@@ -1,3 +1,15 @@
 <resources>
-    <string name="app_name">sid</string>
+    <string name="app_name">SID</string>
+    <string name="cargando">Cargando</string>
+    <string name="logo">DOLMEN SA ESP</string>
+
+    <string name="nombre_usuario">Nombre Usuario</string>
+    <string name="clave_usuario">Clave Usuario</string>
+
+    <!--Titulo de Vistas -->
+    <string name="titulo_actividad_login">Login</string>
+
+    <!--Button-->
+    <string name="btn_ingresar">Ingresar</string>
+    <string name="btn_cancelar">Cancelar</string>
 </resources>
