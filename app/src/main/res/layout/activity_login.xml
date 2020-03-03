@@ -27,7 +27,7 @@
             android:padding="20dp">
 
             <ImageView
-                android:id="@+id/id_logo_login"
+                android:id="@+id/logo_login"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
@@ -35,7 +35,7 @@
                 app:srcCompat="@drawable/logo" />
 
             <EditText
-                android:id="@+id/id_usuario"
+                android:id="@+id/txt_usuario"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
@@ -45,7 +45,7 @@
                 android:inputType="textPersonName" />
 
             <EditText
-                android:id="@+id/editText6"
+                android:id="@+id/txt_clave"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"

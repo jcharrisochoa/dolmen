@@ -3,13 +3,19 @@
     <string name="cargando">Cargando</string>
     <string name="logo">DOLMEN SA ESP</string>
 
-    <string name="nombre_usuario">Nombre Usuario</string>
-    <string name="clave_usuario">Clave Usuario</string>
+    <string name="nombre_usuario">Digite su Usuario</string>
+    <string name="clave_usuario">Digite su Usuario</string>
 
     <!--Titulo de Vistas -->
-    <string name="titulo_actividad_login">Login</string>
+    <string name="titulo_actividad_login">Ingreso a Usuario</string>
 
     <!--Button-->
     <string name="btn_ingresar">Ingresar</string>
     <string name="btn_cancelar">Cancelar</string>
+    <string name="btn_aceptar">Aceptar</string>
+
+    <!--Alertas-->
+    <string name="titulo_alerta">Atención</string>
+    <string name="alert_usuario">Digite su usuario</string>
+    <string name="alert_clave">Digite su clave</string>
 </resources>

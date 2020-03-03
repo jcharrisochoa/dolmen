@@ -86,4 +86,7 @@ public class Login extends AppCompatActivity {
         }
         return this.salida;
     }
+    public void servicioConsultarUsuario(View v){
+
+    }
 }
