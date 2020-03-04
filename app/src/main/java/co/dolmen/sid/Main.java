@@ -11,27 +11,26 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Main extends AppCompatActivity {
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         SharedPreferences config = getSharedPreferences("config",MODE_PRIVATE);
-        Boolean userLogged  = config.getBoolean("usuario_logueado",false);
-        String userName = config.getString("nombre_usuario","");
-        Integer userId  = config.getInt("id_usuario",0);
-        Timer t = new Timer();
+        Boolean userLogged      = config.getBoolean("usuario_logueado",false);
+        String nombre_usuario   = config.getString("nombre_usuario","");
+        String usuario          = config.getString("usuario","");
+        Integer id_usuario      = config.getInt("id_usuario",0);
+        Integer id_bodega       = config.getInt("id_bodega",0);
 
+        Timer t = new Timer();
         if(userLogged){
             t.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    Toast.makeText(Main.this,"Menu",Toast.LENGTH_LONG).show();
-                    //Intent i = new Intent(Main.this,ConfigurarArea.class);
-                    //startActivity(i);
-                    //finish();
+                    //Toast.makeText(Main.this,"Menu",Toast.LENGTH_LONG).show();
+                    Intent i = new Intent(Main.this,Parametros.class);
+                    startActivity(i);
+                    finish();
                 }
             },3000);
         }

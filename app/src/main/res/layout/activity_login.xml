@@ -14,6 +14,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+
+
         <LinearLayout
             android:id="@+id/id_layout_login"
             android:layout_width="match_parent"
@@ -62,12 +64,23 @@
                 android:text="@string/btn_ingresar" />
 
             <Button
-                android:id="@+id/btn_cancelar"
+                android:id="@+id/btn_salir"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginTop="10dp"
-                android:text="@string/btn_cancelar" />
+                android:text="@string/btn_salir" />
+
+            <ProgressBar
+                android:id="@+id/progressLogin"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:indeterminate="true"
+                android:progress="25"
+                tools:visibility="invisible" />
         </LinearLayout>
+
     </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

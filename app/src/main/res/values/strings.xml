@@ -12,10 +12,13 @@
     <!--Button-->
     <string name="btn_ingresar">Ingresar</string>
     <string name="btn_cancelar">Cancelar</string>
+    <string name="btn_salir">Salir</string>
     <string name="btn_aceptar">Aceptar</string>
 
     <!--Alertas-->
     <string name="titulo_alerta">Atención</string>
     <string name="alert_usuario">Digite su usuario</string>
     <string name="alert_clave">Digite su clave</string>
+    <string name="alert_servicio_no_encontrado">Servicio no Disponible</string>
+    <string name="alert_error_ejecucion">Error de ejeución</string>
 </resources>
