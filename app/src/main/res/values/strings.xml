@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">SID</string>
     <string name="cargando">Cargando</string>
+    <string name="descargando_configuracion">Descargando Configuración</string>
+    <string name="descargando_programacion">Descargando Programación</string>
+    <string name="descargando_inventario">Descargando Inventario</string>
     <string name="logo">DOLMEN SA ESP</string>
 
     <string name="nombre_usuario">Digite su Usuario</string>
