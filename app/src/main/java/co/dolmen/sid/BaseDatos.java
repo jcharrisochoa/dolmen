@@ -34,8 +34,7 @@ public class BaseDatos extends SQLiteOpenHelper {
         db.execSQL(ConsultasSQL.CREAR_TABLA_ESTADO_MOBILILARIO);
         db.execSQL(ConsultasSQL.CREAR_TABLA_MOBILIARIO);
         db.execSQL(ConsultasSQL.CREAR_TABLA_TIPOLOGIA_MOBILIARIO);
-        db.execSQL(ConsultasSQL.CREAR_TABLA_MOBILIARIO);
-        db.execSQL(ConsultasSQL.CREAR_TABLA_REFERENCIA);
+        db.execSQL(ConsultasSQL.CREAR_TABLA_REFERENCIA_MOBILIARIO);
         db.execSQL(ConsultasSQL.CREAR_TABLA_BARRIO);
         db.execSQL(ConsultasSQL.CREATE_SENTIDO);
         db.execSQL(ConsultasSQL.CREATE_UNIDAD_MEDIDA);
@@ -56,6 +55,17 @@ public class BaseDatos extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+        /*db.execSQL(ConsultasSQL.dropTable(ConsultasSQL.TABLA_ESTADO_MOBILIARIO));
+        db.execSQL(ConsultasSQL.dropTable(ConsultasSQL.TABLA_MOBILIARIO));
+        db.execSQL(ConsultasSQL.dropTable(ConsultasSQL.TABLA_TIPOLOGIA_MOBILIARIO));
+        db.execSQL(ConsultasSQL.dropTable(ConsultasSQL.TABLA_REFERNCIA_MOBILIARIO));
+        db.execSQL(ConsultasSQL.dropTable(ConsultasSQL.TABLA_BARRIO));
+        db.execSQL(ConsultasSQL.dropTable(ConsultasSQL.TABLA_SENTIDO));
+        db.execSQL(ConsultasSQL.dropTable(ConsultasSQL.TABLA_UNIDAD_MEDIDA));
+        db.execSQL(ConsultasSQL.dropTable(ConsultasSQL.TABLA_TIPOLOGIA_MOBILIARIO));
+        db.execSQL(ConsultasSQL.dropTable(ConsultasSQL.TABLA_ESTADO_MOBILIARIO));
+        db.execSQL(ConsultasSQL.dropTable(ConsultasSQL.TABLA_ESTADO_MOBILIARIO));*/
         Log.d("DataBase","update");
+
     }
 }

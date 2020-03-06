@@ -94,6 +94,7 @@ public class Parametros extends AppCompatActivity {
                 startActivity(i);
                 finish();*/
                 db = new BaseDatos(Parametros.this);
+                db.onUpgrade(db.getWritableDatabase(),Constantes.VERSION_BASEDATOS,3);
             }
 
             @Override
