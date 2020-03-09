@@ -7,6 +7,17 @@ import android.util.Log;
 
 
 import co.dolmen.sid.entidad.EstadoActividad;
+import co.dolmen.sid.entidad.TipoEspacio;
+import co.dolmen.sid.entidad.TipoPoste;
+import co.dolmen.sid.modelo.BarrioDB;
+import co.dolmen.sid.modelo.MunicipioDB;
+import co.dolmen.sid.modelo.ProcesoSgcDB;
+import co.dolmen.sid.modelo.TipoEspacioDB;
+import co.dolmen.sid.modelo.TipoInterseccionDB;
+import co.dolmen.sid.modelo.TipoPosteDB;
+import co.dolmen.sid.modelo.TipoRedDB;
+import co.dolmen.sid.modelo.UnidadMedidaDB;
+import co.dolmen.sid.modelo.VatiajeDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
 import co.dolmen.sid.modelo.EstadoActividadDB;
 import co.dolmen.sid.modelo.EstadoMobiliarioDB;
@@ -16,6 +27,15 @@ public class BaseDatos extends SQLiteOpenHelper {
     private ClaseViaDB claseViaDB;
     private EstadoMobiliarioDB estadoMobiliarioDB;
     private EstadoActividadDB estadoActividadDB;
+    private VatiajeDB vatiajeDB;
+    private UnidadMedidaDB unidadMedidaDB;
+    private TipoRedDB tipoRedDB;
+    private TipoPosteDB tipoPosteDB;
+    private TipoInterseccionDB tipoInterseccionDB;
+    private TipoEspacioDB tipoEspacioDB;
+    private MunicipioDB municipioDB;
+    private ProcesoSgcDB procesoSgcDB;
+    private BarrioDB barrioDB;
 
 
     public BaseDatos(Context context){
@@ -25,6 +45,8 @@ public class BaseDatos extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
+        //onUpgrade(sqLiteDatabase,0,0);
+
         claseViaDB = new ClaseViaDB(sqLiteDatabase);
         claseViaDB.crearTabla();
 
@@ -34,18 +56,37 @@ public class BaseDatos extends SQLiteOpenHelper {
         estadoActividadDB = new EstadoActividadDB(sqLiteDatabase);
         estadoActividadDB.crearTabla();
 
+        vatiajeDB = new VatiajeDB(sqLiteDatabase);
+        vatiajeDB.crearTabla();
+
+        unidadMedidaDB = new UnidadMedidaDB(sqLiteDatabase);
+        unidadMedidaDB.crearTabla();
+
+        tipoRedDB = new TipoRedDB(sqLiteDatabase);
+        tipoRedDB.crearTabla();
+
+        tipoPosteDB = new TipoPosteDB(sqLiteDatabase);
+        tipoPosteDB.crearTabla();
+
+        tipoInterseccionDB = new TipoInterseccionDB(sqLiteDatabase);
+        tipoInterseccionDB.crearTabla();
+
+        tipoEspacioDB = new TipoEspacioDB(sqLiteDatabase);
+        tipoEspacioDB.crearTabla();
+
+        municipioDB = new MunicipioDB(sqLiteDatabase);
+        municipioDB.crearTabla();
+
+        procesoSgcDB = new ProcesoSgcDB(sqLiteDatabase);
+        procesoSgcDB.crearTabla();
+
+        barrioDB = new BarrioDB(sqLiteDatabase);
+        barrioDB.crearTabla();
+
         /*db.execSQL(ConsultasSQL.CREAR_TABLA_MOBILIARIO);
         db.execSQL(ConsultasSQL.CREAR_TABLA_TIPOLOGIA_MOBILIARIO);
         db.execSQL(ConsultasSQL.CREAR_TABLA_REFERENCIA_MOBILIARIO);
-        db.execSQL(ConsultasSQL.CREAR_TABLA_BARRIO);
         db.execSQL(ConsultasSQL.CREATE_SENTIDO);
-        db.execSQL(ConsultasSQL.CREATE_UNIDAD_MEDIDA);
-        db.execSQL(ConsultasSQL.CREATE_TIPO_RED);
-        db.execSQL(ConsultasSQL.CREATE_TIPO_POSTE);
-        db.execSQL(ConsultasSQL.CREATE_CLASE_VIA);
-        db.execSQL(ConsultasSQL.CREATE_TIPO_VIA);
-        db.execSQL(ConsultasSQL.CREATE_PROCESO);
-        db.execSQL(ConsultasSQL.CREATE_MUNICIPIO);
         db.execSQL(ConsultasSQL.CREATE_TIPO_ACTIVIDAD);
         db.execSQL(ConsultasSQL.CREATE_TIPO_REPORTE);
         db.execSQL(ConsultasSQL.CREATE_CONTRATO);
@@ -60,17 +101,16 @@ public class BaseDatos extends SQLiteOpenHelper {
         claseViaDB.borrarTabla();
         estadoMobiliarioDB.borrarTabla();
         estadoActividadDB.borrarTabla();
-        onCreate(sqLiteDatabase);
-        /*db.execSQL(ConsultasSQL.dropTable(ConsultasSQL.TABLA_ESTADO_MOBILIARIO));
-        db.execSQL(ConsultasSQL.dropTable(ConsultasSQL.TABLA_MOBILIARIO));
-        db.execSQL(ConsultasSQL.dropTable(ConsultasSQL.TABLA_TIPOLOGIA_MOBILIARIO));
-        db.execSQL(ConsultasSQL.dropTable(ConsultasSQL.TABLA_REFERNCIA_MOBILIARIO));
-        db.execSQL(ConsultasSQL.dropTable(ConsultasSQL.TABLA_BARRIO));
-        db.execSQL(ConsultasSQL.dropTable(ConsultasSQL.TABLA_SENTIDO));
-        db.execSQL(ConsultasSQL.dropTable(ConsultasSQL.TABLA_UNIDAD_MEDIDA));
-        db.execSQL(ConsultasSQL.dropTable(ConsultasSQL.TABLA_TIPOLOGIA_MOBILIARIO));
-        db.execSQL(ConsultasSQL.dropTable(ConsultasSQL.TABLA_ESTADO_MOBILIARIO));
-        db.execSQL(ConsultasSQL.dropTable(ConsultasSQL.TABLA_ESTADO_MOBILIARIO));*/
+        vatiajeDB.borrarTabla();
+        unidadMedidaDB.borrarTabla();
+        tipoRedDB.borrarTabla();
+        tipoPosteDB.borrarTabla();
+        tipoInterseccionDB.borrarTabla();
+        tipoEspacioDB.borrarTabla();
+        municipioDB.borrarTabla();
+        procesoSgcDB.borrarTabla();
+        barrioDB.borrarTabla();
+
         Log.d("DataBase","update");
 
     }

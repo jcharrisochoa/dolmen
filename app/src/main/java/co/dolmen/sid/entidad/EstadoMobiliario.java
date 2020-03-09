@@ -1,22 +1,26 @@
 package co.dolmen.sid.entidad;
 
-public class EstadoMobiliario {
+public class EstadoMobiliario extends ProcesoSgc {
     int id;
     String descripcion;
 
-    public int getId() {
+    public EstadoMobiliario(){
+        super();
+    }
+
+    public int getIdEstadoMobiliario() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setIdEstadoMobiliario(int id) {
         this.id = id;
     }
 
-    public String getDescripcion() {
+    public String getDescripcionEstadoMobiliario() {
         return descripcion;
     }
 
-    public void setDescripcion(String descripcion) {
+    public void setDescripcionEstadoMobiliario(String descripcion) {
         this.descripcion = descripcion;
     }
 }

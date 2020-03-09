@@ -3,6 +3,7 @@ package co.dolmen.sid.modelo;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import co.dolmen.sid.Constantes;
 import co.dolmen.sid.entidad.ClaseVia;
@@ -28,13 +29,14 @@ public class EstadoMobiliarioDB extends EstadoMobiliario implements DatabaseDLM,
 
     @Override
     public boolean agregarDatos(Object o) {
-        if(o instanceof ClaseVia) {
+        if(o instanceof EstadoMobiliario) {
             estadoMobiliario = (EstadoMobiliario) o;
-            Cursor result = consultarId(estadoMobiliario.getId());
+            Cursor result = consultarId(estadoMobiliario.getIdEstadoMobiliario());
             if(result.getCount() == 0) {
                 ContentValues contentValues = new ContentValues();
-                contentValues.put("_id", estadoMobiliario.getId());
-                contentValues.put("descripcion", estadoMobiliario.getDescripcion());
+                contentValues.put("_id", estadoMobiliario.getIdEstadoMobiliario());
+                contentValues.put("id_proceso_sgc", estadoMobiliario.getId());
+                contentValues.put("descripcion", estadoMobiliario.getDescripcionEstadoMobiliario());
                 db.insert(Constantes.TABLA_ESTADO_MOBILIARIO, null, contentValues);
             }
             return true;
@@ -54,8 +56,10 @@ public class EstadoMobiliarioDB extends EstadoMobiliario implements DatabaseDLM,
     }
 
     @Override
-    public void consultarTodo() {
-
+    public Cursor consultarTodo() {
+        this.sql = "SELECT * FROM "+Constantes.TABLA_ESTADO_MOBILIARIO+" ORDER BY descripcion";
+        Cursor result = db.rawQuery(this.sql, null);
+        return result;
     }
     public Cursor consultarId(int id){
         this.sql = "SELECT _id FROM "+Constantes.TABLA_ESTADO_MOBILIARIO+" WHERE _id="+id;

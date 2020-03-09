@@ -60,8 +60,10 @@ public class ClaseViaDB extends ClaseVia implements DatabaseDDL,DatabaseDLM{
     }
 
     @Override
-    public void consultarTodo() {
-
+    public Cursor consultarTodo() {
+        this.sql = "SELECT * FROM "+Constantes.TABLA_CLASE_VIA+" ORDER BY abreviatura";
+        Cursor result = db.rawQuery(this.sql, null);
+        return result;
     }
 
     public Cursor consultarId(int id){

@@ -56,8 +56,10 @@ public class EstadoActividadDB extends EstadoActividad implements DatabaseDLM,Da
     }
 
     @Override
-    public void consultarTodo() {
-
+    public Cursor consultarTodo() {
+        this.sql = "SELECT * FROM "+Constantes.TABLA_ESTADO_ACTIVIDAD+" ORDER BY descripcion";
+        Cursor result = db.rawQuery(this.sql, null);
+        return result;
     }
     public Cursor consultarId(int id){
         this.sql = "SELECT _id FROM "+Constantes.TABLA_ESTADO_ACTIVIDAD+" WHERE _id="+id;

@@ -14,7 +14,7 @@ public final class Constantes {
     public static final String TABLA_TIPO_RED                  = "tipo_red";
     public static final String TABLA_TIPO_POSTE                = "tipo_poste";
     public static final String TABLA_CLASE_VIA                 = "clase_via"; //M1,M2
-    public static final String TABLA_TIPO_VIA                  = "tipo_via"; //CL CR KM
+    public static final String TABLA_TIPO_INTERSECCION         = "tipo_interseccion"; //CL CR KM
     public static final String TABLA_PROCESO                   = "proceso_sgc";
     public static final String TABLA_MUNICIPIO                 = "municipio";
     public static final String TABLA_TIPO_ACTIVIDAD            = "tipo_actividad_operativa";
