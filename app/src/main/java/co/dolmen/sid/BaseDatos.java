@@ -1,38 +1,40 @@
 package co.dolmen.sid;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.database.Cursor;
-import android.text.Editable;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
 
-import java.lang.reflect.Array;
-import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Date;
-
-import co.dolmen.sid.Constantes;
-import co.dolmen.sid.ConsultasSQL;
+import co.dolmen.sid.entidad.EstadoActividad;
+import co.dolmen.sid.modelo.ClaseViaDB;
+import co.dolmen.sid.modelo.EstadoActividadDB;
+import co.dolmen.sid.modelo.EstadoMobiliarioDB;
 
 public class BaseDatos extends SQLiteOpenHelper {
-    private String sql;
     private SQLiteDatabase db;
+    private ClaseViaDB claseViaDB;
+    private EstadoMobiliarioDB estadoMobiliarioDB;
+    private EstadoActividadDB estadoActividadDB;
+
 
     public BaseDatos(Context context){
         super(context, Constantes.NOMBRE_BASEDATOS,null,Constantes.VERSION_BASEDATOS);
-        //db = getWritableDatabase();
+        db = getWritableDatabase();
     }
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        db.execSQL(ConsultasSQL.CREAR_TABLA_ESTADO_MOBILILARIO);
-        db.execSQL(ConsultasSQL.CREAR_TABLA_MOBILIARIO);
+        claseViaDB = new ClaseViaDB(sqLiteDatabase);
+        claseViaDB.crearTabla();
+
+        estadoMobiliarioDB = new EstadoMobiliarioDB(sqLiteDatabase);
+        estadoMobiliarioDB.crearTabla();
+
+        estadoActividadDB = new EstadoActividadDB(sqLiteDatabase);
+        estadoActividadDB.crearTabla();
+
+        /*db.execSQL(ConsultasSQL.CREAR_TABLA_MOBILIARIO);
         db.execSQL(ConsultasSQL.CREAR_TABLA_TIPOLOGIA_MOBILIARIO);
         db.execSQL(ConsultasSQL.CREAR_TABLA_REFERENCIA_MOBILIARIO);
         db.execSQL(ConsultasSQL.CREAR_TABLA_BARRIO);
@@ -49,12 +51,16 @@ public class BaseDatos extends SQLiteOpenHelper {
         db.execSQL(ConsultasSQL.CREATE_CONTRATO);
         db.execSQL(ConsultasSQL.CREATE_ACTA_CONTRATO);
         db.execSQL(ConsultasSQL.CREATE_PROVEEDOR);
-        db.execSQL(ConsultasSQL.CREATE_PROGRAMA);
+        db.execSQL(ConsultasSQL.CREATE_PROGRAMA);*/
         Log.d("DataBase","create");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+        claseViaDB.borrarTabla();
+        estadoMobiliarioDB.borrarTabla();
+        estadoActividadDB.borrarTabla();
+        onCreate(sqLiteDatabase);
         /*db.execSQL(ConsultasSQL.dropTable(ConsultasSQL.TABLA_ESTADO_MOBILIARIO));
         db.execSQL(ConsultasSQL.dropTable(ConsultasSQL.TABLA_MOBILIARIO));
         db.execSQL(ConsultasSQL.dropTable(ConsultasSQL.TABLA_TIPOLOGIA_MOBILIARIO));

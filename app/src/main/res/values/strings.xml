@@ -4,6 +4,7 @@
     <string name="descargando_configuracion">Descargando Configuración</string>
     <string name="descargando_programacion">Descargando Programación</string>
     <string name="descargando_inventario">Descargando Inventario</string>
+    <string name="actualizando_base_datos">Actualizando Base Datos Dispositivo</string>
     <string name="logo">DOLMEN SA ESP</string>
 
     <string name="nombre_usuario">Digite su Usuario</string>
