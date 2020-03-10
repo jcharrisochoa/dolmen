@@ -1,10 +1,13 @@
 package co.dolmen.sid;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -13,6 +16,7 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestHandle;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.ResponseHandlerInterface;
+import com.loopj.android.http.SyncHttpClient;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,16 +24,22 @@ import org.json.JSONObject;
 
 import co.dolmen.sid.entidad.EstadoMobiliario;
 import co.dolmen.sid.entidad.ProcesoSgc;
+import co.dolmen.sid.entidad.TipoTension;
 import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
 import co.dolmen.sid.modelo.EstadoActividadDB;
 import co.dolmen.sid.modelo.EstadoMobiliarioDB;
+import co.dolmen.sid.modelo.MobiliarioDB;
 import co.dolmen.sid.modelo.MunicipioDB;
 import co.dolmen.sid.modelo.ProcesoSgcDB;
+import co.dolmen.sid.modelo.ReferenciaMobiliarioDB;
+import co.dolmen.sid.modelo.RetenidaPosteDB;
 import co.dolmen.sid.modelo.TipoEspacioDB;
 import co.dolmen.sid.modelo.TipoInterseccionDB;
 import co.dolmen.sid.modelo.TipoPosteDB;
 import co.dolmen.sid.modelo.TipoRedDB;
+import co.dolmen.sid.modelo.TipoTensionDB;
+import co.dolmen.sid.modelo.TipologiaDB;
 import co.dolmen.sid.modelo.UnidadMedidaDB;
 import co.dolmen.sid.modelo.VatiajeDB;
 import cz.msebera.android.httpclient.Header;
@@ -46,6 +56,9 @@ public class Parametros extends AppCompatActivity {
     SQLiteDatabase database;
     JSONObject json;
     byte[] responseBodyTmp;
+    int progress;
+
+    private Handler hdlr = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +95,7 @@ public class Parametros extends AppCompatActivity {
             @Override
             public void onProgress(long bytesWritten, long totalSize) {
                 super.onProgress(bytesWritten, totalSize);
-                int progress = (int)Math.round(((double)bytesWritten/(double)contenLenght)*100);
+                progress = (int)Math.round(((double)bytesWritten/(double)contenLenght)*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText(progress+"%");
             }
@@ -98,13 +111,13 @@ public class Parametros extends AppCompatActivity {
             @Override
             public void onFinish() {
                 super.onFinish();
-                //--LLamado a funcion que carga la programacion;
-                actualizarBaseDatosParamtros();
+
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 responseBodyTmp = responseBody;
+                actualizarBaseDatosParamtros();
             }
 
             @Override
@@ -112,7 +125,9 @@ public class Parametros extends AppCompatActivity {
                 progressBar.setProgress(0);
                 txt_porcentaje_carga.setText(getText(R.string.alert_error_ejecucion)+ " Code:"+statusCode);
             }
+
         });
+
     }
     public void actualizarBaseDatosParamtros(){
         int progress = 0;
@@ -133,12 +148,73 @@ public class Parametros extends AppCompatActivity {
                 municipioDB.setDescripcion(jObjectMunicipio.getString("descripcion"));
                 municipioDB.agregarDatos(municipioDB);
                 progress = (int)Math.round((double)(i+1)/arrayMunicipio.length()*100);
-                progressBar.setProgress(progress);
+                progressBar.incrementProgressBy(progress);
                 txt_porcentaje_carga.setText("Actualizando Municipio "+progress+"%");
             }
 
+            //--Tipologia
+            TipologiaDB tipologiaDB = new TipologiaDB(database);
+            JSONArray arrayTipologia = parametros.getJSONArray("tipologia");
+            for (int i = 0;i<arrayTipologia.length();i++){
+                JSONObject jObjectTipologia = arrayTipologia.getJSONObject(i);
+                tipologiaDB.setIdTipologia(jObjectTipologia.getInt("id"));
+                tipologiaDB.setId(jObjectTipologia.getInt("id_proceso_sgc"));
+                tipologiaDB.setDescripcionTipologia(jObjectTipologia.getString("descripcion"));
+                tipologiaDB.agregarDatos(tipologiaDB);
+                progress = (int)Math.round((double)(i+1)/arrayTipologia.length()*100);
+                progressBar.setProgress(progress);
+                txt_porcentaje_carga.setText("Actualizando Tipologia "+progress+"%");
+            }
+
+            //--Mobiliario
+            MobiliarioDB mobiliarioDB = new MobiliarioDB(database);
+            JSONArray arrayMobiliario = parametros.getJSONArray("mobiliario");
+            for (int i = 0;i<arrayMobiliario.length();i++){
+                JSONObject jObjectMobiliario = arrayMobiliario.getJSONObject(i);
+                mobiliarioDB.setIdMobiliario(jObjectMobiliario.getInt("id"));
+                mobiliarioDB.setId(jObjectMobiliario.getInt("id_tipologia"));
+                mobiliarioDB.setDescripcionMobiliario(jObjectMobiliario.getString("descripcion"));
+                mobiliarioDB.agregarDatos(mobiliarioDB);
+                progress = (int)Math.round((double)(i+1)/arrayMobiliario.length()*100);
+                progressBar.setProgress(progress);
+                txt_porcentaje_carga.setText("Actualizando Mobiliario "+progress+"%");
+            }
+            //--Referencia Mobiliario
+            ReferenciaMobiliarioDB referenciaMobiliarioDB = new ReferenciaMobiliarioDB(database);
+            JSONArray arrayReferenciaMobiliario = parametros.getJSONArray("referencia");
+            for (int i = 0;i<arrayReferenciaMobiliario.length();i++){
+                JSONObject jObjectReferenciaMobiliario = arrayReferenciaMobiliario.getJSONObject(i);
+                referenciaMobiliarioDB.setIdReferenciaMobiliario(jObjectReferenciaMobiliario.getInt("id"));
+                referenciaMobiliarioDB.setId(jObjectReferenciaMobiliario.getInt("id_mobiliario"));
+                referenciaMobiliarioDB.setDescripcionReferenciaMobiliario(jObjectReferenciaMobiliario.getString("descripcion"));
+                referenciaMobiliarioDB.agregarDatos(referenciaMobiliarioDB);
+                progress = (int)Math.round((double)(i+1)/arrayReferenciaMobiliario.length()*100);
+                progressBar.setProgress(progress);
+                txt_porcentaje_carga.setText("Actualizando Referencia Mobiliario "+progress+"%");
+            }
+            /*new Thread(new Runnable() {
+                int i = 0;
+                public void run() {
+                    while (i < 100) {
+                        i += 1;
+                        // Update the progress bar and display the current value in text view
+                        hdlr.post(new Runnable() {
+                            public void run() {
+                                progressBar.setProgress(i);
+                                txt_porcentaje_carga.setText(i+"/"+progressBar.getMax());
+                            }
+                        });
+                        try {
+                            // Sleep for 100 milliseconds to show the progress slowly.
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }).start();*/
+
             //--Barrio
-            /*
             BarrioDB barrioDB = new BarrioDB(database);
             JSONArray arrayBarrio = parametros.getJSONArray("barrio");
             for (int i = 0;i<arrayBarrio.length();i++){
@@ -150,8 +226,7 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayBarrio.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Barrios "+progress+"%");
-            }*/
-
+            }
             //--Proceso SGC
             ProcesoSgcDB procesoSgcDB = new ProcesoSgcDB(database);
             JSONArray arrayProcesoSgc = parametros.getJSONArray("procesousuario");
@@ -175,7 +250,6 @@ public class Parametros extends AppCompatActivity {
                 claseViaDB.setAbreviatura(jObjectClaseVia.getString("abreviatura"));
                 claseViaDB.agregarDatos(claseViaDB);
                 progress = (int)Math.round((double)(i+1)/arrayClaseVia.length()*100);
-                //Log.d("progreso->",""+progress);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Entidad Clase Via "+progress+"%");
             }
@@ -284,9 +358,37 @@ public class Parametros extends AppCompatActivity {
                 txt_porcentaje_carga.setText("Actualizando Tipo Espacio "+progress+"%");
             }
 
-            db.close();
+            //--Tipo Tension
+            TipoTensionDB tipoTensionDB = new TipoTensionDB(database);
+            JSONArray arrayTipoTension = parametros.getJSONArray("tipo_tension");
+            for (int i = 0;i<arrayTipoTension.length();i++){
+                JSONObject jObjectTipoTension = arrayTipoTension.getJSONObject(i);
+                tipoTensionDB.setId(jObjectTipoTension.getInt("id"));
+                tipoTensionDB.setDescripcion(jObjectTipoTension.getString("descripcion"));
+                tipoTensionDB.agregarDatos(tipoTensionDB);
+                progress = (int)Math.round((double)(i+1)/arrayTipoTension.length()*100);
+                progressBar.setProgress(progress);
+                txt_porcentaje_carga.setText("Actualizando Tipo Tension "+progress+"%");
+            }
+
+            //Retenida Poste
+            RetenidaPosteDB retenidaPosteDB = new RetenidaPosteDB(database);
+            JSONArray arrayRetenidaPoste = parametros.getJSONArray("retenida_poste");
+            for (int i = 0;i<arrayRetenidaPoste.length();i++){
+                JSONObject jObjectRetenidaPoste = arrayRetenidaPoste.getJSONObject(i);
+                retenidaPosteDB.setId(jObjectRetenidaPoste.getInt("id"));
+                retenidaPosteDB.setDescripcion(jObjectRetenidaPoste.getString("descripcion"));
+                retenidaPosteDB.setNorma(jObjectRetenidaPoste.getString("norma"));
+                retenidaPosteDB.agregarDatos(retenidaPosteDB);
+                progress = (int)Math.round((double)(i+1)/arrayRetenidaPoste.length()*100);
+                progressBar.setProgress(progress);
+                txt_porcentaje_carga.setText("Actualizando Retenida Poste "+progress+"%");
+            }
+
+            database.close();
         }catch (JSONException e){
             e.getMessage();
         }
     }
+
 }

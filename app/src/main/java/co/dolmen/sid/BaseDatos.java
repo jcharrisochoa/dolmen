@@ -6,16 +6,23 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 
+import java.security.PrivateKey;
+
 import co.dolmen.sid.entidad.EstadoActividad;
 import co.dolmen.sid.entidad.TipoEspacio;
 import co.dolmen.sid.entidad.TipoPoste;
 import co.dolmen.sid.modelo.BarrioDB;
+import co.dolmen.sid.modelo.MobiliarioDB;
 import co.dolmen.sid.modelo.MunicipioDB;
 import co.dolmen.sid.modelo.ProcesoSgcDB;
+import co.dolmen.sid.modelo.ReferenciaMobiliarioDB;
+import co.dolmen.sid.modelo.RetenidaPosteDB;
 import co.dolmen.sid.modelo.TipoEspacioDB;
 import co.dolmen.sid.modelo.TipoInterseccionDB;
 import co.dolmen.sid.modelo.TipoPosteDB;
 import co.dolmen.sid.modelo.TipoRedDB;
+import co.dolmen.sid.modelo.TipoTensionDB;
+import co.dolmen.sid.modelo.TipologiaDB;
 import co.dolmen.sid.modelo.UnidadMedidaDB;
 import co.dolmen.sid.modelo.VatiajeDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
@@ -36,6 +43,11 @@ public class BaseDatos extends SQLiteOpenHelper {
     private MunicipioDB municipioDB;
     private ProcesoSgcDB procesoSgcDB;
     private BarrioDB barrioDB;
+    private TipoTensionDB tipoTensionDB;
+    private RetenidaPosteDB retenidaPosteDB;
+    private TipologiaDB tipologiaDB;
+    private MobiliarioDB mobiliarioDB;
+    private ReferenciaMobiliarioDB referenciaMobiliarioDB;
 
 
     public BaseDatos(Context context){
@@ -46,6 +58,14 @@ public class BaseDatos extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         //onUpgrade(sqLiteDatabase,0,0);
+        tipologiaDB = new TipologiaDB(sqLiteDatabase);
+        tipologiaDB.crearTabla();
+
+        mobiliarioDB = new MobiliarioDB(sqLiteDatabase);
+        mobiliarioDB.crearTabla();
+
+        referenciaMobiliarioDB = new ReferenciaMobiliarioDB(sqLiteDatabase);
+        referenciaMobiliarioDB.crearTabla();
 
         claseViaDB = new ClaseViaDB(sqLiteDatabase);
         claseViaDB.crearTabla();
@@ -83,6 +103,12 @@ public class BaseDatos extends SQLiteOpenHelper {
         barrioDB = new BarrioDB(sqLiteDatabase);
         barrioDB.crearTabla();
 
+        tipoTensionDB = new TipoTensionDB(sqLiteDatabase);
+        tipoTensionDB.crearTabla();
+
+        retenidaPosteDB = new RetenidaPosteDB(sqLiteDatabase);
+        retenidaPosteDB.crearTabla();
+
         /*db.execSQL(ConsultasSQL.CREAR_TABLA_MOBILIARIO);
         db.execSQL(ConsultasSQL.CREAR_TABLA_TIPOLOGIA_MOBILIARIO);
         db.execSQL(ConsultasSQL.CREAR_TABLA_REFERENCIA_MOBILIARIO);
@@ -98,6 +124,9 @@ public class BaseDatos extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+        tipologiaDB.borrarTabla();
+        mobiliarioDB.borrarTabla();
+        referenciaMobiliarioDB.borrarTabla();
         claseViaDB.borrarTabla();
         estadoMobiliarioDB.borrarTabla();
         estadoActividadDB.borrarTabla();
@@ -110,7 +139,8 @@ public class BaseDatos extends SQLiteOpenHelper {
         municipioDB.borrarTabla();
         procesoSgcDB.borrarTabla();
         barrioDB.borrarTabla();
-
+        tipoTensionDB.borrarTabla();
+        retenidaPosteDB.borrarTabla();
         Log.d("DataBase","update");
 
     }

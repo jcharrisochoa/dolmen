@@ -19,7 +19,7 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Web"></activity>
+        <activity android:name=".Web" />
         <activity android:name=".Parametros" />
         <activity
             android:name=".Login"

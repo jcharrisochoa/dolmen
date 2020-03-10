@@ -13,6 +13,7 @@ public class EstadoMobiliarioDB extends EstadoMobiliario implements DatabaseDLM,
     SQLiteDatabase db;
     String sql;
     EstadoMobiliario estadoMobiliario;
+
     public EstadoMobiliarioDB(SQLiteDatabase sqLiteDatabase){
         this.db = sqLiteDatabase;
         estadoMobiliario = new EstadoMobiliario();

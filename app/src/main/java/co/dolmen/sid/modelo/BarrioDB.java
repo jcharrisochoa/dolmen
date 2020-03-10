@@ -3,6 +3,7 @@ package co.dolmen.sid.modelo;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import co.dolmen.sid.Constantes;
 import co.dolmen.sid.entidad.Barrio;
@@ -30,6 +31,7 @@ public class BarrioDB extends Barrio implements DatabaseDDL,DatabaseDLM {
     public boolean agregarDatos(Object o) {
         if(o instanceof Barrio) {
             barrio = (Barrio) o;
+            Log.d("barrio",""+barrio.getIdBarrio());
             Cursor result = consultarId(barrio.getIdBarrio());
             if(result.getCount() == 0) {
                 ContentValues contentValues = new ContentValues();

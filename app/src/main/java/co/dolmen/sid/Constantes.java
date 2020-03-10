@@ -35,4 +35,6 @@ public final class Constantes {
     public static final String TABLA_ARCHIVO_ACTIVIDAD_OPERATIVA   = "archivo_actividad_operativa";
     public static final String TABLA_ORDEN_INVENTARIO          = "orden_inventario";
     public static final String TABLA_DETALLE_ORDEN_INVENTARIO  = "detalle_orden_inventario";
+    public static final String TABLA_TIPO_TENSION               = "tipo_tension";
+    public static final String TABLA_RETENIDA_POSTE               = "retenida_poste";
 }
