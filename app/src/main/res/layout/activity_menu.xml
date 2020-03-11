@@ -139,24 +139,27 @@
                             android:layout_width="match_parent"
                             android:layout_height="65dp"
                             android:layout_weight="1"
+                            android:background="@android:drawable/btn_default_small"
+                            android:drawableLeft="@android:drawable/ic_menu_add"
                             android:text="@string/btn_crear_elemento"
-                            android:textSize="14sp"
-                            android:drawableLeft="@android:drawable/ic_menu_add"/>
+                            android:textSize="14sp" />
 
                         <Button
                             android:id="@+id/btnActualizarElemento"
                             android:layout_width="match_parent"
                             android:layout_height="65dp"
                             android:layout_weight="1"
+                            android:background="@android:drawable/btn_default_small"
+                            android:drawableLeft="@android:drawable/ic_menu_edit"
                             android:text="@string/btn_actualizar_elemento"
-                            android:textSize="14sp"
-                            android:drawableLeft="@android:drawable/ic_menu_edit"/>
+                            android:textSize="14sp" />
 
                         <Button
                             android:id="@+id/btnGenerarRD"
                             android:layout_width="match_parent"
                             android:layout_height="65dp"
                             android:layout_weight="1"
+                            android:background="@android:drawable/btn_default_small"
                             android:drawableLeft="@android:drawable/ic_dialog_alert"
                             android:text="@string/btn_crear_reporte_dano"
                             android:textSize="14sp" />
@@ -166,24 +169,36 @@
                             android:layout_width="match_parent"
                             android:layout_height="65dp"
                             android:layout_weight="1"
+                            android:background="@android:drawable/btn_default_small"
+                            android:drawableLeft="@android:drawable/ic_menu_send"
                             android:text="@string/btn_crear_actividad"
-                            android:textSize="14sp"
-                            android:drawableLeft="@android:drawable/ic_menu_send"/>
+                            android:textSize="14sp" />
 
                         <Button
-                            android:id="@+id/btnPerfil"
+                            android:id="@+id/btn_perfil"
                             android:layout_width="match_parent"
                             android:layout_height="65dp"
                             android:layout_weight="1"
+                            android:background="@android:drawable/btn_default_small"
+                            android:drawableLeft="@android:drawable/ic_menu_manage"
                             android:text="@string/btn_perfil"
-                            android:textSize="14sp"
-                            android:drawableLeft="@android:drawable/ic_menu_manage"/>
+                            android:textSize="14sp" />
 
                         <Button
-                            android:id="@+id/btnCerrarSesion"
+                            android:id="@+id/btn_censo_tecnico"
                             android:layout_width="match_parent"
                             android:layout_height="65dp"
                             android:layout_weight="1"
+                            android:background="@android:drawable/btn_default_small"
+                            android:drawableLeft="@android:drawable/btn_star_big_on"
+                            android:text="@string/btn_censo_tecnico" />
+
+                        <Button
+                            android:id="@+id/btn_salir"
+                            android:layout_width="match_parent"
+                            android:layout_height="65dp"
+                            android:layout_weight="1"
+                            android:background="@android:drawable/btn_default_small"
                             android:drawableLeft="@android:drawable/ic_delete"
                             android:text="@string/btn_salir"
                             android:textSize="14sp" />

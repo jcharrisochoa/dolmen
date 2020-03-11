@@ -154,12 +154,15 @@ public class ConfigurarArea extends AppCompatActivity {
             if (procesoList.get(sltProceso.getSelectedItemPosition()).getId() == 0) {
                 alert.setMessage(getString(R.string.alert_proceso));
                 this.salida = false;
-            } /*else {
+            } else {
                 if (contratoList.get(sltContrato.getSelectedItemPosition()).getId() == 0) {
                     alert.setMessage(getString(R.string.alert_contrato));
                     this.salida = false;
                 }
-            }*/
+                else{
+                    this.salida = true;
+                }
+            }
         }
         return this.salida;
     }
@@ -207,7 +210,6 @@ public class ConfigurarArea extends AppCompatActivity {
         if (cursor.moveToFirst()) {
             do {
                 i++;
-                Log.d("Datos","id:"+cursor.getInt(0)+",descripcion:"+cursor.getString(1));
                 dataSpinner = new DataSpinner(cursor.getInt(0),cursor.getString(1).toUpperCase());
                 procesoList.add(dataSpinner);
                 labels.add(cursor.getString(1).toUpperCase());
@@ -229,20 +231,19 @@ public class ConfigurarArea extends AppCompatActivity {
         int i = 0;
         if(id_municipio == 0 || id_proceso_sgc==0){
             DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
-            procesoList.add(dataSpinner);
+            contratoList.add(dataSpinner);
             labels.add(getText(R.string.seleccione).toString());
         }
         else {
             ContratoDB contratoDB = new ContratoDB(sqLiteDatabase);
             Cursor cursor = contratoDB.consultarTodo(id_municipio, id_proceso_sgc);
             DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
-            procesoList.add(dataSpinner);
+            contratoList.add(dataSpinner);
             labels.add(getText(R.string.seleccione).toString());
 
             if (cursor.moveToFirst()) {
                 do {
                     i++;
-                    Log.d("cmbContrato","id:"+cursor.getInt(0)+",desc:"+cursor.getString(3).toUpperCase());
                     dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(3).toUpperCase());
                     contratoList.add(dataSpinner);
                     labels.add(cursor.getString(3).toUpperCase());
@@ -256,8 +257,6 @@ public class ConfigurarArea extends AppCompatActivity {
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, labels);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltContrato.setAdapter(dataAdapter);
-
-        Log.d("tag:","postContrato:"+setDefaultPositionContrato);
         sltContrato.setSelection(setDefaultPositionContrato);
     }
 

@@ -19,7 +19,9 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Menu"></activity>
+        <activity android:name=".CensoTecnico"
+            android:label="@string/titulo_censo_tecnico"></activity>
+        <activity android:name=".Menu" />
         <activity
             android:name=".ConfigurarArea"
             android:label="@string/titulo_perfil_usuario" />
