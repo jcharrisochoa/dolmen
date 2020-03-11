@@ -27,6 +27,14 @@
     <string name="btn_salir">Salir</string>
     <string name="btn_aceptar">Aceptar</string>
     <string name="btn_siguiente">Siguiente</string>
+    <string name="btn_crear_reporte_dano">Crear RD</string>
+    <string name="btn_crear_actividad">Crear Actividad</string>
+    <string name="btn_crear_elemento">Crear Elemento</string>
+    <string name="btn_actualizar_elemento">Actualizar Elemento</string>
+    <string name="btn_perfil">Perfil</string>
+
+    <string name="btn_recorrido">Recorrido</string>
+
 
     <!--Alertas-->
     <string name="titulo_alerta">Atención</string>

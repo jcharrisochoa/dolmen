@@ -2,7 +2,10 @@ package co.dolmen.sid;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import co.dolmen.sid.modelo.ContratoDB;
 import co.dolmen.sid.modelo.MunicipioDB;
+import co.dolmen.sid.modelo.ProcesoSgcDB;
 import co.dolmen.sid.utilidades.DataSpinner;
 
 import android.content.DialogInterface;
@@ -14,6 +17,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -55,6 +59,7 @@ public class ConfigurarArea extends AppCompatActivity {
         setContentView(R.layout.activity_configurar_area);
         conn = new BaseDatos(ConfigurarArea.this);
         database = conn.getReadableDatabase();
+
         alert = new AlertDialog.Builder(this);
 
         btnSiguiente = findViewById(R.id.btn_siguiente);
@@ -72,6 +77,29 @@ public class ConfigurarArea extends AppCompatActivity {
         idDefaultProceso    = config.getInt("id_proceso",0);
         idDefaultContrato   = config.getInt("id_contrato",0);
 
+
+        sltMunicipio.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                cargarContrato(database,municipioList.get(i).getId(),procesoList.get(sltProceso.getSelectedItemPosition()).getId());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        sltProceso.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                cargarContrato(database,municipioList.get(i).getId(),procesoList.get(sltProceso.getSelectedItemPosition()).getId());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         btnSalir.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,10 +125,10 @@ public class ConfigurarArea extends AppCompatActivity {
                     editar.putString("nombreProceso",procesoList.get(sltProceso.getSelectedItemPosition()).getDescripcion());
                     editar.putString("nombreContrato",contratoList.get(sltContrato.getSelectedItemPosition()).getDescripcion());
                     editar.commit();
-
-                    /*Intent i = new Intent(ConfigurarArea.this, Menu.class);
+                    database.close();
+                    Intent i = new Intent(ConfigurarArea.this, Menu.class);
                     startActivity(i);
-                    finish();*/
+                    finish();
                 }
                 else{
                     alert.setTitle(R.string.titulo_alerta);
@@ -116,22 +144,23 @@ public class ConfigurarArea extends AppCompatActivity {
         });
 
         cargarMunicipio(database);
+        cargarProceso(database);
     }
     private boolean validarFrm() {
         if (municipioList.get(sltMunicipio.getSelectedItemPosition()).getId() == 0) {
             alert.setMessage(getString(R.string.alert_municipio));
             this.salida = false;
-        } /*else {
+        } else {
             if (procesoList.get(sltProceso.getSelectedItemPosition()).getId() == 0) {
                 alert.setMessage(getString(R.string.alert_proceso));
                 this.salida = false;
-            } else {
+            } /*else {
                 if (contratoList.get(sltContrato.getSelectedItemPosition()).getId() == 0) {
                     alert.setMessage(getString(R.string.alert_contrato));
                     this.salida = false;
                 }
-            }
-        }*/
+            }*/
+        }
         return this.salida;
     }
     private void cargarMunicipio(SQLiteDatabase sqLiteDatabase) {
@@ -159,12 +188,77 @@ public class ConfigurarArea extends AppCompatActivity {
             } while (cursor.moveToNext());
         }
         cursor.close();
-        sqLiteDatabase.close();
 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, labels);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltMunicipio.setAdapter(dataAdapter);
-         /*sltMunicipio.setSelection(setDefaultPositionMunicipio);*/
+        sltMunicipio.setSelection(setDefaultPositionMunicipio);
+    }
+    private void cargarProceso(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        procesoList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        ProcesoSgcDB procesoSgcDB = new ProcesoSgcDB(sqLiteDatabase);
+        Cursor cursor = procesoSgcDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i,getText(R.string.seleccione).toString());
+        procesoList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+
+        if (cursor.moveToFirst()) {
+            do {
+                i++;
+                Log.d("Datos","id:"+cursor.getInt(0)+",descripcion:"+cursor.getString(1));
+                dataSpinner = new DataSpinner(cursor.getInt(0),cursor.getString(1).toUpperCase());
+                procesoList.add(dataSpinner);
+                labels.add(cursor.getString(1).toUpperCase());
+                if(idDefaultProceso == cursor.getInt(0)){
+                    setDefaultPositionProceso = i;
+                }
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltProceso.setAdapter(dataAdapter);
+        sltProceso.setSelection(setDefaultPositionProceso);
+    }
+    private void cargarContrato(SQLiteDatabase sqLiteDatabase,int id_municipio,int id_proceso_sgc) {
+        contratoList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        int i = 0;
+        if(id_municipio == 0 || id_proceso_sgc==0){
+            DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+            procesoList.add(dataSpinner);
+            labels.add(getText(R.string.seleccione).toString());
+        }
+        else {
+            ContratoDB contratoDB = new ContratoDB(sqLiteDatabase);
+            Cursor cursor = contratoDB.consultarTodo(id_municipio, id_proceso_sgc);
+            DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+            procesoList.add(dataSpinner);
+            labels.add(getText(R.string.seleccione).toString());
+
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    Log.d("cmbContrato","id:"+cursor.getInt(0)+",desc:"+cursor.getString(3).toUpperCase());
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(3).toUpperCase());
+                    contratoList.add(dataSpinner);
+                    labels.add(cursor.getString(3).toUpperCase());
+                    if (idDefaultContrato == cursor.getInt(0)) {
+                        setDefaultPositionContrato = i;
+                    }
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltContrato.setAdapter(dataAdapter);
+
+        Log.d("tag:","postContrato:"+setDefaultPositionContrato);
+        sltContrato.setSelection(setDefaultPositionContrato);
     }
 
 }

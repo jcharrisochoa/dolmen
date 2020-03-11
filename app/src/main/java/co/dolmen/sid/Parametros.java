@@ -23,10 +23,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import co.dolmen.sid.entidad.EstadoMobiliario;
+import co.dolmen.sid.entidad.Municipio;
 import co.dolmen.sid.entidad.ProcesoSgc;
 import co.dolmen.sid.entidad.TipoTension;
 import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
+import co.dolmen.sid.modelo.ContratoDB;
 import co.dolmen.sid.modelo.EstadoActividadDB;
 import co.dolmen.sid.modelo.EstadoMobiliarioDB;
 import co.dolmen.sid.modelo.MobiliarioDB;
@@ -242,6 +244,30 @@ public class Parametros extends AppCompatActivity {
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Proceso SGC "+progress+"%");
             }
+
+            //--Proceso SGC
+            ContratoDB contratoDB = new ContratoDB(database);
+            JSONArray arrayContrato = parametros.getJSONArray("contrato");
+            for (int i = 0;i<arrayContrato.length();i++){
+                JSONObject jObjectContrato = arrayContrato.getJSONObject(i);
+                contratoDB.setId(jObjectContrato.getInt("id"));
+                contratoDB.setDescripcion(jObjectContrato.getString("descripcion"));
+                //--
+                Municipio municipioContrato = new Municipio();
+                municipioContrato.setId(jObjectContrato.getInt("id_municipio"));
+                contratoDB.setMunicipio(municipioContrato);
+                //--
+                ProcesoSgc procesoContrato = new ProcesoSgc();
+                procesoContrato.setId(jObjectContrato.getInt("id_proceso_sgc"));
+                contratoDB.setProcesoSgc(procesoContrato);
+
+                //--
+                contratoDB.agregarDatos(contratoDB);
+                progress = (int)Math.round((double)(i+1)/arrayContrato.length()*100);
+                progressBar.setProgress(progress);
+                txt_porcentaje_carga.setText("Actualizando Contratos "+progress+"%");
+            }
+
 
             //--Clase Via
             ClaseViaDB claseViaDB = new ClaseViaDB(database);

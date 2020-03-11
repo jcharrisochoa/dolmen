@@ -28,7 +28,7 @@ public class Main extends AppCompatActivity {
                 @Override
                 public void run() {
                     //Toast.makeText(Main.this,"Menu",Toast.LENGTH_LONG).show();
-                    Intent i = new Intent(Main.this,Parametros.class);
+                    Intent i = new Intent(Main.this,ConfigurarArea.class);
                     startActivity(i);
                     finish();
                 }

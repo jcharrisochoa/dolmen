@@ -12,6 +12,7 @@ import co.dolmen.sid.entidad.EstadoActividad;
 import co.dolmen.sid.entidad.TipoEspacio;
 import co.dolmen.sid.entidad.TipoPoste;
 import co.dolmen.sid.modelo.BarrioDB;
+import co.dolmen.sid.modelo.ContratoDB;
 import co.dolmen.sid.modelo.MobiliarioDB;
 import co.dolmen.sid.modelo.MunicipioDB;
 import co.dolmen.sid.modelo.ProcesoSgcDB;
@@ -48,6 +49,7 @@ public class BaseDatos extends SQLiteOpenHelper {
     private TipologiaDB tipologiaDB;
     private MobiliarioDB mobiliarioDB;
     private ReferenciaMobiliarioDB referenciaMobiliarioDB;
+    private ContratoDB contratoDB;
 
 
     public BaseDatos(Context context){
@@ -109,6 +111,9 @@ public class BaseDatos extends SQLiteOpenHelper {
         retenidaPosteDB = new RetenidaPosteDB(sqLiteDatabase);
         retenidaPosteDB.crearTabla();
 
+        contratoDB = new ContratoDB(sqLiteDatabase);
+        contratoDB.crearTabla();
+
         /*db.execSQL(ConsultasSQL.CREAR_TABLA_MOBILIARIO);
         db.execSQL(ConsultasSQL.CREAR_TABLA_TIPOLOGIA_MOBILIARIO);
         db.execSQL(ConsultasSQL.CREAR_TABLA_REFERENCIA_MOBILIARIO);
@@ -141,6 +146,7 @@ public class BaseDatos extends SQLiteOpenHelper {
         barrioDB.borrarTabla();
         tipoTensionDB.borrarTabla();
         retenidaPosteDB.borrarTabla();
+        contratoDB.borrarTabla();
         Log.d("DataBase","update");
 
     }
