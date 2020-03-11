@@ -1,23 +1,32 @@
 <resources>
+    <!--Label-->
     <string name="app_name">SID</string>
     <string name="cargando">Cargando</string>
+    <string name="usuario">Usuario</string>
     <string name="descargando_configuracion">Descargando Configuración</string>
     <string name="descargando_programacion">Descargando Programación</string>
     <string name="descargando_inventario">Descargando Inventario</string>
     <string name="actualizando_base_datos">Actualizando Base Datos Dispositivo</string>
     <string name="logo">DOLMEN SA ESP</string>
+    <string name="municipio">Municipio</string>
+    <string name="proceso">Proceso</string>
+    <string name="contrato">Contrato</string>
 
+    <!--Hint-->
     <string name="nombre_usuario">Digite su Usuario</string>
     <string name="clave_usuario">Digite su Usuario</string>
+    <string name="seleccione">-Seleccione-</string>
 
     <!--Titulo de Vistas -->
     <string name="titulo_actividad_login">Ingreso a Usuario</string>
+    <string name="titulo_perfil_usuario">Perfin del Usuario</string>
 
     <!--Button-->
     <string name="btn_ingresar">Ingresar</string>
     <string name="btn_cancelar">Cancelar</string>
     <string name="btn_salir">Salir</string>
     <string name="btn_aceptar">Aceptar</string>
+    <string name="btn_siguiente">Siguiente</string>
 
     <!--Alertas-->
     <string name="titulo_alerta">Atención</string>
@@ -25,4 +34,7 @@
     <string name="alert_clave">Digite su clave</string>
     <string name="alert_servicio_no_encontrado">Servicio no Disponible</string>
     <string name="alert_error_ejecucion">Error de ejeución</string>
+    <string name="alert_municipio">Seleccione Municipio</string>
+    <string name="alert_proceso">Seleccione el Proceso</string>
+    <string name="alert_contrato">Seleccione Contrato</string>
 </resources>

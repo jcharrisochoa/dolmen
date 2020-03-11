@@ -61,6 +61,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginTop="30dp"
+                android:background="@android:drawable/btn_default_small"
                 android:text="@string/btn_ingresar" />
 
             <Button
@@ -68,6 +69,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginTop="10dp"
+                android:background="@android:drawable/btn_default_small"
                 android:text="@string/btn_salir" />
 
             <ProgressBar

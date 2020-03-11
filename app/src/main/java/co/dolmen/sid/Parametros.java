@@ -118,6 +118,9 @@ public class Parametros extends AppCompatActivity {
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 responseBodyTmp = responseBody;
                 actualizarBaseDatosParamtros();
+                Intent i = new Intent(Parametros.this,ConfigurarArea.class);
+                startActivity(i);
+                finish();
             }
 
             @Override

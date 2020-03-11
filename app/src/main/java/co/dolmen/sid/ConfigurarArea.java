@@ -1,0 +1,170 @@
+package co.dolmen.sid;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import co.dolmen.sid.modelo.MunicipioDB;
+import co.dolmen.sid.utilidades.DataSpinner;
+
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.Spinner;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ConfigurarArea extends AppCompatActivity {
+
+    private String nombreUsuario;
+    private int idUsuario;
+    private int idDefaultMunicipio;
+    private int setDefaultPositionMunicipio;
+    private int idDefaultProceso;
+    private int setDefaultPositionProceso;
+    private int idDefaultContrato;
+    private int setDefaultPositionContrato = 0;
+    private boolean salida;
+
+    SQLiteOpenHelper conn;
+    SQLiteDatabase database;
+    SharedPreferences config;
+    Button btnSiguiente;
+    Button btnSalir;
+    AlertDialog.Builder alert;
+    Spinner sltMunicipio;
+    Spinner sltProceso;
+    Spinner sltContrato;
+
+    //--Objetos List
+    List<DataSpinner> municipioList;
+    List<DataSpinner> procesoList;
+    List<DataSpinner> contratoList;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_configurar_area);
+        conn = new BaseDatos(ConfigurarArea.this);
+        database = conn.getReadableDatabase();
+        alert = new AlertDialog.Builder(this);
+
+        btnSiguiente = findViewById(R.id.btn_siguiente);
+        btnSalir =  findViewById(R.id.btn_salir);
+        //-
+        sltMunicipio    = findViewById(R.id.sltMunicipio);
+        sltProceso      = findViewById(R.id.sltProceso);
+        sltContrato     = findViewById(R.id.sltContrato);
+
+        //--Preferencias--
+        config = getSharedPreferences("config",MODE_PRIVATE);
+        nombreUsuario       = config.getString("nombre_usuario", "");
+        idUsuario           = config.getInt("id_usuario", 0);
+        idDefaultMunicipio  = config.getInt("id_municipio",0);
+        idDefaultProceso    = config.getInt("id_proceso",0);
+        idDefaultContrato   = config.getInt("id_contrato",0);
+
+
+        btnSalir.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                config.edit().clear().commit();
+                Intent i = new Intent(ConfigurarArea.this,Login.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(i);
+                ConfigurarArea.this.finish();
+            }
+        });
+
+        btnSiguiente.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(validarFrm()){
+                    SharedPreferences.Editor editar = config.edit();
+                    editar.putBoolean("config",true);
+                    editar.putInt("id_municipio", municipioList.get(sltMunicipio.getSelectedItemPosition()).getId());
+                    editar.putInt("id_proceso", procesoList.get(sltProceso.getSelectedItemPosition()).getId());
+                    editar.putInt("id_contrato",contratoList.get(sltContrato.getSelectedItemPosition()).getId());
+                    editar.putString("nombreMunicipio",municipioList.get(sltMunicipio.getSelectedItemPosition()).getDescripcion());
+                    editar.putString("nombreProceso",procesoList.get(sltProceso.getSelectedItemPosition()).getDescripcion());
+                    editar.putString("nombreContrato",contratoList.get(sltContrato.getSelectedItemPosition()).getDescripcion());
+                    editar.commit();
+
+                    /*Intent i = new Intent(ConfigurarArea.this, Menu.class);
+                    startActivity(i);
+                    finish();*/
+                }
+                else{
+                    alert.setTitle(R.string.titulo_alerta);
+                    alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    });
+                    alert.create().show();
+                }
+            }
+        });
+
+        cargarMunicipio(database);
+    }
+    private boolean validarFrm() {
+        if (municipioList.get(sltMunicipio.getSelectedItemPosition()).getId() == 0) {
+            alert.setMessage(getString(R.string.alert_municipio));
+            this.salida = false;
+        } /*else {
+            if (procesoList.get(sltProceso.getSelectedItemPosition()).getId() == 0) {
+                alert.setMessage(getString(R.string.alert_proceso));
+                this.salida = false;
+            } else {
+                if (contratoList.get(sltContrato.getSelectedItemPosition()).getId() == 0) {
+                    alert.setMessage(getString(R.string.alert_contrato));
+                    this.salida = false;
+                }
+            }
+        }*/
+        return this.salida;
+    }
+    private void cargarMunicipio(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        municipioList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        MunicipioDB municipioDB = new MunicipioDB(sqLiteDatabase);
+        Cursor cursor = municipioDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i,getText(R.string.seleccione).toString());
+        municipioList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if(idDefaultMunicipio == 0){
+            setDefaultPositionMunicipio = 0;
+        }
+        if (cursor.moveToFirst()) {
+            do {
+                i++;
+                Log.d("Datos","id:"+cursor.getInt(0)+",descripcion:"+cursor.getString(1));
+                dataSpinner = new DataSpinner(cursor.getInt(0),cursor.getString(1).toUpperCase());
+                municipioList.add(dataSpinner);
+                labels.add(cursor.getString(1).toUpperCase());
+                if(idDefaultMunicipio == cursor.getInt(0)){
+                    setDefaultPositionMunicipio = i;
+                }
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        sqLiteDatabase.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltMunicipio.setAdapter(dataAdapter);
+         /*sltMunicipio.setSelection(setDefaultPositionMunicipio);*/
+    }
+
+}
