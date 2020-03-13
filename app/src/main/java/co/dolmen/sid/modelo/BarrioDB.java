@@ -59,7 +59,14 @@ public class BarrioDB extends Barrio implements DatabaseDDL,DatabaseDLM {
 
     @Override
     public Cursor consultarTodo() {
-        return null;
+        this.sql = "SELECT * FROM "+Constantes.TABLA_BARRIO+" ORDER BY descripcion";
+        Cursor result = db.rawQuery(this.sql, null);
+        return result;
+    }
+    public Cursor consultarTodo(int idMunicipio){
+        this.sql = "SELECT * FROM "+Constantes.TABLA_BARRIO+" WHERE id_municipio="+idMunicipio+" order by descripcion";
+        Cursor result = db.rawQuery(this.sql, null);
+        return result;
     }
     public Cursor consultarId(int id){
         this.sql = "SELECT _id FROM "+Constantes.TABLA_BARRIO+" WHERE _id="+id;

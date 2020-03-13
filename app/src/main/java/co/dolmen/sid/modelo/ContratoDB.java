@@ -40,6 +40,7 @@ public class ContratoDB extends Contrato implements DatabaseDDL,DatabaseDLM {
 
                db.insert(Constantes.TABLA_CONTRATO, null, contentValues);
             }
+            result.close();
             return true;
         }
         else

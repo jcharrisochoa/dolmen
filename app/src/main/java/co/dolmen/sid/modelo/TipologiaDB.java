@@ -68,4 +68,9 @@ public class TipologiaDB extends Tipologia implements DatabaseDLM,DatabaseDDL {
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }
+    public Cursor consultarTodo(int idProceso){
+        this.sql = "SELECT * FROM "+Constantes.TABLA_TIPOLOGIA_MOBILIARIO+" WHERE id_proceso_sgc="+idProceso+" ORDER BY descripcion";
+        Cursor result = db.rawQuery(this.sql, null);
+        return result;
+    }
 }

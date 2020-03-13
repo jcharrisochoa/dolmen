@@ -30,11 +30,14 @@ public final class Constantes {
     public static final String TABLA_CENTRO_COSTO              = "centro_costo";
     public static final String TABLA_TIPO_ESPACIO              = "tipo_espacio";
     public static final String TABLA_ELEMENTO                  = "elemento";
-    public static final String TABLA_STOCK                      = "stock";
+    public static final String TABLA_STOCK                     = "stock";
     public static final String TABLA_ACTIVIDAD_OPERATIVA       = "actividad_operativa";
     public static final String TABLA_ARCHIVO_ACTIVIDAD_OPERATIVA   = "archivo_actividad_operativa";
     public static final String TABLA_ORDEN_INVENTARIO          = "orden_inventario";
     public static final String TABLA_DETALLE_ORDEN_INVENTARIO  = "detalle_orden_inventario";
-    public static final String TABLA_TIPO_TENSION               = "tipo_tension";
-    public static final String TABLA_RETENIDA_POSTE               = "retenida_poste";
+    public static final String TABLA_TIPO_TENSION              = "tipo_tension";
+    public static final String TABLA_RETENIDA_POSTE            = "retenida_poste";
+    public static final String TABLA_NORMA_CONSTRUCCION_POSTE  = "norma_construccion_poste";
+    public static final String TABLA_TIPO_ESTRUCTURA           = "tipo_estructura";
+    public static final String TABLA_NORMA_CONSTRUCCION_RED  = "norma_construccion_red";
 }

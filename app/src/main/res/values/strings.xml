@@ -21,12 +21,14 @@
     <!--Titulo de Vistas -->
     <string name="titulo_actividad_login">Ingreso a Usuario</string>
     <string name="titulo_perfil_usuario">Mi Perfil</string>
-    <string name="titulo_censo_tecnico">Censo Técnico</string>
+    <string name="titulo_censo_tecnico">Censo Técnico AP</string>
 
     <!--Button-->
     <string name="btn_ingresar">Ingresar</string>
     <string name="btn_cancelar">Cancelar</string>
     <string name="btn_guardar">Guardar</string>
+    <string name="btn_agregar">Agregar</string>
+    <string name="btn_eliminar">Eliminar</string>
     <string name="btn_salir">Salir</string>
     <string name="btn_aceptar">Aceptar</string>
     <string name="btn_siguiente">Siguiente</string>
@@ -35,8 +37,9 @@
     <string name="btn_crear_elemento">Crear Elemento</string>
     <string name="btn_actualizar_elemento">Actualizar Elemento</string>
     <string name="btn_perfil">Perfil</string>
-    <string name="btn_censo_tecnico">Censo Ténico</string>
+    <string name="btn_censo_tecnico">Censo Ténico Alumbrado Público</string>
     <string name="btn_recorrido">Recorrido</string>
+    <string name="btn_tomar_foto">Tomar Foto</string>
 
 
     <!--Alertas-->

@@ -5,20 +5,17 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-
-import java.security.PrivateKey;
-
-import co.dolmen.sid.entidad.EstadoActividad;
-import co.dolmen.sid.entidad.TipoEspacio;
-import co.dolmen.sid.entidad.TipoPoste;
 import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.ContratoDB;
 import co.dolmen.sid.modelo.MobiliarioDB;
 import co.dolmen.sid.modelo.MunicipioDB;
+import co.dolmen.sid.modelo.NormaConstruccionPosteDB;
+import co.dolmen.sid.modelo.NormaConstruccionRedDB;
 import co.dolmen.sid.modelo.ProcesoSgcDB;
 import co.dolmen.sid.modelo.ReferenciaMobiliarioDB;
 import co.dolmen.sid.modelo.RetenidaPosteDB;
 import co.dolmen.sid.modelo.TipoEspacioDB;
+import co.dolmen.sid.modelo.TipoEstructuraDB;
 import co.dolmen.sid.modelo.TipoInterseccionDB;
 import co.dolmen.sid.modelo.TipoPosteDB;
 import co.dolmen.sid.modelo.TipoRedDB;
@@ -50,6 +47,9 @@ public class BaseDatos extends SQLiteOpenHelper {
     private MobiliarioDB mobiliarioDB;
     private ReferenciaMobiliarioDB referenciaMobiliarioDB;
     private ContratoDB contratoDB;
+    private NormaConstruccionPosteDB normaConstruccionPosteDB;
+    private TipoEstructuraDB tipoEstructuraDB;
+    private NormaConstruccionRedDB normaConstruccionRedDB;
 
 
     public BaseDatos(Context context){
@@ -114,6 +114,15 @@ public class BaseDatos extends SQLiteOpenHelper {
         contratoDB = new ContratoDB(sqLiteDatabase);
         contratoDB.crearTabla();
 
+        normaConstruccionPosteDB = new NormaConstruccionPosteDB(sqLiteDatabase);
+        normaConstruccionPosteDB.crearTabla();
+
+        tipoEstructuraDB = new TipoEstructuraDB(sqLiteDatabase);
+        tipoEstructuraDB.crearTabla();
+
+        normaConstruccionRedDB = new NormaConstruccionRedDB(sqLiteDatabase);
+        normaConstruccionRedDB.crearTabla();
+
         /*db.execSQL(ConsultasSQL.CREAR_TABLA_MOBILIARIO);
         db.execSQL(ConsultasSQL.CREAR_TABLA_TIPOLOGIA_MOBILIARIO);
         db.execSQL(ConsultasSQL.CREAR_TABLA_REFERENCIA_MOBILIARIO);
@@ -147,6 +156,9 @@ public class BaseDatos extends SQLiteOpenHelper {
         tipoTensionDB.borrarTabla();
         retenidaPosteDB.borrarTabla();
         contratoDB.borrarTabla();
+        normaConstruccionPosteDB.borrarTabla();
+        tipoEstructuraDB.borrarTabla();
+        normaConstruccionRedDB.borrarTabla();
         Log.d("DataBase","update");
 
     }

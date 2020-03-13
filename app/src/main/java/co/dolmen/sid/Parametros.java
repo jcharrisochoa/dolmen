@@ -25,6 +25,8 @@ import org.json.JSONObject;
 import co.dolmen.sid.entidad.EstadoMobiliario;
 import co.dolmen.sid.entidad.Municipio;
 import co.dolmen.sid.entidad.ProcesoSgc;
+import co.dolmen.sid.entidad.TipoEstructura;
+import co.dolmen.sid.entidad.TipoPoste;
 import co.dolmen.sid.entidad.TipoTension;
 import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
@@ -33,10 +35,13 @@ import co.dolmen.sid.modelo.EstadoActividadDB;
 import co.dolmen.sid.modelo.EstadoMobiliarioDB;
 import co.dolmen.sid.modelo.MobiliarioDB;
 import co.dolmen.sid.modelo.MunicipioDB;
+import co.dolmen.sid.modelo.NormaConstruccionPosteDB;
+import co.dolmen.sid.modelo.NormaConstruccionRedDB;
 import co.dolmen.sid.modelo.ProcesoSgcDB;
 import co.dolmen.sid.modelo.ReferenciaMobiliarioDB;
 import co.dolmen.sid.modelo.RetenidaPosteDB;
 import co.dolmen.sid.modelo.TipoEspacioDB;
+import co.dolmen.sid.modelo.TipoEstructuraDB;
 import co.dolmen.sid.modelo.TipoInterseccionDB;
 import co.dolmen.sid.modelo.TipoPosteDB;
 import co.dolmen.sid.modelo.TipoRedDB;
@@ -412,6 +417,59 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayRetenidaPoste.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Retenida Poste "+progress+"%");
+            }
+
+            //--Norma Construccion Poste
+            NormaConstruccionPosteDB normaConstruccionPosteDB = new NormaConstruccionPosteDB(database);
+            JSONArray arrayNormaConstruccionPoste = parametros.getJSONArray("norma_construccion_poste");
+            for (int i = 0;i<arrayNormaConstruccionPoste.length();i++){
+                JSONObject jObjectNormaConstruccionPoste = arrayNormaConstruccionPoste.getJSONObject(i);
+                normaConstruccionPosteDB.setId(jObjectNormaConstruccionPoste.getInt("id"));
+                normaConstruccionPosteDB.setDescripcion(jObjectNormaConstruccionPoste.getString("descripcion"));
+                //--
+                TipoPoste tipoPoste = new TipoPoste();
+                tipoPoste.setId(jObjectNormaConstruccionPoste.getInt("id_tipo_poste"));
+                normaConstruccionPosteDB.setTipoPoste(tipoPoste);
+                //--
+                normaConstruccionPosteDB.agregarDatos(normaConstruccionPosteDB);
+                progress = (int)Math.round((double)(i+1)/arrayNormaConstruccionPoste.length()*100);
+                progressBar.setProgress(progress);
+                txt_porcentaje_carga.setText("Actualizando Norma Construccion Poste "+progress+"%");
+            }
+
+            //--Tipo Estructura
+            TipoEstructuraDB tipoEstructuraDB = new TipoEstructuraDB(database);
+            JSONArray arrayTipoEstructura = parametros.getJSONArray("tipo_estructura");
+            for (int i = 0;i<arrayTipoEstructura.length();i++){
+                JSONObject jObjectTipoEstructura = arrayTipoEstructura.getJSONObject(i);
+                tipoEstructuraDB.setId(jObjectTipoEstructura.getInt("id"));
+                tipoEstructuraDB.setDescripcion(jObjectTipoEstructura.getString("descripcion"));
+                //--
+                TipoTension tipoTension = new TipoTension();
+                tipoTension.setId(jObjectTipoEstructura.getInt("id_tipo_tension"));
+                tipoEstructuraDB.setTipoTension(tipoTension);
+                //--
+                tipoEstructuraDB.agregarDatos(tipoEstructuraDB);
+                progress = (int)Math.round((double)(i+1)/arrayTipoEstructura.length()*100);
+                progressBar.setProgress(progress);
+                txt_porcentaje_carga.setText("Actualizando Tipo Estructura "+progress+"%");
+            }
+            //--Norma Construccion Red
+            NormaConstruccionRedDB normaConstruccionRedDB = new NormaConstruccionRedDB(database);
+            JSONArray arrayNormaConstruccionRed = parametros.getJSONArray("norma_construccion_red");
+            for (int i = 0;i<arrayNormaConstruccionRed.length();i++){
+                JSONObject jObjectNormaConstruccionRed = arrayNormaConstruccionRed.getJSONObject(i);
+                normaConstruccionRedDB.setId(jObjectNormaConstruccionRed.getInt("id"));
+                normaConstruccionRedDB.setDescripcion(jObjectNormaConstruccionRed.getString("descripcion"));
+                //--
+                TipoEstructura tipoEstructura = new TipoEstructura();
+                tipoEstructura.setId(jObjectNormaConstruccionRed.getInt("id_tipo_estructura"));
+                normaConstruccionRedDB.setTipoEstructura(tipoEstructura);
+                //--
+                normaConstruccionRedDB.agregarDatos(normaConstruccionRedDB);
+                progress = (int)Math.round((double)(i+1)/arrayNormaConstruccionRed.length()*100);
+                progressBar.setProgress(progress);
+                txt_porcentaje_carga.setText("Actualizando Norma Construccion Red "+progress+"%");
             }
 
             database.close();

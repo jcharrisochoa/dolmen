@@ -21,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,7 @@ public class ConfigurarArea extends AppCompatActivity {
     Spinner sltMunicipio;
     Spinner sltProceso;
     Spinner sltContrato;
-
+    TextView tvNombreUsuario;
     //--Objetos List
     List<DataSpinner> municipioList;
     List<DataSpinner> procesoList;
@@ -68,6 +69,7 @@ public class ConfigurarArea extends AppCompatActivity {
         sltMunicipio    = findViewById(R.id.sltMunicipio);
         sltProceso      = findViewById(R.id.sltProceso);
         sltContrato     = findViewById(R.id.sltContrato);
+        tvNombreUsuario = findViewById(R.id.nombre_usuario);
 
         //--Preferencias--
         config = getSharedPreferences("config",MODE_PRIVATE);
@@ -78,12 +80,13 @@ public class ConfigurarArea extends AppCompatActivity {
         idDefaultContrato   = config.getInt("id_contrato",0);
 
 
+        tvNombreUsuario.setText(nombreUsuario);
+
         sltMunicipio.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 cargarContrato(database,municipioList.get(i).getId(),procesoList.get(sltProceso.getSelectedItemPosition()).getId());
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
 
@@ -92,7 +95,7 @@ public class ConfigurarArea extends AppCompatActivity {
         sltProceso.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                cargarContrato(database,municipioList.get(i).getId(),procesoList.get(sltProceso.getSelectedItemPosition()).getId());
+                cargarContrato(database,municipioList.get(sltMunicipio.getSelectedItemPosition()).getId(),procesoList.get(i).getId());
             }
 
             @Override
@@ -100,7 +103,6 @@ public class ConfigurarArea extends AppCompatActivity {
 
             }
         });
-
         btnSalir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -111,11 +113,11 @@ public class ConfigurarArea extends AppCompatActivity {
                 ConfigurarArea.this.finish();
             }
         });
-
         btnSiguiente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(validarFrm()){
+                    Log.d("GidDefaultContrato",""+contratoList.get(sltContrato.getSelectedItemPosition()).getId());
                     SharedPreferences.Editor editar = config.edit();
                     editar.putBoolean("config",true);
                     editar.putInt("id_municipio", municipioList.get(sltMunicipio.getSelectedItemPosition()).getId());
@@ -181,7 +183,6 @@ public class ConfigurarArea extends AppCompatActivity {
         if (cursor.moveToFirst()) {
             do {
                 i++;
-                Log.d("Datos","id:"+cursor.getInt(0)+",descripcion:"+cursor.getString(1));
                 dataSpinner = new DataSpinner(cursor.getInt(0),cursor.getString(1).toUpperCase());
                 municipioList.add(dataSpinner);
                 labels.add(cursor.getString(1).toUpperCase());
@@ -240,17 +241,22 @@ public class ConfigurarArea extends AppCompatActivity {
             DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
             contratoList.add(dataSpinner);
             labels.add(getText(R.string.seleccione).toString());
-
-            if (cursor.moveToFirst()) {
-                do {
-                    i++;
-                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(3).toUpperCase());
-                    contratoList.add(dataSpinner);
-                    labels.add(cursor.getString(3).toUpperCase());
-                    if (idDefaultContrato == cursor.getInt(0)) {
-                        setDefaultPositionContrato = i;
-                    }
-                } while (cursor.moveToNext());
+            Log.d ("Count",""+cursor.getCount());
+            if (cursor.getCount() > 0){
+                if (cursor.moveToFirst()) {
+                    do {
+                        i++;
+                        dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(3).toUpperCase());
+                        contratoList.add(dataSpinner);
+                        labels.add(cursor.getString(3).toUpperCase());
+                        if (idDefaultContrato == cursor.getInt(0)) {
+                            setDefaultPositionContrato = i;
+                        }
+                    } while (cursor.moveToNext());
+                }
+            }
+            else{
+                setDefaultPositionContrato = i;
             }
             cursor.close();
         }
@@ -259,5 +265,4 @@ public class ConfigurarArea extends AppCompatActivity {
         sltContrato.setAdapter(dataAdapter);
         sltContrato.setSelection(setDefaultPositionContrato);
     }
-
 }
