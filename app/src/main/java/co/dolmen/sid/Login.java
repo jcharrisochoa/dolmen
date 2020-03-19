@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -56,7 +58,26 @@ public class Login extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         if(validarFrm()){
-                            servicioConsultarUsuario(view);
+                            //--Validar si hay conexion a internet
+                            //Es necesario el permiso android.permission.ACCESS_NETWORK_STATE
+                            ConnectivityManager conn = (ConnectivityManager) getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
+                            NetworkInfo networkInfo = conn.getActiveNetworkInfo();
+
+                            if(networkInfo != null && networkInfo.isConnected()) {
+                                Log.d("Conexion","Conn"+networkInfo);
+                                servicioConsultarUsuario(view);
+                            }
+                            else{
+                                alert.setTitle(R.string.titulo_alerta);
+                                alert.setMessage(R.string.alert_conexion);
+                                alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        dialogInterface.cancel();
+                                    }
+                                });
+                                alert.create().show();
+                            }
                         }
                         else{
                             alert.setTitle(R.string.titulo_alerta);

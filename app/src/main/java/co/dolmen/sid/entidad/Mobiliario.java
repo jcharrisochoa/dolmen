@@ -8,6 +8,11 @@ public class Mobiliario extends Tipologia {
     public Mobiliario(){
         super();
     }
+    public Mobiliario(int idMobiliario,String descripcionMobiliario){
+        super();
+        this.idMobiliario = idMobiliario;
+        this.descripcionMobiliario = descripcionMobiliario;
+    }
 
     public int getIdMobiliario() {
         return idMobiliario;

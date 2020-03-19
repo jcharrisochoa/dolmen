@@ -66,4 +66,9 @@ public class ReferenciaMobiliarioDB extends ReferenciaMobiliario implements Data
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }
+    public Cursor consultarTodo(int idMobiliario) {
+        this.sql = "SELECT * FROM "+Constantes.TABLA_REFERNCIA_MOBILIARIO+" where id_mobiliario="+idMobiliario+" ORDER BY descripcion";
+        Cursor result = db.rawQuery(this.sql, null);
+        return result;
+    }
 }

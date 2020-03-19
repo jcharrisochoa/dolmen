@@ -65,4 +65,9 @@ public class MobiliarioDB extends Mobiliario implements DatabaseDDL,DatabaseDLM 
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }
+    public Cursor consultarTodo(int idTipologia){
+        this.sql = "SELECT * FROM "+ Constantes.TABLA_MOBILIARIO+" WHERE id_tipologia="+idTipologia;
+        Cursor result = db.rawQuery(this.sql, null);
+        return result;
+    }
 }

@@ -51,4 +51,14 @@
     <string name="alert_municipio">Seleccione Municipio</string>
     <string name="alert_proceso">Seleccione el Proceso</string>
     <string name="alert_contrato">Seleccione Contrato</string>
+    <string name="alert_conexion">Sin Conexion a Internet</string>
+    <string name="alert_error_camara">Error Capturando la Imagen</string>
+    <string name="alert_cancelar_camara">Captura de imagen cancelada</string>v
+
+    <string name="file_provider_authority" translatable="false">co.dolmen.sid</string>
+
+    <!--Menu de Cargar Imagen-->
+    <string name="tomar_foto">Tomar Foto</string>
+    <string name="cargar_imagen">Cargar Imagen</string>
+
 </resources>

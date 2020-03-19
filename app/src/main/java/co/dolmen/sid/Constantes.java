@@ -1,6 +1,15 @@
 package co.dolmen.sid;
 
 public final class Constantes {
+    //--Camara
+    public static final String IMAGE_DIRECTORY_NAME = "sdcard";
+    public static final int timeout = 150000;
+    public static final int cons = 100;
+    public static final int CONS_TOMAR_FOTO = 100;
+    public static final int CONS_SELECCIONAR_IMAGEN = 200;
+    public static final int MEDIA_TYPE_IMAGE = 1;
+
+    //--Base Datos
     public static final int VERSION_BASEDATOS = 1;
     public static final String NOMBRE_BASEDATOS = "sid.db";
 
