@@ -40,6 +40,7 @@
     <string name="btn_censo_tecnico">Censo Ténico Alumbrado Público</string>
     <string name="btn_recorrido">Recorrido</string>
     <string name="btn_tomar_foto">Tomar Foto</string>
+    <string name="btn_borrar_foto">Quitar Foto</string>
 
 
     <!--Alertas-->
@@ -53,7 +54,8 @@
     <string name="alert_contrato">Seleccione Contrato</string>
     <string name="alert_conexion">Sin Conexion a Internet</string>
     <string name="alert_error_camara">Error Capturando la Imagen</string>
-    <string name="alert_cancelar_camara">Captura de imagen cancelada</string>v
+    <string name="alert_cancelar_camara">Captura de imagen cancelada</string>
+    <string name="alert_gps_deshabilitado">Habilita el GPS, para continuar</string>
 
     <string name="file_provider_authority" translatable="false">co.dolmen.sid</string>
 

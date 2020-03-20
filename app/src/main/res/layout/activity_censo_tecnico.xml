@@ -529,7 +529,7 @@
                         android:layout_gravity="center|center_horizontal"
                         android:layout_marginTop="5dp"
                         android:layout_marginBottom="5dp"
-                        app:srcCompat="@android:drawable/ic_menu_camera" />
+                        app:srcCompat="@drawable/imagen_no_disponible" />
 
                     <Button
                         android:id="@+id/btn_tomar_foto_1"
@@ -538,6 +538,14 @@
                         android:background="@android:drawable/btn_default_small"
                         android:drawableLeft="@android:drawable/ic_menu_camera"
                         android:text="@string/btn_tomar_foto" />
+
+                    <Button
+                        android:id="@+id/btn_borrar_foto_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/btn_default"
+                        android:drawableLeft="@android:drawable/ic_delete"
+                        android:text="@string/btn_borrar_foto" />
                 </LinearLayout>
                 <!--Foto 2-->
                 <LinearLayout
@@ -552,7 +560,7 @@
                         android:layout_gravity="center|center_horizontal"
                         android:layout_marginTop="5dp"
                         android:layout_marginBottom="5dp"
-                        app:srcCompat="@android:drawable/ic_menu_camera" />
+                        app:srcCompat="@drawable/imagen_no_disponible" />
 
                     <Button
                         android:id="@+id/btn_tomar_foto_2"
@@ -561,6 +569,14 @@
                         android:background="@android:drawable/btn_default_small"
                         android:drawableLeft="@android:drawable/ic_menu_camera"
                         android:text="@string/btn_tomar_foto" />
+
+                    <Button
+                        android:id="@+id/btn_borrar_foto_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/btn_default"
+                        android:drawableLeft="@android:drawable/ic_delete"
+                        android:text="@string/btn_borrar_foto" />
                 </LinearLayout>
 
             </LinearLayout>
