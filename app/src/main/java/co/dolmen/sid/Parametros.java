@@ -461,6 +461,7 @@ public class Parametros extends AppCompatActivity {
                 JSONObject jObjectNormaConstruccionRed = arrayNormaConstruccionRed.getJSONObject(i);
                 normaConstruccionRedDB.setId(jObjectNormaConstruccionRed.getInt("id"));
                 normaConstruccionRedDB.setDescripcion(jObjectNormaConstruccionRed.getString("descripcion"));
+                normaConstruccionRedDB.setNorma(jObjectNormaConstruccionRed.getString("norma"));
                 //--
                 TipoEstructura tipoEstructura = new TipoEstructura();
                 tipoEstructura.setId(jObjectNormaConstruccionRed.getInt("id_tipo_estructura"));

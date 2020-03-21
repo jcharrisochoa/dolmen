@@ -18,7 +18,7 @@ public class NormaConstruccionRedDB extends NormaConstruccionRed implements Data
     }
     @Override
     public void crearTabla() {
-        db.execSQL("create table "+ Constantes.TABLA_NORMA_CONSTRUCCION_RED+"( _id INTEGER PRIMARY KEY,id_tipo_estructura INTEGER, descripcion VARCHAR(80));");
+        db.execSQL("create table "+ Constantes.TABLA_NORMA_CONSTRUCCION_RED+"( _id INTEGER PRIMARY KEY,id_tipo_estructura INTEGER, descripcion VARCHAR(80),norma VARCHAR(12));");
     }
 
     @Override
@@ -36,6 +36,7 @@ public class NormaConstruccionRedDB extends NormaConstruccionRed implements Data
                 contentValues.put("_id", normaConstruccionRed.getId());
                 contentValues.put("id_tipo_estructura", normaConstruccionRed.getTipoEstructura().getId());
                 contentValues.put("descripcion", normaConstruccionRed.getDescripcion());
+                contentValues.put("norma", normaConstruccionRed.getNorma());
                 db.insert(Constantes.TABLA_NORMA_CONSTRUCCION_RED, null, contentValues);
             }
             result.close();

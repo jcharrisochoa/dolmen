@@ -23,6 +23,15 @@
     <string name="titulo_perfil_usuario">Mi Perfil</string>
     <string name="titulo_censo_tecnico">Censo Técnico AP</string>
 
+    <!--Titulo Tabla-->
+    <string name="titulo_norma">Norma</string>
+    <string name="titulo_accion">Acción</string>
+    <!--Alert Table-->
+    <string name="alert_tipo_red">Seleccione el Tipo de Red</string>
+    <string name="alert_tipo_tension">Seleccione el Tipo de Tensión</string>
+    <string name="alert_tipo_estructura">Seleccione el Tipo de Estructura</string>
+    <string name="alert_norma_construccion_red">Seleccione la norma de construcción</string>
+
     <!--Button-->
     <string name="btn_ingresar">Ingresar</string>
     <string name="btn_cancelar">Cancelar</string>

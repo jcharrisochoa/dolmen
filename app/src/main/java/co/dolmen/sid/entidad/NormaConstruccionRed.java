@@ -3,6 +3,8 @@ package co.dolmen.sid.entidad;
 public class NormaConstruccionRed {
     int id;
     String descripcion;
+    String norma;
+
     TipoEstructura tipoEstructura;
 
     public NormaConstruccionRed(){
@@ -23,6 +25,14 @@ public class NormaConstruccionRed {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    public String getNorma() {
+        return norma;
+    }
+
+    public void setNorma(String norma) {
+        this.norma = norma;
     }
 
     public TipoEstructura getTipoEstructura() {

@@ -419,20 +419,26 @@
                     android:layout_height="1dp"
                     android:background="?android:attr/listDivider" />
 
-                <TextView
-                    android:id="@+id/textView9"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center|center_horizontal"
-                    android:text="TIPO ARMADO RED"
-                    android:textColor="@color/colorPrimary" />
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="#F7A1ABAE"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#EFFBFB"
                     android:fadeScrollbars="false"
                     android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textView9"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center|center_horizontal"
+                        android:text="TIPO ARMADO RED"
+                        android:textSize="18sp"
+                        android:textColor="@color/colorPrimary" />
 
                     <TextView
                         android:id="@+id/textView16"
@@ -490,32 +496,99 @@
                         android:background="@android:drawable/btn_default_small"
                         app:srcCompat="@android:drawable/ic_input_add" />
 
-                    <TableLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
 
-                        <TableRow
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent" >
-
-                            <TableRow
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent" />
-                        </TableRow>
-
-                        <TableRow
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent" >
-
-                            <TableRow
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent" />
-                        </TableRow>
-
-                    </TableLayout>
 
 
                 </LinearLayout>
+                    <!---->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:background="#FBEFF8"
+                        android:id="@+id/layout_tabla_armamdo">
+
+                        <TextView
+                            android:id="@+id/txt_titulo_armados_agregados"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center|center_horizontal"
+                            android:text="TIPO ARMADO RED AGREGADOS"
+                            android:textSize="18sp"
+                            android:textColor="@color/colorPrimary" />
+
+                        <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:stretchColumns="1"
+                            android:layout_gravity="center"
+                            android:layout_margin="10dp">
+
+                            <TableRow>
+                                <TextView
+                                    android:text="@string/titulo_norma"
+                                    android:gravity="center"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/colorPrimary"/>
+
+                                <TextView
+                                    android:text="@string/titulo_accion"
+                                    android:gravity="right"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/colorPrimary"/>
+                            </TableRow>
+                            <TableRow>
+                                <TextView
+                                    android:text=""
+                                    android:padding="3dip"
+                                    android:id="@+id/txt_norma_armado_red_1"/>
+                                <ImageButton
+                                    android:id="@+id/btn_eliminar_armado_1"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="right"
+                                    android:background="@android:drawable/btn_default_small"
+                                    app:srcCompat="@android:drawable/ic_menu_delete" />
+                            </TableRow>
+                            <TableRow>
+                                <TextView
+                                    android:text=""
+                                    android:padding="3dip"
+                                    android:id="@+id/txt_norma_armado_red_2"/>
+                                <ImageButton
+                                    android:id="@+id/btn_eliminar_armado_2"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="right"
+                                    android:background="@android:drawable/btn_default_small"
+                                    app:srcCompat="@android:drawable/ic_menu_delete" />
+                            </TableRow>
+                            <TableRow>
+                                <TextView
+                                    android:text=""
+                                    android:padding="3dip"
+                                    android:id="@+id/txt_norma_armado_red_3"/>
+                                <ImageButton
+                                    android:id="@+id/btn_eliminar_armado_3"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="right"
+                                    android:background="@android:drawable/btn_default_small"
+                                    app:srcCompat="@android:drawable/ic_menu_delete" />
+                            </TableRow>
+
+                        </TableLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+                <View
+                    android:id="@+id/dividerfoto"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?android:attr/listDivider" />
                 <!--Foto 1-->
                 <LinearLayout
                     android:layout_width="match_parent"

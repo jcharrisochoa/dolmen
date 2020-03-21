@@ -1,9 +1,12 @@
 package co.dolmen.sid;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,6 +26,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.Layout;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -33,8 +37,11 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -50,8 +57,13 @@ import java.util.Locale;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import co.dolmen.sid.entidad.ComponenteNormaConstruccionRed;
 import co.dolmen.sid.entidad.Mobiliario;
+import co.dolmen.sid.entidad.NormaConstruccionRed;
 import co.dolmen.sid.entidad.ReferenciaMobiliario;
+import co.dolmen.sid.entidad.TipoEstructura;
+import co.dolmen.sid.entidad.TipoRed;
+import co.dolmen.sid.entidad.TipoTension;
 import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
 import co.dolmen.sid.modelo.MobiliarioDB;
@@ -67,7 +79,7 @@ import co.dolmen.sid.modelo.TipoTensionDB;
 import co.dolmen.sid.modelo.TipologiaDB;
 import co.dolmen.sid.utilidades.DataSpinner;
 
-public class CensoTecnico extends AppCompatActivity {
+public class CensoTecnico extends AppCompatActivity{
 
     SQLiteOpenHelper conn;
     SQLiteDatabase database;
@@ -88,7 +100,7 @@ public class CensoTecnico extends AppCompatActivity {
     Spinner sltTipoRed;
     Spinner sltTipoTension;
     Spinner sltTipoEstructura;
-    Spinner getSltNormaConstruccionRed;
+    Spinner sltNormaConstruccionRed;
     //--
     EditText txtElementoNo;
     EditText txtLatitud;
@@ -102,6 +114,10 @@ public class CensoTecnico extends AppCompatActivity {
     Button btnTomarFoto2;
     Button btnBorrarFoto1;
     Button btnBorrarFoto2;
+    ImageButton btnAgregarArmadoRed;
+    ImageButton btnEliminarArmado_1;
+    ImageButton btnEliminarArmado_2;
+    ImageButton btnEliminarArmado_3;
     ImageButton btnCapturarGPS;
     //--
     ArrayList<DataSpinner> tipologiaList;
@@ -118,9 +134,14 @@ public class CensoTecnico extends AppCompatActivity {
     ArrayList<DataSpinner> tipoTensionList;
     ArrayList<DataSpinner> tipoEstructuraList;
     ArrayList<DataSpinner> normaConstruccionRedList;
+    ComponenteNormaConstruccionRed componenteNormaConstruccionRed;
     //--
     ImageView imgFoto1;
     ImageView imgFoto2;
+    //--
+    TextView txt_norma_armado_red_1;
+    TextView txt_norma_armado_red_2;
+    TextView txt_norma_armado_red_3;
 
     private boolean accionarFoto1;
     private boolean accionarFoto2;
@@ -130,6 +151,8 @@ public class CensoTecnico extends AppCompatActivity {
     private int idDefaultContrato;
     private String encodeString;
     private String path;
+    private ArrayList<ComponenteNormaConstruccionRed> tipoArmadoList;
+
     private double latitud;
     private double longitud;
 
@@ -137,21 +160,39 @@ public class CensoTecnico extends AppCompatActivity {
     //private final String RUTA_IMAGEN= CARPETA_RAIZ+"Img";
 
     private FusedLocationProviderClient fusedLocationClient;
-    public LocationManager ubicacion;
+    public LocationManager ubicacion;  //
 
 
+    @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_censo_tecnico);
+
         conn = new BaseDatos(CensoTecnico.this);
         database = conn.getReadableDatabase();
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        //createLocationRequest();
 
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if (location != null) {
+                            txtLatitud.setText(String.valueOf(location.getLatitude()));
+                            txtLongitud.setText(String.valueOf(location.getLongitude()));
+                        } else {
+                            txtLatitud.setText("0");
+                            txtLongitud.setText("0");
+                        }
+                    }
+                });
+
+        //--
         alert = new AlertDialog.Builder(this);
 
+        //--Datos de la tabla Armado Red--
+        tipoArmadoList = new ArrayList<ComponenteNormaConstruccionRed>();
         //--
         config = getSharedPreferences("config", MODE_PRIVATE);
         idUsuario = config.getInt("id_usuario", 0);
@@ -159,40 +200,49 @@ public class CensoTecnico extends AppCompatActivity {
         idDefaultProceso = config.getInt("id_proceso", 0);
         idDefaultContrato = config.getInt("id_contrato", 0);
         nombreMunicipio = config.getString("nombreMunicipio", "");
-
+        //--
         setTitle(getText(R.string.titulo_censo_tecnico) + " (" + nombreMunicipio + ")");
         //--
-        sltTipologia = findViewById(R.id.slt_tipologia);
-        sltMobiliario = findViewById(R.id.slt_mobiliario);
-        sltReferencia = findViewById(R.id.slt_referencia);
-        sltBarrio = findViewById(R.id.slt_barrio);
-        sltTipoInterseccionA = findViewById(R.id.slt_tipo_interseccion_a);
-        sltTipoInterseccionB = findViewById(R.id.slt_tipo_interseccion_b);
-        sltClaseVia = findViewById(R.id.slt_clase_via);
-        sltTipoPoste = findViewById(R.id.slt_tipo_poste);
-        sltNormaConstruccionPoste = findViewById(R.id.slt_norma_construccion_poste);
-        sltTipoRetenida = findViewById(R.id.slt_tipo_retenida);
-        sltTipoRed = findViewById(R.id.slt_tipo_red);
-        sltTipoTension = findViewById(R.id.slt_tipo_tension);
-        sltTipoEstructura = findViewById(R.id.slt_tipo_estructura);
-        getSltNormaConstruccionRed = findViewById(R.id.slt_norma_construccion_red);
+        sltTipologia                = findViewById(R.id.slt_tipologia);
+        sltMobiliario               = findViewById(R.id.slt_mobiliario);
+        sltReferencia               = findViewById(R.id.slt_referencia);
+        sltBarrio                   = findViewById(R.id.slt_barrio);
+        sltTipoInterseccionA        = findViewById(R.id.slt_tipo_interseccion_a);
+        sltTipoInterseccionB        = findViewById(R.id.slt_tipo_interseccion_b);
+        sltClaseVia                 = findViewById(R.id.slt_clase_via);
+        sltTipoPoste                = findViewById(R.id.slt_tipo_poste);
+        sltNormaConstruccionPoste   = findViewById(R.id.slt_norma_construccion_poste);
+        sltTipoRetenida             = findViewById(R.id.slt_tipo_retenida);
+        sltTipoRed                  = findViewById(R.id.slt_tipo_red);
+        sltTipoTension              = findViewById(R.id.slt_tipo_tension);
+        sltTipoEstructura           = findViewById(R.id.slt_tipo_estructura);
+        sltNormaConstruccionRed     = findViewById(R.id.slt_norma_construccion_red);
         //--
-        txtElementoNo = findViewById(R.id.txt_elemento_no);
-        txtLatitud = findViewById(R.id.txt_latitud);
-        txtLongitud = findViewById(R.id.txt_longitud);
+        txtElementoNo               = findViewById(R.id.txt_elemento_no);
+        txtLatitud                  = findViewById(R.id.txt_latitud);
+        txtLongitud                 = findViewById(R.id.txt_longitud);
         //--
-        swLuminariaVisible = findViewById(R.id.sw_numero_luminaria_visible);
-        swPoseeLuminaria = findViewById(R.id.sw_tiene_luminaria);
+        swLuminariaVisible          = findViewById(R.id.sw_numero_luminaria_visible);
+        swPoseeLuminaria            = findViewById(R.id.sw_tiene_luminaria);
         //--
-        btnCapturarGPS = findViewById(R.id.btn_capturar_gps);
-        btnCancelar = findViewById(R.id.btn_cancelar);
-        btnTomarFoto1 = findViewById(R.id.btn_tomar_foto_1);
-        btnTomarFoto2 = findViewById(R.id.btn_tomar_foto_2);
-        btnBorrarFoto1 = findViewById(R.id.btn_borrar_foto_1);
-        btnBorrarFoto2 = findViewById(R.id.btn_borrar_foto_2);
+        btnCapturarGPS              = findViewById(R.id.btn_capturar_gps);
+        btnCancelar                 = findViewById(R.id.btn_cancelar);
+        btnTomarFoto1               = findViewById(R.id.btn_tomar_foto_1);
+        btnTomarFoto2               = findViewById(R.id.btn_tomar_foto_2);
+        btnBorrarFoto1              = findViewById(R.id.btn_borrar_foto_1);
+        btnBorrarFoto2              = findViewById(R.id.btn_borrar_foto_2);
+        btnAgregarArmadoRed         = findViewById(R.id.btn_agregar_armado);
+
+        btnEliminarArmado_1         = findViewById(R.id.btn_eliminar_armado_1);
+        btnEliminarArmado_2         = findViewById(R.id.btn_eliminar_armado_2);
+        btnEliminarArmado_3         = findViewById(R.id.btn_eliminar_armado_3);
         //--
         imgFoto1 = findViewById(R.id.foto_1);
         imgFoto2 = findViewById(R.id.foto_2);
+        //--
+        txt_norma_armado_red_1      = findViewById(R.id.txt_norma_armado_red_1);
+        txt_norma_armado_red_2      = findViewById(R.id.txt_norma_armado_red_2);
+        txt_norma_armado_red_3      = findViewById(R.id.txt_norma_armado_red_3);
         //--
         txtElementoNo.setEnabled(false);
         //swLuminariaVisible.setEnabled(false);
@@ -210,6 +260,68 @@ public class CensoTecnico extends AppCompatActivity {
                 Intent i = new Intent(CensoTecnico.this, Menu.class);
                 startActivity(i);
                 CensoTecnico.this.finish();
+            }
+        });
+        btnAgregarArmadoRed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(validarArmadoRed()){
+                    if(tipoArmadoList.size()< 3){
+                        TipoRed tipoRedArmamdo = new TipoRed();
+                        tipoRedArmamdo.setId(tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId());
+                        tipoRedArmamdo.setDescripcion(tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getDescripcion());
+
+                        TipoTension tipoTensionArmado = new TipoTension();
+                        tipoTensionArmado.setId(tipoTensionList.get(sltTipoTension.getSelectedItemPosition()).getId());
+                        tipoTensionArmado.setDescripcion(tipoTensionList.get(sltTipoTension.getSelectedItemPosition()).getDescripcion());
+
+                        NormaConstruccionRed normaConstruccionRed = new NormaConstruccionRed();
+
+                        TipoEstructura tipoEstructuraArmado =  normaConstruccionRed.getTipoEstructura();
+                        tipoEstructuraArmado.setId(tipoEstructuraList.get(sltTipoEstructura.getSelectedItemPosition()).getId());
+                        tipoEstructuraArmado.setDescripcion(tipoEstructuraList.get(sltTipoEstructura.getSelectedItemPosition()).getDescripcion());
+
+                        normaConstruccionRed.setId(normaConstruccionRedList.get(sltNormaConstruccionRed.getSelectedItemPosition()).getId());
+                        normaConstruccionRed.setDescripcion(normaConstruccionRedList.get(sltNormaConstruccionRed.getSelectedItemPosition()).getDescripcion());
+
+                        componenteNormaConstruccionRed = new ComponenteNormaConstruccionRed(
+                                tipoRedArmamdo,
+                                tipoTensionArmado,
+                                normaConstruccionRed
+                                );
+                        tipoArmadoList.add(componenteNormaConstruccionRed);
+                    }
+                    mostrarTablaArmado();
+
+                }
+                else{
+                    alert.setTitle(R.string.titulo_alerta);
+                    alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    });
+                    alert.create().show();
+                }
+            }
+        });
+        btnEliminarArmado_1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                borrarItemTablaArmado(0);
+            }
+        });
+        btnEliminarArmado_2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                borrarItemTablaArmado(1);
+            }
+        });
+        btnEliminarArmado_3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                borrarItemTablaArmado(2);
             }
         });
         btnTomarFoto1.setOnClickListener(new View.OnClickListener() {
@@ -304,56 +416,7 @@ public class CensoTecnico extends AppCompatActivity {
         cargarTipoRed(database);
         cargarTension(database);
         cargarRetenidaPoste(database);
-        //localizacion();
-        //registrarLocalizacion();
-    }
 
-    public boolean estadoGPS() {
-        ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
-        return (ubicacion.isProviderEnabled(LocationManager.GPS_PROVIDER));
-    }
-
-    /*protected void createLocationRequest() {
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(1000);
-        locationRequest.setFastestInterval(5000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-    }*/
-    private void tomarCoordenadas() {
-        int PERMISSIONS_REQUEST_LOCATION = 0;
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(CensoTecnico.this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},
-                    PERMISSIONS_REQUEST_LOCATION);
-        } else {
-            if (!estadoGPS()) {
-                alert.setTitle(getString(R.string.titulo_alerta));
-                alert.setMessage(getString(R.string.alert_gps_deshabilitado));
-                alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.cancel();
-                    }
-                });
-                alert.create().show();
-            } else {
-               fusedLocationClient.getLastLocation()
-                        .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                            @Override
-                            public void onSuccess(Location location) {
-                                if (location != null) {
-                                    txtLatitud.setText(String.valueOf(location.getLatitude()));
-                                    txtLongitud.setText(String.valueOf(location.getLongitude()));
-                                } else {
-                                    txtLatitud.setText("0");
-                                    txtLongitud.setText("0");
-                                }
-                            }
-                        });
-            }
-        }
     }
 
     @Override
@@ -402,6 +465,74 @@ public class CensoTecnico extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+    }
+    //--Administrar Tabla Armado Red----
+    private boolean validarArmadoRed(){
+        if(tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId() == 0){
+            alert.setMessage(R.string.alert_tipo_red);
+            return false;
+        }
+        else{
+            if(tipoTensionList.get(sltTipoTension.getSelectedItemPosition()).getId() == 0){
+                alert.setMessage(R.string.alert_tipo_tension);
+                return false;
+            }
+            else{
+                if(tipoEstructuraList.get(sltTipoEstructura.getSelectedItemPosition()).getId()==0){
+                    alert.setMessage(R.string.alert_tipo_estructura);
+                    return false;
+                }
+                else{
+                    if(normaConstruccionRedList.get(sltNormaConstruccionRed.getSelectedItemPosition()).getId()==0){
+                        alert.setMessage(R.string.alert_norma_construccion_red);
+                        return false;
+                    }
+                    else{
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    //--
+    private void mostrarTablaArmado(){
+        txt_norma_armado_red_1.setText("-");
+        txt_norma_armado_red_2.setText("-");
+        txt_norma_armado_red_3.setText("-");
+        int index = 0;
+        while(index < tipoArmadoList.size()){
+            switch (index) {
+                case 0:
+                    txt_norma_armado_red_1.setText(tipoArmadoList.get(index).getNormaConstruccionRed().getDescripcion());
+                    break;
+                case 1:
+                    txt_norma_armado_red_2.setText(tipoArmadoList.get(index).getNormaConstruccionRed().getDescripcion());
+                    break;
+                case 2:
+                    txt_norma_armado_red_3.setText(tipoArmadoList.get(index).getNormaConstruccionRed().getDescripcion());
+                    break;
+            }
+            index++;
+        }
+    }
+    //--
+    private void borrarItemTablaArmado(int index){
+        if(tipoArmadoList.size()>index)
+            tipoArmadoList.remove(index);
+        mostrarTablaArmado();
+    }
+
+    //--Cargar Parametrizacion--
     private void cargarTipologia(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
         tipologiaList = new ArrayList<DataSpinner>();
@@ -747,9 +878,9 @@ public class CensoTecnico extends AppCompatActivity {
             if (cursor.moveToFirst()) {
                 do {
                     i++;
-                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(2).toUpperCase());
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(3).toUpperCase());
                     normaConstruccionRedList.add(dataSpinner);
-                    labels.add(cursor.getString(2).toUpperCase());
+                    labels.add(cursor.getString(3).toUpperCase());
                 } while (cursor.moveToNext());
             }
         }
@@ -757,7 +888,7 @@ public class CensoTecnico extends AppCompatActivity {
 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, labels);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        getSltNormaConstruccionRed.setAdapter(dataAdapter);
+        sltNormaConstruccionRed.setAdapter(dataAdapter);
     }
 
     //--Administrar Cámara--
@@ -825,51 +956,45 @@ public class CensoTecnico extends AppCompatActivity {
         startActivityForResult(intent, Constantes.CONS_TOMAR_FOTO);
     }
 
-    //--Administrar GPS--
-    /*private void localizacion() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},100);
-        }
-        ubicacion = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        Location loc = ubicacion.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        if(ubicacion == null)
-            Log.d("Coordenadas","ubiNull:"+loc);
-        else
-            Log.d("Coordenadas","ubi:"+loc);
-    }
-
-
-    private  void registrarLocalizacion(){
+    //--Administracion del GPS
+    public boolean estadoGPS() {
         ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
+        return (ubicacion.isProviderEnabled(LocationManager.GPS_PROVIDER));
+    }
+    private void tomarCoordenadas() {
+        int PERMISSIONS_REQUEST_LOCATION = 0;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(CensoTecnico.this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_LOCATION);
+        } else {
+            if (!estadoGPS()) {
+                alert.setTitle(getString(R.string.titulo_alerta));
+                alert.setMessage(getString(R.string.alert_gps_deshabilitado));
+                alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+                alert.create().show();
+            } else {
+               /*fusedLocationClient.getLastLocation()
+                        .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(Location location) {
+                                if (location != null) {
+                                    txtLatitud.setText(String.valueOf(location.getLatitude()));
+                                    txtLongitud.setText(String.valueOf(location.getLongitude()));
+                                } else {
+                                    txtLatitud.setText("0");
+                                    txtLongitud.setText("0");
+                                }
+                            }
+                        });*/
+            }
         }
-        ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 0, new miLocalizacion());
     }
 
-    private class miLocalizacion implements LocationListener{
-        @Override
-        public void onLocationChanged(Location location) {
-            latitud = location.getLatitude();
-            longitud = location.getLongitude();
-            Log.d("Coordenadas","Lat:"+latitud+",Long:"+longitud);
-        }
-
-        @Override
-        public void onStatusChanged(String s, int i, Bundle bundle) {
-            Log.d("Coordenadas","ProviderEnable:"+s);
-        }
-
-        @Override
-        public void onProviderEnabled(String s) {
-            Log.d("Coordenadas","ProviderEnable:"+s);
-        }
-
-        @Override
-        public void onProviderDisabled(String s) {
-            Log.d("Coordenadas","ProviderDisable:"+s);
-        }
-    }*/
 }
