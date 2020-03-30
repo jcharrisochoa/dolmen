@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Layout;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -111,6 +112,9 @@ public class CensoTecnico extends AppCompatActivity{
     EditText txtLongitud;
     EditText txtBuscarElemento;
     EditText txtDireccion;
+    EditText txtNumeroInterseccion;
+    EditText txtNumeracionA;
+    EditText txtNumeracionB;
     //--
     Switch swLuminariaVisible;
     Switch swPoseeLuminaria;
@@ -152,6 +156,7 @@ public class CensoTecnico extends AppCompatActivity{
     TextView txt_norma_armado_red_1;
     TextView txt_norma_armado_red_2;
     TextView txt_norma_armado_red_3;
+    TextView txtMensajeDireccion;
 
     private boolean accionarFoto1;
     private boolean accionarFoto2;
@@ -372,29 +377,11 @@ public class CensoTecnico extends AppCompatActivity{
                 imgFoto2.setImageResource(R.drawable.imagen_no_disponible);
             }
         });
+
         btnEditarDireccion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                View content = LayoutInflater.from(getApplicationContext()).inflate(R.layout.direccion,null);
-                sltTipoInterseccionA        = content.findViewById(R.id.slt_tipo_interseccion_a);
-                sltTipoInterseccionB        = content.findViewById(R.id.slt_tipo_interseccion_b);
-                cargarTipoInterseccion(database);
-                alert.setTitle(R.string.titulo_direccion);
-                alert.setView(content)
-                        // Add action buttons
-                        .setPositiveButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int id) {
-                                // sign in the user ...
-                            }
-                        })
-                        .setNegativeButton(R.string.btn_cancelar, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                //LoginDialogFragment.this.getDialog().cancel();
-                            }
-                        });
-
-                alert.create().show();
+                armarDireccion();
             }
         });
         //--
@@ -513,13 +500,11 @@ public class CensoTecnico extends AppCompatActivity{
     @Override
     protected void onStart() {
         super.onStart();
-
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-
     }
     //--Administrar Tabla Armado Red----
     private boolean validarArmadoRed(){
@@ -1110,5 +1095,59 @@ public class CensoTecnico extends AppCompatActivity{
         }
     }
 
+    //--Administrar Direccion
+    private void armarDireccion(){
+        View content = LayoutInflater.from(getApplicationContext()).inflate(R.layout.direccion,null);
+        txtMensajeDireccion         = content.findViewById(R.id.txt_mensaje_direccion);
+        sltTipoInterseccionA        = content.findViewById(R.id.slt_tipo_interseccion_a);
+        sltTipoInterseccionB        = content.findViewById(R.id.slt_tipo_interseccion_b);
+        txtNumeroInterseccion       = content.findViewById(R.id.numero_interseccion);
+        txtNumeracionA              = content.findViewById(R.id.txt_numeracion_a);
+        txtNumeracionB              = content.findViewById(R.id.txt_numeracion_b);
+        cargarTipoInterseccion(database);
+        alert.setTitle(R.string.titulo_direccion);
+        alert.setView(content)
+                // Add action buttons
+                .setPositiveButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        if(tipoInterseccionA.get(sltTipoInterseccionA.getSelectedItemPosition()).getId() == 0){
+                            txtMensajeDireccion.setText("Seleccione Tipo Intersección");
+                            Log.d("Busqueda","Seleccione Tipo Intersección");
+                        }
+                        else{
+                            if(TextUtils.isEmpty(txtNumeroInterseccion.getText().toString())){
+                                txtMensajeDireccion.setText("Digite el Número de la Intersección");
+                            }
+                            else{
+                                String miDireccion = "";
+
+                                miDireccion = miDireccion + tipoInterseccionA.get(sltTipoInterseccionA.getSelectedItemPosition()).getDescripcion();
+                                miDireccion = miDireccion + " " + txtNumeroInterseccion.getText().toString();
+
+                                if(tipoInterseccionA.get(sltTipoInterseccionB.getSelectedItemPosition()).getId() != 0 ){
+                                    miDireccion = miDireccion + " " + tipoInterseccionB.get(sltTipoInterseccionB.getSelectedItemPosition()).getDescripcion();
+                                }
+                                if(!TextUtils.isEmpty(txtNumeracionA.getText().toString())){
+                                    miDireccion = miDireccion + " N " + txtNumeracionA.getText().toString();
+                                }
+                                if(!TextUtils.isEmpty(txtNumeracionB.getText().toString())){
+                                    miDireccion = miDireccion + " - " +txtNumeracionB.getText().toString();
+                                }
+                                if(!miDireccion.isEmpty())
+                                    txtDireccion.setText(miDireccion);
+                            }
+                        }
+                    }
+                })
+                .setNegativeButton(R.string.btn_cancelar, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        //alert.create().setCancelable(false);
+        alert.create().show();
+    }
 
 }
