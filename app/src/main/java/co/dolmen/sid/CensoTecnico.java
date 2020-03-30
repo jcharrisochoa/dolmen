@@ -28,6 +28,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Layout;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -66,6 +67,7 @@ import co.dolmen.sid.entidad.TipoRed;
 import co.dolmen.sid.entidad.TipoTension;
 import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
+import co.dolmen.sid.modelo.ElementoDB;
 import co.dolmen.sid.modelo.MobiliarioDB;
 import co.dolmen.sid.modelo.NormaConstruccionPosteDB;
 import co.dolmen.sid.modelo.NormaConstruccionRedDB;
@@ -78,6 +80,8 @@ import co.dolmen.sid.modelo.TipoRedDB;
 import co.dolmen.sid.modelo.TipoTensionDB;
 import co.dolmen.sid.modelo.TipologiaDB;
 import co.dolmen.sid.utilidades.DataSpinner;
+
+import static java.lang.Integer.parseInt;
 
 public class CensoTecnico extends AppCompatActivity{
 
@@ -105,6 +109,8 @@ public class CensoTecnico extends AppCompatActivity{
     EditText txtElementoNo;
     EditText txtLatitud;
     EditText txtLongitud;
+    EditText txtBuscarElemento;
+    EditText txtDireccion;
     //--
     Switch swLuminariaVisible;
     Switch swPoseeLuminaria;
@@ -114,11 +120,15 @@ public class CensoTecnico extends AppCompatActivity{
     Button btnTomarFoto2;
     Button btnBorrarFoto1;
     Button btnBorrarFoto2;
+
+
     ImageButton btnAgregarArmadoRed;
     ImageButton btnEliminarArmado_1;
     ImageButton btnEliminarArmado_2;
     ImageButton btnEliminarArmado_3;
     ImageButton btnCapturarGPS;
+    ImageButton btnBuscarElemento;
+    ImageButton btnEditarDireccion;
     //--
     ArrayList<DataSpinner> tipologiaList;
     ArrayList<Mobiliario> mobiliarioList;
@@ -149,6 +159,8 @@ public class CensoTecnico extends AppCompatActivity{
     private int idDefaultMunicipio;
     private int idDefaultProceso;
     private int idDefaultContrato;
+    private int idMobiliarioBusqueda;
+    private int idReferenciaBusqueda;
     private String encodeString;
     private String path;
     private ArrayList<ComponenteNormaConstruccionRed> tipoArmadoList;
@@ -207,8 +219,8 @@ public class CensoTecnico extends AppCompatActivity{
         sltMobiliario               = findViewById(R.id.slt_mobiliario);
         sltReferencia               = findViewById(R.id.slt_referencia);
         sltBarrio                   = findViewById(R.id.slt_barrio);
-        sltTipoInterseccionA        = findViewById(R.id.slt_tipo_interseccion_a);
-        sltTipoInterseccionB        = findViewById(R.id.slt_tipo_interseccion_b);
+        //sltTipoInterseccionA        = findViewById(R.id.slt_tipo_interseccion_a);
+        //sltTipoInterseccionB        = findViewById(R.id.slt_tipo_interseccion_b);
         sltClaseVia                 = findViewById(R.id.slt_clase_via);
         sltTipoPoste                = findViewById(R.id.slt_tipo_poste);
         sltNormaConstruccionPoste   = findViewById(R.id.slt_norma_construccion_poste);
@@ -221,6 +233,8 @@ public class CensoTecnico extends AppCompatActivity{
         txtElementoNo               = findViewById(R.id.txt_elemento_no);
         txtLatitud                  = findViewById(R.id.txt_latitud);
         txtLongitud                 = findViewById(R.id.txt_longitud);
+        txtBuscarElemento           = findViewById(R.id.txt_buscar_elemento);
+        txtDireccion                = findViewById(R.id.txt_direccion);
         //--
         swLuminariaVisible          = findViewById(R.id.sw_numero_luminaria_visible);
         swPoseeLuminaria            = findViewById(R.id.sw_tiene_luminaria);
@@ -232,10 +246,11 @@ public class CensoTecnico extends AppCompatActivity{
         btnBorrarFoto1              = findViewById(R.id.btn_borrar_foto_1);
         btnBorrarFoto2              = findViewById(R.id.btn_borrar_foto_2);
         btnAgregarArmadoRed         = findViewById(R.id.btn_agregar_armado);
-
+        btnBuscarElemento           = findViewById(R.id.btn_buscar_elemento);
         btnEliminarArmado_1         = findViewById(R.id.btn_eliminar_armado_1);
         btnEliminarArmado_2         = findViewById(R.id.btn_eliminar_armado_2);
         btnEliminarArmado_3         = findViewById(R.id.btn_eliminar_armado_3);
+        btnEditarDireccion          = findViewById(R.id.btn_editar_direccion);
         //--
         imgFoto1 = findViewById(R.id.foto_1);
         imgFoto2 = findViewById(R.id.foto_2);
@@ -245,6 +260,7 @@ public class CensoTecnico extends AppCompatActivity{
         txt_norma_armado_red_3      = findViewById(R.id.txt_norma_armado_red_3);
         //--
         txtElementoNo.setEnabled(false);
+        txtDireccion.setEnabled(false);
         //swLuminariaVisible.setEnabled(false);
         //swPoseeLuminaria.setEnabled(false);
         //--
@@ -306,6 +322,12 @@ public class CensoTecnico extends AppCompatActivity{
                 }
             }
         });
+        btnBuscarElemento.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                buscarElemento(database);
+            }
+        });
         btnEliminarArmado_1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -350,7 +372,31 @@ public class CensoTecnico extends AppCompatActivity{
                 imgFoto2.setImageResource(R.drawable.imagen_no_disponible);
             }
         });
+        btnEditarDireccion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                View content = LayoutInflater.from(getApplicationContext()).inflate(R.layout.direccion,null);
+                sltTipoInterseccionA        = content.findViewById(R.id.slt_tipo_interseccion_a);
+                sltTipoInterseccionB        = content.findViewById(R.id.slt_tipo_interseccion_b);
+                cargarTipoInterseccion(database);
+                alert.setTitle(R.string.titulo_direccion);
+                alert.setView(content)
+                        // Add action buttons
+                        .setPositiveButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                // sign in the user ...
+                            }
+                        })
+                        .setNegativeButton(R.string.btn_cancelar, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                //LoginDialogFragment.this.getDialog().cancel();
+                            }
+                        });
 
+                alert.create().show();
+            }
+        });
         //--
         sltTipologia.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -410,7 +456,6 @@ public class CensoTecnico extends AppCompatActivity{
 
         cargarTipologia(database);
         cargarBarrio(database);
-        cargarTipoInterseccion(database);
         cargarClaseVia(database);
         cargarTipoPoste(database);
         cargarTipoRed(database);
@@ -561,6 +606,7 @@ public class CensoTecnico extends AppCompatActivity{
     //--
     private void cargarMobiliario(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
+        int pos = 0;
         //Localizo el id seleccionado
         int idTipologia = tipologiaList.get(sltTipologia.getSelectedItemPosition()).getId();
 
@@ -585,6 +631,9 @@ public class CensoTecnico extends AppCompatActivity{
                     mobiliario = new Mobiliario(cursor.getInt(0), cursor.getString(2).toUpperCase());
                     mobiliarioList.add(mobiliario);
                     labels.add(cursor.getString(2).toUpperCase());
+                    if(idMobiliarioBusqueda == cursor.getInt(0)){
+                        pos = i;
+                    }
                 } while (cursor.moveToNext());
             }
         }
@@ -593,10 +642,12 @@ public class CensoTecnico extends AppCompatActivity{
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, labels);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltMobiliario.setAdapter(dataAdapter);
+        sltMobiliario.setSelection(pos);
     }
     //--
     private void cargarReferencia(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
+        int pos = 0;
         referenciaMobiliarioList = new ArrayList<ReferenciaMobiliario>();
         List<String> labels = new ArrayList<String>();
         int idMobiliario = mobiliarioList.get(sltMobiliario.getSelectedItemPosition()).getIdMobiliario();
@@ -614,6 +665,9 @@ public class CensoTecnico extends AppCompatActivity{
                     referenciaMobiliario = new ReferenciaMobiliario(cursor.getInt(0), cursor.getString(2).toUpperCase());
                     referenciaMobiliarioList.add(referenciaMobiliario);
                     labels.add(cursor.getString(2).toUpperCase());
+                    if(idReferenciaBusqueda == cursor.getInt(0)){
+                        pos = i;
+                    }
                 } while (cursor.moveToNext());
             }
         }
@@ -621,6 +675,7 @@ public class CensoTecnico extends AppCompatActivity{
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, labels);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltReferencia.setAdapter(dataAdapter);
+        sltReferencia.setSelection(pos);
     }
     //--
     private void cargarBarrio(SQLiteDatabase sqLiteDatabase) {
@@ -890,6 +945,64 @@ public class CensoTecnico extends AppCompatActivity{
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltNormaConstruccionRed.setAdapter(dataAdapter);
     }
+    //--
+    private void buscarElemento(SQLiteDatabase sqLiteDatabase){
+        if(txtBuscarElemento.getText().toString().trim().length() == 0){
+            alert.setTitle(R.string.titulo_alerta);
+            alert.setMessage(R.string.alert_elemento_buscar);
+            alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                }
+            });
+            alert.create().show();
+        }
+        else{
+            ElementoDB elementoDB = new ElementoDB(sqLiteDatabase);
+            Cursor cursor = elementoDB.consultarElemento(idDefaultMunicipio,idDefaultProceso,parseInt(txtBuscarElemento.getText().toString()));
+            if(cursor.getCount() == 0) {
+                alert.setTitle(R.string.titulo_alerta);
+                alert.setMessage(getText(R.string.alert_elemento_no_encontrado)+" sobre el Elemento: "+txtBuscarElemento.getText() );
+                alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+                alert.create().show();
+                sltTipologia.setSelection(0);
+                sltBarrio.setSelection(0);
+                txtElementoNo.setText("");
+                txtDireccion.setText("");
+                txtElementoNo.setEnabled(true);
+            }
+            else {
+
+                cursor.moveToFirst();
+
+                txtElementoNo.setEnabled(false);
+                txtElementoNo.setText(cursor.getString(cursor.getColumnIndex("elemento_no")));
+                txtDireccion.setText(cursor.getString(cursor.getColumnIndex("direccion")));
+                //mobiliarioList
+                idMobiliarioBusqueda =  cursor.getInt(cursor.getColumnIndex("id_mobiliario"));
+                idReferenciaBusqueda =  cursor.getInt(cursor.getColumnIndex("id_referencia"));
+
+                //tipologiaList
+                for(int i=0;i<tipologiaList.size();i++){
+                    if(tipologiaList.get(i).getId() == cursor.getInt(cursor.getColumnIndex("id_tipologia"))){
+                        sltTipologia.setSelection(i);
+                    }
+                }
+                //barrioList
+                for(int i=0;i<barrioList.size();i++){
+                    if(barrioList.get(i).getId() == cursor.getInt(cursor.getColumnIndex("id_barrio"))){
+                        sltBarrio.setSelection(i);
+                    }
+                }
+            }
+        }
+    }
 
     //--Administrar Cámara--
     public void cargarImagen() {
@@ -996,5 +1109,6 @@ public class CensoTecnico extends AppCompatActivity{
             }
         }
     }
+
 
 }

@@ -39,6 +39,7 @@ public class TipoPosteDB extends TipoPoste implements DatabaseDLM,DatabaseDDL {
                 contentValues.put("descripcion", tipoPoste.getDescripcion());
                 db.insert(Constantes.TABLA_TIPO_POSTE, null, contentValues);
             }
+            result.close();
             return true;
         }
         else

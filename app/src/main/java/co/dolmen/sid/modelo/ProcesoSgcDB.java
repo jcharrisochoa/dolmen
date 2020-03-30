@@ -39,6 +39,7 @@ public class ProcesoSgcDB extends ProcesoSgc implements DatabaseDLM,DatabaseDDL 
                 contentValues.put("descripcion", procesoSgc.getDescripcion());
                 db.insert(Constantes.TABLA_PROCESO, null, contentValues);
             }
+            result.close();
             return true;
         }
         else

@@ -43,6 +43,7 @@ public class ClaseViaDB extends ClaseVia implements DatabaseDDL,DatabaseDLM{
                 contentValues.put("abreviatura", claseVia.getAbreviatura());
                 db.insert(Constantes.TABLA_CLASE_VIA, null, contentValues);
             }
+            result.close();
             return true;
         }
         else

@@ -39,6 +39,7 @@ public class MunicipioDB extends Municipio implements DatabaseDDL,DatabaseDLM {
                 contentValues.put("descripcion", municipio.getDescripcion());
                 db.insert(Constantes.TABLA_MUNICIPIO, null, contentValues);
             }
+            result.close();
             return true;
         }
         else

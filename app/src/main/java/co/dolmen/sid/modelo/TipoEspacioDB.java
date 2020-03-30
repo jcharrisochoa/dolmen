@@ -38,6 +38,7 @@ public class TipoEspacioDB extends TipoEspacio implements DatabaseDLM,DatabaseDD
                 contentValues.put("descripcion", tipoEspacio.getDescripcion());
                 db.insert(Constantes.TABLA_TIPO_ESPACIO, null, contentValues);
             }
+            result.close();
             return true;
         }
         else

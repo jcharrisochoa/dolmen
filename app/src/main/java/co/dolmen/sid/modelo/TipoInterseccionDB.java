@@ -39,6 +39,7 @@ public class TipoInterseccionDB extends TipoInterseccion implements DatabaseDDL,
                 contentValues.put("abreviatura", tipoInterseccion.getAbreviatura());
                 db.insert(Constantes.TABLA_TIPO_INTERSECCION, null, contentValues);
             }
+            result.close();
             return true;
         }
         else

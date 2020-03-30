@@ -48,5 +48,5 @@ public final class Constantes {
     public static final String TABLA_RETENIDA_POSTE            = "retenida_poste";
     public static final String TABLA_NORMA_CONSTRUCCION_POSTE  = "norma_construccion_poste";
     public static final String TABLA_TIPO_ESTRUCTURA           = "tipo_estructura";
-    public static final String TABLA_NORMA_CONSTRUCCION_RED  = "norma_construccion_red";
+    public static final String TABLA_NORMA_CONSTRUCCION_RED     = "norma_construccion_red";
 }

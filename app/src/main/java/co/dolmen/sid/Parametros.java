@@ -22,15 +22,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import co.dolmen.sid.entidad.Barrio;
 import co.dolmen.sid.entidad.EstadoMobiliario;
 import co.dolmen.sid.entidad.Municipio;
 import co.dolmen.sid.entidad.ProcesoSgc;
+import co.dolmen.sid.entidad.ReferenciaMobiliario;
 import co.dolmen.sid.entidad.TipoEstructura;
 import co.dolmen.sid.entidad.TipoPoste;
 import co.dolmen.sid.entidad.TipoTension;
+import co.dolmen.sid.entidad.Tipologia;
 import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
 import co.dolmen.sid.modelo.ContratoDB;
+import co.dolmen.sid.modelo.ElementoDB;
 import co.dolmen.sid.modelo.EstadoActividadDB;
 import co.dolmen.sid.modelo.EstadoMobiliarioDB;
 import co.dolmen.sid.modelo.MobiliarioDB;
@@ -78,13 +82,12 @@ public class Parametros extends AppCompatActivity {
         cargarParametros(config.getInt("id_usuario",0));
         db = new BaseDatos(Parametros.this);
         database = db.getWritableDatabase();
-
     }
     private void cargarParametros(final Integer id_usuario){
         final AsyncHttpClient client = new AsyncHttpClient();
         RequestParams requestParams = new RequestParams();
         requestParams.add("id_usuario",id_usuario.toString());
-        client.setTimeout(150000);
+        client.setTimeout(180000);
 
         RequestHandle GET = client.get(urlParametros, requestParams, new AsyncHttpResponseHandler() {
             @Override
@@ -118,7 +121,6 @@ public class Parametros extends AppCompatActivity {
             @Override
             public void onFinish() {
                 super.onFinish();
-
             }
 
             @Override
@@ -135,7 +137,6 @@ public class Parametros extends AppCompatActivity {
                 progressBar.setProgress(0);
                 txt_porcentaje_carga.setText(getText(R.string.alert_error_ejecucion)+ " Code:"+statusCode);
             }
-
         });
 
     }
@@ -144,7 +145,6 @@ public class Parametros extends AppCompatActivity {
         progressBar.setProgress(0);
         txt_porcentaje_carga.setText("0%");
         txt_nombre_tipo_descarga.setText(getText(R.string.actualizando_base_datos));
-        Log.d("responseBody",""+new String(responseBodyTmp));
         try{
             json = new JSONObject(new String(responseBodyTmp));
             JSONObject parametros = json.getJSONObject("parametros");
@@ -202,6 +202,7 @@ public class Parametros extends AppCompatActivity {
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Referencia Mobiliario "+progress+"%");
             }
+
             /*new Thread(new Runnable() {
                 int i = 0;
                 public void run() {
@@ -237,6 +238,7 @@ public class Parametros extends AppCompatActivity {
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Barrios "+progress+"%");
             }
+
             //--Proceso SGC
             ProcesoSgcDB procesoSgcDB = new ProcesoSgcDB(database);
             JSONArray arrayProcesoSgc = parametros.getJSONArray("procesousuario");
@@ -272,7 +274,6 @@ public class Parametros extends AppCompatActivity {
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Contratos "+progress+"%");
             }
-
 
             //--Clase Via
             ClaseViaDB claseViaDB = new ClaseViaDB(database);
@@ -454,6 +455,7 @@ public class Parametros extends AppCompatActivity {
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Tipo Estructura "+progress+"%");
             }
+
             //--Norma Construccion Red
             NormaConstruccionRedDB normaConstruccionRedDB = new NormaConstruccionRedDB(database);
             JSONArray arrayNormaConstruccionRed = parametros.getJSONArray("norma_construccion_red");
@@ -473,6 +475,43 @@ public class Parametros extends AppCompatActivity {
                 txt_porcentaje_carga.setText("Actualizando Norma Construccion Red "+progress+"%");
             }
 
+            //--Elementos--
+            ElementoDB elementoDB = new ElementoDB(database);
+            JSONArray arrayElemento = parametros.getJSONArray("elemento_usuario");
+            for (int i = 0;i<arrayElemento.length();i++){
+
+                JSONObject jObjectElemento = arrayElemento.getJSONObject(i);
+
+                elementoDB.setId(jObjectElemento.getInt("id_elemento"));
+                elementoDB.setElemento_no(jObjectElemento.getString("elemento_no"));
+                elementoDB.setDireccion(jObjectElemento.getString("direccion"));
+
+                Barrio barrio = new Barrio();
+                barrio.setIdBarrio(jObjectElemento.getInt("id_barrio"));
+                barrio.setId(jObjectElemento.getInt("id_municipio"));
+                elementoDB.setBarrio(barrio);
+
+                ProcesoSgc procesoSgc = new ProcesoSgc();
+                procesoSgc.setId(jObjectElemento.getInt("id_proceso_sgc"));
+                elementoDB.setProcesoSgc(procesoSgc);
+
+                ReferenciaMobiliario referenciaMobiliario = new ReferenciaMobiliario();
+                referenciaMobiliario.setId(jObjectElemento.getInt("id_tipologia"));
+                referenciaMobiliario.setIdMobiliario(jObjectElemento.getInt("id_mobiliario"));
+                referenciaMobiliario.setIdReferenciaMobiliario(jObjectElemento.getInt("id_referencia"));
+                elementoDB.setReferenciaMobiliario(referenciaMobiliario);
+
+                EstadoMobiliario estadoMobiliarioElem = new EstadoMobiliario();
+                estadoMobiliarioElem.setIdEstadoMobiliario(jObjectElemento.getInt("id_estado_mobiliario"));
+                elementoDB.setEstadoMobiliario(estadoMobiliarioElem);
+
+                elementoDB.agregarDatos(elementoDB);
+
+                progress = (int)Math.round((double)(i+1)/arrayElemento.length()*100);
+                progressBar.setProgress(progress);
+                txt_porcentaje_carga.setText("Actualizando elementos "+progress+"%");
+
+            }
             database.close();
         }catch (JSONException e){
             e.getMessage();

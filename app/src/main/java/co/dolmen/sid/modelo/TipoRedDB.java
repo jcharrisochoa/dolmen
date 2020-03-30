@@ -38,6 +38,7 @@ public class TipoRedDB extends TipoRed implements DatabaseDDL,DatabaseDLM {
                 contentValues.put("descripcion", tipoRed.getDescripcion());
                 db.insert(Constantes.TABLA_TIPO_RED, null, contentValues);
             }
+            result.close();
             return true;
         }
         else

@@ -38,6 +38,7 @@ public class UnidadMedidaDB extends UnidadMedida implements DatabaseDLM,Database
                 contentValues.put("descripcion", unidadMedida.getDescripcion());
                 db.insert(Constantes.TABLA_UNIDAD_MEDIDA, null, contentValues);
             }
+            result.close();
             return true;
         }
         else

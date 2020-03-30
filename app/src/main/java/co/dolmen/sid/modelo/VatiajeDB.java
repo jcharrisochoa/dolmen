@@ -39,6 +39,7 @@ public class VatiajeDB extends Vatiaje implements DatabaseDDL,DatabaseDLM {
                 contentValues.put("descripcion", vatiaje.getDescripcion());
                 db.insert(Constantes.TABLA_POTENCIA_TIPO_LUZ, null, contentValues);
             }
+            result.close();
             return true;
         }
         else

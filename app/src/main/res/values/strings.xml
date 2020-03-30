@@ -54,6 +54,7 @@
 
     <!--Alertas-->
     <string name="titulo_alerta">Atención</string>
+    <string name="titulo_direccion">Dirección</string>
     <string name="alert_usuario">Digite su usuario</string>
     <string name="alert_clave">Digite su clave</string>
     <string name="alert_servicio_no_encontrado">Servicio no Disponible</string>
@@ -65,11 +66,14 @@
     <string name="alert_error_camara">Error Capturando la Imagen</string>
     <string name="alert_cancelar_camara">Captura de imagen cancelada</string>
     <string name="alert_gps_deshabilitado">Habilita el GPS, para continuar</string>
+    <string name="alert_elemento_buscar">Digite el elemento a buscar</string>
+    <string name="alert_elemento_no_encontrado">No existe información</string>
 
     <string name="file_provider_authority" translatable="false">co.dolmen.sid</string>
 
     <!--Menu de Cargar Imagen-->
     <string name="tomar_foto">Tomar Foto</string>
     <string name="cargar_imagen">Cargar Imagen</string>
+
 
 </resources>

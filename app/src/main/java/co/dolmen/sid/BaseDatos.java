@@ -7,6 +7,7 @@ import android.util.Log;
 
 import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.ContratoDB;
+import co.dolmen.sid.modelo.ElementoDB;
 import co.dolmen.sid.modelo.MobiliarioDB;
 import co.dolmen.sid.modelo.MunicipioDB;
 import co.dolmen.sid.modelo.NormaConstruccionPosteDB;
@@ -50,6 +51,7 @@ public class BaseDatos extends SQLiteOpenHelper {
     private NormaConstruccionPosteDB normaConstruccionPosteDB;
     private TipoEstructuraDB tipoEstructuraDB;
     private NormaConstruccionRedDB normaConstruccionRedDB;
+    private ElementoDB elementoDB;
 
 
     public BaseDatos(Context context){
@@ -123,6 +125,9 @@ public class BaseDatos extends SQLiteOpenHelper {
         normaConstruccionRedDB = new NormaConstruccionRedDB(sqLiteDatabase);
         normaConstruccionRedDB.crearTabla();
 
+        elementoDB = new ElementoDB(sqLiteDatabase);
+        elementoDB.crearTabla();
+
         /*db.execSQL(ConsultasSQL.CREAR_TABLA_MOBILIARIO);
         db.execSQL(ConsultasSQL.CREAR_TABLA_TIPOLOGIA_MOBILIARIO);
         db.execSQL(ConsultasSQL.CREAR_TABLA_REFERENCIA_MOBILIARIO);
@@ -159,6 +164,7 @@ public class BaseDatos extends SQLiteOpenHelper {
         normaConstruccionPosteDB.borrarTabla();
         tipoEstructuraDB.borrarTabla();
         normaConstruccionRedDB.borrarTabla();
+        elementoDB.borrarTabla();
         Log.d("DataBase","update");
 
     }

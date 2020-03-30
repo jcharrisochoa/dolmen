@@ -39,6 +39,7 @@ public class EstadoActividadDB extends EstadoActividad implements DatabaseDLM,Da
                 contentValues.put("descripcion", estadoActividad.getDescripcion());
                 db.insert(Constantes.TABLA_ESTADO_ACTIVIDAD, null, contentValues);
             }
+            result.close();
             return true;
         }
         else

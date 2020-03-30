@@ -40,6 +40,7 @@ public class EstadoMobiliarioDB extends EstadoMobiliario implements DatabaseDLM,
                 contentValues.put("descripcion", estadoMobiliario.getDescripcionEstadoMobiliario());
                 db.insert(Constantes.TABLA_ESTADO_MOBILIARIO, null, contentValues);
             }
+            result.close();
             return true;
         }
         else

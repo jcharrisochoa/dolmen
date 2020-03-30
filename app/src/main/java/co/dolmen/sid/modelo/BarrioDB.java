@@ -31,7 +31,7 @@ public class BarrioDB extends Barrio implements DatabaseDDL,DatabaseDLM {
     public boolean agregarDatos(Object o) {
         if(o instanceof Barrio) {
             barrio = (Barrio) o;
-            Log.d("barrio",""+barrio.getIdBarrio());
+            //Log.d("barrio",""+barrio.getIdBarrio());
             Cursor result = consultarId(barrio.getIdBarrio());
             if(result.getCount() == 0) {
                 ContentValues contentValues = new ContentValues();
