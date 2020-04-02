@@ -91,6 +91,7 @@ public class CensoTecnico extends AppCompatActivity{
     SharedPreferences config;
     String nombreMunicipio;
     AlertDialog.Builder alert;
+    AlertDialog.Builder alertDireccion;
     //--
     Spinner sltTipologia;
     Spinner sltMobiliario;
@@ -115,10 +116,16 @@ public class CensoTecnico extends AppCompatActivity{
     EditText txtNumeroInterseccion;
     EditText txtNumeracionA;
     EditText txtNumeracionB;
+    EditText txtInterdistancia;
+    EditText txtPotenciaTransformador;
+    EditText txtMtTransformador;
+    EditText txtCtTransformador;
+
     //--
     Switch swLuminariaVisible;
     Switch swPoseeLuminaria;
     //--
+    Button btnGuardar;
     Button btnCancelar;
     Button btnTomarFoto1;
     Button btnTomarFoto2;
@@ -240,11 +247,16 @@ public class CensoTecnico extends AppCompatActivity{
         txtLongitud                 = findViewById(R.id.txt_longitud);
         txtBuscarElemento           = findViewById(R.id.txt_buscar_elemento);
         txtDireccion                = findViewById(R.id.txt_direccion);
+        txtInterdistancia           = findViewById(R.id.txt_interdistancia);
+        txtPotenciaTransformador    = findViewById(R.id.txt_potencia_transformador);
+        txtMtTransformador          = findViewById(R.id.txt_mt_transformador);
+        txtCtTransformador          = findViewById(R.id.txt_ct_transformador);
         //--
         swLuminariaVisible          = findViewById(R.id.sw_numero_luminaria_visible);
         swPoseeLuminaria            = findViewById(R.id.sw_tiene_luminaria);
         //--
         btnCapturarGPS              = findViewById(R.id.btn_capturar_gps);
+        btnGuardar                  = findViewById(R.id.btn_guardar);
         btnCancelar                 = findViewById(R.id.btn_cancelar);
         btnTomarFoto1               = findViewById(R.id.btn_tomar_foto_1);
         btnTomarFoto2               = findViewById(R.id.btn_tomar_foto_2);
@@ -266,13 +278,34 @@ public class CensoTecnico extends AppCompatActivity{
         //--
         txtElementoNo.setEnabled(false);
         txtDireccion.setEnabled(false);
+        txtLatitud.setEnabled(false);
+        txtLongitud.setEnabled(false);
+
         //swLuminariaVisible.setEnabled(false);
         //swPoseeLuminaria.setEnabled(false);
-        //--
+
         btnCapturarGPS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 tomarCoordenadas();
+            }
+        });
+        btnGuardar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(validarFormulario()){
+                    Log.d("Guardar","Validar Conexion, y guardar ");
+                }
+                else{
+                    alert.setTitle(R.string.titulo_alerta);
+                    alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    });
+                    alert.create().show();
+                }
             }
         });
         btnCancelar.setOnClickListener(new View.OnClickListener() {
@@ -948,19 +981,31 @@ public class CensoTecnico extends AppCompatActivity{
             Cursor cursor = elementoDB.consultarElemento(idDefaultMunicipio,idDefaultProceso,parseInt(txtBuscarElemento.getText().toString()));
             if(cursor.getCount() == 0) {
                 alert.setTitle(R.string.titulo_alerta);
-                alert.setMessage(getText(R.string.alert_elemento_no_encontrado)+" sobre el Elemento: "+txtBuscarElemento.getText() );
-                alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                alert.setMessage(getText(R.string.alert_elemento_no_encontrado)+" sobre el Elemento: "+txtBuscarElemento.getText()+". ¿Desea registrar el Elemento?" );
+                alert.setPositiveButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.cancel();
+                        txtElementoNo.setText(txtBuscarElemento.getText());
+                        txtElementoNo.setEnabled(true);
                     }
                 });
+                alert.setNegativeButton(R.string.btn_cancelar, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        txtElementoNo.setText("");
+                        txtElementoNo.setEnabled(true);
+                    }
+                });
+
+                ///---Posible funcion reset
                 alert.create().show();
                 sltTipologia.setSelection(0);
                 sltBarrio.setSelection(0);
                 txtElementoNo.setText("");
                 txtDireccion.setText("");
-                txtElementoNo.setEnabled(true);
+                idMobiliarioBusqueda = 0;
+                idReferenciaBusqueda = 0;
+
             }
             else {
 
@@ -988,7 +1033,171 @@ public class CensoTecnico extends AppCompatActivity{
             }
         }
     }
+    //--
+    //--Administrar Direccion
+    private void armarDireccion(){
+        alertDireccion = new AlertDialog.Builder(this);
+        View content = LayoutInflater.from(getApplicationContext()).inflate(R.layout.direccion,null);
+        txtMensajeDireccion         = content.findViewById(R.id.txt_mensaje_direccion);
+        sltTipoInterseccionA        = content.findViewById(R.id.slt_tipo_interseccion_a);
+        sltTipoInterseccionB        = content.findViewById(R.id.slt_tipo_interseccion_b);
+        txtNumeroInterseccion       = content.findViewById(R.id.numero_interseccion);
+        txtNumeracionA              = content.findViewById(R.id.txt_numeracion_a);
+        txtNumeracionB              = content.findViewById(R.id.txt_numeracion_b);
+        cargarTipoInterseccion(database);
+        alertDireccion.setTitle(R.string.titulo_direccion);
+        alertDireccion.setView(content)
+                // Add action buttons
+                .setPositiveButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        if(tipoInterseccionA.get(sltTipoInterseccionA.getSelectedItemPosition()).getId() == 0){
+                            txtMensajeDireccion.setText("Seleccione Tipo Intersección");
+                            Log.d("Busqueda","Seleccione Tipo Intersección");
+                        }
+                        else{
+                            if(TextUtils.isEmpty(txtNumeroInterseccion.getText().toString())){
+                                txtMensajeDireccion.setText("Digite el Número de la Intersección");
+                            }
+                            else{
+                                String miDireccion = "";
 
+                                miDireccion = miDireccion + tipoInterseccionA.get(sltTipoInterseccionA.getSelectedItemPosition()).getDescripcion();
+                                miDireccion = miDireccion + " " + txtNumeroInterseccion.getText().toString();
+
+                                if(tipoInterseccionA.get(sltTipoInterseccionB.getSelectedItemPosition()).getId() != 0 ){
+                                    miDireccion = miDireccion + " " + tipoInterseccionB.get(sltTipoInterseccionB.getSelectedItemPosition()).getDescripcion();
+                                }
+                                if(!TextUtils.isEmpty(txtNumeracionA.getText().toString())){
+                                    if(tipoInterseccionA.get(sltTipoInterseccionB.getSelectedItemPosition()).getId() != 0 ) {
+                                        miDireccion = miDireccion + " " + txtNumeracionA.getText().toString();
+                                    }
+                                    else{
+                                        miDireccion = miDireccion + " N " + txtNumeracionA.getText().toString();
+                                    }
+                                }
+                                if(!TextUtils.isEmpty(txtNumeracionB.getText().toString())){
+                                    miDireccion = miDireccion + " - " +txtNumeracionB.getText().toString();
+                                }
+                                if(!miDireccion.isEmpty())
+                                    txtDireccion.setText(miDireccion);
+                            }
+                        }
+                    }
+                })
+                .setNegativeButton(R.string.btn_cancelar, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        alertDireccion.create().setCancelable(false);
+        alertDireccion.create().show();
+    }
+    //--Validar Formulario para enviar--
+    private boolean validarFormulario(){
+        boolean swTmp = true;
+        if(txtElementoNo.getText().toString().isEmpty()){
+            alert.setMessage(R.string.alert_censo_tecnico_elemento_no);
+            return false;
+        }
+        else{
+            if(tipologiaList.get(sltTipologia.getSelectedItemPosition()).getId()==0){
+                alert.setMessage(R.string.alert_censo_tipologia);
+                return false;
+            }
+            else{
+                if(mobiliarioList.get(sltMobiliario.getSelectedItemPosition()).getIdMobiliario() == 0){
+                    alert.setMessage(R.string.alert_censo_mobiliario);
+                    return false;
+                }
+                else{
+                    if(referenciaMobiliarioList.get(sltReferencia.getSelectedItemPosition()).getIdReferenciaMobiliario() == 0){
+                        alert.setMessage(R.string.alert_censo_mobiliario);
+                        return false;
+                    }
+                    else{
+                        if(barrioList.get(sltBarrio.getSelectedItemPosition()).getId() == 0){
+                            alert.setMessage(R.string.alert_censo_referencia);
+                            return false;
+                        }
+                        else{
+                            if(txtDireccion.getText().toString().isEmpty()){
+                                alert.setMessage(R.string.alert_censo_direccion);
+                                return false;
+                            }
+                            else{
+                                if(claseViaList.get(sltClaseVia.getSelectedItemPosition()).getId() == 0){
+                                    alert.setMessage(R.string.alert_censo_clase_via);
+                                    return false;
+                                }
+                                else{
+                                    if(tipoPosteList.get(sltTipoPoste.getSelectedItemPosition()).getId() == 0){
+                                        alert.setMessage(R.string.alert_censo_tipo_poste);
+                                        return false;
+                                    }
+                                    else{
+                                        if(normaConstruccionPosteList.get(sltNormaConstruccionPoste.getSelectedItemPosition()).getId()==0){
+                                            alert.setMessage(R.string.alert_censo_norma_tipo_poste);
+                                            return false;
+                                        }
+                                        else{
+                                            if(txtInterdistancia.getText().toString().isEmpty()){
+                                                alert.setMessage(R.string.alert_censo_interdistancia);
+                                                return false;
+                                            }
+                                            else{
+                                                //return true;
+                                                if(!txtPotenciaTransformador.getText().toString().isEmpty()){
+                                                    if(txtMtTransformador.getText().toString().isEmpty()){
+                                                        alert.setMessage(R.string.alert_censo_mt_transformador);
+                                                        swTmp = false;
+                                                        return false;
+                                                    }
+                                                    else{
+                                                        if(txtCtTransformador.getText().toString().isEmpty()){
+                                                            alert.setMessage(R.string.alert_censo_ct_transformador);
+                                                            swTmp = false;
+                                                            return false;
+                                                        }
+                                                    }
+                                                }
+
+                                                if(swTmp){
+                                                    if (tipoArmadoList.size() == 0) {
+                                                        alert.setMessage(R.string.alert_censo_tipo_armado_red);
+                                                        return false;
+                                                    }
+                                                    else{
+                                                        if(imgFoto1.getDrawable().getConstantState().equals(getResources().getDrawable(R.drawable.imagen_no_disponible).getConstantState())){
+                                                            alert.setMessage(R.string.alert_censo_foto_1);
+                                                            return false;
+                                                        }
+                                                        else{
+                                                            if(imgFoto2.getDrawable().getConstantState().equals(getResources().getDrawable(R.drawable.imagen_no_disponible).getConstantState())){
+                                                                alert.setMessage(R.string.alert_censo_foto_2);
+                                                                return false;
+                                                            }
+                                                            else{
+                                                                return true;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                    return false;
+
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
     //--Administrar Cámara--
     public void cargarImagen() {
         final CharSequence[] opciones = {getText(R.string.tomar_foto).toString(), getText(R.string.cargar_imagen).toString(), getText(R.string.btn_cancelar)};
@@ -1095,59 +1304,6 @@ public class CensoTecnico extends AppCompatActivity{
         }
     }
 
-    //--Administrar Direccion
-    private void armarDireccion(){
-        View content = LayoutInflater.from(getApplicationContext()).inflate(R.layout.direccion,null);
-        txtMensajeDireccion         = content.findViewById(R.id.txt_mensaje_direccion);
-        sltTipoInterseccionA        = content.findViewById(R.id.slt_tipo_interseccion_a);
-        sltTipoInterseccionB        = content.findViewById(R.id.slt_tipo_interseccion_b);
-        txtNumeroInterseccion       = content.findViewById(R.id.numero_interseccion);
-        txtNumeracionA              = content.findViewById(R.id.txt_numeracion_a);
-        txtNumeracionB              = content.findViewById(R.id.txt_numeracion_b);
-        cargarTipoInterseccion(database);
-        alert.setTitle(R.string.titulo_direccion);
-        alert.setView(content)
-                // Add action buttons
-                .setPositiveButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        if(tipoInterseccionA.get(sltTipoInterseccionA.getSelectedItemPosition()).getId() == 0){
-                            txtMensajeDireccion.setText("Seleccione Tipo Intersección");
-                            Log.d("Busqueda","Seleccione Tipo Intersección");
-                        }
-                        else{
-                            if(TextUtils.isEmpty(txtNumeroInterseccion.getText().toString())){
-                                txtMensajeDireccion.setText("Digite el Número de la Intersección");
-                            }
-                            else{
-                                String miDireccion = "";
 
-                                miDireccion = miDireccion + tipoInterseccionA.get(sltTipoInterseccionA.getSelectedItemPosition()).getDescripcion();
-                                miDireccion = miDireccion + " " + txtNumeroInterseccion.getText().toString();
-
-                                if(tipoInterseccionA.get(sltTipoInterseccionB.getSelectedItemPosition()).getId() != 0 ){
-                                    miDireccion = miDireccion + " " + tipoInterseccionB.get(sltTipoInterseccionB.getSelectedItemPosition()).getDescripcion();
-                                }
-                                if(!TextUtils.isEmpty(txtNumeracionA.getText().toString())){
-                                    miDireccion = miDireccion + " N " + txtNumeracionA.getText().toString();
-                                }
-                                if(!TextUtils.isEmpty(txtNumeracionB.getText().toString())){
-                                    miDireccion = miDireccion + " - " +txtNumeracionB.getText().toString();
-                                }
-                                if(!miDireccion.isEmpty())
-                                    txtDireccion.setText(miDireccion);
-                            }
-                        }
-                    }
-                })
-                .setNegativeButton(R.string.btn_cancelar, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
-
-        //alert.create().setCancelable(false);
-        alert.create().show();
-    }
 
 }

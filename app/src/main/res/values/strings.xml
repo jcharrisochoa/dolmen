@@ -52,7 +52,7 @@
     <string name="btn_borrar_foto">Quitar Foto</string>
 
 
-    <!--Alertas-->
+    <!--Alertas Generales-->
     <string name="titulo_alerta">Atención</string>
     <string name="titulo_direccion">Dirección</string>
     <string name="alert_usuario">Digite su usuario</string>
@@ -75,5 +75,21 @@
     <string name="tomar_foto">Tomar Foto</string>
     <string name="cargar_imagen">Cargar Imagen</string>
 
+    <!--Alertas Formulario censo Tecnico AP-->
+    <string name="alert_censo_tecnico_elemento_no">Digite el número del elemento</string>
+    <string name="alert_censo_tipologia">Seleccione una Tipología</string>
+    <string name="alert_censo_mobiliario">Seleccione un Mobiliario</string>
+    <string name="alert_censo_referencia">Seleccione una Referencia</string>
+    <string name="alert_censo_barrio">Seleccione un barrio</string>
+    <string name="alert_censo_direccion">Digite una Dirección</string>
+    <string name="alert_censo_clase_via">Seleccione la Clase de Via</string>
+    <string name="alert_censo_tipo_poste">Seleccione el tipo de Poste</string>
+    <string name="alert_censo_norma_tipo_poste">Seleccione la norma de construcción del tipo de poste</string>
+    <string name="alert_censo_interdistancia">Digite la Interdistancia</string>
+    <string name="alert_censo_tipo_armado_red">Agregue el tipo de Armado de la Red</string>
+    <string name="alert_censo_mt_transformador">Digite el Serial MT del Transformador</string>
+    <string name="alert_censo_ct_transformador">Digite el Serial CT del Transformador</string>
+    <string name="alert_censo_foto_1">Cargue la Foto 1</string>
+    <string name="alert_censo_foto_2">Cargue la Foto 2</string>
 
 </resources>

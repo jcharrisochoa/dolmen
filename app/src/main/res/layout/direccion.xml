@@ -17,7 +17,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
         <TextView
             android:id="@+id/textView6"
             android:layout_width="match_parent"
@@ -43,7 +42,9 @@
             android:background="@android:drawable/edit_text"
             android:ems="10"
             android:hint="Numero de la Intersección"
-            android:inputType="textPersonName" />
+            android:inputType="textPersonName"
+            android:textColor="#000000"
+            android:textColorHint="#9EA0A1" />
 
         <TextView
             android:id="@+id/textView8"
@@ -70,7 +71,9 @@
                 android:background="@android:drawable/edit_text"
                 android:ems="10"
                 android:hint="Ej:45B"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:textColor="#000000"
+                android:textColorHint="#9EA0A1" />
 
             <EditText
                 android:id="@+id/txt_numeracion_b"
@@ -79,6 +82,8 @@
                 android:layout_weight="1"
                 android:background="@android:drawable/edit_text"
                 android:ems="10"
+                android:textColor="#000000"
+                android:textColorHint="#9EA0A1"
                 android:hint="Ej: 34C"
                 android:inputType="textPersonName" />
 
