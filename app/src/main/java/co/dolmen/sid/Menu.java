@@ -14,6 +14,7 @@ public class Menu extends AppCompatActivity {
     private String nombreMunicipio;
     private String nombreProceso;
     private String nombreContrato;
+    private int idCenso;
 
     Button btnPerfil;
     Button btnSalir;

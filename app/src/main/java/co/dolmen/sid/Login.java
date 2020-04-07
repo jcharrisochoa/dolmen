@@ -133,7 +133,7 @@ public class Login extends AppCompatActivity {
         RequestParams requestParams = new RequestParams();
         requestParams.add("usuario",txtUsuario.getText().toString());
         requestParams.add("clave", txtClave.getText().toString());
-        client.setTimeout(150000);
+        client.setTimeout(Constantes.TIMEOUT);
         RequestHandle GET = client.get(urlLogin, requestParams, new AsyncHttpResponseHandler() {
             @Override
             public void onStart() {

@@ -14,16 +14,22 @@ public class Elemento {
     private ReferenciaMobiliario referenciaMobiliario;
     private EstadoMobiliario estadoMobiliario;
 
-    /*public Elemento(){
-        municipio = new Municipio();
-        barrio = new Barrio();
-        procesoSgc = new ProcesoSgc();
-        //contrato = new Contrato();
-        tipologia = new Tipologia();
-        mobiliario = new Mobiliario();
-        referenciaMobiliario = new ReferenciaMobiliario();
-        estadoMobiliario = new EstadoMobiliario();
-    }*/
+    public Elemento(){
+
+    }
+
+    public Elemento(int id, String elemento_no, String direccion, Municipio municipio, Barrio barrio, Tipologia tipologia,
+                    Mobiliario mobiliario, ReferenciaMobiliario referenciaMobiliario, EstadoMobiliario estadoMobiliario) {
+        this.id = id;
+        this.elemento_no = elemento_no;
+        this.direccion = direccion;
+        this.municipio = municipio;
+        this.barrio = barrio;
+        this.tipologia = tipologia;
+        this.mobiliario = mobiliario;
+        this.referenciaMobiliario = referenciaMobiliario;
+        this.estadoMobiliario = estadoMobiliario;
+    }
 
     public int getId() {
         return id;

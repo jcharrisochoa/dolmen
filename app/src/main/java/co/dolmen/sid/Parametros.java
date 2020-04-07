@@ -32,6 +32,7 @@ import co.dolmen.sid.entidad.TipoPoste;
 import co.dolmen.sid.entidad.TipoTension;
 import co.dolmen.sid.entidad.Tipologia;
 import co.dolmen.sid.modelo.BarrioDB;
+import co.dolmen.sid.modelo.CensoAsignadoDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
 import co.dolmen.sid.modelo.ContratoDB;
 import co.dolmen.sid.modelo.ElementoDB;
@@ -148,6 +149,22 @@ public class Parametros extends AppCompatActivity {
         try{
             json = new JSONObject(new String(responseBodyTmp));
             JSONObject parametros = json.getJSONObject("parametros");
+
+
+            //--Censo Asignado
+            JSONArray arrayCenso = parametros.getJSONArray("censo");
+            CensoAsignadoDB censoAsignadoDB = new CensoAsignadoDB(database);
+            for (int i = 0;i<arrayCenso.length();i++){
+                JSONObject jObjectCenso = arrayCenso.getJSONObject(i);
+                censoAsignadoDB.setId(jObjectCenso.getInt("id"));
+                censoAsignadoDB.setId_municipio(jObjectCenso.getInt("id_municipio"));
+                censoAsignadoDB.setId_proceso_sgc(jObjectCenso.getInt("id_proceso_sgc"));
+                censoAsignadoDB.agregarDatos(censoAsignadoDB);
+
+                progress = (int)Math.round((double)(i+1)/arrayCenso.length()*100);
+                progressBar.incrementProgressBy(progress);
+                txt_porcentaje_carga.setText("Actualizando Censo "+progress+"%");
+            }
 
             //--Municipio
             MunicipioDB municipioDB = new MunicipioDB(database);

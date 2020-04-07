@@ -6,6 +6,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import co.dolmen.sid.modelo.BarrioDB;
+import co.dolmen.sid.modelo.CensoArchivoDB;
+import co.dolmen.sid.modelo.CensoAsignadoDB;
+import co.dolmen.sid.modelo.CensoDB;
+import co.dolmen.sid.modelo.CensoTipoArmadoDB;
 import co.dolmen.sid.modelo.ContratoDB;
 import co.dolmen.sid.modelo.ElementoDB;
 import co.dolmen.sid.modelo.MobiliarioDB;
@@ -52,6 +56,10 @@ public class BaseDatos extends SQLiteOpenHelper {
     private TipoEstructuraDB tipoEstructuraDB;
     private NormaConstruccionRedDB normaConstruccionRedDB;
     private ElementoDB elementoDB;
+    private CensoDB censoDB;
+    private CensoTipoArmadoDB censoTipoArmadoDB;
+    private CensoArchivoDB censoArchivoDB;
+    private CensoAsignadoDB censoAsignadoDB;
 
 
     public BaseDatos(Context context){
@@ -128,17 +136,18 @@ public class BaseDatos extends SQLiteOpenHelper {
         elementoDB = new ElementoDB(sqLiteDatabase);
         elementoDB.crearTabla();
 
-        /*db.execSQL(ConsultasSQL.CREAR_TABLA_MOBILIARIO);
-        db.execSQL(ConsultasSQL.CREAR_TABLA_TIPOLOGIA_MOBILIARIO);
-        db.execSQL(ConsultasSQL.CREAR_TABLA_REFERENCIA_MOBILIARIO);
-        db.execSQL(ConsultasSQL.CREATE_SENTIDO);
-        db.execSQL(ConsultasSQL.CREATE_TIPO_ACTIVIDAD);
-        db.execSQL(ConsultasSQL.CREATE_TIPO_REPORTE);
-        db.execSQL(ConsultasSQL.CREATE_CONTRATO);
-        db.execSQL(ConsultasSQL.CREATE_ACTA_CONTRATO);
-        db.execSQL(ConsultasSQL.CREATE_PROVEEDOR);
-        db.execSQL(ConsultasSQL.CREATE_PROGRAMA);*/
-        Log.d("DataBase","create");
+        censoDB = new CensoDB(sqLiteDatabase);
+        censoDB.crearTabla();
+
+        censoArchivoDB = new CensoArchivoDB(sqLiteDatabase);
+        censoArchivoDB.crearTabla();
+
+        censoTipoArmadoDB = new CensoTipoArmadoDB(sqLiteDatabase);
+        censoTipoArmadoDB.crearTabla();
+
+        censoAsignadoDB = new CensoAsignadoDB(sqLiteDatabase);
+        censoAsignadoDB.crearTabla();
+       // Log.d("DataBase","create");
     }
 
     @Override
@@ -165,6 +174,10 @@ public class BaseDatos extends SQLiteOpenHelper {
         tipoEstructuraDB.borrarTabla();
         normaConstruccionRedDB.borrarTabla();
         elementoDB.borrarTabla();
+        censoDB.borrarTabla();
+        censoArchivoDB.borrarTabla();
+        censoTipoArmadoDB.borrarTabla();
+        censoAsignadoDB.borrarTabla();
         Log.d("DataBase","update");
 
     }

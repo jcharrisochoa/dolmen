@@ -76,6 +76,7 @@
     <string name="cargar_imagen">Cargar Imagen</string>
 
     <!--Alertas Formulario censo Tecnico AP-->
+    <string name="alert_censo_asignado">Seleccione el No de Censo Asignado</string>
     <string name="alert_censo_tecnico_elemento_no">Digite el número del elemento</string>
     <string name="alert_censo_tipologia">Seleccione una Tipología</string>
     <string name="alert_censo_mobiliario">Seleccione un Mobiliario</string>
@@ -91,5 +92,9 @@
     <string name="alert_censo_ct_transformador">Digite el Serial CT del Transformador</string>
     <string name="alert_censo_foto_1">Cargue la Foto 1</string>
     <string name="alert_censo_foto_2">Cargue la Foto 2</string>
+    <string name="alert_error_almacenando_datos">Error Guardando los Datos</string>
+    <string name="alert_almacenamiento_local">Datos Guardados en el Dispositivo</string>
+    <string name="alert_datos_pendientes_sincronizar">Pendientes por Sincronizar</string>
+    <string name="alert_almacenamiento_remoto">Datos Sincronizados.</string>
 
 </resources>

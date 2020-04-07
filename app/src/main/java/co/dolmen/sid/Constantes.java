@@ -3,8 +3,8 @@ package co.dolmen.sid;
 public final class Constantes {
     //--Camara
     public static final String IMAGE_DIRECTORY_NAME = "sdcard";
-    public static final int timeout = 150000;
-    public static final int cons = 100;
+    public static final int TIMEOUT = 150000;
+    public static final int CONS = 100;
     public static final int CONS_TOMAR_FOTO = 100;
     public static final int CONS_SELECCIONAR_IMAGEN = 200;
     public static final int MEDIA_TYPE_IMAGE = 1;
@@ -49,4 +49,9 @@ public final class Constantes {
     public static final String TABLA_NORMA_CONSTRUCCION_POSTE  = "norma_construccion_poste";
     public static final String TABLA_TIPO_ESTRUCTURA           = "tipo_estructura";
     public static final String TABLA_NORMA_CONSTRUCCION_RED     = "norma_construccion_red";
+    public static final String TABLA_CENSO_TECNICO              = "censo_tecnico";
+    public static final String TABLA_CENSO_TECNICO_TIPO_ARMADO  = "censo_tecnico_tipo_armado";
+    public static final String TABLA_CENSO_TECNICO_ARCHIVO      = "censo_tecnico_archivo";
+    public static final String TABLA_CENSO_ASIGNADO             = "censo_asignado";
+
 }

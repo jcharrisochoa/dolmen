@@ -1,0 +1,141 @@
+package co.dolmen.sid.modelo;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+import android.util.Log;
+import android.widget.Toast;
+
+import co.dolmen.sid.Constantes;
+import co.dolmen.sid.entidad.Censo;
+import co.dolmen.sid.entidad.ClaseVia;
+import co.dolmen.sid.entidad.Elemento;
+
+public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
+    SQLiteDatabase db;
+    String sql;
+    Censo censo;
+
+    public CensoDB(SQLiteDatabase sqLiteDatabase){
+        this.db = sqLiteDatabase;
+        this.censo = new Censo();
+    }
+    @Override
+    public void crearTabla() {
+
+        db.execSQL(
+                "create table "+ Constantes.TABLA_CENSO_TECNICO+
+                        "("+
+                        "id INTEGER PRIMARY KEY ASC NOT NULL,"+
+                        "id_municipio INTEGER NOT NULL,"+
+                        "id_barrio INTEGER NOT NULL,"+
+                        "id_tipologia INTEGER NOT NULL,"+
+                        "id_mobiliario INTEGER NOT NULL,"+
+                        "id_referencia INTEGER DEFAULT NULL,"+
+                        "id_estado_mobiliario INTEGER DEFAULT NULL,"+
+                        "longitud NUMERIC(15,13) NOT NULL DEFAULT 0,"+
+                        "latitud NUMERIC(15,13) NOT NULL DEFAULT 0,"+
+                        "direccion VARCHAR(100) DEFAULT NULL,"+
+                        "fch_registro datetime NOT NULL,"+
+                        "observacion TEXT DEFAULT NULL,"+
+                        "id_censo INTEGER DEFAULT NULL,"+
+                        "id_elemento INTEGER DEFAULT NULL,"+
+                        "mobiliario_no INTEGER DEFAULT NULL,"+
+                        "numero_mobiliario_visible VARCHAR(1) NOT NULL DEFAULT 'S',"+
+                        "mobiliario_en_sitio VARCHAR(1) NOT NULL DEFAULT 'S',"+
+                        "id_sentido INTEGER DEFAULT NULL,"+
+                        "cantidad decimal(6,3) NOT NULL DEFAULT 1,"+
+                        "estado VARCHAR(1) NOT NULL DEFAULT 'P',"+
+                        "id_tipo_poste INTEGER DEFAULT NULL,"+
+                        "id_norma_construccion_poste INTEGER DEFAULT NULL,"+
+                        "id_tipo_red INTEGER DEFAULT NULL,"+
+                        "poste_no VARCHAR(12) DEFAULT NULL,"+
+                        "interdistancia INTEGER NOT NULL DEFAULT 0,"+
+                        "puesta_a_tierra VARCHAR(1) NOT NULL DEFAULT 'N',"+
+                        "poste_exclusivo_ap VARCHAR(1) NOT NULL DEFAULT 'N',"+
+                        "id_tipo_retenida INTEGER DEFAULT NULL,"+
+                        "id_clase_via INTEGER DEFAULT NULL,"+
+                        "serial_medidor VARCHAR(12) NOT NULL DEFAULT '0',"+
+                        "lectura_medidor INTEGER NOT NULL DEFAULT 0,"+
+                        "potencia_transformador NUMERIC(5,1) NOT NULL DEFAULT 0.0,"+
+                        "placa_mt_transformador VARCHAR(12) DEFAULT NULL,"+
+                        "placa_ct_transformador VARCHAR(12) DEFAULT NULL"+
+                        ");"
+        );
+    }
+
+    @Override
+    public void borrarTabla() {
+        db.execSQL("DROP TABLE IF EXISTS "+Constantes.TABLA_CENSO_TECNICO);
+    }
+
+    @Override
+    public boolean agregarDatos(Object o) {
+        if(o instanceof Censo) {
+            censo = (Censo) o;
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("id_municipio",censo.getElemento().getBarrio().getId());
+            contentValues.put("id_barrio",censo.getElemento().getBarrio().getIdBarrio());
+            contentValues.put("id_tipologia",censo.getElemento().getTipologia().getIdTipologia());
+            contentValues.put("id_mobiliario",censo.getElemento().getMobiliario().getIdMobiliario());
+            contentValues.put("id_referencia",censo.getElemento().getReferenciaMobiliario().getIdReferenciaMobiliario());
+            contentValues.put("id_estado_mobiliario",0);
+            contentValues.put("longitud",censo.getLatitud());
+            contentValues.put("latitud",censo.getLongitud());
+            contentValues.put("direccion",censo.getElemento().getDireccion());
+            contentValues.put("fch_registro",censo.getFchRegistro());
+            contentValues.put("observacion",censo.getObservacion());
+            contentValues.put("id_censo",censo.getId_censo());
+            contentValues.put("id_elemento",censo.getElemento().getId());
+            contentValues.put("mobiliario_no",censo.getElemento().getElemento_no());
+            contentValues.put("numero_mobiliario_visible",censo.getChkSwLuminariaVisible());
+            contentValues.put("mobiliario_en_sitio",censo.getChkSwPoseeLuminaria());
+            contentValues.put("id_sentido",0);
+            contentValues.put("cantidad",1);
+            contentValues.put("estado","P");
+            contentValues.put("id_tipo_poste",censo.getNormaConstruccionPoste().getTipoPoste().getId());
+            contentValues.put("id_norma_construccion_poste",censo.getNormaConstruccionPoste().getId());
+            contentValues.put("id_tipo_red",censo.getTipoRed().getId());
+            contentValues.put("poste_no",censo.getPosteNo());
+            contentValues.put("interdistancia",censo.getInterdistancia());
+            contentValues.put("puesta_a_tierra",censo.getChkSwPuestaTierra());
+            contentValues.put("poste_exclusivo_ap",censo.getChkSwPosteExclusivoAp());
+            contentValues.put("id_tipo_retenida",censo.getRetenidaPoste().getId());
+            contentValues.put("id_clase_via",censo.getClaseVia().getId());
+            contentValues.put("serial_medidor",0);
+            contentValues.put("lectura_medidor",0);
+            contentValues.put("potencia_transformador",censo.getPotenciaTransformador());
+            contentValues.put("placa_mt_transformador",censo.getPlacaMtTransformador());
+            contentValues.put("placa_ct_transformador",censo.getPlacaCtTransformador());
+
+            try {
+                db.insertWithOnConflict(Constantes.TABLA_CENSO_TECNICO, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
+            }catch (SQLiteException e){
+                Log.d("ErrorI",""+e.getMessage());
+                return false;
+            }finally {
+                //db.close();
+            }
+            return true;
+        }
+        else
+            return false;
+    }
+
+    @Override
+    public void eliminarDatos() {
+
+    }
+
+    @Override
+    public Cursor consultarTodo() {
+        return null;
+    }
+
+    @Override
+    public void actualizarDatos(Object E) {
+
+    }
+}

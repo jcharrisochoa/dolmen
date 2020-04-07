@@ -22,6 +22,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.MediaScannerConnection;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -34,6 +36,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -48,8 +51,14 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestHandle;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.ResponseHandlerInterface;
 
 import java.io.File;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,14 +68,26 @@ import java.util.Locale;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import co.dolmen.sid.entidad.Barrio;
+import co.dolmen.sid.entidad.Censo;
+import co.dolmen.sid.entidad.ClaseVia;
 import co.dolmen.sid.entidad.ComponenteNormaConstruccionRed;
+import co.dolmen.sid.entidad.Contrato;
+import co.dolmen.sid.entidad.Elemento;
 import co.dolmen.sid.entidad.Mobiliario;
+import co.dolmen.sid.entidad.NormaConstruccionPoste;
 import co.dolmen.sid.entidad.NormaConstruccionRed;
+import co.dolmen.sid.entidad.ProcesoSgc;
 import co.dolmen.sid.entidad.ReferenciaMobiliario;
+import co.dolmen.sid.entidad.RetenidaPoste;
 import co.dolmen.sid.entidad.TipoEstructura;
+import co.dolmen.sid.entidad.TipoPoste;
 import co.dolmen.sid.entidad.TipoRed;
 import co.dolmen.sid.entidad.TipoTension;
+import co.dolmen.sid.entidad.Tipologia;
 import co.dolmen.sid.modelo.BarrioDB;
+import co.dolmen.sid.modelo.CensoAsignadoDB;
+import co.dolmen.sid.modelo.CensoDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
 import co.dolmen.sid.modelo.ElementoDB;
 import co.dolmen.sid.modelo.MobiliarioDB;
@@ -81,6 +102,8 @@ import co.dolmen.sid.modelo.TipoRedDB;
 import co.dolmen.sid.modelo.TipoTensionDB;
 import co.dolmen.sid.modelo.TipologiaDB;
 import co.dolmen.sid.utilidades.DataSpinner;
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.HttpResponse;
 
 import static java.lang.Integer.parseInt;
 
@@ -92,6 +115,7 @@ public class CensoTecnico extends AppCompatActivity{
     String nombreMunicipio;
     AlertDialog.Builder alert;
     AlertDialog.Builder alertDireccion;
+    AlertDialog.Builder alertBuscarElemento;
     //--
     Spinner sltTipologia;
     Spinner sltMobiliario;
@@ -107,6 +131,7 @@ public class CensoTecnico extends AppCompatActivity{
     Spinner sltTipoTension;
     Spinner sltTipoEstructura;
     Spinner sltNormaConstruccionRed;
+    Spinner sltCensoAsignado;
     //--
     EditText txtElementoNo;
     EditText txtLatitud;
@@ -120,10 +145,14 @@ public class CensoTecnico extends AppCompatActivity{
     EditText txtPotenciaTransformador;
     EditText txtMtTransformador;
     EditText txtCtTransformador;
+    EditText txtPosteNo;
+    EditText txtObservacion;
 
     //--
     Switch swLuminariaVisible;
     Switch swPoseeLuminaria;
+    Switch swPuestaTierra;
+    Switch swPosteExclusivoAp;
     //--
     Button btnGuardar;
     Button btnCancelar;
@@ -155,6 +184,7 @@ public class CensoTecnico extends AppCompatActivity{
     ArrayList<DataSpinner> tipoTensionList;
     ArrayList<DataSpinner> tipoEstructuraList;
     ArrayList<DataSpinner> normaConstruccionRedList;
+    ArrayList<DataSpinner> censoAsignadoList;
     ComponenteNormaConstruccionRed componenteNormaConstruccionRed;
     //--
     ImageView imgFoto1;
@@ -173,12 +203,19 @@ public class CensoTecnico extends AppCompatActivity{
     private int idDefaultContrato;
     private int idMobiliarioBusqueda;
     private int idReferenciaBusqueda;
+    private int idCenso;
     private String encodeString;
     private String path;
     private ArrayList<ComponenteNormaConstruccionRed> tipoArmadoList;
 
     private double latitud;
     private double longitud;
+    Elemento elemento;
+
+    String chkSwLuminariaVisible = "S";
+    String chkSwPoseeLuminaria = "S";
+    String chkSwPuestaTierra = "N";
+    String chkSwPosteExclusivoAp = "N";
 
     //private final String CARPETA_RAIZ="ImagenesCenso/";
     //private final String RUTA_IMAGEN= CARPETA_RAIZ+"Img";
@@ -219,11 +256,12 @@ public class CensoTecnico extends AppCompatActivity{
         tipoArmadoList = new ArrayList<ComponenteNormaConstruccionRed>();
         //--
         config = getSharedPreferences("config", MODE_PRIVATE);
-        idUsuario = config.getInt("id_usuario", 0);
-        idDefaultMunicipio = config.getInt("id_municipio", 0);
-        idDefaultProceso = config.getInt("id_proceso", 0);
-        idDefaultContrato = config.getInt("id_contrato", 0);
-        nombreMunicipio = config.getString("nombreMunicipio", "");
+        idUsuario           = config.getInt("id_usuario", 0);
+        idDefaultProceso    = config.getInt("id_proceso", 0);
+        idDefaultContrato   = config.getInt("id_contrato", 0);
+        idDefaultMunicipio  = config.getInt("id_municipio", 0);
+        nombreMunicipio     = config.getString("nombreMunicipio", "");
+        idCenso             = config.getInt("id_censo",0);
         //--
         setTitle(getText(R.string.titulo_censo_tecnico) + " (" + nombreMunicipio + ")");
         //--
@@ -241,6 +279,7 @@ public class CensoTecnico extends AppCompatActivity{
         sltTipoTension              = findViewById(R.id.slt_tipo_tension);
         sltTipoEstructura           = findViewById(R.id.slt_tipo_estructura);
         sltNormaConstruccionRed     = findViewById(R.id.slt_norma_construccion_red);
+        sltCensoAsignado            = findViewById(R.id.slt_censo_asignado);
         //--
         txtElementoNo               = findViewById(R.id.txt_elemento_no);
         txtLatitud                  = findViewById(R.id.txt_latitud);
@@ -251,9 +290,13 @@ public class CensoTecnico extends AppCompatActivity{
         txtPotenciaTransformador    = findViewById(R.id.txt_potencia_transformador);
         txtMtTransformador          = findViewById(R.id.txt_mt_transformador);
         txtCtTransformador          = findViewById(R.id.txt_ct_transformador);
+        txtPosteNo                  = findViewById(R.id.txt_poste_no);
+        txtObservacion              = findViewById(R.id.txt_observacion);
         //--
         swLuminariaVisible          = findViewById(R.id.sw_numero_luminaria_visible);
         swPoseeLuminaria            = findViewById(R.id.sw_tiene_luminaria);
+        swPosteExclusivoAp          = findViewById(R.id.sw_poste_exclulsivo_alumbrado_publico);
+        swPuestaTierra              = findViewById(R.id.sw_puesta_tierra);
         //--
         btnCapturarGPS              = findViewById(R.id.btn_capturar_gps);
         btnGuardar                  = findViewById(R.id.btn_guardar);
@@ -281,6 +324,30 @@ public class CensoTecnico extends AppCompatActivity{
         txtLatitud.setEnabled(false);
         txtLongitud.setEnabled(false);
 
+        swLuminariaVisible.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                chkSwLuminariaVisible = (isChecked)?"S":"N";
+            }
+        });
+        swPoseeLuminaria.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                chkSwPoseeLuminaria = (isChecked)?"S":"N";
+            }
+        });
+        swPuestaTierra.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                chkSwPuestaTierra = (isChecked)?"S":"N";
+            }
+        });
+        swPosteExclusivoAp.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                chkSwPosteExclusivoAp = (isChecked)?"S":"N";
+            }
+        });
         //swLuminariaVisible.setEnabled(false);
         //swPoseeLuminaria.setEnabled(false);
 
@@ -294,7 +361,25 @@ public class CensoTecnico extends AppCompatActivity{
             @Override
             public void onClick(View view) {
                 if(validarFormulario()){
-                    Log.d("Guardar","Validar Conexion, y guardar ");
+                    ConnectivityManager conn = (ConnectivityManager) getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
+                    NetworkInfo networkInfo = conn.getActiveNetworkInfo();
+
+                    if(networkInfo != null && networkInfo.isConnected()) {
+                        Toast.makeText(getApplicationContext(),"Conectando con "+networkInfo.getTypeName()+" / "+networkInfo.getExtraInfo(),Toast.LENGTH_LONG).show();
+                        guardarFormulario('R',database);
+                    }
+                    else{
+                        alert.setTitle(R.string.titulo_alerta);
+                        alert.setMessage(R.string.alert_conexion);
+                        alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                                guardarFormulario('L',database);
+                            }
+                        });
+                        alert.create().show();
+                    }
                 }
                 else{
                     alert.setTitle(R.string.titulo_alerta);
@@ -481,6 +566,7 @@ public class CensoTecnico extends AppCompatActivity{
         cargarTipoRed(database);
         cargarTension(database);
         cargarRetenidaPoste(database);
+        cargarCensoAsignado(database);
 
     }
 
@@ -964,6 +1050,32 @@ public class CensoTecnico extends AppCompatActivity{
         sltNormaConstruccionRed.setAdapter(dataAdapter);
     }
     //--
+    private void cargarCensoAsignado(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        censoAsignadoList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        CensoAsignadoDB censoAsignadoDB = new CensoAsignadoDB(sqLiteDatabase);
+        Cursor cursor = censoAsignadoDB.consultarTodo(idDefaultMunicipio,idDefaultProceso);
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        censoAsignadoList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), String.valueOf(cursor.getInt(0)));
+                    censoAsignadoList.add(dataSpinner);
+                    labels.add(cursor.getString(0).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltCensoAsignado.setAdapter(dataAdapter);
+    }
+    //--
     private void buscarElemento(SQLiteDatabase sqLiteDatabase){
         if(txtBuscarElemento.getText().toString().trim().length() == 0){
             alert.setTitle(R.string.titulo_alerta);
@@ -977,39 +1089,40 @@ public class CensoTecnico extends AppCompatActivity{
             alert.create().show();
         }
         else{
+
+
+            alertBuscarElemento = new AlertDialog.Builder(this);
             ElementoDB elementoDB = new ElementoDB(sqLiteDatabase);
             Cursor cursor = elementoDB.consultarElemento(idDefaultMunicipio,idDefaultProceso,parseInt(txtBuscarElemento.getText().toString()));
             if(cursor.getCount() == 0) {
-                alert.setTitle(R.string.titulo_alerta);
-                alert.setMessage(getText(R.string.alert_elemento_no_encontrado)+" sobre el Elemento: "+txtBuscarElemento.getText()+". ¿Desea registrar el Elemento?" );
-                alert.setPositiveButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                alertBuscarElemento.setTitle(R.string.titulo_alerta);
+                alertBuscarElemento.setMessage(getText(R.string.alert_elemento_no_encontrado)+" sobre el Elemento: "+txtBuscarElemento.getText()+". ¿Desea registrar el Elemento?" );
+                alertBuscarElemento.setPositiveButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         txtElementoNo.setText(txtBuscarElemento.getText());
-                        txtElementoNo.setEnabled(true);
+                        elemento = new Elemento();
+                        elemento.setId(0);
+                        elemento.setElemento_no(txtBuscarElemento.getText().toString());
+                        resetFrm(true);
                     }
                 });
-                alert.setNegativeButton(R.string.btn_cancelar, new DialogInterface.OnClickListener() {
+                alertBuscarElemento.setNegativeButton(R.string.btn_cancelar, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        txtElementoNo.setText("");
-                        txtElementoNo.setEnabled(true);
+                        resetFrm(false);
                     }
                 });
-
-                ///---Posible funcion reset
-                alert.create().show();
-                sltTipologia.setSelection(0);
-                sltBarrio.setSelection(0);
-                txtElementoNo.setText("");
-                txtDireccion.setText("");
-                idMobiliarioBusqueda = 0;
-                idReferenciaBusqueda = 0;
+                alertBuscarElemento.create().show();
 
             }
             else {
 
                 cursor.moveToFirst();
+
+                elemento = new Elemento();
+                elemento.setId(Integer.parseInt(cursor.getString(cursor.getColumnIndex("_id"))));
+                elemento.setElemento_no(cursor.getString(cursor.getColumnIndex("elemento_no")));
 
                 txtElementoNo.setEnabled(false);
                 txtElementoNo.setText(cursor.getString(cursor.getColumnIndex("elemento_no")));
@@ -1094,68 +1207,59 @@ public class CensoTecnico extends AppCompatActivity{
         alertDireccion.create().setCancelable(false);
         alertDireccion.create().show();
     }
+
     //--Validar Formulario para enviar--
     private boolean validarFormulario(){
         boolean swTmp = true;
-        if(txtElementoNo.getText().toString().isEmpty()){
-            alert.setMessage(R.string.alert_censo_tecnico_elemento_no);
+        if(censoAsignadoList.get(sltCensoAsignado.getSelectedItemPosition()).getId()==0){
+            alert.setMessage(R.string.alert_censo_asignado);
             return false;
         }
-        else{
-            if(tipologiaList.get(sltTipologia.getSelectedItemPosition()).getId()==0){
-                alert.setMessage(R.string.alert_censo_tipologia);
+        else {
+            if (txtElementoNo.getText().toString().isEmpty()) {
+                alert.setMessage(R.string.alert_censo_tecnico_elemento_no);
                 return false;
-            }
-            else{
-                if(mobiliarioList.get(sltMobiliario.getSelectedItemPosition()).getIdMobiliario() == 0){
-                    alert.setMessage(R.string.alert_censo_mobiliario);
+            } else {
+                if (tipologiaList.get(sltTipologia.getSelectedItemPosition()).getId() == 0) {
+                    alert.setMessage(R.string.alert_censo_tipologia);
                     return false;
-                }
-                else{
-                    if(referenciaMobiliarioList.get(sltReferencia.getSelectedItemPosition()).getIdReferenciaMobiliario() == 0){
+                } else {
+                    if (mobiliarioList.get(sltMobiliario.getSelectedItemPosition()).getIdMobiliario() == 0) {
                         alert.setMessage(R.string.alert_censo_mobiliario);
                         return false;
-                    }
-                    else{
-                        if(barrioList.get(sltBarrio.getSelectedItemPosition()).getId() == 0){
-                            alert.setMessage(R.string.alert_censo_referencia);
+                    } else {
+                        if (referenciaMobiliarioList.get(sltReferencia.getSelectedItemPosition()).getIdReferenciaMobiliario() == 0) {
+                            alert.setMessage(R.string.alert_censo_mobiliario);
                             return false;
-                        }
-                        else{
-                            if(txtDireccion.getText().toString().isEmpty()){
-                                alert.setMessage(R.string.alert_censo_direccion);
+                        } else {
+                            if (barrioList.get(sltBarrio.getSelectedItemPosition()).getId() == 0) {
+                                alert.setMessage(R.string.alert_censo_referencia);
                                 return false;
-                            }
-                            else{
-                                if(claseViaList.get(sltClaseVia.getSelectedItemPosition()).getId() == 0){
-                                    alert.setMessage(R.string.alert_censo_clase_via);
+                            } else {
+                                if (txtDireccion.getText().toString().isEmpty()) {
+                                    alert.setMessage(R.string.alert_censo_direccion);
                                     return false;
-                                }
-                                else{
-                                    if(tipoPosteList.get(sltTipoPoste.getSelectedItemPosition()).getId() == 0){
-                                        alert.setMessage(R.string.alert_censo_tipo_poste);
+                                } else {
+                                    if (claseViaList.get(sltClaseVia.getSelectedItemPosition()).getId() == 0) {
+                                        alert.setMessage(R.string.alert_censo_clase_via);
                                         return false;
-                                    }
-                                    else{
-                                        if(normaConstruccionPosteList.get(sltNormaConstruccionPoste.getSelectedItemPosition()).getId()==0){
-                                            alert.setMessage(R.string.alert_censo_norma_tipo_poste);
+                                    } else {
+                                        if (tipoPosteList.get(sltTipoPoste.getSelectedItemPosition()).getId() == 0) {
+                                            alert.setMessage(R.string.alert_censo_tipo_poste);
                                             return false;
-                                        }
-                                        else{
-                                            if(txtInterdistancia.getText().toString().isEmpty()){
+                                        } else {
+                                            if (txtInterdistancia.getText().toString().isEmpty()) {
                                                 alert.setMessage(R.string.alert_censo_interdistancia);
                                                 return false;
-                                            }
-                                            else{
+                                            } else {
                                                 //return true;
-                                                if(!txtPotenciaTransformador.getText().toString().isEmpty()){
-                                                    if(txtMtTransformador.getText().toString().isEmpty()){
+                                                if (!txtPotenciaTransformador.getText().toString().isEmpty()) {
+                                                    if (txtMtTransformador.getText().toString().isEmpty()) {
                                                         alert.setMessage(R.string.alert_censo_mt_transformador);
                                                         swTmp = false;
                                                         return false;
-                                                    }
-                                                    else{
-                                                        if(txtCtTransformador.getText().toString().isEmpty()){
+                                                    } else {
+                                                        if (txtCtTransformador.getText().toString().isEmpty()) {
                                                             alert.setMessage(R.string.alert_censo_ct_transformador);
                                                             swTmp = false;
                                                             return false;
@@ -1163,28 +1267,24 @@ public class CensoTecnico extends AppCompatActivity{
                                                     }
                                                 }
 
-                                                if(swTmp){
+                                                if (swTmp) {
                                                     if (tipoArmadoList.size() == 0) {
                                                         alert.setMessage(R.string.alert_censo_tipo_armado_red);
                                                         return false;
-                                                    }
-                                                    else{
-                                                        if(imgFoto1.getDrawable().getConstantState().equals(getResources().getDrawable(R.drawable.imagen_no_disponible).getConstantState())){
+                                                    } else {
+                                                        if (imgFoto1.getDrawable().getConstantState().equals(getResources().getDrawable(R.drawable.imagen_no_disponible).getConstantState())) {
                                                             alert.setMessage(R.string.alert_censo_foto_1);
                                                             return false;
-                                                        }
-                                                        else{
-                                                            if(imgFoto2.getDrawable().getConstantState().equals(getResources().getDrawable(R.drawable.imagen_no_disponible).getConstantState())){
+                                                        } else {
+                                                            if (imgFoto2.getDrawable().getConstantState().equals(getResources().getDrawable(R.drawable.imagen_no_disponible).getConstantState())) {
                                                                 alert.setMessage(R.string.alert_censo_foto_2);
                                                                 return false;
-                                                            }
-                                                            else{
+                                                            } else {
                                                                 return true;
                                                             }
                                                         }
                                                     }
-                                                }
-                                                else
+                                                } else
                                                     return false;
 
                                             }
@@ -1197,6 +1297,244 @@ public class CensoTecnico extends AppCompatActivity{
                 }
             }
         }
+    }
+    //--
+    private void resetFrm(boolean enabled){
+        idMobiliarioBusqueda = 0;
+        idReferenciaBusqueda = 0;
+
+        txtElementoNo.setEnabled(enabled);
+
+        if(!enabled)
+            txtElementoNo.setText("");
+
+        sltTipologia.setSelection(0);
+        sltBarrio.setSelection(0);
+        sltClaseVia.setSelection(0);
+        sltTipoPoste.setSelection(0);
+        sltTipoRetenida.setSelection(0);
+        sltTipoRed.setSelection(0);
+        sltTipoTension.setSelection(0);
+
+        txtDireccion.setText("");
+        txtLatitud.setText("");
+        txtLongitud.setText("");
+        txtInterdistancia.setText("");
+        txtPotenciaTransformador.setText("");
+        txtMtTransformador.setText("");
+        txtCtTransformador.setText("");
+        txtPosteNo.setText("");
+        txtObservacion.setText("");
+
+        swLuminariaVisible.setChecked(true);
+        swPoseeLuminaria.setChecked(true);
+        swPosteExclusivoAp.setChecked(false);
+        swPuestaTierra.setChecked(false);
+
+        borrarItemTablaArmado(0);
+        borrarItemTablaArmado(1);
+        borrarItemTablaArmado(2);
+
+        imgFoto1.setImageResource(R.drawable.imagen_no_disponible);
+        imgFoto2.setImageResource(R.drawable.imagen_no_disponible);
+        txtBuscarElemento.setFocusable(true);
+    }
+    //--
+    private void guardarFormulario(char tipoAlmacenamiento,SQLiteDatabase sqLiteDatabase){
+        switch (tipoAlmacenamiento){
+            case 'L':
+                almacenarDatosLocal(sqLiteDatabase);
+                break;
+            case 'R':
+                almacenarDatosEnRemoto(sqLiteDatabase);
+                break;
+        }
+    }
+    //--
+    private void almacenarDatosLocal(SQLiteDatabase sqLiteDatabase){
+        Barrio barrio = new Barrio();
+        barrio.setIdBarrio(barrioList.get(sltBarrio.getSelectedItemPosition()).getId());
+        barrio.setNombreBarrio(barrioList.get(sltBarrio.getSelectedItemPosition()).getDescripcion());
+
+        //--Datos del Municipio
+        barrio.setId(idDefaultMunicipio);
+        barrio.setDescripcion(nombreMunicipio);
+
+        Tipologia tipologia = new ReferenciaMobiliario();
+        tipologia.setIdTipologia(tipologiaList.get(sltTipologia.getSelectedItemPosition()).getId());
+        tipologia.setDescripcionTipologia(tipologiaList.get(sltTipologia.getSelectedItemPosition()).getDescripcion());
+        //--Datos del Proceso
+        tipologia.setId(idDefaultProceso);
+
+        Mobiliario mobiliario = new ReferenciaMobiliario();
+        mobiliario.setIdMobiliario(mobiliarioList.get(sltMobiliario.getSelectedItemPosition()).getIdMobiliario());
+        mobiliario.setDescripcionMobiliario(mobiliarioList.get(sltMobiliario.getSelectedItemPosition()).getDescripcionMobiliario());
+
+        ReferenciaMobiliario referenciaMobiliario = new ReferenciaMobiliario();
+        referenciaMobiliario.setIdReferenciaMobiliario(referenciaMobiliarioList.get(sltReferencia.getSelectedItemPosition()).getIdReferenciaMobiliario());
+        referenciaMobiliario.setDescripcionReferenciaMobiliario(referenciaMobiliarioList.get(sltReferencia.getSelectedItemPosition()).getDescripcionReferenciaMobiliario());
+
+        Contrato contrato = new Contrato();
+        contrato.setId(idDefaultContrato);
+
+        elemento.setDireccion(txtDireccion.getText().toString());
+        elemento.setBarrio(barrio);
+        elemento.setTipologia(tipologia);
+        elemento.setMobiliario(mobiliario);
+        elemento.setReferenciaMobiliario(referenciaMobiliario);
+        elemento.setContrato(contrato);
+
+
+        TipoPoste tipoPoste = new TipoPoste();
+        tipoPoste.setId(tipoPosteList.get(sltTipoPoste.getSelectedItemPosition()).getId());
+        tipoPoste.setDescripcion(tipoPosteList.get(sltTipoPoste.getSelectedItemPosition()).getDescripcion());
+
+        NormaConstruccionPoste normaConstruccionPoste = new NormaConstruccionPoste();
+        normaConstruccionPoste.setId(normaConstruccionPosteList.get(sltNormaConstruccionPoste.getSelectedItemPosition()).getId());
+        normaConstruccionPoste.setDescripcion(normaConstruccionPosteList.get(sltNormaConstruccionPoste.getSelectedItemPosition()).getDescripcion());
+        normaConstruccionPoste.setTipoPoste(tipoPoste);
+
+        RetenidaPoste retenidaPoste = new RetenidaPoste();
+        retenidaPoste.setId(tipoRetenidaList.get(sltTipoRetenida.getSelectedItemPosition()).getId());
+        retenidaPoste.setDescripcion(tipoRetenidaList.get(sltTipoRetenida.getSelectedItemPosition()).getDescripcion());
+
+        ClaseVia claseVia = new ClaseVia();
+        claseVia.setId(claseViaList.get(sltClaseVia.getSelectedItemPosition()).getId());
+        claseVia.setAbreviatura(claseViaList.get(sltClaseVia.getSelectedItemPosition()).getDescripcion());
+
+        TipoRed tipoRed = new TipoRed();
+        tipoRed.setId(tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId());
+        tipoRed.setDescripcion(tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getDescripcion());
+
+        Censo censo = new Censo();
+        censo.setId_censo(censoAsignadoList.get(sltCensoAsignado.getSelectedItemPosition()).getId());
+        censo.setElemento(elemento);
+        censo.setClaseVia(claseVia);
+        censo.setTipoRed(tipoRed);
+        //Poste
+        censo.setRetenidaPoste(retenidaPoste);
+        censo.setInterdistancia(Integer.parseInt(txtInterdistancia.getText().toString()));
+        censo.setPosteNo(txtPosteNo.getText().toString());
+        censo.setNormaConstruccionPoste(normaConstruccionPoste);
+        //Transformador
+        Double potencia = (txtPotenciaTransformador.getText().toString().isEmpty())?0.0:Double.parseDouble(txtPotenciaTransformador.getText().toString());
+        //--
+        censo.setPotenciaTransformador(potencia);
+        censo.setPlacaCtTransformador(txtCtTransformador.getText().toString());
+        censo.setPlacaMtTransformador(txtMtTransformador.getText().toString());
+        //--
+
+        String fechaHora = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.getDefault()).format(new Date());
+        censo.setFchRegistro(fechaHora);
+
+        Float latitud = (txtLatitud.getText().toString().isEmpty())?0:Float.parseFloat(txtLatitud.getText().toString());
+        Float longitud = (txtLongitud.getText().toString().isEmpty())?0:Float.parseFloat(txtLongitud.getText().toString());
+        censo.setLatitud(latitud);
+        censo.setLongitud(longitud);
+        censo.setChkSwLuminariaVisible(chkSwLuminariaVisible);
+        censo.setChkSwPoseeLuminaria(chkSwPoseeLuminaria);
+        censo.setChkSwPuestaTierra(chkSwPuestaTierra);
+        censo.setChkSwPosteExclusivoAp(chkSwPosteExclusivoAp);
+        censo.setObservacion(txtObservacion.getText().toString());
+
+        CensoDB censoDB = new CensoDB(sqLiteDatabase);
+        if(censoDB.agregarDatos(censo)){
+            resetFrm(false);
+            alert.setTitle(R.string.titulo_alerta);
+            alert.setMessage(R.string.alert_almacenamiento_local);
+            alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                }
+            });
+            alert.create().show();
+        }
+        else{
+            alert.setTitle(R.string.titulo_alerta);
+            alert.setMessage(R.string.alert_error_almacenando_datos);
+            alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                }
+            });
+            alert.create().show();
+        }
+    }
+    //--
+    private void almacenarDatosEnRemoto(SQLiteDatabase sqLiteDatabase){
+        final AsyncHttpClient client = new AsyncHttpClient();
+        RequestParams requestParams = new RequestParams();
+
+        requestParams.put("id_usuario",idUsuario);
+       /* requestParams.put("id_municipio",idMunicipio);
+        requestParams.put("id_contrato",idContrato);
+        requestParams.put("id_proceso",idProceso);
+        requestParams.put("id_acta",actaList.get(sltActaContrato.getSelectedItemPosition()).getId());
+        requestParams.put("id_barrio",barrioList.get(sltBarrio.getSelectedItemPosition()).getId());
+        requestParams.put("id_tipo_via",tipoViaList.get(sltCruce.getSelectedItemPosition()).getId());
+        requestParams.put("cruce_no",txtCruceno.getText());
+        requestParams.put("placa_a",txtPlaca_a_no.getText());
+        requestParams.put("placa_b",txtPlaca_b_no.getText());
+        requestParams.put("latitud",txtLatitud.getText());
+        requestParams.put("longitud",txtLongitud.getText());
+        requestParams.put("id_tipologia",tipologiaList.get(sltTipologia.getSelectedItemPosition()).getId());
+        requestParams.put("id_mobiliario",mobiliarioList.get(sltMobiliario.getSelectedItemPosition()).getId());
+        requestParams.put("id_referencia",referenciaList.get(sltReferencia.getSelectedItemPosition()).getId());
+        requestParams.put("id_sentido",sentidoList.get(sltSentido.getSelectedItemPosition()).getId());
+        requestParams.put("tercero",tercero);
+        requestParams.put("id_proveedor",proveedorList.get(sltProveedor.getSelectedItemPosition()).getId());
+        requestParams.put("cantidad",txtCantidad.getText());
+        requestParams.put("id_unidad",unidadList.get(sltUnidad.getSelectedItemPosition()).getId());
+        requestParams.put("id_tipo_poste",tipoPosteList.get(sltTipoPoste.getSelectedItemPosition()).getId());
+        requestParams.put("poste_no",txtPosteno.getText());
+        requestParams.put("id_tipo_red",tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId());
+        requestParams.put("transformador",txtTransformador.getText());
+        requestParams.put("potencia_transformador",txtPotenciaTransformador.getText());
+        requestParams.put("serial_medidor",txtSerialMedidor.getText());
+        requestParams.put("lectura_medidor",txtLecturaMedidor.getText());
+        requestParams.put("id_clase_via",claseViaList.get(sltClaseVia.getSelectedItemPosition()).getId());
+        requestParams.put("id_tipo_via",tipoViaList.get(sltCruce.getSelectedItemPosition()).getId());
+        requestParams.put("id_estado",estadoMobiliarioList.get(sltEstadoMobiliario.getSelectedItemPosition()).getId());
+        requestParams.put("observacion",txtObservacion.getText());
+        requestParams.put("conexion_electrica",conexionElectrica);
+        requestParams.put("encode_string",encodeString);*/
+        client.setTimeout(Constantes.TIMEOUT);
+
+        Log.d("params:",ServicioWeb.urlGuardarCensoTecnico+"?"+requestParams);
+        RequestHandle post = client.post(ServicioWeb.urlGuardarCensoTecnico, requestParams, new AsyncHttpResponseHandler() {
+            @Override
+            public void onProgress(long bytesWritten, long totalSize) {
+                super.onProgress(bytesWritten, totalSize);
+            }
+
+            @Override
+            public void onStart() {
+                super.onStart();
+            }
+
+            @Override
+            public void onFinish() {
+                super.onFinish();
+            }
+
+            @Override
+            public void onPreProcessResponse(ResponseHandlerInterface instance, HttpResponse response) {
+                super.onPreProcessResponse(instance, response);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+
+            }
+        });
+
     }
     //--Administrar Cámara--
     public void cargarImagen() {
@@ -1303,7 +1641,4 @@ public class CensoTecnico extends AppCompatActivity{
             }
         }
     }
-
-
-
 }
