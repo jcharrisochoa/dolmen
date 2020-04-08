@@ -73,6 +73,7 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
 
     @Override
     public boolean agregarDatos(Object o) {
+        long lastId;
         if(o instanceof Censo) {
             censo = (Censo) o;
             ContentValues contentValues = new ContentValues();
@@ -111,7 +112,8 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
             contentValues.put("placa_ct_transformador",censo.getPlacaCtTransformador());
 
             try {
-                db.insertWithOnConflict(Constantes.TABLA_CENSO_TECNICO, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
+                lastId = db.insertWithOnConflict(Constantes.TABLA_CENSO_TECNICO, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
+                censo.setLastId(lastId);
             }catch (SQLiteException e){
                 Log.d("ErrorI",""+e.getMessage());
                 return false;

@@ -30,6 +30,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Layout;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,7 +58,10 @@ import com.loopj.android.http.RequestHandle;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.ResponseHandlerInterface;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -70,6 +74,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import co.dolmen.sid.entidad.Barrio;
 import co.dolmen.sid.entidad.Censo;
+import co.dolmen.sid.entidad.CensoArchivo;
+import co.dolmen.sid.entidad.CensoTipoArmado;
 import co.dolmen.sid.entidad.ClaseVia;
 import co.dolmen.sid.entidad.ComponenteNormaConstruccionRed;
 import co.dolmen.sid.entidad.Contrato;
@@ -86,8 +92,10 @@ import co.dolmen.sid.entidad.TipoRed;
 import co.dolmen.sid.entidad.TipoTension;
 import co.dolmen.sid.entidad.Tipologia;
 import co.dolmen.sid.modelo.BarrioDB;
+import co.dolmen.sid.modelo.CensoArchivoDB;
 import co.dolmen.sid.modelo.CensoAsignadoDB;
 import co.dolmen.sid.modelo.CensoDB;
+import co.dolmen.sid.modelo.CensoTipoArmadoDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
 import co.dolmen.sid.modelo.ElementoDB;
 import co.dolmen.sid.modelo.MobiliarioDB;
@@ -204,7 +212,8 @@ public class CensoTecnico extends AppCompatActivity{
     private int idMobiliarioBusqueda;
     private int idReferenciaBusqueda;
     private int idCenso;
-    private String encodeString;
+    private String encodeStringFoto_1;
+    private String encodeStringFoto_2;
     private String path;
     private ArrayList<ComponenteNormaConstruccionRed> tipoArmadoList;
 
@@ -396,6 +405,7 @@ public class CensoTecnico extends AppCompatActivity{
         btnCancelar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                database.close();
                 Intent i = new Intent(CensoTecnico.this, Menu.class);
                 startActivity(i);
                 CensoTecnico.this.finish();
@@ -573,35 +583,65 @@ public class CensoTecnico extends AppCompatActivity{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = 8;
+        Bitmap bitmap;
+        ByteArrayOutputStream stream;
+        byte[] array;
 
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case Constantes.CONS_SELECCIONAR_IMAGEN:
+                    String encode = "";
                     Uri selectionPath = data.getData();
+                    //Log.d("Path",""+selectionPath.getPath());
+
+                    try {
+                        InputStream s = getContentResolver().openInputStream(selectionPath);
+                        bitmap = BitmapFactory.decodeStream(s,null,options);
+                        stream = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                        array = stream.toByteArray();
+                        encode = Base64.encodeToString(array,0);
+                        //Log.d("Path",""+encode);
+                    } catch (Exception e){
+                        Toast.makeText(getApplicationContext(),e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
                     if (accionarFoto1) {
                         imgFoto1.setImageURI(selectionPath);
+                        encodeStringFoto_1 = encode;
                         accionarFoto1 = false;
                     }
                     if (accionarFoto2) {
                         imgFoto2.setImageURI(selectionPath);
+                        encodeStringFoto_2 = encode;
                         accionarFoto2 = false;
                     }
                     break;
                 case Constantes.CONS_TOMAR_FOTO:
+
                     MediaScannerConnection.scanFile(this, new String[]{path}, null, new MediaScannerConnection.OnScanCompletedListener() {
                         @Override
                         public void onScanCompleted(String s, Uri uri) {
 
                         }
                     });
-                    Bitmap bitmap = BitmapFactory.decodeFile(path);
+                    bitmap = BitmapFactory.decodeFile(path, options);
+
+                    stream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG,100,stream);
+                    array = stream.toByteArray();
+
                     if (accionarFoto1) {
                         imgFoto1.setImageBitmap(bitmap);
+                        encodeStringFoto_1 = Base64.encodeToString(array,0);
                         accionarFoto1 = false;
                     }
 
                     if (accionarFoto2) {
                         imgFoto2.setImageBitmap(bitmap);
+                        encodeStringFoto_2 = Base64.encodeToString(array,0);
                         accionarFoto2 = false;
                     }
                     break;
@@ -1439,6 +1479,34 @@ public class CensoTecnico extends AppCompatActivity{
 
         CensoDB censoDB = new CensoDB(sqLiteDatabase);
         if(censoDB.agregarDatos(censo)){
+            //Log.d("LastId",""+censo.getLastId());
+
+            //--Guardar el Tipo de Armado;
+            for(int n=0;n<tipoArmadoList.size();n++){
+                TipoRed tipoRedArmado = new TipoRed();
+                tipoRedArmado.setId(tipoArmadoList.get(n).getTipoRed().getId());
+
+                NormaConstruccionRed normaConstruccionRedTipoArmado = new NormaConstruccionRed();
+                normaConstruccionRedTipoArmado.setId(tipoArmadoList.get(n).getNormaConstruccionRed().getId());
+
+                CensoTipoArmado censoTipoArmado = new CensoTipoArmado();
+                censoTipoArmado.setId_censo_tecnico(censo.getLastId());
+                censoTipoArmado.setTipoRed(tipoRedArmado);
+                censoTipoArmado.setNormaConstruccionRed(normaConstruccionRedTipoArmado);
+
+                CensoTipoArmadoDB censoTipoArmadoDB = new CensoTipoArmadoDB(sqLiteDatabase);
+                censoTipoArmadoDB.agregarDatos(censoTipoArmado);
+            }
+
+            //--Guardar Imagen
+            //CensoArchivo censoArchivo = new CensoArchivo();
+            CensoArchivoDB censoArchivoDB = new CensoArchivoDB(sqLiteDatabase);
+            censoArchivoDB.setId_censo_tecnico(censo.getLastId());
+            censoArchivoDB.setArchivo(encodeStringFoto_1);
+            censoArchivoDB.agregarDatos(censoArchivoDB);
+            censoArchivoDB.setArchivo(encodeStringFoto_2);
+            censoArchivoDB.agregarDatos(censoArchivoDB);
+
             resetFrm(false);
             alert.setTitle(R.string.titulo_alerta);
             alert.setMessage(R.string.alert_almacenamiento_local);
@@ -1563,7 +1631,7 @@ public class CensoTecnico extends AppCompatActivity{
                                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                                     PERMISSIONS_REQUEST_INTERNAL_STORAGE);
                         } else {
-                            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                             intent.setType("image/");
                             startActivityForResult(intent.createChooser(intent, "Seleccione la aplicacion"), Constantes.CONS_SELECCIONAR_IMAGEN);
                         }

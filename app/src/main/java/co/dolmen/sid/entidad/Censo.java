@@ -1,6 +1,7 @@
 package co.dolmen.sid.entidad;
 
 public class Censo {
+    private long lastId;
     private int id_censo;
     private int interdistancia;
 
@@ -252,5 +253,13 @@ public class Censo {
 
     public void setChkSwPosteExclusivoAp(String chkSwPosteExclusivoAp) {
         this.chkSwPosteExclusivoAp = chkSwPosteExclusivoAp;
+    }
+
+    public long getLastId() {
+        return lastId;
+    }
+
+    public void setLastId(long lastId) {
+        this.lastId = lastId;
     }
 }

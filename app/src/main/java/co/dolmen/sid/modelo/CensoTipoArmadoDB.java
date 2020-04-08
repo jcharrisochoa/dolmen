@@ -1,18 +1,23 @@
 package co.dolmen.sid.modelo;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+import android.util.Log;
 
 import co.dolmen.sid.Constantes;
+import co.dolmen.sid.entidad.CensoTipoArmado;
 import co.dolmen.sid.entidad.Elemento;
 
-public class CensoTipoArmadoDB implements DatabaseDLM,DatabaseDDL   {
+public class CensoTipoArmadoDB extends CensoTipoArmado implements DatabaseDLM,DatabaseDDL   {
     SQLiteDatabase db;
     String sql;
-    Elemento elemento;
+    CensoTipoArmado censoTipoArmado;
 
     public CensoTipoArmadoDB(SQLiteDatabase sqLiteDatabase){
         this.db = sqLiteDatabase;
+        this.censoTipoArmado = new CensoTipoArmado();
     }
 
     @Override
@@ -33,8 +38,23 @@ public class CensoTipoArmadoDB implements DatabaseDLM,DatabaseDDL   {
     }
 
     @Override
-    public boolean agregarDatos(Object E) {
-        return false;
+    public boolean agregarDatos(Object o) {
+        if(o instanceof CensoTipoArmado) {
+            censoTipoArmado = (CensoTipoArmado) o;
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("id_censo_tecnico", censoTipoArmado.getId_censo_tecnico());
+            contentValues.put("id_tipo_red", censoTipoArmado.getTipoRed().getId());
+            contentValues.put("id_norma_construccion_red", censoTipoArmado.getNormaConstruccionRed().getId());
+            try {
+                db.insertWithOnConflict(Constantes.TABLA_CENSO_TECNICO_TIPO_ARMADO, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
+            }catch (SQLiteException e){
+                Log.d("ErrorI",""+e.getMessage());
+                return false;
+            }
+            return true;
+        }
+        else
+            return false;
     }
 
     @Override

@@ -1,15 +1,19 @@
 package co.dolmen.sid.modelo;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+import android.util.Log;
 
 import co.dolmen.sid.Constantes;
+import co.dolmen.sid.entidad.CensoArchivo;
 import co.dolmen.sid.entidad.Elemento;
 
-public class CensoArchivoDB implements DatabaseDLM,DatabaseDDL   {
+public class CensoArchivoDB extends CensoArchivo implements DatabaseDLM,DatabaseDDL   {
     SQLiteDatabase db;
     String sql;
-    Elemento elemento;
+    CensoArchivo censoArchivo;
 
     public CensoArchivoDB(SQLiteDatabase sqLiteDatabase){
         this.db = sqLiteDatabase;
@@ -32,8 +36,22 @@ public class CensoArchivoDB implements DatabaseDLM,DatabaseDDL   {
     }
 
     @Override
-    public boolean agregarDatos(Object E) {
-        return false;
+    public boolean agregarDatos(Object o) {
+        if(o instanceof CensoArchivo) {
+            censoArchivo = (CensoArchivo) o;
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("id_censo_tecnico", censoArchivo.getId_censo_tecnico());
+            contentValues.put("archivo", censoArchivo.getArchivo());
+            try {
+                db.insertWithOnConflict(Constantes.TABLA_CENSO_TECNICO_ARCHIVO, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
+            }catch (SQLiteException e){
+                Log.d("ErrorI",""+e.getMessage());
+                return false;
+            }
+            return true;
+        }
+        else
+            return false;
     }
 
     @Override
