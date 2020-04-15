@@ -58,10 +58,15 @@ import com.loopj.android.http.RequestHandle;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.ResponseHandlerInterface;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -112,11 +117,15 @@ import co.dolmen.sid.modelo.TipologiaDB;
 import co.dolmen.sid.utilidades.DataSpinner;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.HttpResponse;
+import cz.msebera.android.httpclient.entity.StringEntity;
+import cz.msebera.android.httpclient.message.BasicHeader;
+import cz.msebera.android.httpclient.protocol.HTTP;
 
 import static java.lang.Integer.parseInt;
 
 public class CensoTecnico extends AppCompatActivity{
 
+    JSONObject json;
     SQLiteOpenHelper conn;
     SQLiteDatabase database;
     SharedPreferences config;
@@ -375,7 +384,13 @@ public class CensoTecnico extends AppCompatActivity{
 
                     if(networkInfo != null && networkInfo.isConnected()) {
                         Toast.makeText(getApplicationContext(),"Conectando con "+networkInfo.getTypeName()+" / "+networkInfo.getExtraInfo(),Toast.LENGTH_LONG).show();
-                        guardarFormulario('R',database);
+                        try {
+                            guardarFormulario('R',database);
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                     else{
                         alert.setTitle(R.string.titulo_alerta);
@@ -384,7 +399,13 @@ public class CensoTecnico extends AppCompatActivity{
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 dialogInterface.cancel();
-                                guardarFormulario('L',database);
+                                try {
+                                    guardarFormulario('L',database);
+                                } catch (UnsupportedEncodingException e) {
+                                    e.printStackTrace();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         });
                         alert.create().show();
@@ -1380,7 +1401,7 @@ public class CensoTecnico extends AppCompatActivity{
         txtBuscarElemento.setFocusable(true);
     }
     //--
-    private void guardarFormulario(char tipoAlmacenamiento,SQLiteDatabase sqLiteDatabase){
+    private void guardarFormulario(char tipoAlmacenamiento,SQLiteDatabase sqLiteDatabase) throws UnsupportedEncodingException, JSONException {
         switch (tipoAlmacenamiento){
             case 'L':
                 almacenarDatosLocal(sqLiteDatabase);
@@ -1531,78 +1552,77 @@ public class CensoTecnico extends AppCompatActivity{
         }
     }
     //--
-    private void almacenarDatosEnRemoto(SQLiteDatabase sqLiteDatabase){
+    private void almacenarDatosEnRemoto(SQLiteDatabase sqLiteDatabase) throws JSONException, UnsupportedEncodingException {
         final AsyncHttpClient client = new AsyncHttpClient();
-        RequestParams requestParams = new RequestParams();
+        //RequestParams requestParams = new RequestParams();
+        JSONObject jo = new JSONObject();
 
+        JSONObject requestParams = new JSONObject();
         requestParams.put("id_usuario",idUsuario);
-       /* requestParams.put("id_municipio",idMunicipio);
-        requestParams.put("id_contrato",idContrato);
-        requestParams.put("id_proceso",idProceso);
-        requestParams.put("id_acta",actaList.get(sltActaContrato.getSelectedItemPosition()).getId());
+        requestParams.put("id_municipio",idDefaultMunicipio);
         requestParams.put("id_barrio",barrioList.get(sltBarrio.getSelectedItemPosition()).getId());
-        requestParams.put("id_tipo_via",tipoViaList.get(sltCruce.getSelectedItemPosition()).getId());
-        requestParams.put("cruce_no",txtCruceno.getText());
-        requestParams.put("placa_a",txtPlaca_a_no.getText());
-        requestParams.put("placa_b",txtPlaca_b_no.getText());
-        requestParams.put("latitud",txtLatitud.getText());
-        requestParams.put("longitud",txtLongitud.getText());
+        requestParams.put("direccion",txtDireccion.getText());
         requestParams.put("id_tipologia",tipologiaList.get(sltTipologia.getSelectedItemPosition()).getId());
-        requestParams.put("id_mobiliario",mobiliarioList.get(sltMobiliario.getSelectedItemPosition()).getId());
-        requestParams.put("id_referencia",referenciaList.get(sltReferencia.getSelectedItemPosition()).getId());
-        requestParams.put("id_sentido",sentidoList.get(sltSentido.getSelectedItemPosition()).getId());
-        requestParams.put("tercero",tercero);
-        requestParams.put("id_proveedor",proveedorList.get(sltProveedor.getSelectedItemPosition()).getId());
-        requestParams.put("cantidad",txtCantidad.getText());
-        requestParams.put("id_unidad",unidadList.get(sltUnidad.getSelectedItemPosition()).getId());
-        requestParams.put("id_tipo_poste",tipoPosteList.get(sltTipoPoste.getSelectedItemPosition()).getId());
-        requestParams.put("poste_no",txtPosteno.getText());
-        requestParams.put("id_tipo_red",tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId());
-        requestParams.put("transformador",txtTransformador.getText());
-        requestParams.put("potencia_transformador",txtPotenciaTransformador.getText());
-        requestParams.put("serial_medidor",txtSerialMedidor.getText());
-        requestParams.put("lectura_medidor",txtLecturaMedidor.getText());
-        requestParams.put("id_clase_via",claseViaList.get(sltClaseVia.getSelectedItemPosition()).getId());
-        requestParams.put("id_tipo_via",tipoViaList.get(sltCruce.getSelectedItemPosition()).getId());
-        requestParams.put("id_estado",estadoMobiliarioList.get(sltEstadoMobiliario.getSelectedItemPosition()).getId());
+        requestParams.put("id_mobiliario",mobiliarioList.get(sltMobiliario.getSelectedItemPosition()).getIdMobiliario());
+        requestParams.put("id_referencia",referenciaMobiliarioList.get(sltReferencia.getSelectedItemPosition()).getIdReferenciaMobiliario());
+        requestParams.put("id_estado_mobiliario",elemento.getEstadoMobiliario());
+        requestParams.put("longitud",txtLongitud.getText());
+        requestParams.put("latitud",txtLatitud.getText());
         requestParams.put("observacion",txtObservacion.getText());
-        requestParams.put("conexion_electrica",conexionElectrica);
-        requestParams.put("encode_string",encodeString);*/
+        requestParams.put("id_censo",censoAsignadoList.get(sltCensoAsignado.getSelectedItemPosition()).getId());
+        requestParams.put("id_elemento",elemento.getId());
+        requestParams.put("mobiliario_no",elemento.getElemento_no());
+        requestParams.put("numero_mobiliario_visible",chkSwLuminariaVisible);
+        requestParams.put("mobiliario_en_sitio",chkSwPoseeLuminaria);
+        requestParams.put("cantidad",1);
+        requestParams.put("id_tipo_poste",tipoPosteList.get(sltTipoPoste.getSelectedItemPosition()).getId());
+        requestParams.put("id_norma_construccion_poste",normaConstruccionPosteList.get(sltNormaConstruccionPoste.getSelectedItemPosition()).getId());
+        requestParams.put("id_tipo_red",tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId());
+        requestParams.put("poste_no",txtPosteNo.getText());
+        requestParams.put("interdistancia",txtInterdistancia.getText());
+        requestParams.put("puesta_a_tierra",chkSwPuestaTierra);
+        requestParams.put("poste_exclusivo_ap",chkSwPosteExclusivoAp);
+        requestParams.put("id_tipo_retenida",tipoRetenidaList.get(sltTipoRetenida.getSelectedItemPosition()).getId());
+        requestParams.put("id_clase_via",claseViaList.get(sltClaseVia.getSelectedItemPosition()).getId());
+        requestParams.put("potencia_transformador",txtPotenciaTransformador.getText());
+        requestParams.put("placa_mt_transformador",txtMtTransformador.getText());
+        requestParams.put("placa_ct_transformador",txtCtTransformador.getText());
+        requestParams.put("foto_1",encodeStringFoto_1);
+        requestParams.put("foto_2",encodeStringFoto_2);
+        //requestParams.put("tipo_armado",tipoArmadoList);
+        StringEntity jsonParams = new StringEntity(requestParams.toString(),"UTF-8");
+        jsonParams.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
         client.setTimeout(Constantes.TIMEOUT);
 
-        Log.d("params:",ServicioWeb.urlGuardarCensoTecnico+"?"+requestParams);
-        RequestHandle post = client.post(ServicioWeb.urlGuardarCensoTecnico, requestParams, new AsyncHttpResponseHandler() {
-            @Override
-            public void onProgress(long bytesWritten, long totalSize) {
-                super.onProgress(bytesWritten, totalSize);
-            }
+        Log.d("params:","?"+requestParams.toString());
+        RequestHandle post = client.post(getApplicationContext(), ServicioWeb.urlGuardarCensoTecnico, jsonParams, "application/json", new AsyncHttpResponseHandler() {
+                @Override
+                public void onProgress(long bytesWritten, long totalSize) {
+                    super.onProgress(bytesWritten, totalSize);
+                }
 
-            @Override
-            public void onStart() {
-                super.onStart();
-            }
+                @Override
+                public void onPreProcessResponse(ResponseHandlerInterface instance, HttpResponse response) {
+                    super.onPreProcessResponse(instance, response);
+                }
 
-            @Override
-            public void onFinish() {
-                super.onFinish();
-            }
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
 
-            @Override
-            public void onPreProcessResponse(ResponseHandlerInterface instance, HttpResponse response) {
-                super.onPreProcessResponse(instance, response);
-            }
+                    try {
+                        json = new JSONObject(new String(responseBody));
+                        Log.d("params","statusCode"+statusCode+","+ json.getString("Mensaje")+" ");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                }
 
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-
-            }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                    Log.d("params","statusCode"+statusCode+",Body:"+responseBody.toString());
+                }
         });
-
     }
     //--Administrar Cámara--
     public void cargarImagen() {
