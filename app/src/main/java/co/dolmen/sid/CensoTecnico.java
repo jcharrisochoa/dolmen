@@ -85,6 +85,7 @@ import co.dolmen.sid.entidad.ClaseVia;
 import co.dolmen.sid.entidad.ComponenteNormaConstruccionRed;
 import co.dolmen.sid.entidad.Contrato;
 import co.dolmen.sid.entidad.Elemento;
+import co.dolmen.sid.entidad.EstadoMobiliario;
 import co.dolmen.sid.entidad.Mobiliario;
 import co.dolmen.sid.entidad.NormaConstruccionPoste;
 import co.dolmen.sid.entidad.NormaConstruccionRed;
@@ -384,13 +385,9 @@ public class CensoTecnico extends AppCompatActivity{
 
                     if(networkInfo != null && networkInfo.isConnected()) {
                         Toast.makeText(getApplicationContext(),"Conectando con "+networkInfo.getTypeName()+" / "+networkInfo.getExtraInfo(),Toast.LENGTH_LONG).show();
-                        try {
-                            guardarFormulario('R',database);
-                        } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+
+                        guardarFormulario('R',database);
+
                     }
                     else{
                         alert.setTitle(R.string.titulo_alerta);
@@ -399,13 +396,7 @@ public class CensoTecnico extends AppCompatActivity{
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 dialogInterface.cancel();
-                                try {
-                                    guardarFormulario('L',database);
-                                } catch (UnsupportedEncodingException e) {
-                                    e.printStackTrace();
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
+                                guardarFormulario('L',database);
                             }
                         });
                         alert.create().show();
@@ -1185,6 +1176,11 @@ public class CensoTecnico extends AppCompatActivity{
                 elemento.setId(Integer.parseInt(cursor.getString(cursor.getColumnIndex("_id"))));
                 elemento.setElemento_no(cursor.getString(cursor.getColumnIndex("elemento_no")));
 
+                EstadoMobiliario estadoMobiliario = new EstadoMobiliario();
+                estadoMobiliario.setIdEstadoMobiliario(cursor.getInt(cursor.getColumnIndex("id_estado_mobiliario")));
+
+                elemento.setEstadoMobiliario(estadoMobiliario);
+
                 txtElementoNo.setEnabled(false);
                 txtElementoNo.setText(cursor.getString(cursor.getColumnIndex("elemento_no")));
                 txtDireccion.setText(cursor.getString(cursor.getColumnIndex("direccion")));
@@ -1401,13 +1397,13 @@ public class CensoTecnico extends AppCompatActivity{
         txtBuscarElemento.setFocusable(true);
     }
     //--
-    private void guardarFormulario(char tipoAlmacenamiento,SQLiteDatabase sqLiteDatabase) throws UnsupportedEncodingException, JSONException {
+    private void guardarFormulario(char tipoAlmacenamiento,SQLiteDatabase sqLiteDatabase)  {
         switch (tipoAlmacenamiento){
             case 'L':
                 almacenarDatosLocal(sqLiteDatabase);
                 break;
             case 'R':
-                almacenarDatosEnRemoto(sqLiteDatabase);
+                almacenarDatosEnRemoto();
                 break;
         }
     }
@@ -1552,12 +1548,11 @@ public class CensoTecnico extends AppCompatActivity{
         }
     }
     //--
-    private void almacenarDatosEnRemoto(SQLiteDatabase sqLiteDatabase) throws JSONException, UnsupportedEncodingException {
+    private void almacenarDatosEnRemoto() {
         final AsyncHttpClient client = new AsyncHttpClient();
-        //RequestParams requestParams = new RequestParams();
-        JSONObject jo = new JSONObject();
-
-        JSONObject requestParams = new JSONObject();
+        RequestParams requestParams = new RequestParams();
+        //JSONObject jo = new JSONObject();
+        //JSONObject requestParams = new JSONObject();
         requestParams.put("id_usuario",idUsuario);
         requestParams.put("id_municipio",idDefaultMunicipio);
         requestParams.put("id_barrio",barrioList.get(sltBarrio.getSelectedItemPosition()).getId());
@@ -1565,7 +1560,7 @@ public class CensoTecnico extends AppCompatActivity{
         requestParams.put("id_tipologia",tipologiaList.get(sltTipologia.getSelectedItemPosition()).getId());
         requestParams.put("id_mobiliario",mobiliarioList.get(sltMobiliario.getSelectedItemPosition()).getIdMobiliario());
         requestParams.put("id_referencia",referenciaMobiliarioList.get(sltReferencia.getSelectedItemPosition()).getIdReferenciaMobiliario());
-        requestParams.put("id_estado_mobiliario",elemento.getEstadoMobiliario());
+        requestParams.put("id_estado_mobiliario",elemento.getEstadoMobiliario().getIdEstadoMobiliario());
         requestParams.put("longitud",txtLongitud.getText());
         requestParams.put("latitud",txtLatitud.getText());
         requestParams.put("observacion",txtObservacion.getText());
@@ -1590,7 +1585,38 @@ public class CensoTecnico extends AppCompatActivity{
         requestParams.put("foto_1",encodeStringFoto_1);
         requestParams.put("foto_2",encodeStringFoto_2);
         //requestParams.put("tipo_armado",tipoArmadoList);
-        StringEntity jsonParams = new StringEntity(requestParams.toString(),"UTF-8");
+        client.setTimeout(Constantes.TIMEOUT);
+
+        RequestHandle post = client.post(ServicioWeb.urlGuardarCensoTecnico, requestParams, new AsyncHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                super.onStart();
+            }
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                String respuesta = new String(responseBody);
+                JSONObject jsonObject;
+                String mensaje;
+                try {
+                    jsonObject = new JSONObject(new String(responseBody));
+                    mensaje = jsonObject.getString("mensaje");
+                    //Log.d("resultado", "statusCode:" + statusCode + ", mensaje:" + mensaje+" ,respuesta:"+respuesta);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Log.d("resultado","Error: onsuccess"+e.getMessage()+"respuesta:"+respuesta);
+                    Toast.makeText(getApplicationContext(),getText(R.string.alert_error_ejecucion)+ " Servicio Web, Código:"+statusCode, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                String respuesta = new String(responseBody);
+                //Log.d("resultado","error "+respuesta);
+                Toast.makeText(getApplicationContext(),getText(R.string.alert_error_ejecucion)+ " Código: "+statusCode, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+       /* StringEntity jsonParams = new StringEntity(requestParams.toString(),"UTF-8");
         jsonParams.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
         client.setTimeout(Constantes.TIMEOUT);
 
@@ -1622,7 +1648,7 @@ public class CensoTecnico extends AppCompatActivity{
                 public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                     Log.d("params","statusCode"+statusCode+",Body:"+responseBody.toString());
                 }
-        });
+        });*/
     }
     //--Administrar Cámara--
     public void cargarImagen() {
