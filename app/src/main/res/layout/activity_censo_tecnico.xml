@@ -168,6 +168,18 @@
                     android:background="@android:drawable/btn_dropdown" />
 
                 <TextView
+                    android:id="@+id/textView24"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Estado Mobiliario" />
+
+                <Spinner
+                    android:id="@+id/slt_estado_mobiliario"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/btn_dropdown" />
+
+                <TextView
                     android:id="@+id/textView5"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

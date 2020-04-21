@@ -63,6 +63,12 @@ public class EstadoMobiliarioDB extends EstadoMobiliario implements DatabaseDLM,
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }
+
+    public Cursor consultarTodo(int idProcesoSGC) {
+        this.sql = "SELECT * FROM "+Constantes.TABLA_ESTADO_MOBILIARIO+" where id_proceso_sgc="+idProcesoSGC+" ORDER BY descripcion";
+        Cursor result = db.rawQuery(this.sql, null);
+        return result;
+    }
     public Cursor consultarId(int id){
         this.sql = "SELECT _id FROM "+Constantes.TABLA_ESTADO_MOBILIARIO+" WHERE _id="+id;
         Cursor result = db.rawQuery(this.sql, null);

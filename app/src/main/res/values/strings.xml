@@ -50,6 +50,8 @@
     <string name="btn_recorrido">Recorrido</string>
     <string name="btn_tomar_foto">Tomar Foto</string>
     <string name="btn_borrar_foto">Quitar Foto</string>
+    <string name="btn_sincronizar">Sincronizar Pendientes</string>
+    <string name="btn_registrar_elemento">Registrar Elemento</string>
 
 
     <!--Alertas Generales-->
@@ -81,6 +83,7 @@
     <string name="alert_censo_tipologia">Seleccione una Tipología</string>
     <string name="alert_censo_mobiliario">Seleccione un Mobiliario</string>
     <string name="alert_censo_referencia">Seleccione una Referencia</string>
+    <string name="alert_censo_estado_mobiliario">Seleccione un estado de Mobiliario</string>
     <string name="alert_censo_barrio">Seleccione un barrio</string>
     <string name="alert_censo_direccion">Digite una Dirección</string>
     <string name="alert_censo_clase_via">Seleccione la Clase de Via</string>

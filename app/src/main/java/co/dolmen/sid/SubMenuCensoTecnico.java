@@ -8,17 +8,18 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class Menu extends AppCompatActivity {
+public class SubMenuCensoTecnico extends AppCompatActivity {
 
     private String nombreMunicipio;
     private String nombreProceso;
     private String nombreContrato;
     private int idCenso;
 
-    Button btnPerfil;
-    Button btnSalir;
-    Button btnCensoTecnico;
+    Button btnRegistrarElemento;
+    Button btnSincronizar;
+    Button btnCancelar;
     SharedPreferences config;
     TextView txtNombreMunicipio;
     TextView txtNombreProceso;
@@ -27,16 +28,18 @@ public class Menu extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_menu);
+        setContentView(R.layout.activity_sub_menu_censo_tecnico);
+
         config = getSharedPreferences("config", MODE_PRIVATE);
         nombreMunicipio = config.getString("nombreMunicipio", "");
         nombreProceso = config.getString("nombreProceso", "");
         nombreContrato = config.getString("nombreContrato", "");
 
-        btnPerfil = findViewById(R.id.btn_perfil);
-        btnSalir = findViewById(R.id.btn_salir);
+        btnRegistrarElemento = findViewById(R.id.btn_registrar_elemento);
+        btnSincronizar = findViewById(R.id.btn_sincronizar);
+        btnCancelar = findViewById(R.id.btn_cancelar);
 
-        btnCensoTecnico = findViewById(R.id.btn_censo_tecnico);
+
         txtNombreMunicipio  = findViewById(R.id.txtNombreMunicipio);
         txtNombreProceso    = findViewById(R.id.txtNombreProceso);
         txtNombreContrato   = findViewById(R.id.txtNombreContrato);
@@ -45,31 +48,26 @@ public class Menu extends AppCompatActivity {
         txtNombreProceso.setText(nombreProceso);
         txtNombreContrato.setText(nombreContrato);
 
-        btnPerfil.setOnClickListener(new View.OnClickListener() {
+        btnRegistrarElemento.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(Menu.this,ConfigurarArea.class);
+                Intent i = new Intent(SubMenuCensoTecnico.this,CensoTecnico.class);
                 startActivity(i);
-                Menu.this.finish();
+                SubMenuCensoTecnico.this.finish();
             }
         });
-        btnSalir.setOnClickListener(new View.OnClickListener() {
+        btnCancelar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                config.edit().clear().commit();
-                Intent i = new Intent(Menu.this,Login.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                Intent i = new Intent(SubMenuCensoTecnico.this,Menu.class);
                 startActivity(i);
-                Menu.this.finish();
+                SubMenuCensoTecnico.this.finish();
             }
         });
-
-        btnCensoTecnico.setOnClickListener(new View.OnClickListener() {
+        btnSincronizar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(Menu.this,SubMenuCensoTecnico.class);
-                startActivity(i);
-                Menu.this.finish();
+                Toast.makeText(getApplicationContext(),"Sincronizar", Toast.LENGTH_SHORT).show();
             }
         });
     }

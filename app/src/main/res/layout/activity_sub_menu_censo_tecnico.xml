@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Menu">
+    tools:context=".SubMenuCensoTecnico">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -124,84 +124,35 @@
                         android:gravity="center"
                         android:orientation="vertical">
 
-                        <Button
-                            android:id="@+id/btnRecorrido"
-                            android:layout_width="match_parent"
-                            android:layout_height="75dp"
-                            android:layout_weight="1"
-                            android:background="@android:drawable/btn_default_small"
-                            android:drawableLeft="@android:drawable/ic_menu_myplaces"
-                            android:enabled="false"
-                            android:text="@string/btn_recorrido" />
-
 
                         <Button
-                            android:id="@+id/btnCrearElemento"
+                            android:id="@+id/btn_registrar_elemento"
                             android:layout_width="match_parent"
                             android:layout_height="65dp"
                             android:layout_weight="1"
                             android:background="@android:drawable/btn_default_small"
-                            android:drawableLeft="@android:drawable/ic_menu_add"
-                            android:text="@string/btn_crear_elemento"
+                            android:drawableLeft="@android:drawable/ic_input_add"
+                            android:text="@string/btn_registrar_elemento"
                             android:textSize="14sp" />
 
                         <Button
-                            android:id="@+id/btnActualizarElemento"
+                            android:id="@+id/btn_sincronizar"
                             android:layout_width="match_parent"
                             android:layout_height="65dp"
                             android:layout_weight="1"
                             android:background="@android:drawable/btn_default_small"
-                            android:drawableLeft="@android:drawable/ic_menu_edit"
-                            android:text="@string/btn_actualizar_elemento"
+                            android:drawableLeft="@android:drawable/stat_notify_sync_noanim"
+                            android:text="@string/btn_sincronizar"
                             android:textSize="14sp" />
 
                         <Button
-                            android:id="@+id/btnRegistrarElemento"
+                            android:id="@+id/btn_cancelar"
                             android:layout_width="match_parent"
                             android:layout_height="65dp"
                             android:layout_weight="1"
                             android:background="@android:drawable/btn_default_small"
-                            android:drawableLeft="@android:drawable/ic_dialog_alert"
-                            android:text="@string/btn_crear_reporte_dano"
-                            android:textSize="14sp" />
-
-                        <Button
-                            android:id="@+id/btnSincronizar"
-                            android:layout_width="match_parent"
-                            android:layout_height="65dp"
-                            android:layout_weight="1"
-                            android:background="@android:drawable/btn_default_small"
-                            android:drawableLeft="@android:drawable/ic_menu_send"
-                            android:text="@string/btn_crear_actividad"
-                            android:textSize="14sp" />
-
-                        <Button
-                            android:id="@+id/btn_perfil"
-                            android:layout_width="match_parent"
-                            android:layout_height="65dp"
-                            android:layout_weight="1"
-                            android:background="@android:drawable/btn_default_small"
-                            android:drawableLeft="@android:drawable/ic_menu_manage"
-                            android:text="@string/btn_perfil"
-                            android:textSize="14sp" />
-
-                        <Button
-                            android:id="@+id/btn_censo_tecnico"
-                            android:layout_width="match_parent"
-                            android:layout_height="65dp"
-                            android:layout_weight="1"
-                            android:background="@android:drawable/btn_default_small"
-                            android:drawableLeft="@android:drawable/btn_star_big_on"
-                            android:text="@string/btn_censo_tecnico" />
-
-                        <Button
-                            android:id="@+id/btn_salir"
-                            android:layout_width="match_parent"
-                            android:layout_height="65dp"
-                            android:layout_weight="1"
-                            android:background="@android:drawable/btn_default_small"
-                            android:drawableLeft="@android:drawable/ic_delete"
-                            android:text="@string/btn_salir"
+                            android:drawableLeft="@android:drawable/ic_menu_close_clear_cancel"
+                            android:text="@string/btn_cancelar"
                             android:textSize="14sp" />
 
                     </LinearLayout>
