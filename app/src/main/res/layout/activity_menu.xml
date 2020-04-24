@@ -142,6 +142,7 @@
                             android:layout_weight="1"
                             android:background="@android:drawable/btn_default_small"
                             android:drawableLeft="@android:drawable/ic_menu_add"
+                            android:enabled="false"
                             android:text="@string/btn_crear_elemento"
                             android:textSize="14sp" />
 
@@ -152,11 +153,12 @@
                             android:layout_weight="1"
                             android:background="@android:drawable/btn_default_small"
                             android:drawableLeft="@android:drawable/ic_menu_edit"
+                            android:enabled="false"
                             android:text="@string/btn_actualizar_elemento"
                             android:textSize="14sp" />
 
                         <Button
-                            android:id="@+id/btnRegistrarElemento"
+                            android:id="@+id/btn_reportar_dano"
                             android:layout_width="match_parent"
                             android:layout_height="65dp"
                             android:layout_weight="1"
@@ -172,6 +174,7 @@
                             android:layout_weight="1"
                             android:background="@android:drawable/btn_default_small"
                             android:drawableLeft="@android:drawable/ic_menu_send"
+                            android:enabled="false"
                             android:text="@string/btn_crear_actividad"
                             android:textSize="14sp" />
 

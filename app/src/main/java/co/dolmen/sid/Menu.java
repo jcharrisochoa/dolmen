@@ -19,6 +19,7 @@ public class Menu extends AppCompatActivity {
     Button btnPerfil;
     Button btnSalir;
     Button btnCensoTecnico;
+    Button btnReporteDano;
     SharedPreferences config;
     TextView txtNombreMunicipio;
     TextView txtNombreProceso;
@@ -35,6 +36,7 @@ public class Menu extends AppCompatActivity {
 
         btnPerfil = findViewById(R.id.btn_perfil);
         btnSalir = findViewById(R.id.btn_salir);
+        btnReporteDano = findViewById(R.id.btn_reportar_dano);
 
         btnCensoTecnico = findViewById(R.id.btn_censo_tecnico);
         txtNombreMunicipio  = findViewById(R.id.txtNombreMunicipio);
@@ -68,6 +70,14 @@ public class Menu extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(Menu.this,SubMenuCensoTecnico.class);
+                startActivity(i);
+                Menu.this.finish();
+            }
+        });
+        btnReporteDano.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(Menu.this,ReporteDano.class);
                 startActivity(i);
                 Menu.this.finish();
             }

@@ -97,7 +97,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -105,18 +105,17 @@
                 android:id="@+id/scContenedor"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
                 tools:ignore="MissingConstraints"
                 tools:layout_editor_absoluteX="8dp"
                 tools:layout_editor_absoluteY="8dp">
 
+
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    tools:layout_editor_absoluteX="8dp"
-                    tools:layout_editor_absoluteY="175dp">
-
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -155,11 +154,18 @@
                             android:text="@string/btn_cancelar"
                             android:textSize="14sp" />
 
+                        <ProgressBar
+                            android:id="@+id/progressBarSincronizar"
+                            style="@style/Widget.AppCompat.ProgressBar"
+                            android:layout_width="200dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:indeterminate="true" />
+
                     </LinearLayout>
 
                 </LinearLayout>
             </ScrollView>
-
 
         </LinearLayout>
 

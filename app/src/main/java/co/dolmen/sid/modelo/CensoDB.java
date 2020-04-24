@@ -82,7 +82,7 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
             contentValues.put("id_tipologia",censo.getElemento().getTipologia().getIdTipologia());
             contentValues.put("id_mobiliario",censo.getElemento().getMobiliario().getIdMobiliario());
             contentValues.put("id_referencia",censo.getElemento().getReferenciaMobiliario().getIdReferenciaMobiliario());
-            contentValues.put("id_estado_mobiliario",0);
+            contentValues.put("id_estado_mobiliario",censo.getEstadoMobiliario().getIdEstadoMobiliario());
             contentValues.put("longitud",censo.getLatitud());
             contentValues.put("latitud",censo.getLongitud());
             contentValues.put("direccion",censo.getElemento().getDireccion());
@@ -128,12 +128,16 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
 
     @Override
     public void eliminarDatos() {
-
+        db.execSQL("DELETE FROM  "+Constantes.TABLA_CENSO_TECNICO);
     }
-
+    public void eliminarDatos(int id) {
+        db.execSQL("DELETE FROM  "+Constantes.TABLA_CENSO_TECNICO+ " WHERE id="+id);
+    }
     @Override
     public Cursor consultarTodo() {
-        return null;
+        this.sql = "SELECT * FROM "+ Constantes.TABLA_CENSO_TECNICO;
+        Cursor result = db.rawQuery(this.sql, null);
+        return result;
     }
 
     @Override

@@ -3,6 +3,7 @@
     <string name="app_name">SID</string>
     <string name="cargando">Cargando</string>
     <string name="usuario">Usuario</string>
+
     <string name="descargando_configuracion">Descargando Configuración</string>
     <string name="descargando_programacion">Descargando Programación</string>
     <string name="descargando_inventario">Descargando Inventario</string>
@@ -52,6 +53,7 @@
     <string name="btn_borrar_foto">Quitar Foto</string>
     <string name="btn_sincronizar">Sincronizar Pendientes</string>
     <string name="btn_registrar_elemento">Registrar Elemento</string>
+    <string name="btn_buscar_elemento">Registrar Elemento</string>
 
 
     <!--Alertas Generales-->
@@ -99,5 +101,41 @@
     <string name="alert_almacenamiento_local">Datos Guardados en el Dispositivo</string>
     <string name="alert_datos_pendientes_sincronizar">Pendientes por Sincronizar</string>
     <string name="alert_almacenamiento_remoto">Datos Sincronizados.</string>
+    <string name="alert_sin_datos_por_sincronizar">No hay datos que Sincronizar!!</string>
+
+
+    <string name="titulo_contrato">Contrato No</string>
+    <string name="titulo_acta_contrato">Acta No</string>
+    <string name="titulo_proceso">Proceso</string>
+    <string name="titulo_municipio">Municipio</string>
+    <string name="titulo_barrio">Barrio</string>
+    <string name="titulo_tipologia">Tipología</string>
+    <string name="titulo_mobiliario">Mobiliario</string>
+    <string name="titulo_referencia">Referencia</string>
+    <string name="titulo_estado">Estado</string>
+    <string name="titulo_sentido">Sentido</string>
+    <string name="titulo_tercero">Tercero</string>
+    <string name="titulo_cantidad">Cantidad</string>
+    <string name="titulo_medida">U. Medida</string>
+    <string name="titulo_cruce">Tipo Intersección</string>
+    <string name="titulo_tipo_poste">Tipo Poste</string>
+    <string name="titulo_poste_no">Poste No</string>
+    <string name="titulo_transformador_no">Transformador No</string>
+    <string name="titulo_potencia_transformador">Potencia Transformador</string>
+    <string name="titulo_serial_medidor">Serial Medidor No</string>
+    <string name="titulo_lectura_medidor">Lectura Medidor</string>
+    <string name="titulo_tipo_red">Tipo Red</string>
+    <string name="titulo_clase_via">Clase Vía</string>
+    <string name="titulo_estado_elemento">Estado</string>
+    <string name="titulo_cruce_no">Intersección No</string>
+    <string name="titulo_placa_no">Placa No</string>
+    <string name="titulo_latitud">Latitud</string>
+    <string name="titulo_longitud">Longitud</string>
+    <string name="titulo_observacion">Observación</string>
+    <string name="titulo_fotografia">Foto</string>
+    <string name="titulo_tipo_actividad">Tipo Actividad</string>
+    <string name="titulo_tipo_reporte">Tipo Reporte</string>
+    <string name="titulo_programa">Programa</string>
+
 
 </resources>

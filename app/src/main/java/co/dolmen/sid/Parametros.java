@@ -43,6 +43,7 @@ import co.dolmen.sid.modelo.MunicipioDB;
 import co.dolmen.sid.modelo.NormaConstruccionPosteDB;
 import co.dolmen.sid.modelo.NormaConstruccionRedDB;
 import co.dolmen.sid.modelo.ProcesoSgcDB;
+import co.dolmen.sid.modelo.ProgramaDB;
 import co.dolmen.sid.modelo.ReferenciaMobiliarioDB;
 import co.dolmen.sid.modelo.RetenidaPosteDB;
 import co.dolmen.sid.modelo.TipoEspacioDB;
@@ -50,6 +51,7 @@ import co.dolmen.sid.modelo.TipoEstructuraDB;
 import co.dolmen.sid.modelo.TipoInterseccionDB;
 import co.dolmen.sid.modelo.TipoPosteDB;
 import co.dolmen.sid.modelo.TipoRedDB;
+import co.dolmen.sid.modelo.TipoReporteDanoDB;
 import co.dolmen.sid.modelo.TipoTensionDB;
 import co.dolmen.sid.modelo.TipologiaDB;
 import co.dolmen.sid.modelo.UnidadMedidaDB;
@@ -269,7 +271,7 @@ public class Parametros extends AppCompatActivity {
                 txt_porcentaje_carga.setText("Actualizando Proceso SGC "+progress+"%");
             }
 
-            //--Proceso SGC
+            //--Contrato
             ContratoDB contratoDB = new ContratoDB(database);
             JSONArray arrayContrato = parametros.getJSONArray("contrato");
             for (int i = 0;i<arrayContrato.length();i++){
@@ -490,6 +492,42 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayNormaConstruccionRed.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Norma Construccion Red "+progress+"%");
+            }
+
+            //--Tipo Reporte Dano
+            TipoReporteDanoDB tipoReporteDanoDB = new TipoReporteDanoDB(database);
+            JSONArray arrayTipoReporteDano = parametros.getJSONArray("tiporeporte");
+            for (int i = 0;i<arrayTipoReporteDano.length();i++){
+                JSONObject jObjectTipoReporteDano = arrayTipoReporteDano.getJSONObject(i);
+                ProcesoSgc procesoSgcReporte = new ProcesoSgc();
+                procesoSgcReporte.setId(jObjectTipoReporteDano.getInt("id_proceso_sgc"));
+
+                tipoReporteDanoDB.setId(jObjectTipoReporteDano.getInt("id"));
+                tipoReporteDanoDB.setProcesoSgc(procesoSgcReporte);
+                tipoReporteDanoDB.setDescripcion(jObjectTipoReporteDano.getString("descripcion"));
+                tipoReporteDanoDB.agregarDatos(tipoReporteDanoDB);
+                progress = (int)Math.round((double)(i+1)/arrayTipoReporteDano.length()*100);
+                progressBar.setProgress(progress);
+                txt_porcentaje_carga.setText("Actualizando Tipo Reporte Dano "+progress+"%");
+            }
+
+            //--Tipo Programa
+            ProgramaDB programaDB = new ProgramaDB(database);
+            JSONArray arrayPrograma = parametros.getJSONArray("programausuario");
+            for (int i = 0;i<arrayPrograma.length();i++){
+                JSONObject jObjectPrograma = arrayPrograma.getJSONObject(i);
+                programaDB.setId(jObjectPrograma.getInt("id"));
+                ProcesoSgc procesoPrograma = new ProcesoSgc();
+                procesoPrograma.setId(jObjectPrograma.getInt("id_proceso_sgc"));
+                Municipio municipioPrograma = new Municipio();
+                municipioPrograma.setId(jObjectPrograma.getInt("id_municipio"));
+                programaDB.setProcesoSgc(procesoPrograma);
+                programaDB.setMunicipio(municipioPrograma);
+                programaDB.agregarDatos(programaDB);
+
+                progress = (int)Math.round((double)(i+1)/arrayPrograma.length()*100);
+                progressBar.setProgress(progress);
+                txt_porcentaje_carga.setText("Actualizando Programa "+progress+"%");
             }
 
             //--Elementos--

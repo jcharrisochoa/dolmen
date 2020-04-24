@@ -1480,6 +1480,10 @@ public class CensoTecnico extends AppCompatActivity{
         referenciaMobiliario.setIdReferenciaMobiliario(referenciaMobiliarioList.get(sltReferencia.getSelectedItemPosition()).getIdReferenciaMobiliario());
         referenciaMobiliario.setDescripcionReferenciaMobiliario(referenciaMobiliarioList.get(sltReferencia.getSelectedItemPosition()).getDescripcionReferenciaMobiliario());
 
+        EstadoMobiliario estadoMobiliario = new EstadoMobiliario();
+        estadoMobiliario.setIdEstadoMobiliario(estadoMobiliarioList.get(sltEstadoMobiliario.getSelectedItemPosition()).getId());
+        estadoMobiliario.setDescripcionEstadoMobiliario(estadoMobiliarioList.get(sltEstadoMobiliario.getSelectedItemPosition()).getDescripcion());
+
         Contrato contrato = new Contrato();
         contrato.setId(idDefaultContrato);
 
@@ -1517,6 +1521,7 @@ public class CensoTecnico extends AppCompatActivity{
         censo.setElemento(elemento);
         censo.setClaseVia(claseVia);
         censo.setTipoRed(tipoRed);
+        censo.setEstadoMobiliario(estadoMobiliario);
         //Poste
         censo.setRetenidaPoste(retenidaPoste);
         censo.setInterdistancia(Integer.parseInt(txtInterdistancia.getText().toString()));

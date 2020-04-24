@@ -59,6 +59,7 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
                 contentValues.put("id_mobiliario", elemento.getReferenciaMobiliario().getIdMobiliario());
                 contentValues.put("id_referencia", elemento.getReferenciaMobiliario().getIdReferenciaMobiliario());
                 contentValues.put("id_estado_mobiliario", elemento.getEstadoMobiliario().getIdEstadoMobiliario());
+                //Log.d("VALUE",contentValues.toString());
                 db.insert(Constantes.TABLA_ELEMENTO, null, contentValues);
             }
             result.close();
