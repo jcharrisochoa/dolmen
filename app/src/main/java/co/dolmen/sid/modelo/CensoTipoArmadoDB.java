@@ -69,6 +69,13 @@ public class CensoTipoArmadoDB extends CensoTipoArmado implements DatabaseDLM,Da
 
     @Override
     public Cursor consultarTodo() {
-        return null;
+        this.sql = "SELECT * FROM "+ Constantes.TABLA_CENSO_TECNICO_TIPO_ARMADO;
+        Cursor result = db.rawQuery(this.sql, null);
+        return result;
+    }
+    public Cursor consultarTodo(int id_censo_tecnico) {
+        this.sql = "SELECT * FROM "+ Constantes.TABLA_CENSO_TECNICO_TIPO_ARMADO+" WHERE id_censo_tecnico="+id_censo_tecnico;
+        Cursor result = db.rawQuery(this.sql, null);
+        return result;
     }
 }

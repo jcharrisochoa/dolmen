@@ -27,6 +27,7 @@ public class Censo {
     private RetenidaPoste retenidaPoste;
     private ClaseVia claseVia;
     private TipoRed tipoRed;
+    private EstadoMobiliario estadoMobiliario;
 
     private String chkSwLuminariaVisible;
     private String chkSwPoseeLuminaria;
@@ -254,7 +255,13 @@ public class Censo {
     public void setChkSwPosteExclusivoAp(String chkSwPosteExclusivoAp) {
         this.chkSwPosteExclusivoAp = chkSwPosteExclusivoAp;
     }
+    public EstadoMobiliario getEstadoMobiliario() {
+        return estadoMobiliario;
+    }
 
+    public void setEstadoMobiliario(EstadoMobiliario estadoMobiliario) {
+        this.estadoMobiliario = estadoMobiliario;
+    }
     public long getLastId() {
         return lastId;
     }

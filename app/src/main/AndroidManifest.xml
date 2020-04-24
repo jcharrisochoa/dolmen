@@ -12,7 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".SubMenuCensoTecnico"></activity>
+        <activity android:name=".ActualizarElemento"></activity>
+        <activity android:name=".ReporteDano" />
+        <activity android:name=".SubMenuCensoTecnico" />
         <activity
             android:name=".CensoTecnico"
             android:label="@string/titulo_censo_tecnico" />
@@ -54,12 +56,12 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 </manifest>

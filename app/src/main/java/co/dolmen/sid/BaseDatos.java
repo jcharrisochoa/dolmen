@@ -17,6 +17,7 @@ import co.dolmen.sid.modelo.MunicipioDB;
 import co.dolmen.sid.modelo.NormaConstruccionPosteDB;
 import co.dolmen.sid.modelo.NormaConstruccionRedDB;
 import co.dolmen.sid.modelo.ProcesoSgcDB;
+import co.dolmen.sid.modelo.ProgramaDB;
 import co.dolmen.sid.modelo.ReferenciaMobiliarioDB;
 import co.dolmen.sid.modelo.RetenidaPosteDB;
 import co.dolmen.sid.modelo.TipoEspacioDB;
@@ -24,6 +25,7 @@ import co.dolmen.sid.modelo.TipoEstructuraDB;
 import co.dolmen.sid.modelo.TipoInterseccionDB;
 import co.dolmen.sid.modelo.TipoPosteDB;
 import co.dolmen.sid.modelo.TipoRedDB;
+import co.dolmen.sid.modelo.TipoReporteDanoDB;
 import co.dolmen.sid.modelo.TipoTensionDB;
 import co.dolmen.sid.modelo.TipologiaDB;
 import co.dolmen.sid.modelo.UnidadMedidaDB;
@@ -60,6 +62,8 @@ public class BaseDatos extends SQLiteOpenHelper {
     private CensoTipoArmadoDB censoTipoArmadoDB;
     private CensoArchivoDB censoArchivoDB;
     private CensoAsignadoDB censoAsignadoDB;
+    private TipoReporteDanoDB tipoReporteDanoDB;
+    private ProgramaDB programaDB;
 
 
     public BaseDatos(Context context){
@@ -147,6 +151,12 @@ public class BaseDatos extends SQLiteOpenHelper {
 
         censoAsignadoDB = new CensoAsignadoDB(sqLiteDatabase);
         censoAsignadoDB.crearTabla();
+
+        tipoReporteDanoDB = new TipoReporteDanoDB(sqLiteDatabase);
+        tipoReporteDanoDB.crearTabla();
+
+        programaDB = new ProgramaDB(sqLiteDatabase);
+        programaDB.crearTabla();
        // Log.d("DataBase","create");
     }
 
@@ -178,6 +188,8 @@ public class BaseDatos extends SQLiteOpenHelper {
         censoArchivoDB.borrarTabla();
         censoTipoArmadoDB.borrarTabla();
         censoAsignadoDB.borrarTabla();
+        tipoReporteDanoDB.borrarTabla();
+        programaDB.borrarTabla();
         Log.d("DataBase","update");
 
     }

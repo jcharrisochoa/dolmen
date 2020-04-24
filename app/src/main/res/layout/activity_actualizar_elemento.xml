@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ActualizarElemento">
+
+
+    <LinearLayout
+        android:layout_width="409dp"
+        android:layout_height="729dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imgLogo"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:layout_weight="0"
+                android:contentDescription="@string/logo"
+                app:srcCompat="@drawable/logo" />
+
+            <TextView
+                android:id="@+id/idSeparador4"
+                android:layout_width="wrap_content"
+                android:layout_height="35sp"
+                android:layout_weight="0"
+                android:gravity="center"
+                android:text="|"
+                android:textColor="@android:color/holo_orange_dark"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtNombreMunicipio"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/idSeparador"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_weight="0"
+                android:gravity="center"
+                android:text="|"
+                android:textColor="@android:color/holo_orange_dark"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtNombreProceso"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="8sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/idSeparador2"
+                android:layout_width="wrap_content"
+                android:layout_height="35sp"
+                android:layout_weight="0"
+                android:gravity="center"
+                android:text="|"
+                android:textColor="@android:color/holo_orange_dark"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtNombreContrato"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="8sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/txt_buscar_elemento"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:autofillHints="@string/buscar_elemento"
+                android:background="@android:drawable/edit_text"
+                android:ems="10"
+                android:hint="@string/buscar_elemento"
+                android:inputType="number"
+                tools:text="@string/buscar_elemento" />
+
+            <ImageButton
+                android:id="@+id/btn_buscar_elemento"
+                android:layout_width="wrap_content"
+                android:layout_height="46dp"
+                android:layout_weight="1"
+                android:background="@android:drawable/btn_default_small"
+                android:contentDescription="@string/buscar_elemento"
+                android:tint="#FF5722"
+                app:srcCompat="@android:drawable/ic_menu_search" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:ignore="MissingConstraints"
+                    tools:layout_editor_absoluteX="8dp"
+                    tools:layout_editor_absoluteY="8dp">
+
+                <LinearLayout
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:orientation="vertical">
+
+                    <!--   <EditText
+                        android:id="@+id/txtIdElmento"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:inputType="number" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/titulo_tipologia" />
+
+                    <Spinner
+                        android:id="@+id/sltTipologia"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:spinnerMode="dialog" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/titulo_mobiliario" />
+
+                    <Spinner
+                        android:id="@+id/sltMobiliario"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/titulo_referencia" />
+
+                    <Spinner
+                        android:id="@+id/sltReferencia"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/titulo_barrio" />
+
+                    <Spinner
+                        android:id="@+id/sltBarrio"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/titulo_direccion" />
+
+                    <EditText
+                        android:id="@+id/txtDireccion"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="@string/titulo_direccion"
+                        android:inputType="textPersonName" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/titulo_coordenadas" />
+
+                    <EditText
+                        android:id="@+id/txtCoordenadas"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="@string/titulo_coordenadas"
+                        android:inputType="numberDecimal" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/titulo_tipo_poste" />
+
+                    <Spinner
+                        android:id="@+id/sltTipoPoste"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/titulo_poste_no" />
+
+                    <EditText
+                        android:id="@+id/txtPosteNo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="@string/titulo_poste_no"
+                        android:inputType="number" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/titulo_altura_poste" />
+
+                    <EditText
+                        android:id="@+id/txtAlturaPoste"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="@string/titulo_altura_poste"
+                        android:inputType="number" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/titulo_interdistancia" />
+
+                    <EditText
+                        android:id="@+id/txtInterdistancia"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="@string/titulo_interdistancia"
+                        android:inputType="number" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/titulo_tipo_red" />
+
+                    <Spinner
+                        android:id="@+id/sltTipoRed"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <EditText
+                        android:id="@+id/txtTransformadorNo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="@string/titulo_transformador_no"
+                        android:inputType="number" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/titulo_potencia_transformador" />
+
+                    <EditText
+                        android:id="@+id/txtPotenciaTransformador"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="@string/titulo_potencia_transformador"
+                        android:inputType="number" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/titulo_clase_via" />
+
+                    <Spinner
+                        android:id="@+id/sltClaseVia"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/titulo_estado_elemento" />
+
+                    <Spinner
+                        android:id="@+id/sltEstadoMobiliario"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:background="?android:attr/listDivider" />
+
+                    <Switch
+                        android:id="@+id/swActualizarPosicion"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:checked="true"
+                        android:text="@string/titulo_actualizar_posicion" />
+
+
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/titulo_latitud" />
+
+                    <EditText
+                        android:id="@+id/txtLatitud"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:inputType="numberDecimal" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/titulo_longitud" />
+
+                    <EditText
+                        android:id="@+id/txtLongitud"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:inputType="numberDecimal" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center">
+
+                       <Button
+                            android:id="@+id/btnFoto"
+                            android:layout_width="match_parent"
+                            android:layout_height="100dp"
+                            android:layout_weight="1"
+                            android:nextFocusDown="@+id/btnGuardar"
+                            android:text="@string/btn_captura_fotografia"
+                            android:textSize="10sp" />
+
+                        <ImageView
+                            android:id="@+id/imgFoto"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:contentDescription="@string/img_elemento"
+                            app:srcCompat="@drawable/camera" />
+                    </LinearLayout>-->
+
+                    </LinearLayout>
+
+                </ScrollView>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnCancelar"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_weight="1"
+                android:background="@android:drawable/btn_default_small"
+                android:drawableLeft="@android:drawable/ic_menu_revert"
+                android:text="@string/btn_cancelar"
+                android:textSize="10sp" />
+
+            <Button
+                android:id="@+id/btnGuardar"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_weight="1"
+                android:background="@android:drawable/btn_default_small"
+                android:drawableLeft="@android:drawable/ic_menu_save"
+                android:text="@string/btn_guardar"
+                android:textSize="10sp" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
