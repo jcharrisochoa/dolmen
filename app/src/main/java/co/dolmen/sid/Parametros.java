@@ -517,21 +517,12 @@ public class Parametros extends AppCompatActivity {
             for (int i = 0;i<arrayPrograma.length();i++){
                 JSONObject jObjectPrograma = arrayPrograma.getJSONObject(i);
                 programaDB.setId(jObjectPrograma.getInt("id"));
-<<<<<<< HEAD
                 ProcesoSgc procesoPrograma = new ProcesoSgc();
                 procesoPrograma.setId(jObjectPrograma.getInt("id_proceso_sgc"));
                 Municipio municipioPrograma = new Municipio();
                 municipioPrograma.setId(jObjectPrograma.getInt("id_municipio"));
                 programaDB.setProcesoSgc(procesoPrograma);
                 programaDB.setMunicipio(municipioPrograma);
-=======
-                ProcesoSgc proceso = new ProcesoSgc();
-                proceso.setId(jObjectPrograma.getInt("id_proceso_sgc"));
-                Municipio municipio = new Municipio();
-                municipio.setId(jObjectPrograma.getInt("id_municipio"));
-                programaDB.setProcesoSgc(proceso);
-                programaDB.setMunicipio(municipio);
->>>>>>> a61da78be237204e9082289d0a1e86a75ffa9ad4
                 programaDB.agregarDatos(programaDB);
 
                 progress = (int)Math.round((double)(i+1)/arrayPrograma.length()*100);

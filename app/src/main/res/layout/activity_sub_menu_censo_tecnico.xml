@@ -156,25 +156,11 @@
 
                         <ProgressBar
                             android:id="@+id/progressBarSincronizar"
-<<<<<<< HEAD
                             style="@style/Widget.AppCompat.ProgressBar"
                             android:layout_width="200dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:indeterminate="true" />
-=======
-                            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                            android:layout_width="200dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"/>
-
-                        <TextView
-                            android:id="@+id/txt_porcentaje_carga"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="0%" />
->>>>>>> a61da78be237204e9082289d0a1e86a75ffa9ad4
 
                     </LinearLayout>
 
