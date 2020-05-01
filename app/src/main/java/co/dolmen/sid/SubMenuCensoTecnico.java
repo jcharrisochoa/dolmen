@@ -176,11 +176,11 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
                                     jLog.getString("mensaje");
                                     jLog.getBoolean("procesar");
                                     logs = logs + "Mobiliario No: "+jLog.getInt("mobiliario")+","+jLog.getString("mensaje")+"\n";
-                                    /*if (jLog.getBoolean("procesar")){
+                                    if (jLog.getBoolean("procesar")){
                                         censoArchivoDB.eliminarDatos(jLog.getInt("id"));
                                         censoTipoArmadoDB.eliminarDatos(jLog.getInt("id"));
                                         censoDB.eliminarDatos(jLog.getInt("id"));
-                                    }*/
+                                    }
                                 }
                                 visualizarLogs(logs,jsonResponse.getString("mensaje"));
                                 btnSincronizar.setText(getText(R.string.btn_sincronizar)+" ("+censoDB.consultarTodo().getCount()+")");
