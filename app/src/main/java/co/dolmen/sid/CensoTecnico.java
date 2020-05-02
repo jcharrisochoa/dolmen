@@ -535,12 +535,13 @@ public class CensoTecnico extends AppCompatActivity{
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 cargarMobiliario(database);
+                Log.d("Mobiliario","selected");
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
             }
+
         });
         sltMobiliario.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -787,6 +788,7 @@ public class CensoTecnico extends AppCompatActivity{
         labels.add(getText(R.string.seleccione).toString());
         //--Recorrer el cursor de la consulta e ir creando objeto de tipo mobiliario para agregar
         //a la lista mobiliarioList y a la Lista label que es la que se muestra en el spinner
+        Log.d("Mobiliario","idTipologia:"+idTipologia);
         if (cursor.getCount() > 0) {
             if (cursor.moveToFirst()) {
                 do {
@@ -1162,6 +1164,10 @@ public class CensoTecnico extends AppCompatActivity{
     }
     //--
     private void buscarElemento(SQLiteDatabase sqLiteDatabase){
+        sltTipologia.setSelection(0);
+        sltMobiliario.setSelection(0);
+        sltReferencia.setSelection(0);
+
         if(txtBuscarElemento.getText().toString().trim().length() == 0){
             alert.setTitle(R.string.titulo_alerta);
             alert.setMessage(R.string.alert_elemento_buscar);
@@ -1174,12 +1180,10 @@ public class CensoTecnico extends AppCompatActivity{
             alert.create().show();
         }
         else{
-
-
             alertBuscarElemento = new AlertDialog.Builder(this);
             ElementoDB elementoDB = new ElementoDB(sqLiteDatabase);
-            Cursor cursor = elementoDB.consultarElemento(idDefaultMunicipio,idDefaultProceso,parseInt(txtBuscarElemento.getText().toString()));
-            if(cursor.getCount() == 0) {
+            Cursor cursorElemento = elementoDB.consultarElemento(idDefaultMunicipio,idDefaultProceso,parseInt(txtBuscarElemento.getText().toString()));
+            if(cursorElemento.getCount() == 0) {
                 alertBuscarElemento.setTitle(R.string.titulo_alerta);
                 alertBuscarElemento.setMessage(getText(R.string.alert_elemento_no_encontrado)+" sobre el Elemento: "+txtBuscarElemento.getText()+". ¿Desea registrar el Elemento?" );
                 alertBuscarElemento.setPositiveButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
@@ -1203,43 +1207,47 @@ public class CensoTecnico extends AppCompatActivity{
             }
             else {
 
-                cursor.moveToFirst();
+                cursorElemento.moveToFirst();
 
                 elemento = new Elemento();
-                elemento.setId(Integer.parseInt(cursor.getString(cursor.getColumnIndex("_id"))));
-                elemento.setElemento_no(cursor.getString(cursor.getColumnIndex("elemento_no")));
+                elemento.setId(Integer.parseInt(cursorElemento.getString(cursorElemento.getColumnIndex("_id"))));
+                elemento.setElemento_no(cursorElemento.getString(cursorElemento.getColumnIndex("elemento_no")));
 
                 EstadoMobiliario estadoMobiliario = new EstadoMobiliario();
-                estadoMobiliario.setIdEstadoMobiliario(cursor.getInt(cursor.getColumnIndex("id_estado_mobiliario")));
+                estadoMobiliario.setIdEstadoMobiliario(cursorElemento.getInt(cursorElemento.getColumnIndex("id_estado_mobiliario")));
 
                 elemento.setEstadoMobiliario(estadoMobiliario);
 
                 txtElementoNo.setEnabled(false);
-                txtElementoNo.setText(cursor.getString(cursor.getColumnIndex("elemento_no")));
-                txtDireccion.setText(cursor.getString(cursor.getColumnIndex("direccion")));
-                //mobiliarioList
-                idMobiliarioBusqueda =  cursor.getInt(cursor.getColumnIndex("id_mobiliario"));
-                idReferenciaBusqueda =  cursor.getInt(cursor.getColumnIndex("id_referencia"));
+                txtElementoNo.setText(cursorElemento.getString(cursorElemento.getColumnIndex("elemento_no")));
+                txtDireccion.setText(cursorElemento.getString(cursorElemento.getColumnIndex("direccion")));
+
+                idMobiliarioBusqueda =  cursorElemento.getInt(cursorElemento.getColumnIndex("id_mobiliario"));
+                idReferenciaBusqueda =  cursorElemento.getInt(cursorElemento.getColumnIndex("id_referencia"));
 
                 //tipologiaList
                 for(int i=0;i<tipologiaList.size();i++){
-                    if(tipologiaList.get(i).getId() == cursor.getInt(cursor.getColumnIndex("id_tipologia"))){
+                    if(tipologiaList.get(i).getId() == cursorElemento.getInt(cursorElemento.getColumnIndex("id_tipologia"))){
+                        sltTipologia.setAdapter(sltTipologia.getAdapter());
                         sltTipologia.setSelection(i);
                     }
                 }
+               // this.cargarMobiliario(database);
+               // this.cargarReferencia(database);
                 //EstadoList
                 for(int i=0;i<estadoMobiliarioList.size();i++){
-                    if(estadoMobiliarioList.get(i).getId() == cursor.getInt(cursor.getColumnIndex("id_estado_mobiliario"))){
+                    if(estadoMobiliarioList.get(i).getId() == cursorElemento.getInt(cursorElemento.getColumnIndex("id_estado_mobiliario"))){
                         sltEstadoMobiliario.setSelection(i);
                     }
                 }
                 //barrioList
                 for(int i=0;i<barrioList.size();i++){
-                    if(barrioList.get(i).getId() == cursor.getInt(cursor.getColumnIndex("id_barrio"))){
+                    if(barrioList.get(i).getId() == cursorElemento.getInt(cursorElemento.getColumnIndex("id_barrio"))){
                         sltBarrio.setSelection(i);
                     }
                 }
             }
+            cursorElemento.close();
         }
     }
     //--
@@ -1442,6 +1450,7 @@ public class CensoTecnico extends AppCompatActivity{
         imgFoto1.setImageResource(R.drawable.imagen_no_disponible);
         imgFoto2.setImageResource(R.drawable.imagen_no_disponible);
         txtBuscarElemento.setFocusable(true);
+        txtBuscarElemento.setText("");
         tipoArmadoList.clear();
         mostrarTablaArmado();
     }

@@ -130,9 +130,11 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
     public void eliminarDatos() {
         db.execSQL("DELETE FROM  "+Constantes.TABLA_CENSO_TECNICO);
     }
+
     public void eliminarDatos(int id) {
         db.execSQL("DELETE FROM  "+Constantes.TABLA_CENSO_TECNICO+ " WHERE id="+id);
     }
+
     @Override
     public Cursor consultarTodo() {
         this.sql = "SELECT * FROM "+ Constantes.TABLA_CENSO_TECNICO;

@@ -3,6 +3,9 @@ package co.dolmen.sid;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import co.dolmen.sid.modelo.CensoArchivoDB;
+import co.dolmen.sid.modelo.CensoDB;
+import co.dolmen.sid.modelo.CensoTipoArmadoDB;
 import co.dolmen.sid.modelo.ContratoDB;
 import co.dolmen.sid.modelo.MunicipioDB;
 import co.dolmen.sid.modelo.ProcesoSgcDB;
@@ -12,6 +15,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
@@ -22,6 +26,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +58,9 @@ public class ConfigurarArea extends AppCompatActivity {
     List<DataSpinner> procesoList;
     List<DataSpinner> contratoList;
 
+    private CensoDB censoDB;
+    private CensoTipoArmadoDB censoTipoArmadoDB;
+    private CensoArchivoDB censoArchivoDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +68,11 @@ public class ConfigurarArea extends AppCompatActivity {
         setContentView(R.layout.activity_configurar_area);
         conn = new BaseDatos(ConfigurarArea.this);
         database = conn.getReadableDatabase();
+
+
+        censoDB = new CensoDB(database);
+        censoTipoArmadoDB = new CensoTipoArmadoDB(database);
+        censoArchivoDB = new CensoArchivoDB(database);
 
         alert = new AlertDialog.Builder(this);
 
@@ -106,11 +119,34 @@ public class ConfigurarArea extends AppCompatActivity {
         btnSalir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                config.edit().clear().commit();
-                Intent i = new Intent(ConfigurarArea.this,Login.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                startActivity(i);
-                ConfigurarArea.this.finish();
+                alert.setTitle(R.string.titulo_alerta);
+                alert.setMessage(R.string.alert_cerrar_sesion);
+                alert.setPositiveButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //
+                        try {
+                            censoTipoArmadoDB.eliminarDatos();
+                            censoArchivoDB.eliminarDatos();
+                            censoDB.eliminarDatos();
+                            config.edit().clear().commit();
+                            Intent intent = new Intent(ConfigurarArea.this,Login.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                            startActivity(intent);
+                            ConfigurarArea.this.finish();
+                        }catch (SQLException e){
+                            Toast.makeText(getApplicationContext(),"ERROR"+e.getMessage(),Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                });
+                alert.setNegativeButton(R.string.btn_cancelar, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //dialogInterface.cancel();
+                    }
+                });
+                alert.create().show();
             }
         });
         btnSiguiente.setOnClickListener(new View.OnClickListener() {

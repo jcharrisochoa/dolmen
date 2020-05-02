@@ -34,16 +34,21 @@ public class CensoAsignadoDB extends CensoAsignado implements DatabaseDDL,Databa
     public boolean agregarDatos(Object o) {
         if(o instanceof CensoAsignado) {
             censoAsignado = (CensoAsignado) o;
-            ContentValues contentValues = new ContentValues();
-            contentValues.put("id_municipio",censoAsignado.getId_municipio());
-            contentValues.put("id_proceso_sgc",censoAsignado.getId_proceso_sgc());
-            contentValues.put("id_censo",censoAsignado.getId());
-            try {
-                db.insertWithOnConflict(Constantes.TABLA_CENSO_ASIGNADO, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
-            }catch (SQLiteException e){
-                Log.d("ErrorI",""+e.getMessage());
-                return false;
+            Cursor result = consultarTodo(censoAsignado.getId_municipio(),censoAsignado.getId_proceso_sgc());
+            if(result.getCount() == 0) {
+                ContentValues contentValues = new ContentValues();
+                contentValues.put("id_municipio",censoAsignado.getId_municipio());
+                contentValues.put("id_proceso_sgc",censoAsignado.getId_proceso_sgc());
+                contentValues.put("id_censo",censoAsignado.getId());
+                try {
+                    db.insertWithOnConflict(Constantes.TABLA_CENSO_ASIGNADO, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
+                }catch (SQLiteException e){
+                    Log.d("ErrorI",""+e.getMessage());
+                    return false;
+                }
             }
+            result.close();
+
             return true;
         }
         else

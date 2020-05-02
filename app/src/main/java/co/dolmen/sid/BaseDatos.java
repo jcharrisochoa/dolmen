@@ -73,7 +73,7 @@ public class BaseDatos extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        //onUpgrade(sqLiteDatabase,0,0);
+        //onUpgrade(sqLiteDatabase,Constantes.VERSION_BASEDATOS,Constantes.VERSION_BASEDATOS+1);
         tipologiaDB = new TipologiaDB(sqLiteDatabase);
         tipologiaDB.crearTabla();
 
@@ -157,7 +157,7 @@ public class BaseDatos extends SQLiteOpenHelper {
 
         programaDB = new ProgramaDB(sqLiteDatabase);
         programaDB.crearTabla();
-       // Log.d("DataBase","create");
+        Log.d("DataBase","create");
     }
 
     @Override
@@ -190,6 +190,7 @@ public class BaseDatos extends SQLiteOpenHelper {
         censoAsignadoDB.borrarTabla();
         tipoReporteDanoDB.borrarTabla();
         programaDB.borrarTabla();
+        //onCreate(sqLiteDatabase);
         Log.d("DataBase","update");
 
     }

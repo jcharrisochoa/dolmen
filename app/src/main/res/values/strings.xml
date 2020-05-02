@@ -72,6 +72,7 @@
     <string name="alert_gps_deshabilitado">Habilita el GPS, para continuar</string>
     <string name="alert_elemento_buscar">Digite el elemento a buscar</string>
     <string name="alert_elemento_no_encontrado">No existe información</string>
+    <string name="alert_cerrar_sesion">¿ Está seguro(a) de cerrar su sesión ?</string>
 
     <string name="file_provider_authority" translatable="false">co.dolmen.sid</string>
 

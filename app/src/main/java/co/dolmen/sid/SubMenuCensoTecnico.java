@@ -14,6 +14,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.ConnectivityManager;
@@ -66,7 +67,7 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
     TextView txtMensaje;
     ProgressBar progressBar;
     EditText txtLog;
-
+    int cant = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,12 +78,20 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
         conn = new BaseDatos(SubMenuCensoTecnico.this);
         database = conn.getReadableDatabase();
 
-        censoDB = new CensoDB(database);
-        censoTipoArmadoDB = new CensoTipoArmadoDB(database);
-        censoArchivoDB = new CensoArchivoDB(database);
 
-        cursor = censoDB.consultarTodo();
-        cursorCensoArchivo = censoArchivoDB.consultarTodo();
+
+        try {
+            censoDB = new CensoDB(database);
+            censoTipoArmadoDB = new CensoTipoArmadoDB(database);
+            censoArchivoDB = new CensoArchivoDB(database);
+            cursor = censoDB.consultarTodo();
+            cursorCensoArchivo = censoArchivoDB.consultarTodo();
+            cant = cursor.getCount();
+        }catch (SQLException e){
+            Toast.makeText(getApplicationContext(),"ERROR"+e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+
+
 
         config = getSharedPreferences("config", MODE_PRIVATE);
         nombreMunicipio     = config.getString("nombreMunicipio", "");
@@ -128,8 +137,9 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
                 sincronizar();
             }
         });
-        btnSincronizar.setText(getText(R.string.btn_sincronizar)+" ("+censoDB.consultarTodo().getCount()+")");
+        btnSincronizar.setText(getText(R.string.btn_sincronizar)+" ("+cant+")");
     }
+
     private void sincronizar(){
         setButton(false);
         final String tag = "Log:\n";
@@ -241,6 +251,7 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
             alert.create().show();
         }
     }
+
     private void setButton(boolean estado){
         btnRegistrarElemento.setEnabled(estado);
         btnCancelar.setEnabled(estado);
