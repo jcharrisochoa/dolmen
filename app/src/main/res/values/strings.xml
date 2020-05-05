@@ -23,6 +23,11 @@
     <string name="titulo_actividad_login">Ingreso a Usuario</string>
     <string name="titulo_perfil_usuario">Mi Perfil</string>
     <string name="titulo_censo_tecnico">Censo Técnico AP</string>
+    <string name="titulo_menu">Menú</string>
+    <string name="titulo_generar_reporte_dano">Generar Reporte Daño</string>
+    <string name="titulo_generar_actividad_operativa">Generar Actividad Operativa</string>
+    <string name="titulo_menu_censo_tecnico">Menú Censo Técnico</string>
+
 
     <!--Titulo Tabla-->
     <string name="titulo_norma">Norma</string>
@@ -73,6 +78,9 @@
     <string name="alert_elemento_buscar">Digite el elemento a buscar</string>
     <string name="alert_elemento_no_encontrado">No existe información</string>
     <string name="alert_cerrar_sesion">¿ Está seguro(a) de cerrar su sesión ?</string>
+    <string name="alert_observacion">Digite una observacion</string>
+    <string name="alert_fotografia">Incluya una fotografía</string>
+    <string name="alert_tipo_reporte_dano">Seleccione un tipo de reporte</string>
 
     <string name="file_provider_authority" translatable="false">co.dolmen.sid</string>
 

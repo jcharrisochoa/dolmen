@@ -29,6 +29,8 @@ public class Menu extends AppCompatActivity {
     Button btnSalir;
     Button btnCensoTecnico;
     Button btnReporteDano;
+    Button btnCrearActividad;
+
     SharedPreferences config;
     TextView txtNombreMunicipio;
     TextView txtNombreProceso;
@@ -46,6 +48,8 @@ public class Menu extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
+        setTitle(getText(R.string.titulo_menu));
+
         conn = new BaseDatos(Menu.this);
         database = conn.getReadableDatabase();
 
@@ -57,15 +61,16 @@ public class Menu extends AppCompatActivity {
 
         config = getSharedPreferences("config", MODE_PRIVATE);
         nombreMunicipio = config.getString("nombreMunicipio", "");
-        nombreProceso = config.getString("nombreProceso", "");
-        nombreContrato = config.getString("nombreContrato", "");
+        nombreProceso   = config.getString("nombreProceso", "");
+        nombreContrato  = config.getString("nombreContrato", "");
 
 
-        btnPerfil = findViewById(R.id.btn_perfil);
-        btnSalir = findViewById(R.id.btn_salir);
-        btnReporteDano = findViewById(R.id.btn_reportar_dano);
+        btnPerfil           = findViewById(R.id.btn_perfil);
+        btnSalir            = findViewById(R.id.btn_salir);
+        btnReporteDano      = findViewById(R.id.btn_reportar_dano);
+        btnCrearActividad   = findViewById(R.id.btn_crear_actividad);
 
-        btnCensoTecnico = findViewById(R.id.btn_censo_tecnico);
+        btnCensoTecnico     = findViewById(R.id.btn_censo_tecnico);
         txtNombreMunicipio  = findViewById(R.id.txtNombreMunicipio);
         txtNombreProceso    = findViewById(R.id.txtNombreProceso);
         txtNombreContrato   = findViewById(R.id.txtNombreContrato);
@@ -130,6 +135,15 @@ public class Menu extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(Menu.this,ReporteDano.class);
+                startActivity(i);
+                Menu.this.finish();
+            }
+        });
+
+        btnCrearActividad.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(Menu.this,GenerarActividadOperativa.class);
                 startActivity(i);
                 Menu.this.finish();
             }

@@ -8,10 +8,9 @@ import androidx.core.content.FileProvider;
 import co.dolmen.sid.entidad.Elemento;
 import co.dolmen.sid.entidad.EstadoMobiliario;
 import co.dolmen.sid.modelo.ElementoDB;
+import co.dolmen.sid.modelo.TipoActividadDB;
 import co.dolmen.sid.modelo.TipoReporteDanoDB;
-import co.dolmen.sid.modelo.TipologiaDB;
 import co.dolmen.sid.utilidades.DataSpinner;
-import cz.msebera.android.httpclient.Header;
 
 import android.Manifest;
 import android.content.DialogInterface;
@@ -25,8 +24,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -42,14 +39,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestHandle;
-import com.loopj.android.http.RequestParams;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -58,17 +47,18 @@ import java.util.List;
 
 import static java.lang.Integer.parseInt;
 
-public class ReporteDano extends AppCompatActivity {
+public class GenerarActividadOperativa extends AppCompatActivity {
 
-    SharedPreferences config;
     SQLiteOpenHelper conn;
     SQLiteDatabase database;
     AlertDialog.Builder alert;
+    SharedPreferences config;
 
+    private String  encodeString;
+    private String titulo;
     private String nombreMunicipio;
     private String nombreProceso;
     private String nombreContrato;
-    private String  encodeString;
     private int idUsuario;
     private int idDefaultMunicipio;
     private int idDefaultProceso;
@@ -77,6 +67,26 @@ public class ReporteDano extends AppCompatActivity {
     Elemento elemento;
 
     private String path;
+    //-
+    private Integer idMunicipio;
+    private Integer idProceso;
+    private Integer idContrato;
+
+    private TextView txtNombreMunicipio;
+    private TextView txtNombreProceso;
+    private TextView txtNombreContrato;
+
+    private Spinner sltTipoActividad;
+    private Spinner sltPrograma;
+
+    private Button btnCancelar;
+    private Button btnGuardar;
+    private ImageButton btnBuscar;
+    private Button btnFoto;
+    private Button btnTomarFoto;
+    private Button btnBorrarFoto;
+    private ImageView imgFoto;
+
 
     private EditText inElemento;
     private EditText txtIdElemento;
@@ -87,27 +97,18 @@ public class ReporteDano extends AppCompatActivity {
     private EditText txtDireccion;
     private EditText txtEstadoMobiliario;
     private EditText txtObservacion;
-    private Button btnGuardar;
-    private Button btnCancelar;
-    private Button btnTomarFoto;
-    private Button btnBorrarFoto;
-    private ImageButton btnBuscar;
-    private ImageView imgFoto;
-    private TextView txtNombreMunicipio;
-    private TextView txtNombreProceso;
-    private TextView txtNombreContrato;
-    private Spinner sltTipoReporte;
+    private EditText txtIdPrograma;
 
-    ArrayList<DataSpinner> tipoReporteList;
 
+    List<DataSpinner> tipoActividadList;
+    List<DataSpinner> programacionList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_reporte_dano);
+        setContentView(R.layout.activity_generar_actividad_operativa);
 
-        setTitle(getText(R.string.titulo_generar_reporte_dano).toString());
-
+        setTitle(getText(R.string.titulo_generar_actividad_operativa));
         config = getSharedPreferences("config", MODE_PRIVATE);
         idUsuario           = config.getInt("id_usuario", 0);
         idDefaultProceso    = config.getInt("id_proceso", 0);
@@ -117,7 +118,7 @@ public class ReporteDano extends AppCompatActivity {
         nombreProceso = config.getString("nombreProceso", "");
         nombreContrato = config.getString("nombreContrato", "");
 
-        conn = new BaseDatos(ReporteDano.this);
+        conn = new BaseDatos(GenerarActividadOperativa.this);
         database = conn.getReadableDatabase();
 
         //--
@@ -148,7 +149,7 @@ public class ReporteDano extends AppCompatActivity {
         txtDireccion        = findViewById(R.id.txtDireccion);
         txtEstadoMobiliario = findViewById(R.id.txtEstadoMobiliario);
         txtObservacion      = findViewById(R.id.txtObservacion);
-        sltTipoReporte      = findViewById(R.id.slt_tipo_reporte);
+        sltTipoActividad      = findViewById(R.id.slt_tipo_actividad);
 
         //--Acciones sobre Controles
         txtTipologia.setEnabled(false);
@@ -163,7 +164,6 @@ public class ReporteDano extends AppCompatActivity {
         btnTomarFoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //accionarFoto = true;
                 cargarImagen();
             }
         });
@@ -177,9 +177,9 @@ public class ReporteDano extends AppCompatActivity {
         btnCancelar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(ReporteDano.this, Menu.class);
+                Intent i = new Intent(GenerarActividadOperativa.this, Menu.class);
                 startActivity(i);
-                ReporteDano.this.finish();
+                GenerarActividadOperativa.this.finish();
             }
         });
         btnBuscar.setOnClickListener(new View.OnClickListener() {
@@ -188,43 +188,32 @@ public class ReporteDano extends AppCompatActivity {
                 buscarElemento(database);
             }
         });
-        btnGuardar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(validarAccionReporte()){
-                    ConnectivityManager conn = (ConnectivityManager) getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
-                    NetworkInfo networkInfo = conn.getActiveNetworkInfo();
-
-                    if(networkInfo != null && networkInfo.isConnected()) {
-                        Toast.makeText(getApplicationContext(),"Conectando con "+networkInfo.getTypeName()+" / "+networkInfo.getExtraInfo(),Toast.LENGTH_LONG).show();
-                        generarReporteDano();
-                    }
-                    else{
-                        alert.setTitle(R.string.titulo_alerta);
-                        alert.setMessage(R.string.alert_conexion);
-                        alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.cancel();
-                            }
-                        });
-                        alert.create().show();
-                    }
-                }
-                else{
-                    alert.setTitle(R.string.titulo_alerta);
-                    alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.cancel();
-                        }
-                    });
-                    alert.create().show();
-                }
-            }
-        });
-
         cargarTipoReporte(database);
+    }
+    private void cargarTipoReporte(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        tipoActividadList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        TipoActividadDB tipoActividadDB = new TipoActividadDB(sqLiteDatabase);
+        Cursor cursor = tipoActividadDB.consultarTodo(idDefaultProceso);
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        tipoActividadList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(2).toUpperCase());
+                    tipoActividadList.add(dataSpinner);
+                    labels.add(cursor.getString(2).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltTipoActividad.setAdapter(dataAdapter);
     }
 
     @Override
@@ -288,104 +277,6 @@ public class ReporteDano extends AppCompatActivity {
 
     }
 
-    private void resetFrm(){
-        txtIdElemento.setText("");
-        inElemento.setText("");
-        txtTipologia.setText("");
-        txtMobiliario.setText("");
-        txtReferencia.setText("");
-        txtDireccion.setText("");
-        txtBarrio.setText("");
-        txtEstadoMobiliario.setText("");
-        txtObservacion.setText("");
-        imgFoto.setImageResource(R.drawable.imagen_no_disponible);
-        sltTipoReporte.setSelection(0);
-        encodeString=null;
-    }
-
-    private void generarReporteDano(){
-        AsyncHttpClient client = new AsyncHttpClient();
-        RequestParams requestParams = new RequestParams();
-        requestParams.put("idmunicipio", idDefaultMunicipio);
-        requestParams.put("idtipodano",tipoReporteList.get(sltTipoReporte.getSelectedItemPosition()).getId());
-        requestParams.put("idusuario",idUsuario);
-        requestParams.put("idelemento",txtIdElemento.getText());
-        requestParams.put("idprocesosgc",idDefaultProceso);
-        requestParams.put("barrio",txtBarrio.getText());
-        requestParams.put("direccion",txtDireccion.getText());
-        requestParams.put("observacion",txtObservacion.getText());
-        requestParams.put("encode_string",encodeString);
-        client.setTimeout(Constantes.TIMEOUT);
-        RequestHandle post = client.post(ServicioWeb.urlGuardarReporteDano, requestParams, new AsyncHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                super.onStart();
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                String respuesta = new String(responseBody);
-                Integer idreporte;
-                Integer request;
-                String mensaje;
-
-                try{
-                    JSONObject o = new JSONObject(new String(responseBody));
-                    idreporte = o.getInt("idreporte");
-                    mensaje = o.getString("mensaje");
-                    request = o.getInt("request");
-
-                    alert.setTitle(R.string.titulo_alerta);
-                    alert.setMessage(mensaje);
-                    alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            resetFrm();
-                            dialogInterface.cancel();
-                        }
-                    });
-                    alert.create().show();
-
-                }catch (JSONException e){
-                    Toast.makeText(getApplicationContext(),"ERROR:"+e.getMessage(),Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                String respuesta = new String(responseBody);
-                Toast.makeText(ReporteDano.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-
-        });
-    }
-
-    private void cargarTipoReporte(SQLiteDatabase sqLiteDatabase) {
-        int i = 0;
-        tipoReporteList = new ArrayList<DataSpinner>();
-        List<String> labels = new ArrayList<>();
-        TipoReporteDanoDB tipoReporteDanoDB = new TipoReporteDanoDB(sqLiteDatabase);
-        Cursor cursor = tipoReporteDanoDB.consultarTodo(idDefaultProceso);
-        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
-        tipoReporteList.add(dataSpinner);
-        labels.add(getText(R.string.seleccione).toString());
-        if (cursor.getCount() > 0) {
-            if (cursor.moveToFirst()) {
-                do {
-                    i++;
-                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(2).toUpperCase());
-                    tipoReporteList.add(dataSpinner);
-                    labels.add(cursor.getString(2).toUpperCase());
-                } while (cursor.moveToNext());
-            }
-        }
-        cursor.close();
-
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, labels);
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sltTipoReporte.setAdapter(dataAdapter);
-    }
-
     private void buscarElemento(SQLiteDatabase sqLiteDatabase){
         if(inElemento.getText().toString().trim().length() == 0){
             alert.setTitle(R.string.titulo_alerta);
@@ -445,37 +336,9 @@ public class ReporteDano extends AppCompatActivity {
         }
     }
 
-    private boolean validarAccionReporte(){
-        if(txtIdElemento.getText().toString().isEmpty()){
-            alert.setMessage(R.string.alert_elemento_buscar);
-            return false;
-        }
-        else {
-            if (tipoReporteList.get(sltTipoReporte.getSelectedItemPosition()).getId() == 0) {
-                alert.setMessage(R.string.alert_tipo_reporte_dano);
-                return false;
-            }
-            else{
-
-                if(txtObservacion.getText().toString().isEmpty()){
-                    alert.setMessage(R.string.alert_observacion);
-                    return false;
-                }
-                else {
-                    if (encodeString == null || encodeString == "") {
-                        alert.setMessage(R.string.alert_fotografia);
-                        return false;
-                    }
-                    else
-                        return true;
-                }
-            }
-        }
-    }
-
     private void cargarImagen(){
         final CharSequence[] opciones = {getText(R.string.tomar_foto).toString(), getText(R.string.cargar_imagen).toString(), getText(R.string.btn_cancelar)};
-        final AlertDialog.Builder alertOpciones = new AlertDialog.Builder(ReporteDano.this);
+        final AlertDialog.Builder alertOpciones = new AlertDialog.Builder(GenerarActividadOperativa.this);
         alertOpciones.setTitle(getText(R.string.app_name));
         alertOpciones.setItems(opciones, new DialogInterface.OnClickListener() {
             @Override
@@ -483,8 +346,8 @@ public class ReporteDano extends AppCompatActivity {
                 switch (i) { //Tomar Foto
                     case 0:
                         int PERMISSIONS_REQUEST_CAMERA = 0;
-                        if (ContextCompat.checkSelfPermission(ReporteDano.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                            ActivityCompat.requestPermissions(ReporteDano.this,
+                        if (ContextCompat.checkSelfPermission(GenerarActividadOperativa.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(GenerarActividadOperativa.this,
                                     new String[]{Manifest.permission.CAMERA},
                                     PERMISSIONS_REQUEST_CAMERA);
                         } else {
@@ -494,8 +357,8 @@ public class ReporteDano extends AppCompatActivity {
                         break;
                     case 1: //Seleccionar Imagen
                         int PERMISSIONS_REQUEST_INTERNAL_STORAGE = 0;
-                        if (ContextCompat.checkSelfPermission(ReporteDano.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                            ActivityCompat.requestPermissions(ReporteDano.this,
+                        if (ContextCompat.checkSelfPermission(GenerarActividadOperativa.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(GenerarActividadOperativa.this,
                                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                                     PERMISSIONS_REQUEST_INTERNAL_STORAGE);
                         } else {
@@ -531,7 +394,7 @@ public class ReporteDano extends AppCompatActivity {
         path = mediaStorageDir.getPath() + File.separator + nombreImagen;
         File imagen = new File(path);
 
-        Uri photoURI = FileProvider.getUriForFile(ReporteDano.this, getString(R.string.file_provider_authority), imagen);
+        Uri photoURI = FileProvider.getUriForFile(GenerarActividadOperativa.this, getString(R.string.file_provider_authority), imagen);
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
         startActivityForResult(intent, Constantes.CONS_TOMAR_FOTO);

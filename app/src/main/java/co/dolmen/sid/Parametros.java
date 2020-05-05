@@ -46,6 +46,7 @@ import co.dolmen.sid.modelo.ProcesoSgcDB;
 import co.dolmen.sid.modelo.ProgramaDB;
 import co.dolmen.sid.modelo.ReferenciaMobiliarioDB;
 import co.dolmen.sid.modelo.RetenidaPosteDB;
+import co.dolmen.sid.modelo.TipoActividadDB;
 import co.dolmen.sid.modelo.TipoEspacioDB;
 import co.dolmen.sid.modelo.TipoEstructuraDB;
 import co.dolmen.sid.modelo.TipoInterseccionDB;
@@ -511,7 +512,7 @@ public class Parametros extends AppCompatActivity {
                 txt_porcentaje_carga.setText("Actualizando Tipo Reporte Dano "+progress+"%");
             }
 
-            //--Tipo Programa
+            //--Programa
             ProgramaDB programaDB = new ProgramaDB(database);
             JSONArray arrayPrograma = parametros.getJSONArray("programausuario");
             for (int i = 0;i<arrayPrograma.length();i++){
@@ -567,7 +568,28 @@ public class Parametros extends AppCompatActivity {
                 txt_porcentaje_carga.setText("Actualizando elementos "+progress+"%");
 
             }
+
+            //--Tipo Actividad Operativa
+            TipoActividadDB tipoActividadDB = new TipoActividadDB(database);
+            JSONArray arrayTipoActividad = parametros.getJSONArray("tipo_operacion");
+            for (int i = 0;i<arrayTipoActividad.length();i++){
+                JSONObject jObjectTipoActividad = arrayTipoActividad.getJSONObject(i);
+
+                ProcesoSgc procesoSgcTipoAct = new ProcesoSgc();
+                procesoSgcTipoAct.setId(jObjectTipoActividad.getInt("id_proceso_sgc"));
+
+                tipoActividadDB.setId(jObjectTipoActividad.getInt("id"));
+                tipoActividadDB.setProcesoSgc(procesoSgcTipoAct);
+                tipoActividadDB.setDescripcion(jObjectTipoActividad.getString("descripcion"));
+                tipoActividadDB.agregarDatos(tipoActividadDB);
+                progress = (int)Math.round((double)(i+1)/arrayTipoActividad.length()*100);
+                progressBar.setProgress(progress);
+                txt_porcentaje_carga.setText("Actualizando Tipo Actividad "+progress+"%");
+            }
+
             database.close();
+
+
         }catch (JSONException e){
             e.getMessage();
         }

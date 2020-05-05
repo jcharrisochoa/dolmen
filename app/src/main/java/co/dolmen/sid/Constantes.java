@@ -27,7 +27,6 @@ public final class Constantes {
     public static final String TABLA_PROCESO                   = "proceso_sgc";
     public static final String TABLA_MUNICIPIO                 = "municipio";
     public static final String TABLA_TIPO_ACTIVIDAD            = "tipo_actividad_operativa";
-    public static final String TABLA_TIPO_REPORTE              = "tipo_reporte";
     public static final String TABLA_CONTRATO                  = "contrato";
     public static final String TABLA_ACTA_CONTRATO             = "acta_contrato";
     public static final String TABLA_PROVEEDOR                 = "proveedor";

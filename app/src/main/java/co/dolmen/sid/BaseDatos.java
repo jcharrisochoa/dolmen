@@ -20,6 +20,7 @@ import co.dolmen.sid.modelo.ProcesoSgcDB;
 import co.dolmen.sid.modelo.ProgramaDB;
 import co.dolmen.sid.modelo.ReferenciaMobiliarioDB;
 import co.dolmen.sid.modelo.RetenidaPosteDB;
+import co.dolmen.sid.modelo.TipoActividadDB;
 import co.dolmen.sid.modelo.TipoEspacioDB;
 import co.dolmen.sid.modelo.TipoEstructuraDB;
 import co.dolmen.sid.modelo.TipoInterseccionDB;
@@ -64,6 +65,7 @@ public class BaseDatos extends SQLiteOpenHelper {
     private CensoAsignadoDB censoAsignadoDB;
     private TipoReporteDanoDB tipoReporteDanoDB;
     private ProgramaDB programaDB;
+    private TipoActividadDB tipoActividadDB;
 
 
     public BaseDatos(Context context){
@@ -157,6 +159,9 @@ public class BaseDatos extends SQLiteOpenHelper {
 
         programaDB = new ProgramaDB(sqLiteDatabase);
         programaDB.crearTabla();
+
+        tipoActividadDB = new TipoActividadDB(sqLiteDatabase);
+        tipoActividadDB.crearTabla();
         Log.d("DataBase","create");
     }
 
@@ -190,6 +195,7 @@ public class BaseDatos extends SQLiteOpenHelper {
         censoAsignadoDB.borrarTabla();
         tipoReporteDanoDB.borrarTabla();
         programaDB.borrarTabla();
+        tipoActividadDB.borrarTabla();
         //onCreate(sqLiteDatabase);
         Log.d("DataBase","update");
 

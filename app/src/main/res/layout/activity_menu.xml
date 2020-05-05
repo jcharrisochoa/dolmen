@@ -168,13 +168,12 @@
                             android:textSize="14sp" />
 
                         <Button
-                            android:id="@+id/btnSincronizar"
+                            android:id="@+id/btn_crear_actividad"
                             android:layout_width="match_parent"
                             android:layout_height="65dp"
                             android:layout_weight="1"
                             android:background="@android:drawable/btn_default_small"
                             android:drawableLeft="@android:drawable/ic_menu_send"
-                            android:enabled="false"
                             android:text="@string/btn_crear_actividad"
                             android:textSize="14sp" />
 
