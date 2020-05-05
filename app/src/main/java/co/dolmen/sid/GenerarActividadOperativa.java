@@ -8,9 +8,11 @@ import androidx.core.content.FileProvider;
 import co.dolmen.sid.entidad.Elemento;
 import co.dolmen.sid.entidad.EstadoMobiliario;
 import co.dolmen.sid.modelo.ElementoDB;
+import co.dolmen.sid.modelo.ProgramaDB;
 import co.dolmen.sid.modelo.TipoActividadDB;
 import co.dolmen.sid.modelo.TipoReporteDanoDB;
 import co.dolmen.sid.utilidades.DataSpinner;
+import cz.msebera.android.httpclient.Header;
 
 import android.Manifest;
 import android.content.DialogInterface;
@@ -24,11 +26,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -38,6 +43,14 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestHandle;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -150,6 +163,7 @@ public class GenerarActividadOperativa extends AppCompatActivity {
         txtEstadoMobiliario = findViewById(R.id.txtEstadoMobiliario);
         txtObservacion      = findViewById(R.id.txtObservacion);
         sltTipoActividad      = findViewById(R.id.slt_tipo_actividad);
+        sltPrograma         = findViewById(R.id.sltPrograma);
 
         //--Acciones sobre Controles
         txtTipologia.setEnabled(false);
@@ -188,32 +202,44 @@ public class GenerarActividadOperativa extends AppCompatActivity {
                 buscarElemento(database);
             }
         });
-        cargarTipoReporte(database);
-    }
-    private void cargarTipoReporte(SQLiteDatabase sqLiteDatabase) {
-        int i = 0;
-        tipoActividadList = new ArrayList<DataSpinner>();
-        List<String> labels = new ArrayList<>();
-        TipoActividadDB tipoActividadDB = new TipoActividadDB(sqLiteDatabase);
-        Cursor cursor = tipoActividadDB.consultarTodo(idDefaultProceso);
-        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
-        tipoActividadList.add(dataSpinner);
-        labels.add(getText(R.string.seleccione).toString());
-        if (cursor.getCount() > 0) {
-            if (cursor.moveToFirst()) {
-                do {
-                    i++;
-                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(2).toUpperCase());
-                    tipoActividadList.add(dataSpinner);
-                    labels.add(cursor.getString(2).toUpperCase());
-                } while (cursor.moveToNext());
-            }
-        }
-        cursor.close();
+        btnGuardar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(validarAccionReporte()){
+                    ConnectivityManager conn = (ConnectivityManager) getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
+                    NetworkInfo networkInfo = conn.getActiveNetworkInfo();
 
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, labels);
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sltTipoActividad.setAdapter(dataAdapter);
+                    if(networkInfo != null && networkInfo.isConnected()) {
+                        Toast.makeText(getApplicationContext(),"Conectando con "+networkInfo.getTypeName()+" / "+networkInfo.getExtraInfo(),Toast.LENGTH_LONG).show();
+                        generarActividadOperativa();
+                    }
+                    else{
+                        alert.setTitle(R.string.titulo_alerta);
+                        alert.setMessage(R.string.alert_conexion);
+                        alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        });
+                        alert.create().show();
+                    }
+                }
+                else{
+                    alert.setTitle(R.string.titulo_alerta);
+                    alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    });
+                    alert.create().show();
+                }
+            }
+        });
+        cargarTipoReporte(database);
+        cargarPrograma(database);
+
     }
 
     @Override
@@ -277,6 +303,58 @@ public class GenerarActividadOperativa extends AppCompatActivity {
 
     }
 
+    private void cargarTipoReporte(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        tipoActividadList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        TipoActividadDB tipoActividadDB = new TipoActividadDB(sqLiteDatabase);
+        Cursor cursor = tipoActividadDB.consultarTodo(idDefaultProceso);
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        tipoActividadList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(2).toUpperCase());
+                    tipoActividadList.add(dataSpinner);
+                    labels.add(cursor.getString(2).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltTipoActividad.setAdapter(dataAdapter);
+    }
+
+    private void cargarPrograma(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        programacionList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        ProgramaDB programaDB = new ProgramaDB(sqLiteDatabase);
+        Cursor cursor = programaDB.consultarTodo(idDefaultMunicipio,idDefaultProceso);
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        programacionList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(0).toUpperCase());
+                    programacionList.add(dataSpinner);
+                    labels.add(cursor.getString(0).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltPrograma.setAdapter(dataAdapter);
+    }
+
     private void buscarElemento(SQLiteDatabase sqLiteDatabase){
         if(inElemento.getText().toString().trim().length() == 0){
             alert.setTitle(R.string.titulo_alerta);
@@ -332,6 +410,37 @@ public class GenerarActividadOperativa extends AppCompatActivity {
             }
             catch (SQLException e){
                 Toast.makeText(getApplicationContext(),"ERROR:"+e.getMessage(),Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private boolean validarAccionReporte(){
+        if(txtIdElemento.getText().toString().isEmpty()){
+            alert.setMessage(R.string.alert_elemento_buscar);
+            return false;
+        }
+        else {
+            if (tipoActividadList.get(sltTipoActividad.getSelectedItemPosition()).getId() == 0) {
+                alert.setMessage(R.string.alert_tipo_actividad);
+                return false;
+            }
+            else{
+                if (programacionList.get(sltPrograma.getSelectedItemPosition()).getId() == 0) {
+                    alert.setMessage(R.string.alert_programa_operativo);
+                    return false;
+                }
+                else {
+                    if (txtObservacion.getText().toString().isEmpty()) {
+                        alert.setMessage(R.string.alert_observacion);
+                        return false;
+                    } else {
+                        if (encodeString == null || encodeString == "") {
+                            alert.setMessage(R.string.alert_fotografia);
+                            return false;
+                        } else
+                            return true;
+                    }
+                }
             }
         }
     }
@@ -398,5 +507,72 @@ public class GenerarActividadOperativa extends AppCompatActivity {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
         startActivityForResult(intent, Constantes.CONS_TOMAR_FOTO);
+    }
+
+    private void generarActividadOperativa(){
+        AsyncHttpClient client = new AsyncHttpClient();
+        RequestParams requestParams = new RequestParams();
+        requestParams.put("idmunicipio", idDefaultMunicipio);
+        requestParams.put("idprocesosgc", idDefaultProceso);
+        requestParams.put("idusuario", idUsuario);
+        requestParams.put("idprograma", programacionList.get(sltPrograma.getSelectedItemPosition()).getId());
+        requestParams.put("idtipoactividad", tipoActividadList.get(sltTipoActividad.getSelectedItemPosition()).getId());
+        requestParams.put("idelemento", txtIdElemento.getText().toString());
+        requestParams.put("barrio", txtBarrio.getText().toString());
+        requestParams.put("direccion", txtDireccion.getText().toString());
+        requestParams.put("observacion", txtObservacion.getText().toString());
+        requestParams.put("encode_string",encodeString);
+
+        client.setTimeout(Constantes.TIMEOUT);
+        RequestHandle post = client.post(ServicioWeb.urlGenerarActividadOperativa, requestParams, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                String respuesta = new String(responseBody);
+                Integer request;
+                String mensaje;
+               // Log.d("RESPUESTA",""+respuesta);
+
+                try {
+                    JSONObject o = new JSONObject(new String(responseBody));
+                    mensaje         = o.getString("mensaje");
+                    request         = o.getInt("request");
+                    alert.setTitle(R.string.titulo_alerta);
+                    alert.setMessage(mensaje);
+                    alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            resetFrm();
+                            dialogInterface.cancel();
+                        }
+                    });
+                    alert.create().show();
+
+                } catch (JSONException e) {
+                    Toast.makeText(GenerarActividadOperativa.this, "Error:" + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                String respuesta = new String(responseBody);
+               // Log.d("RESPUESTA",""+respuesta);
+                Toast.makeText(GenerarActividadOperativa.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void resetFrm(){
+        txtIdElemento.setText("");
+        inElemento.setText("");
+        txtTipologia.setText("");
+        txtMobiliario.setText("");
+        txtReferencia.setText("");
+        txtDireccion.setText("");
+        txtBarrio.setText("");
+        txtEstadoMobiliario.setText("");
+        txtObservacion.setText("");
+        imgFoto.setImageResource(R.drawable.imagen_no_disponible);
+        sltTipoActividad.setSelection(0);
+        sltPrograma.setSelection(0);
+        encodeString=null;
     }
 }

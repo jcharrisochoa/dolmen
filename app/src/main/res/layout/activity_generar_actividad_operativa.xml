@@ -236,13 +236,6 @@
                             android:layout_height="wrap_content"
                             android:text="@string/titulo_programa" />
 
-                        <EditText
-                            android:id="@+id/txtIdPrograma"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:ems="10"
-                            android:inputType="number" />
-
                         <Spinner
                             android:id="@+id/sltPrograma"
                             android:layout_width="match_parent"

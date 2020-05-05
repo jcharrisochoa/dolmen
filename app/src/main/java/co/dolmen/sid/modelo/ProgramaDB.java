@@ -57,7 +57,12 @@ public class ProgramaDB extends Programa implements  DatabaseDDL,DatabaseDLM {
 
     @Override
     public Cursor consultarTodo() {
-        this.sql = "SELECT * FROM "+Constantes.TABLA_PROGRAMA+" ORDER BY descripcion";
+        this.sql = "SELECT * FROM "+Constantes.TABLA_PROGRAMA;
+        Cursor result = db.rawQuery(this.sql, null);
+        return result;
+    }
+    public Cursor consultarTodo(int idMunicipio, int idProcesoSGC) {
+        this.sql = "SELECT * FROM "+Constantes.TABLA_PROGRAMA+" WHERE id_municipio= "+idMunicipio +" AND id_proceso_sgc="+idProcesoSGC+" ORDER BY _id";
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }

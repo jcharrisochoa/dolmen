@@ -145,6 +145,8 @@
     <string name="titulo_tipo_actividad">Tipo Actividad</string>
     <string name="titulo_tipo_reporte">Tipo Reporte</string>
     <string name="titulo_programa">Programa</string>
+    <string name="alert_programa_operativo">Seleccione el programa</string>
+    <string name="alert_tipo_actividad">Seleccione el tipo de actividad</string>
 
 
 </resources>

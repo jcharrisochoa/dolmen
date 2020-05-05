@@ -6,4 +6,5 @@ final class ServicioWeb {
     public static final String urlGuardarCensoTecnico = "http://www.dolmen.net.co/sid_v1/webservice/censo_tecnico/guardarCensoTecnico.php";
     public static final String urlSincronizarCensoTecnico = "http://www.dolmen.net.co/sid_v1/webservice/censo_tecnico/sincronizarCensoTecnico.php";
     public static final String urlGuardarReporteDano = "http://www.dolmen.net.co/sid_v1/elementos/webservice/guardarrd.php";
+    public static final String urlGenerarActividadOperativa = "http://www.dolmen.net.co/sid_v1/elementos/webservice/guardarActividad.php";
 }

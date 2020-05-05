@@ -30,6 +30,7 @@ public class Menu extends AppCompatActivity {
     Button btnCensoTecnico;
     Button btnReporteDano;
     Button btnCrearActividad;
+    Button btnActualizarElemento;
 
     SharedPreferences config;
     TextView txtNombreMunicipio;
@@ -69,6 +70,7 @@ public class Menu extends AppCompatActivity {
         btnSalir            = findViewById(R.id.btn_salir);
         btnReporteDano      = findViewById(R.id.btn_reportar_dano);
         btnCrearActividad   = findViewById(R.id.btn_crear_actividad);
+        btnActualizarElemento = findViewById(R.id.btn_actualizar_elemento);
 
         btnCensoTecnico     = findViewById(R.id.btn_censo_tecnico);
         txtNombreMunicipio  = findViewById(R.id.txtNombreMunicipio);
@@ -144,6 +146,14 @@ public class Menu extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(Menu.this,GenerarActividadOperativa.class);
+                startActivity(i);
+                Menu.this.finish();
+            }
+        });
+        btnActualizarElemento.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(Menu.this,ActualizarElemento.class);
                 startActivity(i);
                 Menu.this.finish();
             }
