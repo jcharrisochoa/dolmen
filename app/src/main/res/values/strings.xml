@@ -27,6 +27,7 @@
     <string name="titulo_generar_reporte_dano">Generar Reporte Daño</string>
     <string name="titulo_generar_actividad_operativa">Generar Actividad Operativa</string>
     <string name="titulo_menu_censo_tecnico">Menú Censo Técnico</string>
+    <string name="titulo_actualizar_elemento">Actualizar Elemento</string>
 
 
     <!--Titulo Tabla-->
@@ -149,4 +150,14 @@
     <string name="alert_tipo_actividad">Seleccione el tipo de actividad</string>
 
 
+    <string name="titulo_ancho_via">Ancho Via</string>
+    <string name="titulo_interdistancia">Intedistancia</string>
+    <string name="alert_ancho_via">Ancho de la Via</string>
+    <string name="alert_interdistancia">Interdistancia</string>
+
+    <string name="titulo_altura_poste">Altura Poste</string>
+    <string name="titulo_coordenadas">Coordenadas</string>
+
+    <string name="titulo_actualizar_posicion">Actualizar Posición</string>
+    <string name="alert_coordenadas">Tome el punto geográfico</string>
 </resources>

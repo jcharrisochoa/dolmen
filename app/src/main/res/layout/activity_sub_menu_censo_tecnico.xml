@@ -150,7 +150,7 @@
                             android:layout_height="65dp"
                             android:layout_weight="1"
                             android:background="@android:drawable/btn_default_small"
-                            android:drawableLeft="@android:drawable/ic_menu_close_clear_cancel"
+                            android:drawableLeft="@android:drawable/ic_menu_revert"
                             android:text="@string/btn_cancelar"
                             android:textSize="14sp" />
 

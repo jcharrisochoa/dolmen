@@ -173,6 +173,7 @@ public class CensoTecnico extends AppCompatActivity{
     ImageButton btnCapturarGPS;
     ImageButton btnBuscarElemento;
     ImageButton btnEditarDireccion;
+    ImageButton btnLimpiar;
     //--
     ArrayList<DataSpinner> tipologiaList;
     ArrayList<Mobiliario> mobiliarioList;
@@ -318,6 +319,7 @@ public class CensoTecnico extends AppCompatActivity{
         btnEliminarArmado_2         = findViewById(R.id.btn_eliminar_armado_2);
         btnEliminarArmado_3         = findViewById(R.id.btn_eliminar_armado_3);
         btnEditarDireccion          = findViewById(R.id.btn_editar_direccion);
+        btnLimpiar                  = findViewById(R.id.btn_limpiar);
         //--
         imgFoto1 = findViewById(R.id.foto_1);
         imgFoto2 = findViewById(R.id.foto_2);
@@ -331,6 +333,12 @@ public class CensoTecnico extends AppCompatActivity{
         txtLatitud.setEnabled(false);
         txtLongitud.setEnabled(false);
 
+        btnLimpiar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                resetFrm(true);
+            }
+        });
         swLuminariaVisible.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
@@ -665,6 +673,7 @@ public class CensoTecnico extends AppCompatActivity{
     protected void onStop() {
         super.onStop();
     }
+
     //--Administrar Tabla Armado Red----
     private boolean validarArmadoRed(){
         if(tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId() == 0){
@@ -768,7 +777,7 @@ public class CensoTecnico extends AppCompatActivity{
         labels.add(getText(R.string.seleccione).toString());
         //--Recorrer el cursor de la consulta e ir creando objeto de tipo mobiliario para agregar
         //a la lista mobiliarioList y a la Lista label que es la que se muestra en el spinner
-        Log.d("Mobiliario","idTipologia:"+idTipologia);
+        //Log.d("Mobiliario","idTipologia:"+idTipologia);
         if (cursor.getCount() > 0) {
             if (cursor.moveToFirst()) {
                 do {
@@ -1144,10 +1153,6 @@ public class CensoTecnico extends AppCompatActivity{
     }
     //--
     private void buscarElemento(SQLiteDatabase sqLiteDatabase){
-        sltTipologia.setSelection(0);
-        sltMobiliario.setSelection(0);
-        sltReferencia.setSelection(0);
-
         if(txtBuscarElemento.getText().toString().trim().length() == 0){
             alert.setTitle(R.string.titulo_alerta);
             alert.setMessage(R.string.alert_elemento_buscar);
@@ -1173,13 +1178,13 @@ public class CensoTecnico extends AppCompatActivity{
                         elemento = new Elemento();
                         elemento.setId(0);
                         elemento.setElemento_no(txtBuscarElemento.getText().toString());
-                        resetFrm(true);
+                        resetFrm(false);
                     }
                 });
                 alertBuscarElemento.setNegativeButton(R.string.btn_cancelar, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        resetFrm(false);
+                        resetFrm(true);
                     }
                 });
                 alertBuscarElemento.create().show();
@@ -1198,7 +1203,8 @@ public class CensoTecnico extends AppCompatActivity{
 
                 elemento.setEstadoMobiliario(estadoMobiliario);
 
-                txtElementoNo.setEnabled(false);
+                swLuminariaVisible.setEnabled(false);
+                swLuminariaVisible.setChecked(true);
                 txtElementoNo.setText(cursorElemento.getString(cursorElemento.getColumnIndex("elemento_no")));
                 txtDireccion.setText(cursorElemento.getString(cursorElemento.getColumnIndex("direccion")));
 
@@ -1300,7 +1306,7 @@ public class CensoTecnico extends AppCompatActivity{
             return false;
         }
         else {
-            if (txtElementoNo.getText().toString().isEmpty()) {
+            if (txtElementoNo.getText().toString().isEmpty() && swLuminariaVisible.isChecked()) {
                 alert.setMessage(R.string.alert_censo_tecnico_elemento_no);
                 return false;
             } else {
@@ -1393,11 +1399,11 @@ public class CensoTecnico extends AppCompatActivity{
     private void resetFrm(boolean enabled){
         idMobiliarioBusqueda = 0;
         idReferenciaBusqueda = 0;
+        swLuminariaVisible.setEnabled(enabled);
 
-        txtElementoNo.setEnabled(enabled);
-
-        if(!enabled)
+        if(enabled) {
             txtElementoNo.setText("");
+        }
 
         sltTipologia.setSelection(0);
         sltEstadoMobiliario.setSelection(0);
@@ -1476,6 +1482,11 @@ public class CensoTecnico extends AppCompatActivity{
         Contrato contrato = new Contrato();
         contrato.setId(idDefaultContrato);
 
+        if(txtElementoNo.getText().toString().isEmpty() && !swLuminariaVisible.isChecked()){
+            elemento = new Elemento();
+            elemento.setId(0);
+            elemento.setElemento_no("");
+        }
         elemento.setDireccion(txtDireccion.getText().toString());
         elemento.setBarrio(barrio);
         elemento.setTipologia(tipologia);
@@ -1595,6 +1606,8 @@ public class CensoTecnico extends AppCompatActivity{
         final AsyncHttpClient client = new AsyncHttpClient();
         RequestParams requestParams = new RequestParams();
 
+        Integer id_elemento_t = (txtElementoNo.getText().toString().isEmpty() && !swLuminariaVisible.isChecked())?null:elemento.getId();
+
         requestParams.put("id_usuario", idUsuario);
         requestParams.put("id_municipio", idDefaultMunicipio);
         requestParams.put("id_barrio", barrioList.get(sltBarrio.getSelectedItemPosition()).getId());
@@ -1607,8 +1620,8 @@ public class CensoTecnico extends AppCompatActivity{
         requestParams.put("latitud", txtLatitud.getText());
         requestParams.put("observacion", txtObservacion.getText());
         requestParams.put("id_censo", censoAsignadoList.get(sltCensoAsignado.getSelectedItemPosition()).getId());
-        requestParams.put("id_elemento", elemento.getId());
-        requestParams.put("mobiliario_no", elemento.getElemento_no());
+        requestParams.put("id_elemento", id_elemento_t);
+        requestParams.put("mobiliario_no", txtElementoNo.getText());
         requestParams.put("numero_mobiliario_visible", chkSwLuminariaVisible);
         requestParams.put("mobiliario_en_sitio", chkSwPoseeLuminaria);
         requestParams.put("cantidad", 1);
@@ -1659,7 +1672,7 @@ public class CensoTecnico extends AppCompatActivity{
                     alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            resetFrm(false);
+                            //resetFrm(true);
                             dialogInterface.cancel();
                         }
                     });
@@ -1751,6 +1764,7 @@ public class CensoTecnico extends AppCompatActivity{
         ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
         return (ubicacion.isProviderEnabled(LocationManager.GPS_PROVIDER));
     }
+
     private void tomarCoordenadas() {
         int PERMISSIONS_REQUEST_LOCATION = 0;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -1770,7 +1784,7 @@ public class CensoTecnico extends AppCompatActivity{
                 });
                 alert.create().show();
             } else {
-               /*fusedLocationClient.getLastLocation()
+               fusedLocationClient.getLastLocation()
                         .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                             @Override
                             public void onSuccess(Location location) {
@@ -1782,7 +1796,7 @@ public class CensoTecnico extends AppCompatActivity{
                                     txtLongitud.setText("0");
                                 }
                             }
-                        });*/
+                        });
             }
         }
     }

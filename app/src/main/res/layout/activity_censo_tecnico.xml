@@ -41,8 +41,17 @@
             android:layout_weight="1"
             android:background="@android:drawable/btn_default_small"
             android:contentDescription="@string/buscar_elemento"
-            android:tint="#FF5722"
+            android:tint="@android:color/holo_orange_dark"
             app:srcCompat="@android:drawable/ic_menu_search" />
+
+        <ImageButton
+            android:id="@+id/btn_limpiar"
+            android:layout_width="wrap_content"
+            android:layout_height="46dp"
+            android:layout_weight="1"
+            android:background="@android:drawable/btn_default_small"
+            android:tint="@color/colorAccent"
+            app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
 
     </LinearLayout>
 
@@ -217,7 +226,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@android:drawable/btn_default_small"
-                        android:tint="#FF3D00"
+                        android:tint="@android:color/holo_green_dark"
                         app:srcCompat="@android:drawable/ic_menu_edit" />
                 </LinearLayout>
 <!--
@@ -323,7 +332,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:background="@android:drawable/btn_default_small"
-                        android:tint="#FF3D00"
+                        android:tint="@android:color/holo_green_dark"
                         app:srcCompat="@android:drawable/ic_menu_mylocation" />
 
                 </LinearLayout>
@@ -572,7 +581,7 @@
                             android:textSize="18sp"
                             android:textColor="@color/colorPrimary" />
 
-                        <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        <TableLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:stretchColumns="1"
@@ -597,12 +606,14 @@
                                     android:text=""
                                     android:padding="3dip"
                                     android:id="@+id/txt_norma_armado_red_1"/>
+
                                 <ImageButton
                                     android:id="@+id/btn_eliminar_armado_1"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="right"
                                     android:background="@android:drawable/btn_default_small"
+                                    android:tint="@color/colorAccent"
                                     app:srcCompat="@android:drawable/ic_menu_delete" />
                             </TableRow>
                             <TableRow>
@@ -610,12 +621,14 @@
                                     android:text=""
                                     android:padding="3dip"
                                     android:id="@+id/txt_norma_armado_red_2"/>
+
                                 <ImageButton
                                     android:id="@+id/btn_eliminar_armado_2"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="right"
                                     android:background="@android:drawable/btn_default_small"
+                                    android:tint="@color/colorAccent"
                                     app:srcCompat="@android:drawable/ic_menu_delete" />
                             </TableRow>
                             <TableRow>
@@ -623,12 +636,14 @@
                                     android:text=""
                                     android:padding="3dip"
                                     android:id="@+id/txt_norma_armado_red_3"/>
+
                                 <ImageButton
                                     android:id="@+id/btn_eliminar_armado_3"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="right"
                                     android:background="@android:drawable/btn_default_small"
+                                    android:tint="@color/colorAccent"
                                     app:srcCompat="@android:drawable/ic_menu_delete" />
                             </TableRow>
 
@@ -748,7 +763,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@android:drawable/btn_default_small"
-            android:drawableLeft="@android:drawable/ic_menu_close_clear_cancel"
+            android:drawableLeft="@android:drawable/ic_menu_revert"
             android:text="@string/btn_cancelar" />
 
         <Button

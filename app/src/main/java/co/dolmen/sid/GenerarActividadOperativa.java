@@ -68,7 +68,6 @@ public class GenerarActividadOperativa extends AppCompatActivity {
     SharedPreferences config;
 
     private String  encodeString;
-    private String titulo;
     private String nombreMunicipio;
     private String nombreProceso;
     private String nombreContrato;
@@ -80,10 +79,6 @@ public class GenerarActividadOperativa extends AppCompatActivity {
     Elemento elemento;
 
     private String path;
-    //-
-    private Integer idMunicipio;
-    private Integer idProceso;
-    private Integer idContrato;
 
     private TextView txtNombreMunicipio;
     private TextView txtNombreProceso;
@@ -560,6 +555,7 @@ public class GenerarActividadOperativa extends AppCompatActivity {
             }
         });
     }
+
     private void resetFrm(){
         txtIdElemento.setText("");
         inElemento.setText("");
