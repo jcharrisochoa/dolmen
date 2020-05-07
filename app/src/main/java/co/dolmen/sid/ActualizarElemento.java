@@ -1067,6 +1067,7 @@ public class ActualizarElemento extends AppCompatActivity {
             }
         });
     }
+    //-
     private void resetFrm(){
         btnGuardar.setEnabled(true);
         btnCancelar.setEnabled(true);

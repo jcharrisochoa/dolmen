@@ -14,8 +14,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.media.MediaScannerConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -55,6 +59,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -109,7 +114,7 @@ import cz.msebera.android.httpclient.Header;
 
 import static java.lang.Integer.parseInt;
 
-public class CensoTecnico extends AppCompatActivity{
+public class CensoTecnico extends AppCompatActivity {
 
     JSONObject json;
     SQLiteOpenHelper conn;
@@ -201,6 +206,13 @@ public class CensoTecnico extends AppCompatActivity{
     TextView txt_norma_armado_red_3;
     TextView txtMensajeDireccion;
 
+    TextView viewLatitud;
+    TextView viewLongitud;
+    TextView viewAltitud;
+    TextView viewPrecision;
+    TextView viewDireccion;
+    TextView viewVelocidad;
+
     private boolean accionarFoto1;
     private boolean accionarFoto2;
     private int idUsuario;
@@ -227,7 +239,6 @@ public class CensoTecnico extends AppCompatActivity{
     //private final String CARPETA_RAIZ="ImagenesCenso/";
     //private final String RUTA_IMAGEN= CARPETA_RAIZ+"Img";
 
-    private FusedLocationProviderClient fusedLocationClient;
     public LocationManager ubicacion;  //
 
 
@@ -240,21 +251,6 @@ public class CensoTecnico extends AppCompatActivity{
         conn = new BaseDatos(CensoTecnico.this);
         database = conn.getReadableDatabase();
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        if (location != null) {
-                            txtLatitud.setText(String.valueOf(location.getLatitude()));
-                            txtLongitud.setText(String.valueOf(location.getLongitude()));
-                        } else {
-                            txtLatitud.setText("0");
-                            txtLongitud.setText("0");
-                        }
-                    }
-                });
 
         //--
         alert = new AlertDialog.Builder(this);
@@ -263,70 +259,78 @@ public class CensoTecnico extends AppCompatActivity{
         tipoArmadoList = new ArrayList<ComponenteNormaConstruccionRed>();
         //--
         config = getSharedPreferences("config", MODE_PRIVATE);
-        idUsuario           = config.getInt("id_usuario", 0);
-        idDefaultProceso    = config.getInt("id_proceso", 0);
-        idDefaultContrato   = config.getInt("id_contrato", 0);
-        idDefaultMunicipio  = config.getInt("id_municipio", 0);
-        nombreMunicipio     = config.getString("nombreMunicipio", "");
-        idCenso             = config.getInt("id_censo",0);
+        idUsuario = config.getInt("id_usuario", 0);
+        idDefaultProceso = config.getInt("id_proceso", 0);
+        idDefaultContrato = config.getInt("id_contrato", 0);
+        idDefaultMunicipio = config.getInt("id_municipio", 0);
+        nombreMunicipio = config.getString("nombreMunicipio", "");
+        idCenso = config.getInt("id_censo", 0);
         //--
         setTitle(getText(R.string.titulo_censo_tecnico) + " (" + nombreMunicipio + ")");
         //--
-        sltTipologia                = findViewById(R.id.slt_tipologia);
-        sltMobiliario               = findViewById(R.id.slt_mobiliario);
-        sltReferencia               = findViewById(R.id.slt_referencia);
-        sltEstadoMobiliario         = findViewById(R.id.slt_estado_mobiliario);
-        sltBarrio                   = findViewById(R.id.slt_barrio);
+        sltTipologia = findViewById(R.id.slt_tipologia);
+        sltMobiliario = findViewById(R.id.slt_mobiliario);
+        sltReferencia = findViewById(R.id.slt_referencia);
+        sltEstadoMobiliario = findViewById(R.id.slt_estado_mobiliario);
+        sltBarrio = findViewById(R.id.slt_barrio);
         //sltTipoInterseccionA        = findViewById(R.id.slt_tipo_interseccion_a);
         //sltTipoInterseccionB        = findViewById(R.id.slt_tipo_interseccion_b);
-        sltClaseVia                 = findViewById(R.id.slt_clase_via);
-        sltTipoPoste                = findViewById(R.id.slt_tipo_poste);
-        sltNormaConstruccionPoste   = findViewById(R.id.slt_norma_construccion_poste);
-        sltTipoRetenida             = findViewById(R.id.slt_tipo_retenida);
-        sltTipoRed                  = findViewById(R.id.slt_tipo_red);
-        sltTipoTension              = findViewById(R.id.slt_tipo_tension);
-        sltTipoEstructura           = findViewById(R.id.slt_tipo_estructura);
-        sltNormaConstruccionRed     = findViewById(R.id.slt_norma_construccion_red);
-        sltCensoAsignado            = findViewById(R.id.slt_censo_asignado);
+        sltClaseVia = findViewById(R.id.slt_clase_via);
+        sltTipoPoste = findViewById(R.id.slt_tipo_poste);
+        sltNormaConstruccionPoste = findViewById(R.id.slt_norma_construccion_poste);
+        sltTipoRetenida = findViewById(R.id.slt_tipo_retenida);
+        sltTipoRed = findViewById(R.id.slt_tipo_red);
+        sltTipoTension = findViewById(R.id.slt_tipo_tension);
+        sltTipoEstructura = findViewById(R.id.slt_tipo_estructura);
+        sltNormaConstruccionRed = findViewById(R.id.slt_norma_construccion_red);
+        sltCensoAsignado = findViewById(R.id.slt_censo_asignado);
         //--
-        txtElementoNo               = findViewById(R.id.txt_elemento_no);
-        txtLatitud                  = findViewById(R.id.txt_latitud);
-        txtLongitud                 = findViewById(R.id.txt_longitud);
-        txtBuscarElemento           = findViewById(R.id.txt_buscar_elemento);
-        txtDireccion                = findViewById(R.id.txt_direccion);
-        txtInterdistancia           = findViewById(R.id.txt_interdistancia);
-        txtPotenciaTransformador    = findViewById(R.id.txt_potencia_transformador);
-        txtMtTransformador          = findViewById(R.id.txt_mt_transformador);
-        txtCtTransformador          = findViewById(R.id.txt_ct_transformador);
-        txtPosteNo                  = findViewById(R.id.txt_poste_no);
-        txtObservacion              = findViewById(R.id.txt_observacion);
+        txtElementoNo = findViewById(R.id.txt_elemento_no);
+        txtLatitud = findViewById(R.id.txt_latitud);
+        txtLongitud = findViewById(R.id.txt_longitud);
+        txtBuscarElemento = findViewById(R.id.txt_buscar_elemento);
+        txtDireccion = findViewById(R.id.txt_direccion);
+        txtInterdistancia = findViewById(R.id.txt_interdistancia);
+        txtPotenciaTransformador = findViewById(R.id.txt_potencia_transformador);
+        txtMtTransformador = findViewById(R.id.txt_mt_transformador);
+        txtCtTransformador = findViewById(R.id.txt_ct_transformador);
+        txtPosteNo = findViewById(R.id.txt_poste_no);
+        txtObservacion = findViewById(R.id.txt_observacion);
         //--
-        swLuminariaVisible          = findViewById(R.id.sw_numero_luminaria_visible);
-        swPoseeLuminaria            = findViewById(R.id.sw_tiene_luminaria);
-        swPosteExclusivoAp          = findViewById(R.id.sw_poste_exclulsivo_alumbrado_publico);
-        swPuestaTierra              = findViewById(R.id.sw_puesta_tierra);
+        swLuminariaVisible = findViewById(R.id.sw_numero_luminaria_visible);
+        swPoseeLuminaria = findViewById(R.id.sw_tiene_luminaria);
+        swPosteExclusivoAp = findViewById(R.id.sw_poste_exclulsivo_alumbrado_publico);
+        swPuestaTierra = findViewById(R.id.sw_puesta_tierra);
         //--
-        btnCapturarGPS              = findViewById(R.id.btn_capturar_gps);
-        btnGuardar                  = findViewById(R.id.btn_guardar);
-        btnCancelar                 = findViewById(R.id.btn_cancelar);
-        btnTomarFoto1               = findViewById(R.id.btn_tomar_foto_1);
-        btnTomarFoto2               = findViewById(R.id.btn_tomar_foto_2);
-        btnBorrarFoto1              = findViewById(R.id.btn_borrar_foto_1);
-        btnBorrarFoto2              = findViewById(R.id.btn_borrar_foto_2);
-        btnAgregarArmadoRed         = findViewById(R.id.btn_agregar_armado);
-        btnBuscarElemento           = findViewById(R.id.btn_buscar_elemento);
-        btnEliminarArmado_1         = findViewById(R.id.btn_eliminar_armado_1);
-        btnEliminarArmado_2         = findViewById(R.id.btn_eliminar_armado_2);
-        btnEliminarArmado_3         = findViewById(R.id.btn_eliminar_armado_3);
-        btnEditarDireccion          = findViewById(R.id.btn_editar_direccion);
-        btnLimpiar                  = findViewById(R.id.btn_limpiar);
+        btnCapturarGPS = findViewById(R.id.btn_capturar_gps);
+        btnGuardar = findViewById(R.id.btn_guardar);
+        btnCancelar = findViewById(R.id.btn_cancelar);
+        btnTomarFoto1 = findViewById(R.id.btn_tomar_foto_1);
+        btnTomarFoto2 = findViewById(R.id.btn_tomar_foto_2);
+        btnBorrarFoto1 = findViewById(R.id.btn_borrar_foto_1);
+        btnBorrarFoto2 = findViewById(R.id.btn_borrar_foto_2);
+        btnAgregarArmadoRed = findViewById(R.id.btn_agregar_armado);
+        btnBuscarElemento = findViewById(R.id.btn_buscar_elemento);
+        btnEliminarArmado_1 = findViewById(R.id.btn_eliminar_armado_1);
+        btnEliminarArmado_2 = findViewById(R.id.btn_eliminar_armado_2);
+        btnEliminarArmado_3 = findViewById(R.id.btn_eliminar_armado_3);
+        btnEditarDireccion = findViewById(R.id.btn_editar_direccion);
+        btnLimpiar = findViewById(R.id.btn_limpiar);
         //--
         imgFoto1 = findViewById(R.id.foto_1);
         imgFoto2 = findViewById(R.id.foto_2);
         //--
-        txt_norma_armado_red_1      = findViewById(R.id.txt_norma_armado_red_1);
-        txt_norma_armado_red_2      = findViewById(R.id.txt_norma_armado_red_2);
-        txt_norma_armado_red_3      = findViewById(R.id.txt_norma_armado_red_3);
+        txt_norma_armado_red_1 = findViewById(R.id.txt_norma_armado_red_1);
+        txt_norma_armado_red_2 = findViewById(R.id.txt_norma_armado_red_2);
+        txt_norma_armado_red_3 = findViewById(R.id.txt_norma_armado_red_3);
+        //--
+        viewLatitud = findViewById(R.id.gps_latitud);
+        viewLongitud = findViewById(R.id.gps_longitud);
+        viewAltitud  = findViewById(R.id.gps_altitud);
+        viewPrecision = findViewById(R.id.gps_precision);
+        viewDireccion = findViewById(R.id.gps_direccion);
+        viewVelocidad  = findViewById(R.id.gps_velocidad);
+
         //--
         txtElementoNo.setEnabled(false);
         txtDireccion.setEnabled(false);
@@ -342,25 +346,25 @@ public class CensoTecnico extends AppCompatActivity{
         swLuminariaVisible.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                chkSwLuminariaVisible = (isChecked)?"S":"N";
+                chkSwLuminariaVisible = (isChecked) ? "S" : "N";
             }
         });
         swPoseeLuminaria.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                chkSwPoseeLuminaria = (isChecked)?"S":"N";
+                chkSwPoseeLuminaria = (isChecked) ? "S" : "N";
             }
         });
         swPuestaTierra.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                chkSwPuestaTierra = (isChecked)?"S":"N";
+                chkSwPuestaTierra = (isChecked) ? "S" : "N";
             }
         });
         swPosteExclusivoAp.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                chkSwPosteExclusivoAp = (isChecked)?"S":"N";
+                chkSwPosteExclusivoAp = (isChecked) ? "S" : "N";
             }
         });
         //swLuminariaVisible.setEnabled(false);
@@ -369,34 +373,46 @@ public class CensoTecnico extends AppCompatActivity{
         btnCapturarGPS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                tomarCoordenadas();
+                if(!estadoGPS()){
+                    alert.setTitle(getString(R.string.titulo_alerta));
+                    alert.setMessage(getString(R.string.alert_gps_deshabilitado));
+                    alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    });
+                    alert.create().show();
+                }
+                else {
+                    txtLatitud.setText(viewLatitud.getText().toString().trim());
+                    txtLongitud.setText(viewLongitud.getText().toString().trim());
+                }
             }
         });
         btnGuardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(validarFormulario()){
+                if (validarFormulario()) {
                     ConnectivityManager conn = (ConnectivityManager) getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
                     NetworkInfo networkInfo = conn.getActiveNetworkInfo();
 
-                    if(networkInfo != null && networkInfo.isConnected()) {
+                    if (networkInfo != null && networkInfo.isConnected()) {
                         //Toast.makeText(getApplicationContext(),"Conectando con "+networkInfo.getTypeName()+" / "+networkInfo.getExtraInfo(),Toast.LENGTH_LONG).show();
-                        guardarFormulario('R',database);
-                    }
-                    else{
+                        guardarFormulario('R', database);
+                    } else {
                         alert.setTitle(R.string.titulo_alerta);
                         alert.setMessage(R.string.alert_conexion);
                         alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 dialogInterface.cancel();
-                                guardarFormulario('L',database);
+                                guardarFormulario('L', database);
                             }
                         });
                         alert.create().show();
                     }
-                }
-                else{
+                } else {
                     alert.setTitle(R.string.titulo_alerta);
                     alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
                         @Override
@@ -420,8 +436,8 @@ public class CensoTecnico extends AppCompatActivity{
         btnAgregarArmadoRed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(validarArmadoRed()){
-                    if(tipoArmadoList.size()< 3){
+                if (validarArmadoRed()) {
+                    if (tipoArmadoList.size() < 3) {
                         TipoRed tipoRedArmamdo = new TipoRed();
                         tipoRedArmamdo.setId(tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId());
                         tipoRedArmamdo.setDescripcion(tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getDescripcion());
@@ -432,7 +448,7 @@ public class CensoTecnico extends AppCompatActivity{
 
                         NormaConstruccionRed normaConstruccionRed = new NormaConstruccionRed();
 
-                        TipoEstructura tipoEstructuraArmado =  normaConstruccionRed.getTipoEstructura();
+                        TipoEstructura tipoEstructuraArmado = normaConstruccionRed.getTipoEstructura();
                         tipoEstructuraArmado.setId(tipoEstructuraList.get(sltTipoEstructura.getSelectedItemPosition()).getId());
                         tipoEstructuraArmado.setDescripcion(tipoEstructuraList.get(sltTipoEstructura.getSelectedItemPosition()).getDescripcion());
 
@@ -443,13 +459,12 @@ public class CensoTecnico extends AppCompatActivity{
                                 tipoRedArmamdo,
                                 tipoTensionArmado,
                                 normaConstruccionRed
-                                );
+                        );
                         tipoArmadoList.add(componenteNormaConstruccionRed);
                     }
                     mostrarTablaArmado();
 
-                }
-                else{
+                } else {
                     alert.setTitle(R.string.titulo_alerta);
                     alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
                         @Override
@@ -523,7 +538,7 @@ public class CensoTecnico extends AppCompatActivity{
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 cargarMobiliario(database);
-                Log.d("Mobiliario","selected");
+                Log.d("Mobiliario", "selected");
             }
 
             @Override
@@ -585,6 +600,7 @@ public class CensoTecnico extends AppCompatActivity{
         cargarTension(database);
         cargarRetenidaPoste(database);
         cargarCensoAsignado(database);
+        activarCoordenadas();
 
     }
 
@@ -606,14 +622,14 @@ public class CensoTecnico extends AppCompatActivity{
 
                     try {
                         InputStream s = getContentResolver().openInputStream(selectionPath);
-                        bitmap = BitmapFactory.decodeStream(s,null,options);
+                        bitmap = BitmapFactory.decodeStream(s, null, options);
                         stream = new ByteArrayOutputStream();
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                         array = stream.toByteArray();
-                        encode = Base64.encodeToString(array,0);
+                        encode = Base64.encodeToString(array, 0);
                         //Log.d("Path",""+encode);
-                    } catch (Exception e){
-                        Toast.makeText(getApplicationContext(),e.getMessage(), Toast.LENGTH_LONG).show();
+                    } catch (Exception e) {
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                     }
 
                     if (accionarFoto1) {
@@ -638,18 +654,18 @@ public class CensoTecnico extends AppCompatActivity{
                     bitmap = BitmapFactory.decodeFile(path, options);
 
                     stream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG,100,stream);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                     array = stream.toByteArray();
 
                     if (accionarFoto1) {
                         imgFoto1.setImageBitmap(bitmap);
-                        encodeStringFoto_1 = Base64.encodeToString(array,0);
+                        encodeStringFoto_1 = Base64.encodeToString(array, 0);
                         accionarFoto1 = false;
                     }
 
                     if (accionarFoto2) {
                         imgFoto2.setImageBitmap(bitmap);
-                        encodeStringFoto_2 = Base64.encodeToString(array,0);
+                        encodeStringFoto_2 = Base64.encodeToString(array, 0);
                         accionarFoto2 = false;
                     }
                     break;
@@ -675,40 +691,37 @@ public class CensoTecnico extends AppCompatActivity{
     }
 
     //--Administrar Tabla Armado Red----
-    private boolean validarArmadoRed(){
-        if(tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId() == 0){
+    private boolean validarArmadoRed() {
+        if (tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId() == 0) {
             alert.setMessage(R.string.alert_tipo_red);
             return false;
-        }
-        else{
-            if(tipoTensionList.get(sltTipoTension.getSelectedItemPosition()).getId() == 0){
+        } else {
+            if (tipoTensionList.get(sltTipoTension.getSelectedItemPosition()).getId() == 0) {
                 alert.setMessage(R.string.alert_tipo_tension);
                 return false;
-            }
-            else{
-                if(tipoEstructuraList.get(sltTipoEstructura.getSelectedItemPosition()).getId()==0){
+            } else {
+                if (tipoEstructuraList.get(sltTipoEstructura.getSelectedItemPosition()).getId() == 0) {
                     alert.setMessage(R.string.alert_tipo_estructura);
                     return false;
-                }
-                else{
-                    if(normaConstruccionRedList.get(sltNormaConstruccionRed.getSelectedItemPosition()).getId()==0){
+                } else {
+                    if (normaConstruccionRedList.get(sltNormaConstruccionRed.getSelectedItemPosition()).getId() == 0) {
                         alert.setMessage(R.string.alert_norma_construccion_red);
                         return false;
-                    }
-                    else{
+                    } else {
                         return true;
                     }
                 }
             }
         }
     }
+
     //--
-    private void mostrarTablaArmado(){
+    private void mostrarTablaArmado() {
         txt_norma_armado_red_1.setText("-");
         txt_norma_armado_red_2.setText("-");
         txt_norma_armado_red_3.setText("-");
         int index = 0;
-        while(index < tipoArmadoList.size()){
+        while (index < tipoArmadoList.size()) {
             switch (index) {
                 case 0:
                     txt_norma_armado_red_1.setText(tipoArmadoList.get(index).getNormaConstruccionRed().getDescripcion());
@@ -723,9 +736,10 @@ public class CensoTecnico extends AppCompatActivity{
             index++;
         }
     }
+
     //--
-    private void borrarItemTablaArmado(int index){
-        if(tipoArmadoList.size()>index)
+    private void borrarItemTablaArmado(int index) {
+        if (tipoArmadoList.size() > index)
             tipoArmadoList.remove(index);
         mostrarTablaArmado();
     }
@@ -756,6 +770,7 @@ public class CensoTecnico extends AppCompatActivity{
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltTipologia.setAdapter(dataAdapter);
     }
+
     //--
     private void cargarMobiliario(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
@@ -785,7 +800,7 @@ public class CensoTecnico extends AppCompatActivity{
                     mobiliario = new Mobiliario(cursor.getInt(0), cursor.getString(2).toUpperCase());
                     mobiliarioList.add(mobiliario);
                     labels.add(cursor.getString(2).toUpperCase());
-                    if(idMobiliarioBusqueda == cursor.getInt(0)){
+                    if (idMobiliarioBusqueda == cursor.getInt(0)) {
                         pos = i;
                     }
                 } while (cursor.moveToNext());
@@ -798,6 +813,7 @@ public class CensoTecnico extends AppCompatActivity{
         sltMobiliario.setAdapter(dataAdapter);
         sltMobiliario.setSelection(pos);
     }
+
     //--
     private void cargarReferencia(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
@@ -819,7 +835,7 @@ public class CensoTecnico extends AppCompatActivity{
                     referenciaMobiliario = new ReferenciaMobiliario(cursor.getInt(0), cursor.getString(2).toUpperCase());
                     referenciaMobiliarioList.add(referenciaMobiliario);
                     labels.add(cursor.getString(2).toUpperCase());
-                    if(idReferenciaBusqueda == cursor.getInt(0)){
+                    if (idReferenciaBusqueda == cursor.getInt(0)) {
                         pos = i;
                     }
                 } while (cursor.moveToNext());
@@ -831,8 +847,9 @@ public class CensoTecnico extends AppCompatActivity{
         sltReferencia.setAdapter(dataAdapter);
         sltReferencia.setSelection(pos);
     }
+
     //--
-    private void cargarEstadoMobiliario(SQLiteDatabase sqLiteDatabase){
+    private void cargarEstadoMobiliario(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
         estadoMobiliarioList = new ArrayList<DataSpinner>();
         List<String> labels = new ArrayList<>();
@@ -857,6 +874,7 @@ public class CensoTecnico extends AppCompatActivity{
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltEstadoMobiliario.setAdapter(dataAdapter);
     }
+
     //--
     private void cargarBarrio(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
@@ -883,6 +901,7 @@ public class CensoTecnico extends AppCompatActivity{
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltBarrio.setAdapter(dataAdapter);
     }
+
     //--
     private void cargarTipoInterseccion(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
@@ -913,6 +932,7 @@ public class CensoTecnico extends AppCompatActivity{
         sltTipoInterseccionA.setAdapter(dataAdapter);
         sltTipoInterseccionB.setAdapter(dataAdapter);
     }
+
     //--
     private void cargarClaseVia(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
@@ -939,6 +959,7 @@ public class CensoTecnico extends AppCompatActivity{
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltClaseVia.setAdapter(dataAdapter);
     }
+
     //--
     private void cargarTipoPoste(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
@@ -965,6 +986,7 @@ public class CensoTecnico extends AppCompatActivity{
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltTipoPoste.setAdapter(dataAdapter);
     }
+
     //--
     private void cargarTipoRed(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
@@ -991,6 +1013,7 @@ public class CensoTecnico extends AppCompatActivity{
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltTipoRed.setAdapter(dataAdapter);
     }
+
     //--
     private void cargarTension(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
@@ -1017,6 +1040,7 @@ public class CensoTecnico extends AppCompatActivity{
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltTipoTension.setAdapter(dataAdapter);
     }
+
     //--
     private void cargarRetenidaPoste(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
@@ -1043,6 +1067,7 @@ public class CensoTecnico extends AppCompatActivity{
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltTipoRetenida.setAdapter(dataAdapter);
     }
+
     //--
     private void cargarNormaConstruccionPoste(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
@@ -1070,6 +1095,7 @@ public class CensoTecnico extends AppCompatActivity{
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltNormaConstruccionPoste.setAdapter(dataAdapter);
     }
+
     //--
     private void cargarTipoEstructura(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
@@ -1098,6 +1124,7 @@ public class CensoTecnico extends AppCompatActivity{
         sltTipoEstructura.setAdapter(dataAdapter);
 
     }
+
     //--
     private void cargarNormaConstruccionRed(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
@@ -1125,13 +1152,14 @@ public class CensoTecnico extends AppCompatActivity{
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltNormaConstruccionRed.setAdapter(dataAdapter);
     }
+
     //--
     private void cargarCensoAsignado(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
         censoAsignadoList = new ArrayList<DataSpinner>();
         List<String> labels = new ArrayList<>();
         CensoAsignadoDB censoAsignadoDB = new CensoAsignadoDB(sqLiteDatabase);
-        Cursor cursor = censoAsignadoDB.consultarTodo(idDefaultMunicipio,idDefaultProceso);
+        Cursor cursor = censoAsignadoDB.consultarTodo(idDefaultMunicipio, idDefaultProceso);
         DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
         censoAsignadoList.add(dataSpinner);
         labels.add(getText(R.string.seleccione).toString());
@@ -1151,9 +1179,10 @@ public class CensoTecnico extends AppCompatActivity{
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltCensoAsignado.setAdapter(dataAdapter);
     }
+
     //--
-    private void buscarElemento(SQLiteDatabase sqLiteDatabase){
-        if(txtBuscarElemento.getText().toString().trim().length() == 0){
+    private void buscarElemento(SQLiteDatabase sqLiteDatabase) {
+        if (txtBuscarElemento.getText().toString().trim().length() == 0) {
             alert.setTitle(R.string.titulo_alerta);
             alert.setMessage(R.string.alert_elemento_buscar);
             alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
@@ -1163,14 +1192,13 @@ public class CensoTecnico extends AppCompatActivity{
                 }
             });
             alert.create().show();
-        }
-        else{
+        } else {
             alertBuscarElemento = new AlertDialog.Builder(this);
             ElementoDB elementoDB = new ElementoDB(sqLiteDatabase);
-            Cursor cursorElemento = elementoDB.consultarElemento(idDefaultMunicipio,idDefaultProceso,parseInt(txtBuscarElemento.getText().toString()));
-            if(cursorElemento.getCount() == 0) {
+            Cursor cursorElemento = elementoDB.consultarElemento(idDefaultMunicipio, idDefaultProceso, parseInt(txtBuscarElemento.getText().toString()));
+            if (cursorElemento.getCount() == 0) {
                 alertBuscarElemento.setTitle(R.string.titulo_alerta);
-                alertBuscarElemento.setMessage(getText(R.string.alert_elemento_no_encontrado)+" sobre el Elemento: "+txtBuscarElemento.getText()+". ¿Desea registrar el Elemento?" );
+                alertBuscarElemento.setMessage(getText(R.string.alert_elemento_no_encontrado) + " sobre el Elemento: " + txtBuscarElemento.getText() + ". ¿Desea registrar el Elemento?");
                 alertBuscarElemento.setPositiveButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -1189,8 +1217,7 @@ public class CensoTecnico extends AppCompatActivity{
                 });
                 alertBuscarElemento.create().show();
 
-            }
-            else {
+            } else {
 
                 cursorElemento.moveToFirst();
 
@@ -1208,27 +1235,27 @@ public class CensoTecnico extends AppCompatActivity{
                 txtElementoNo.setText(cursorElemento.getString(cursorElemento.getColumnIndex("elemento_no")));
                 txtDireccion.setText(cursorElemento.getString(cursorElemento.getColumnIndex("direccion")));
 
-                idMobiliarioBusqueda =  cursorElemento.getInt(cursorElemento.getColumnIndex("id_mobiliario"));
-                idReferenciaBusqueda =  cursorElemento.getInt(cursorElemento.getColumnIndex("id_referencia"));
+                idMobiliarioBusqueda = cursorElemento.getInt(cursorElemento.getColumnIndex("id_mobiliario"));
+                idReferenciaBusqueda = cursorElemento.getInt(cursorElemento.getColumnIndex("id_referencia"));
 
                 //tipologiaList
-                for(int i=0;i<tipologiaList.size();i++){
-                    if(tipologiaList.get(i).getId() == cursorElemento.getInt(cursorElemento.getColumnIndex("id_tipologia"))){
+                for (int i = 0; i < tipologiaList.size(); i++) {
+                    if (tipologiaList.get(i).getId() == cursorElemento.getInt(cursorElemento.getColumnIndex("id_tipologia"))) {
                         sltTipologia.setAdapter(sltTipologia.getAdapter());
                         sltTipologia.setSelection(i);
                     }
                 }
-               // this.cargarMobiliario(database);
-               // this.cargarReferencia(database);
+                // this.cargarMobiliario(database);
+                // this.cargarReferencia(database);
                 //EstadoList
-                for(int i=0;i<estadoMobiliarioList.size();i++){
-                    if(estadoMobiliarioList.get(i).getId() == cursorElemento.getInt(cursorElemento.getColumnIndex("id_estado_mobiliario"))){
+                for (int i = 0; i < estadoMobiliarioList.size(); i++) {
+                    if (estadoMobiliarioList.get(i).getId() == cursorElemento.getInt(cursorElemento.getColumnIndex("id_estado_mobiliario"))) {
                         sltEstadoMobiliario.setSelection(i);
                     }
                 }
                 //barrioList
-                for(int i=0;i<barrioList.size();i++){
-                    if(barrioList.get(i).getId() == cursorElemento.getInt(cursorElemento.getColumnIndex("id_barrio"))){
+                for (int i = 0; i < barrioList.size(); i++) {
+                    if (barrioList.get(i).getId() == cursorElemento.getInt(cursorElemento.getColumnIndex("id_barrio"))) {
                         sltBarrio.setSelection(i);
                     }
                 }
@@ -1236,17 +1263,18 @@ public class CensoTecnico extends AppCompatActivity{
             cursorElemento.close();
         }
     }
+
     //--
     //--Administrar Direccion
-    private void armarDireccion(){
+    private void armarDireccion() {
         alertDireccion = new AlertDialog.Builder(this);
-        View content = LayoutInflater.from(getApplicationContext()).inflate(R.layout.direccion,null);
-        txtMensajeDireccion         = content.findViewById(R.id.txt_mensaje_direccion);
-        sltTipoInterseccionA        = content.findViewById(R.id.slt_tipo_interseccion_a);
-        sltTipoInterseccionB        = content.findViewById(R.id.slt_tipo_interseccion_b);
-        txtNumeroInterseccion       = content.findViewById(R.id.numero_interseccion);
-        txtNumeracionA              = content.findViewById(R.id.txt_numeracion_a);
-        txtNumeracionB              = content.findViewById(R.id.txt_numeracion_b);
+        View content = LayoutInflater.from(getApplicationContext()).inflate(R.layout.direccion, null);
+        txtMensajeDireccion = content.findViewById(R.id.txt_mensaje_direccion);
+        sltTipoInterseccionA = content.findViewById(R.id.slt_tipo_interseccion_a);
+        sltTipoInterseccionB = content.findViewById(R.id.slt_tipo_interseccion_b);
+        txtNumeroInterseccion = content.findViewById(R.id.numero_interseccion);
+        txtNumeracionA = content.findViewById(R.id.txt_numeracion_a);
+        txtNumeracionB = content.findViewById(R.id.txt_numeracion_b);
         cargarTipoInterseccion(database);
         alertDireccion.setTitle(R.string.titulo_direccion);
         alertDireccion.setView(content)
@@ -1254,35 +1282,32 @@ public class CensoTecnico extends AppCompatActivity{
                 .setPositiveButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        if(tipoInterseccionA.get(sltTipoInterseccionA.getSelectedItemPosition()).getId() == 0){
+                        if (tipoInterseccionA.get(sltTipoInterseccionA.getSelectedItemPosition()).getId() == 0) {
                             txtMensajeDireccion.setText("Seleccione Tipo Intersección");
-                            Log.d("Busqueda","Seleccione Tipo Intersección");
-                        }
-                        else{
-                            if(TextUtils.isEmpty(txtNumeroInterseccion.getText().toString())){
+                            Log.d("Busqueda", "Seleccione Tipo Intersección");
+                        } else {
+                            if (TextUtils.isEmpty(txtNumeroInterseccion.getText().toString())) {
                                 txtMensajeDireccion.setText("Digite el Número de la Intersección");
-                            }
-                            else{
+                            } else {
                                 String miDireccion = "";
 
                                 miDireccion = miDireccion + tipoInterseccionA.get(sltTipoInterseccionA.getSelectedItemPosition()).getDescripcion();
                                 miDireccion = miDireccion + " " + txtNumeroInterseccion.getText().toString();
 
-                                if(tipoInterseccionA.get(sltTipoInterseccionB.getSelectedItemPosition()).getId() != 0 ){
+                                if (tipoInterseccionA.get(sltTipoInterseccionB.getSelectedItemPosition()).getId() != 0) {
                                     miDireccion = miDireccion + " " + tipoInterseccionB.get(sltTipoInterseccionB.getSelectedItemPosition()).getDescripcion();
                                 }
-                                if(!TextUtils.isEmpty(txtNumeracionA.getText().toString())){
-                                    if(tipoInterseccionA.get(sltTipoInterseccionB.getSelectedItemPosition()).getId() != 0 ) {
+                                if (!TextUtils.isEmpty(txtNumeracionA.getText().toString())) {
+                                    if (tipoInterseccionA.get(sltTipoInterseccionB.getSelectedItemPosition()).getId() != 0) {
                                         miDireccion = miDireccion + " " + txtNumeracionA.getText().toString();
-                                    }
-                                    else{
+                                    } else {
                                         miDireccion = miDireccion + " N " + txtNumeracionA.getText().toString();
                                     }
                                 }
-                                if(!TextUtils.isEmpty(txtNumeracionB.getText().toString())){
-                                    miDireccion = miDireccion + " - " +txtNumeracionB.getText().toString();
+                                if (!TextUtils.isEmpty(txtNumeracionB.getText().toString())) {
+                                    miDireccion = miDireccion + " - " + txtNumeracionB.getText().toString();
                                 }
-                                if(!miDireccion.isEmpty())
+                                if (!miDireccion.isEmpty())
                                     txtDireccion.setText(miDireccion);
                             }
                         }
@@ -1299,13 +1324,12 @@ public class CensoTecnico extends AppCompatActivity{
     }
 
     //--Validar Formulario para enviar--
-    private boolean validarFormulario(){
+    private boolean validarFormulario() {
         boolean swTmp = true;
-        if(censoAsignadoList.get(sltCensoAsignado.getSelectedItemPosition()).getId()==0){
+        if (censoAsignadoList.get(sltCensoAsignado.getSelectedItemPosition()).getId() == 0) {
             alert.setMessage(R.string.alert_censo_asignado);
             return false;
-        }
-        else {
+        } else {
             if (txtElementoNo.getText().toString().isEmpty() && swLuminariaVisible.isChecked()) {
                 alert.setMessage(R.string.alert_censo_tecnico_elemento_no);
                 return false;
@@ -1321,13 +1345,11 @@ public class CensoTecnico extends AppCompatActivity{
                         if (referenciaMobiliarioList.get(sltReferencia.getSelectedItemPosition()).getIdReferenciaMobiliario() == 0) {
                             alert.setMessage(R.string.alert_censo_referencia);
                             return false;
-                        }
-                        else{
+                        } else {
                             if (estadoMobiliarioList.get(sltEstadoMobiliario.getSelectedItemPosition()).getId() == 0) {
                                 alert.setMessage(R.string.alert_censo_estado_mobiliario);
                                 return false;
-                            }
-                            else {
+                            } else {
                                 if (barrioList.get(sltBarrio.getSelectedItemPosition()).getId() == 0) {
                                     alert.setMessage(R.string.alert_censo_referencia);
                                     return false;
@@ -1395,13 +1417,14 @@ public class CensoTecnico extends AppCompatActivity{
             }
         }
     }
+
     //--
-    private void resetFrm(boolean enabled){
+    private void resetFrm(boolean enabled) {
         idMobiliarioBusqueda = 0;
         idReferenciaBusqueda = 0;
         swLuminariaVisible.setEnabled(enabled);
 
-        if(enabled) {
+        if (enabled) {
             txtElementoNo.setText("");
         }
 
@@ -1440,9 +1463,10 @@ public class CensoTecnico extends AppCompatActivity{
         tipoArmadoList.clear();
         mostrarTablaArmado();
     }
+
     //--
-    private void guardarFormulario(char tipoAlmacenamiento,SQLiteDatabase sqLiteDatabase)  {
-        switch (tipoAlmacenamiento){
+    private void guardarFormulario(char tipoAlmacenamiento, SQLiteDatabase sqLiteDatabase) {
+        switch (tipoAlmacenamiento) {
             case 'L':
                 almacenarDatosLocal(sqLiteDatabase);
                 break;
@@ -1451,8 +1475,9 @@ public class CensoTecnico extends AppCompatActivity{
                 break;
         }
     }
+
     //--
-    private void almacenarDatosLocal(SQLiteDatabase sqLiteDatabase){
+    private void almacenarDatosLocal(SQLiteDatabase sqLiteDatabase) {
         Barrio barrio = new Barrio();
         barrio.setIdBarrio(barrioList.get(sltBarrio.getSelectedItemPosition()).getId());
         barrio.setNombreBarrio(barrioList.get(sltBarrio.getSelectedItemPosition()).getDescripcion());
@@ -1482,7 +1507,7 @@ public class CensoTecnico extends AppCompatActivity{
         Contrato contrato = new Contrato();
         contrato.setId(idDefaultContrato);
 
-        if(txtElementoNo.getText().toString().isEmpty() && !swLuminariaVisible.isChecked()){
+        if (txtElementoNo.getText().toString().isEmpty() && !swLuminariaVisible.isChecked()) {
             elemento = new Elemento();
             elemento.setId(0);
             elemento.setElemento_no("");
@@ -1528,18 +1553,18 @@ public class CensoTecnico extends AppCompatActivity{
         censo.setPosteNo(txtPosteNo.getText().toString());
         censo.setNormaConstruccionPoste(normaConstruccionPoste);
         //Transformador
-        Double potencia = (txtPotenciaTransformador.getText().toString().isEmpty())?0.0:Double.parseDouble(txtPotenciaTransformador.getText().toString());
+        Double potencia = (txtPotenciaTransformador.getText().toString().isEmpty()) ? 0.0 : Double.parseDouble(txtPotenciaTransformador.getText().toString());
         //--
         censo.setPotenciaTransformador(potencia);
         censo.setPlacaCtTransformador(txtCtTransformador.getText().toString());
         censo.setPlacaMtTransformador(txtMtTransformador.getText().toString());
         //--
 
-        String fechaHora = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.getDefault()).format(new Date());
+        String fechaHora = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
         censo.setFchRegistro(fechaHora);
 
-        Float latitud = (txtLatitud.getText().toString().isEmpty())?0:Float.parseFloat(txtLatitud.getText().toString());
-        Float longitud = (txtLongitud.getText().toString().isEmpty())?0:Float.parseFloat(txtLongitud.getText().toString());
+        Float latitud = (txtLatitud.getText().toString().isEmpty()) ? 0 : Float.parseFloat(txtLatitud.getText().toString());
+        Float longitud = (txtLongitud.getText().toString().isEmpty()) ? 0 : Float.parseFloat(txtLongitud.getText().toString());
         censo.setLatitud(latitud);
         censo.setLongitud(longitud);
         censo.setChkSwLuminariaVisible(chkSwLuminariaVisible);
@@ -1549,11 +1574,11 @@ public class CensoTecnico extends AppCompatActivity{
         censo.setObservacion(txtObservacion.getText().toString());
 
         CensoDB censoDB = new CensoDB(sqLiteDatabase);
-        if(censoDB.agregarDatos(censo)){
+        if (censoDB.agregarDatos(censo)) {
             //Log.d("LastId",""+censo.getLastId());
 
             //--Guardar el Tipo de Armado;
-            for(int n=0;n<tipoArmadoList.size();n++){
+            for (int n = 0; n < tipoArmadoList.size(); n++) {
                 TipoRed tipoRedArmado = new TipoRed();
                 tipoRedArmado.setId(tipoArmadoList.get(n).getTipoRed().getId());
 
@@ -1588,8 +1613,7 @@ public class CensoTecnico extends AppCompatActivity{
                 }
             });
             alert.create().show();
-        }
-        else{
+        } else {
             alert.setTitle(R.string.titulo_alerta);
             alert.setMessage(R.string.alert_error_almacenando_datos);
             alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
@@ -1606,7 +1630,7 @@ public class CensoTecnico extends AppCompatActivity{
         final AsyncHttpClient client = new AsyncHttpClient();
         RequestParams requestParams = new RequestParams();
 
-        Integer id_elemento_t = (txtElementoNo.getText().toString().isEmpty() && !swLuminariaVisible.isChecked())?null:elemento.getId();
+        Integer id_elemento_t = (txtElementoNo.getText().toString().isEmpty() && !swLuminariaVisible.isChecked()) ? null : elemento.getId();
 
         requestParams.put("id_usuario", idUsuario);
         requestParams.put("id_municipio", idDefaultMunicipio);
@@ -1641,16 +1665,16 @@ public class CensoTecnico extends AppCompatActivity{
         requestParams.put("foto_2", encodeStringFoto_2);
         int index = 0;
         List list = new ArrayList();
-        while(index < tipoArmadoList.size()){
+        while (index < tipoArmadoList.size()) {
             Map<String, Integer> map = new HashMap<String, Integer>();
-            map.put("id_tipo_red",tipoArmadoList.get(index).getTipoRed().getId());
-            map.put("id_tipo_tension",tipoArmadoList.get(index).getTipoTension().getId());
-            map.put("id_tipo_estructura",tipoArmadoList.get(index).getNormaConstruccionRed().getTipoEstructura().getId());
-            map.put("id_norma_construccion",tipoArmadoList.get(index).getNormaConstruccionRed().getId());
+            map.put("id_tipo_red", tipoArmadoList.get(index).getTipoRed().getId());
+            map.put("id_tipo_tension", tipoArmadoList.get(index).getTipoTension().getId());
+            map.put("id_tipo_estructura", tipoArmadoList.get(index).getNormaConstruccionRed().getTipoEstructura().getId());
+            map.put("id_norma_construccion", tipoArmadoList.get(index).getNormaConstruccionRed().getId());
             list.add(map);
             index++;
         }
-        requestParams.put("tipo_armado",list);
+        requestParams.put("tipo_armado", list);
         client.setTimeout(Constantes.TIMEOUT);
 
         RequestHandle post = client.post(ServicioWeb.urlGuardarCensoTecnico, requestParams, new AsyncHttpResponseHandler() {
@@ -1658,6 +1682,7 @@ public class CensoTecnico extends AppCompatActivity{
             public void onStart() {
                 super.onStart();
             }
+
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 String respuesta = new String(responseBody);
@@ -1682,7 +1707,7 @@ public class CensoTecnico extends AppCompatActivity{
                 } catch (JSONException e) {
                     e.printStackTrace();
                     //Log.d("resultado","Error: onsuccess"+e.getMessage()+"respuesta:"+respuesta);
-                    Toast.makeText(getApplicationContext(),getText(R.string.alert_error_ejecucion)+ " Servicio Web, Código:"+statusCode, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getText(R.string.alert_error_ejecucion) + " Servicio Web, Código:" + statusCode, Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -1690,10 +1715,11 @@ public class CensoTecnico extends AppCompatActivity{
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 String respuesta = new String(responseBody);
                 //Log.d("resultado","error "+respuesta);
-                Toast.makeText(getApplicationContext(),getText(R.string.alert_error_ejecucion)+ " Código: "+statusCode, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), getText(R.string.alert_error_ejecucion) + " Código: " + statusCode, Toast.LENGTH_SHORT).show();
             }
         });
     }
+
     //--Administrar Cámara--
     public void cargarImagen() {
         final CharSequence[] opciones = {getText(R.string.tomar_foto).toString(), getText(R.string.cargar_imagen).toString(), getText(R.string.btn_cancelar)};
@@ -1758,46 +1784,89 @@ public class CensoTecnico extends AppCompatActivity{
         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
         startActivityForResult(intent, Constantes.CONS_TOMAR_FOTO);
     }
-
     //--Administracion del GPS
     public boolean estadoGPS() {
         ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
         return (ubicacion.isProviderEnabled(LocationManager.GPS_PROVIDER));
     }
 
-    private void tomarCoordenadas() {
+    private void activarCoordenadas() {
+        ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
         int PERMISSIONS_REQUEST_LOCATION = 0;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(CensoTecnico.this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     PERMISSIONS_REQUEST_LOCATION);
-        } else {
-            if (!estadoGPS()) {
-                alert.setTitle(getString(R.string.titulo_alerta));
-                alert.setMessage(getString(R.string.alert_gps_deshabilitado));
-                alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.cancel();
-                    }
-                });
-                alert.create().show();
-            } else {
-               fusedLocationClient.getLastLocation()
-                        .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                            @Override
-                            public void onSuccess(Location location) {
-                                if (location != null) {
-                                    txtLatitud.setText(String.valueOf(location.getLatitude()));
-                                    txtLongitud.setText(String.valueOf(location.getLongitude()));
-                                } else {
-                                    txtLatitud.setText("0");
-                                    txtLongitud.setText("0");
-                                }
-                            }
-                        });
+
+        }
+        ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, new miLocalizacion());
+    }
+
+    private void listaProvider() {
+        ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
+        List<String> listProvider = ubicacion.getAllProviders();
+
+        LocationProvider locationProvider = ubicacion.getProvider(listProvider.get(1));
+
+        Log.d("Resultado", "Lista de Proveedores:" + listProvider.toString() + "\n" +
+                "Exactitud:" + locationProvider.getAccuracy() + " mts\n" +
+                "Nombre Proveedor:" + locationProvider.getName() + "\n" +
+                "Requerimiento de Batteria:" + locationProvider.getPowerRequirement() + "\n" +
+                "Soporte Altitud:" + locationProvider.supportsAltitude() + "\n" +
+                "Soporte Velocidad:" + locationProvider.supportsSpeed()
+        );
+    }
+
+
+    private class miLocalizacion implements LocationListener{
+        @Override
+        public void onLocationChanged(Location location) {
+            float mts =  Math.round(location.getAccuracy()*100)/100;
+            float alt =  Math.round(location.getAltitude()*100)/100;
+            viewLatitud.setText(""+location.getLatitude());
+            viewLongitud.setText(""+location.getLongitude());
+            viewAltitud.setText(alt+ "Mts");
+            viewPrecision.setText(mts+ " Mts");
+            viewVelocidad.setText(""+location.getSpeed());
+            try {
+                Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+                List<Address> listDireccion = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+
+                String miDireccion = listDireccion.get(0).getThoroughfare()+" "+
+                        listDireccion.get(0).getFeatureName()+", "+
+                        listDireccion.get(0).getLocality()+"/"+
+                        listDireccion.get(0).getAdminArea();
+
+                viewDireccion.setText(miDireccion);
+                //--direccion.get(0).getAddressLine(0)
+            }catch (IOException e){
+                viewDireccion.setText("Sin Internet para convertir coordenadas en dirección");
             }
+        }
+
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String s) {
+            Toast.makeText(getApplicationContext(),"Enabled:"+s,Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        public void onProviderDisabled(String s) {
+            alert.setTitle(getString(R.string.titulo_alerta));
+            alert.setMessage(getString(R.string.alert_gps_deshabilitado));
+            alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                }
+            });
+            alert.create().show();
+            Toast.makeText(getApplicationContext(),"Disabled:"+s,Toast.LENGTH_LONG).show();
         }
     }
 
