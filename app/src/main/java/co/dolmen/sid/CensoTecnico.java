@@ -39,6 +39,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -226,10 +227,11 @@ public class CensoTecnico extends AppCompatActivity {
     private String encodeStringFoto_2;
     private String path;
     private ArrayList<ComponenteNormaConstruccionRed> tipoArmadoList;
+    //private boolean coordenadaActiva = false;
+    private ProgressBar progressBarGuardarCenso;
 
-    private double latitud;
-    private double longitud;
     Elemento elemento;
+
 
     String chkSwLuminariaVisible = "S";
     String chkSwPoseeLuminaria = "S";
@@ -330,12 +332,14 @@ public class CensoTecnico extends AppCompatActivity {
         viewPrecision = findViewById(R.id.gps_precision);
         viewDireccion = findViewById(R.id.gps_direccion);
         viewVelocidad  = findViewById(R.id.gps_velocidad);
-
+        //--
+        progressBarGuardarCenso = findViewById(R.id.progressBarGuardarCenso);
         //--
         txtElementoNo.setEnabled(false);
         txtDireccion.setEnabled(false);
         txtLatitud.setEnabled(false);
         txtLongitud.setEnabled(false);
+        progressBarGuardarCenso.setVisibility(View.INVISIBLE);
 
         btnLimpiar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -373,6 +377,7 @@ public class CensoTecnico extends AppCompatActivity {
         btnCapturarGPS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                activarCoordenadas();
                 if(!estadoGPS()){
                     alert.setTitle(getString(R.string.titulo_alerta));
                     alert.setMessage(getString(R.string.alert_gps_deshabilitado));
@@ -600,8 +605,6 @@ public class CensoTecnico extends AppCompatActivity {
         cargarTension(database);
         cargarRetenidaPoste(database);
         cargarCensoAsignado(database);
-        activarCoordenadas();
-
     }
 
     @Override
@@ -1478,6 +1481,10 @@ public class CensoTecnico extends AppCompatActivity {
 
     //--
     private void almacenarDatosLocal(SQLiteDatabase sqLiteDatabase) {
+        btnGuardar.setEnabled(false);
+        btnCancelar.setEnabled(false);
+        progressBarGuardarCenso.setVisibility(View.VISIBLE);
+
         Barrio barrio = new Barrio();
         barrio.setIdBarrio(barrioList.get(sltBarrio.getSelectedItemPosition()).getId());
         barrio.setNombreBarrio(barrioList.get(sltBarrio.getSelectedItemPosition()).getDescripcion());
@@ -1610,6 +1617,9 @@ public class CensoTecnico extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     dialogInterface.cancel();
+                    btnGuardar.setEnabled(true);
+                    btnCancelar.setEnabled(true);
+                    progressBarGuardarCenso.setVisibility(View.INVISIBLE);
                 }
             });
             alert.create().show();
@@ -1620,10 +1630,16 @@ public class CensoTecnico extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     dialogInterface.cancel();
+                    btnGuardar.setEnabled(true);
+                    btnCancelar.setEnabled(true);
+                    progressBarGuardarCenso.setVisibility(View.INVISIBLE);
                 }
             });
             alert.create().show();
         }
+        btnGuardar.setEnabled(true);
+        btnCancelar.setEnabled(true);
+        progressBarGuardarCenso.setVisibility(View.INVISIBLE);
     }
     //--
     private void almacenarDatosEnRemoto() {
@@ -1681,6 +1697,9 @@ public class CensoTecnico extends AppCompatActivity {
             @Override
             public void onStart() {
                 super.onStart();
+                btnGuardar.setEnabled(false);
+                btnCancelar.setEnabled(false);
+                progressBarGuardarCenso.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -1697,7 +1716,6 @@ public class CensoTecnico extends AppCompatActivity {
                     alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            //resetFrm(true);
                             dialogInterface.cancel();
                         }
                     });
@@ -1709,6 +1727,10 @@ public class CensoTecnico extends AppCompatActivity {
                     //Log.d("resultado","Error: onsuccess"+e.getMessage()+"respuesta:"+respuesta);
                     Toast.makeText(getApplicationContext(), getText(R.string.alert_error_ejecucion) + " Servicio Web, Código:" + statusCode, Toast.LENGTH_SHORT).show();
                 }
+                resetFrm(true);
+                btnGuardar.setEnabled(true);
+                btnCancelar.setEnabled(true);
+                progressBarGuardarCenso.setVisibility(View.INVISIBLE);
             }
 
             @Override
@@ -1716,6 +1738,9 @@ public class CensoTecnico extends AppCompatActivity {
                 String respuesta = new String(responseBody);
                 //Log.d("resultado","error "+respuesta);
                 Toast.makeText(getApplicationContext(), getText(R.string.alert_error_ejecucion) + " Código: " + statusCode, Toast.LENGTH_SHORT).show();
+                btnGuardar.setEnabled(true);
+                btnCancelar.setEnabled(true);
+                progressBarGuardarCenso.setVisibility(View.INVISIBLE);
             }
         });
     }
@@ -1784,6 +1809,7 @@ public class CensoTecnico extends AppCompatActivity {
         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
         startActivityForResult(intent, Constantes.CONS_TOMAR_FOTO);
     }
+
     //--Administracion del GPS
     public boolean estadoGPS() {
         ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
@@ -1798,9 +1824,14 @@ public class CensoTecnico extends AppCompatActivity {
             ActivityCompat.requestPermissions(CensoTecnico.this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     PERMISSIONS_REQUEST_LOCATION);
-
+            //coordenadaActiva = true;
         }
-        ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, new miLocalizacion());
+        else {
+           //if(coordenadaActiva) {
+               Log.d("respuesta","activa");
+               ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, new miLocalizacion());
+           //}
+        }
     }
 
     private void listaProvider() {
@@ -1818,17 +1849,17 @@ public class CensoTecnico extends AppCompatActivity {
         );
     }
 
-
     private class miLocalizacion implements LocationListener{
         @Override
         public void onLocationChanged(Location location) {
+            //coordenadaActiva = false;
             float mts =  Math.round(location.getAccuracy()*100)/100;
             float alt =  Math.round(location.getAltitude()*100)/100;
             viewLatitud.setText(""+location.getLatitude());
             viewLongitud.setText(""+location.getLongitude());
             viewAltitud.setText(alt+ "Mts");
             viewPrecision.setText(mts+ " Mts");
-            viewVelocidad.setText(""+location.getSpeed());
+            viewVelocidad.setText(location.getSpeed()+" Km/h");
             try {
                 Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
                 List<Address> listDireccion = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
