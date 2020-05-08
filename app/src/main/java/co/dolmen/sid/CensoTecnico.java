@@ -227,7 +227,7 @@ public class CensoTecnico extends AppCompatActivity {
     private String encodeStringFoto_2;
     private String path;
     private ArrayList<ComponenteNormaConstruccionRed> tipoArmadoList;
-    //private boolean coordenadaActiva = false;
+    private boolean gpsListener;
     private ProgressBar progressBarGuardarCenso;
 
     Elemento elemento;
@@ -253,6 +253,11 @@ public class CensoTecnico extends AppCompatActivity {
         conn = new BaseDatos(CensoTecnico.this);
         database = conn.getReadableDatabase();
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
+            ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, new miLocalizacion());
+            gpsListener  = true;
+        }
 
         //--
         alert = new AlertDialog.Builder(this);
@@ -1824,13 +1829,13 @@ public class CensoTecnico extends AppCompatActivity {
             ActivityCompat.requestPermissions(CensoTecnico.this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     PERMISSIONS_REQUEST_LOCATION);
-            //coordenadaActiva = true;
+
         }
         else {
-           //if(coordenadaActiva) {
-               Log.d("respuesta","activa");
-               ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, new miLocalizacion());
-           //}
+            if(!gpsListener) {
+                //Log.d("respuesta","activo");
+                ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, new miLocalizacion());
+            }
         }
     }
 
@@ -1900,5 +1905,6 @@ public class CensoTecnico extends AppCompatActivity {
             Toast.makeText(getApplicationContext(),"Disabled:"+s,Toast.LENGTH_LONG).show();
         }
     }
+
 
 }
