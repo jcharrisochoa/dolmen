@@ -5,22 +5,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
-import co.dolmen.sid.entidad.Elemento;
-import co.dolmen.sid.entidad.EstadoMobiliario;
 import co.dolmen.sid.entidad.Mobiliario;
 import co.dolmen.sid.entidad.ReferenciaMobiliario;
+import co.dolmen.sid.modelo.ActaContratoDB;
 import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
-import co.dolmen.sid.modelo.ElementoDB;
 import co.dolmen.sid.modelo.EstadoMobiliarioDB;
 import co.dolmen.sid.modelo.MobiliarioDB;
+import co.dolmen.sid.modelo.ProveedorDB;
 import co.dolmen.sid.modelo.ReferenciaMobiliarioDB;
+import co.dolmen.sid.modelo.SentidoDB;
 import co.dolmen.sid.modelo.TipoInterseccionDB;
 import co.dolmen.sid.modelo.TipoPosteDB;
 import co.dolmen.sid.modelo.TipoRedDB;
 import co.dolmen.sid.modelo.TipologiaDB;
+import co.dolmen.sid.modelo.UnidadMedidaDB;
 import co.dolmen.sid.utilidades.DataSpinner;
-import cz.msebera.android.httpclient.Header;
 
 import android.Manifest;
 import android.content.DialogInterface;
@@ -39,8 +39,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.media.MediaScannerConnection;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -53,23 +51,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestHandle;
-import com.loopj.android.http.RequestParams;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -79,9 +66,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import static java.lang.Integer.parseInt;
-
-public class ActualizarElemento extends AppCompatActivity {
+public class CrearElemento extends AppCompatActivity {
 
     SQLiteOpenHelper conn;
     SQLiteDatabase database;
@@ -94,7 +79,7 @@ public class ActualizarElemento extends AppCompatActivity {
     private String nombreProceso;
     private String nombreContrato;
     private String path;
-    private String actualizarCoordenadas;
+
     private int idUsuario;
     private int idDefaultMunicipio;
     private int idDefaultProceso;
@@ -102,59 +87,52 @@ public class ActualizarElemento extends AppCompatActivity {
     private int idMobiliarioBusqueda;
     private int idReferenciaBusqueda;
 
+    private boolean gpsListener;
+    public LocationManager ubicacion;
+
     private TextView txtNombreMunicipio;
     private TextView txtNombreProceso;
     private TextView txtNombreContrato;
     private TextView txtMensajeDireccion;
-
-    private Button btnCancelar;
-    private Button btnGuardar;
-    private Button btnTomarFoto;
-    private Button btnBorrarFoto;
-
-    private ImageButton btnEditarDireccion;
-    private ImageButton btnCapturarGPS;
-    private ImageButton btnBuscarElemento;
-    private ImageView imgFoto;
-
-    private EditText txtIdElemento;
     private EditText txtDireccion;
     private EditText txtLatitud;
     private EditText txtLongitud;
-    private EditText txtPosteno;
-    private EditText txtAlturaPoste;
-    private EditText txtInterdistancia;
-    private EditText txtTransformadorno;
-    private EditText txtPotenciaTransformador;
+    private TextView viewLatitud;
+    private TextView viewLongitud;
+    private TextView viewAltitud;
+    private TextView viewPrecision;
+    private TextView viewDireccion;
+    private TextView viewVelocidad;
+
     private EditText txtNumeroInterseccion;
     private EditText txtNumeracionA;
     private EditText txtNumeracionB;
-    private EditText txtBuscarElemento;
 
-    TextView viewLatitud;
-    TextView viewLongitud;
-    TextView viewAltitud;
-    TextView viewPrecision;
-    TextView viewDireccion;
-    TextView viewVelocidad;
-
-    private boolean gpsListener;
-    public LocationManager ubicacion;
-
-    private Spinner sltTipologia;
-    private Spinner sltMobiliario;
-    private Spinner sltReferencia;
-    private Spinner sltBarrio;
-    private Spinner sltTipoPoste;
-    private Spinner sltTipoRed;
-    private Spinner sltClaseVia;
-    private Spinner sltEstadoMobiliario;
     private Spinner sltTipoInterseccionA;
     private Spinner sltTipoInterseccionB;
+    private Spinner sltActaContrato;
+    private Spinner sltSentido;
+    private Spinner sltUnidad;
+    private Spinner sltTipoRed;
+    private Spinner sltTipoPoste;
+    private Spinner sltClaseVia;
+    private Spinner sltEstadoMobiliario;
+    private Spinner sltTipologia;
+    private Spinner sltBarrio;
+    private Spinner sltMobiliario;
+    private Spinner sltReferencia;
+    private Spinner sltCruce;
+    private Spinner sltProveedor;
 
-    private ProgressBar progressBar;
 
-    private Switch swActualizarPosicion;
+    private Button btnGuardar;
+    private Button btnCancelar;
+    private Button btnTomarFoto;
+    private Button btnBorrarFoto;
+    private ImageButton btnEditarDireccion;
+    private ImageButton btnCapturarGPS;
+
+    private ImageView imgFoto;
 
     ArrayList<DataSpinner> tipologiaList;
     ArrayList<Mobiliario> mobiliarioList;
@@ -166,13 +144,17 @@ public class ActualizarElemento extends AppCompatActivity {
     ArrayList<DataSpinner> tipoRedList;
     ArrayList<DataSpinner> tipoInterseccionA;
     ArrayList<DataSpinner> tipoInterseccionB;
+    ArrayList<DataSpinner> actaList;
+    ArrayList<DataSpinner> unidadList;
+    ArrayList<DataSpinner> sentidoList;
+    ArrayList<DataSpinner> proveedorList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_actualizar_elemento);
+        setContentView(R.layout.activity_crear_elemento);
 
-        setTitle(getText(R.string.titulo_actualizar_elemento));
+        setTitle(getText(R.string.titulo_crear_elemento));
 
         config = getSharedPreferences("config", MODE_PRIVATE);
         idUsuario           = config.getInt("id_usuario", 0);
@@ -183,7 +165,7 @@ public class ActualizarElemento extends AppCompatActivity {
         nombreProceso = config.getString("nombreProceso", "");
         nombreContrato = config.getString("nombreContrato", "");
 
-        conn = new BaseDatos(ActualizarElemento.this);
+        conn = new BaseDatos(CrearElemento.this);
         database = conn.getReadableDatabase();
         //--
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -195,80 +177,59 @@ public class ActualizarElemento extends AppCompatActivity {
         //--
         alert = new AlertDialog.Builder(this);
 
-        progressBar = findViewById(R.id.progressBarConsultarElemento);
-        btnCancelar     = findViewById(R.id.btnCancelar);
-        btnGuardar      = findViewById(R.id.btnGuardar);
-        btnEditarDireccion          = findViewById(R.id.btn_editar_direccion);
-        btnTomarFoto    = findViewById(R.id.btn_tomar_foto);
-        btnBorrarFoto   = findViewById(R.id.btn_borrar_foto);
-        btnCapturarGPS  = findViewById(R.id.btn_capturar_gps);
-        btnBuscarElemento           = findViewById(R.id.btn_buscar_elemento);
+        sltActaContrato     = findViewById(R.id.sltActaContrato);
+        sltSentido          = findViewById(R.id.sltSentido);
+        sltUnidad           = findViewById(R.id.sltUnidad);
+        sltTipoRed          = findViewById(R.id.sltTipoRed);
+        sltTipoPoste        = findViewById(R.id.sltTipoPoste);
+        sltClaseVia          = findViewById(R.id.sltClaseVia);
+        sltEstadoMobiliario = findViewById(R.id.sltEstado);
+        sltTipologia        = findViewById(R.id.sltTipologia);
+        sltBarrio           = findViewById(R.id.sltBarrio);
+        sltMobiliario       = findViewById(R.id.sltMobiliario);
+        sltReferencia       = findViewById(R.id.sltReferenciaMobiliario);
+        sltProveedor        = findViewById(R.id.sltProveedor);
 
         txtNombreMunicipio  = findViewById(R.id.txtNombreMunicipio);
         txtNombreProceso    = findViewById(R.id.txtNombreProceso);
         txtNombreContrato   = findViewById(R.id.txtNombreContrato);
-
-        txtPosteno          =  findViewById(R.id.txtPosteNo);
-        txtAlturaPoste      =  findViewById(R.id.txtAlturaPoste);
-        txtInterdistancia   =  findViewById(R.id.txtInterdistancia);
-        txtTransformadorno  =  findViewById(R.id.txtTransformadorNo);
-        txtPotenciaTransformador=  findViewById(R.id.txtPotenciaTransformador);
-
-        txtBuscarElemento   =  findViewById(R.id.txt_buscar_elemento);
-        txtIdElemento       =  findViewById(R.id.txtIdElmento);
         txtDireccion        =  findViewById(R.id.txt_direccion);
         txtLatitud          =  findViewById(R.id.txt_latitud);
         txtLongitud         =  findViewById(R.id.txt_longitud);
-        txtIdElemento       =  findViewById(R.id.txtIdElmento);
-
-        sltTipologia        =  findViewById(R.id.sltTipologia);
-        sltMobiliario       =  findViewById(R.id.sltMobiliario);
-        sltReferencia       =  findViewById(R.id.sltReferencia);
-        sltTipoPoste        =  findViewById(R.id.sltTipoPoste);
-        sltTipoRed          =  findViewById(R.id.sltTipoRed);
-        sltClaseVia         =  findViewById(R.id.sltClaseVia);
-        sltEstadoMobiliario =  findViewById(R.id.sltEstadoMobiliario);
-        sltBarrio           =  findViewById(R.id.sltBarrio);
-
         //--
-        viewLatitud = findViewById(R.id.gps_latitud);
-        viewLongitud = findViewById(R.id.gps_longitud);
-        viewAltitud  = findViewById(R.id.gps_altitud);
-        viewPrecision = findViewById(R.id.gps_precision);
-        viewDireccion = findViewById(R.id.gps_direccion);
-        viewVelocidad  = findViewById(R.id.gps_velocidad);
+        viewLatitud             = findViewById(R.id.gps_latitud);
+        viewLongitud            = findViewById(R.id.gps_longitud);
+        viewAltitud             = findViewById(R.id.gps_altitud);
+        viewPrecision           = findViewById(R.id.gps_precision);
+        viewDireccion           = findViewById(R.id.gps_direccion);
+        viewVelocidad           = findViewById(R.id.gps_velocidad);
 
+        //-
+        btnGuardar              = findViewById(R.id.btnGuardar);
+        btnCancelar             = findViewById(R.id.btnCancelar);
+        btnEditarDireccion      = findViewById(R.id.btn_editar_direccion);
+        btnTomarFoto            = findViewById(R.id.btn_tomar_foto);
+        btnBorrarFoto           = findViewById(R.id.btn_borrar_foto);
+        btnCapturarGPS          = findViewById(R.id.btn_capturar_gps);
+        //--
         imgFoto = findViewById(R.id.foto);
-
-        swActualizarPosicion=  findViewById(R.id.swActualizarPosicion);
-
-
-        swActualizarPosicion.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                btnCapturarGPS.setEnabled(isChecked);
-                actualizarCoordenadas = (isChecked)?"S":"N";
-            }
-        });
-
-        txtDireccion.setEnabled(false);
-        btnCapturarGPS.setEnabled(false);
-        txtLatitud.setEnabled(false);
-        txtLongitud.setEnabled(false);
-
-        txtIdElemento.setVisibility(View.INVISIBLE);
-        progressBar.setVisibility(View.INVISIBLE);
+        //--
 
         txtNombreMunicipio.setText(nombreMunicipio);
         txtNombreProceso.setText(nombreProceso);
         txtNombreContrato.setText(nombreContrato);
 
+        txtDireccion.setEnabled(false);
+        txtLatitud.setEnabled(false);
+        txtLongitud.setEnabled(false);
+
+
         btnCancelar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(ActualizarElemento.this,Menu.class);
+                Intent i = new Intent(CrearElemento.this,Menu.class);
                 startActivity(i);
-                ActualizarElemento.this.finish();
+                CrearElemento.this.finish();
             }
         });
         btnEditarDireccion.setOnClickListener(new View.OnClickListener() {
@@ -277,60 +238,18 @@ public class ActualizarElemento extends AppCompatActivity {
                 armarDireccion();
             }
         });
+
         btnTomarFoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 cargarImagen();
             }
         });
+
         btnBorrarFoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 imgFoto.setImageResource(R.drawable.imagen_no_disponible);
-            }
-        });
-
-        btnBuscarElemento.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                buscarElemento(database);
-            }
-        });
-        btnGuardar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(validarFrm()){
-                    ConnectivityManager conn = (ConnectivityManager) getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
-                    NetworkInfo networkInfo = conn.getActiveNetworkInfo();
-
-                    if(networkInfo != null && networkInfo.isConnected()) {
-                        Toast.makeText(getApplicationContext(),"Conectando con "+networkInfo.getTypeName()+" / "+networkInfo.getExtraInfo(),Toast.LENGTH_LONG).show();
-                        btnGuardar.setEnabled(false);
-                        btnCancelar.setEnabled(false);
-                        ActualizarMobiliario();
-                    }
-                    else{
-                        alert.setTitle(R.string.titulo_alerta);
-                        alert.setMessage(R.string.alert_conexion);
-                        alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.cancel();
-                            }
-                        });
-                        alert.create().show();
-                    }
-                }
-                else{
-                    alert.setTitle(R.string.titulo_alerta);
-                    alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.cancel();
-                        }
-                    });
-                    alert.create().show();
-                }
             }
         });
         btnCapturarGPS.setOnClickListener(new View.OnClickListener() {
@@ -354,7 +273,6 @@ public class ActualizarElemento extends AppCompatActivity {
                 }
             }
         });
-
         sltTipologia.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -379,12 +297,18 @@ public class ActualizarElemento extends AppCompatActivity {
             }
         });
         cargarTipologia(database);
-        cargarBarrio(database);
         cargarEstadoMobiliario(database);
+        cargarBarrio(database);
         cargarClaseVia(database);
         cargarTipoPoste(database);
         cargarTipoRed(database);
+        cargarUnidadMedida(database);
+        cargarSentido(database);
+        cargarActa(database);
+        cargarProveedor(database);
+
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -543,6 +467,36 @@ public class ActualizarElemento extends AppCompatActivity {
         sltReferencia.setSelection(pos);
     }
     //--
+    private void cargarTipoInterseccion(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        tipoInterseccionA = new ArrayList<DataSpinner>();
+        tipoInterseccionB = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        TipoInterseccionDB tipoInterseccionDB = new TipoInterseccionDB(sqLiteDatabase);
+        Cursor cursor = tipoInterseccionDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        tipoInterseccionA.add(dataSpinner);
+        tipoInterseccionB.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(2).toUpperCase());
+                    tipoInterseccionA.add(dataSpinner);
+                    tipoInterseccionB.add(dataSpinner);
+                    labels.add(cursor.getString(2).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltTipoInterseccionA.setAdapter(dataAdapter);
+        sltTipoInterseccionB.setAdapter(dataAdapter);
+    }
+    //--
     private void cargarEstadoMobiliario(SQLiteDatabase sqLiteDatabase){
         int i = 0;
         estadoMobiliarioList = new ArrayList<DataSpinner>();
@@ -673,34 +627,104 @@ public class ActualizarElemento extends AppCompatActivity {
         sltTipoRed.setAdapter(dataAdapter);
     }
     //--
-    private void cargarTipoInterseccion(SQLiteDatabase sqLiteDatabase) {
+    private void cargarUnidadMedida(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
-        tipoInterseccionA = new ArrayList<DataSpinner>();
-        tipoInterseccionB = new ArrayList<DataSpinner>();
+        unidadList = new ArrayList<DataSpinner>();
         List<String> labels = new ArrayList<>();
-        TipoInterseccionDB tipoInterseccionDB = new TipoInterseccionDB(sqLiteDatabase);
-        Cursor cursor = tipoInterseccionDB.consultarTodo();
+        UnidadMedidaDB unidadMedidaDB = new UnidadMedidaDB(sqLiteDatabase);
+        Cursor cursor = unidadMedidaDB.consultarTodo();
         DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
-        tipoInterseccionA.add(dataSpinner);
-        tipoInterseccionB.add(dataSpinner);
+        unidadList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    unidadList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltUnidad.setAdapter(dataAdapter);
+    }
+    //--
+    private void cargarSentido(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        sentidoList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        SentidoDB sentidoDB = new SentidoDB(sqLiteDatabase);
+        Cursor cursor = sentidoDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        sentidoList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    sentidoList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltSentido.setAdapter(dataAdapter);
+    }
+    //--
+    private void cargarActa(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        actaList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        ActaContratoDB actaContratoDB = new ActaContratoDB(sqLiteDatabase);
+        Cursor cursor = actaContratoDB.consultarActaContrato(idDefaultContrato);
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        actaList.add(dataSpinner);
         labels.add(getText(R.string.seleccione).toString());
         if (cursor.getCount() > 0) {
             if (cursor.moveToFirst()) {
                 do {
                     i++;
                     dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(2).toUpperCase());
-                    tipoInterseccionA.add(dataSpinner);
-                    tipoInterseccionB.add(dataSpinner);
+                    sentidoList.add(dataSpinner);
                     labels.add(cursor.getString(2).toUpperCase());
                 } while (cursor.moveToNext());
             }
         }
         cursor.close();
-
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, labels);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sltTipoInterseccionA.setAdapter(dataAdapter);
-        sltTipoInterseccionB.setAdapter(dataAdapter);
+        sltActaContrato.setAdapter(dataAdapter);
+    }
+    //--
+    private void cargarProveedor(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        proveedorList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        ProveedorDB proveedorDB = new ProveedorDB(sqLiteDatabase);
+        Cursor cursor = proveedorDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        proveedorList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    proveedorList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltProveedor.setAdapter(dataAdapter);
     }
     //--
     private void armarDireccion(){
@@ -765,7 +789,7 @@ public class ActualizarElemento extends AppCompatActivity {
     //--
     private void cargarImagen(){
         final CharSequence[] opciones = {getText(R.string.tomar_foto).toString(), getText(R.string.cargar_imagen).toString(), getText(R.string.btn_cancelar)};
-        final AlertDialog.Builder alertOpciones = new AlertDialog.Builder(ActualizarElemento.this);
+        final AlertDialog.Builder alertOpciones = new AlertDialog.Builder(CrearElemento.this);
         alertOpciones.setTitle(getText(R.string.app_name));
         alertOpciones.setItems(opciones, new DialogInterface.OnClickListener() {
             @Override
@@ -773,8 +797,8 @@ public class ActualizarElemento extends AppCompatActivity {
                 switch (i) { //Tomar Foto
                     case 0:
                         int PERMISSIONS_REQUEST_CAMERA = 0;
-                        if (ContextCompat.checkSelfPermission(ActualizarElemento.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                            ActivityCompat.requestPermissions(ActualizarElemento.this,
+                        if (ContextCompat.checkSelfPermission(CrearElemento.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(CrearElemento.this,
                                     new String[]{Manifest.permission.CAMERA},
                                     PERMISSIONS_REQUEST_CAMERA);
                         } else {
@@ -784,8 +808,8 @@ public class ActualizarElemento extends AppCompatActivity {
                         break;
                     case 1: //Seleccionar Imagen
                         int PERMISSIONS_REQUEST_INTERNAL_STORAGE = 0;
-                        if (ContextCompat.checkSelfPermission(ActualizarElemento.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                            ActivityCompat.requestPermissions(ActualizarElemento.this,
+                        if (ContextCompat.checkSelfPermission(CrearElemento.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(CrearElemento.this,
                                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                                     PERMISSIONS_REQUEST_INTERNAL_STORAGE);
                         } else {
@@ -821,325 +845,10 @@ public class ActualizarElemento extends AppCompatActivity {
         path = mediaStorageDir.getPath() + File.separator + nombreImagen;
         File imagen = new File(path);
 
-        Uri photoURI = FileProvider.getUriForFile(ActualizarElemento.this, getString(R.string.file_provider_authority), imagen);
+        Uri photoURI = FileProvider.getUriForFile(CrearElemento.this, getString(R.string.file_provider_authority), imagen);
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
         startActivityForResult(intent, Constantes.CONS_TOMAR_FOTO);
-    }
-    //--
-    private void buscarElemento(SQLiteDatabase sqLiteDatabase){
-        if(txtBuscarElemento.getText().toString().trim().length() == 0){
-            alert.setTitle(R.string.titulo_alerta);
-            alert.setMessage(R.string.alert_elemento_buscar);
-            alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.cancel();
-                }
-            });
-            alert.create().show();
-        }
-        else{
-            ConnectivityManager conn = (ConnectivityManager) getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = conn.getActiveNetworkInfo();
-
-            if(networkInfo != null && networkInfo.isConnected()) {
-                Toast.makeText(getApplicationContext(),"Conectando con "+networkInfo.getTypeName()+" / "+networkInfo.getExtraInfo(),Toast.LENGTH_LONG).show();
-                final AsyncHttpClient client = new AsyncHttpClient();
-                RequestParams requestParams = new RequestParams();
-
-                requestParams.add("idmunicipio", String.valueOf(idDefaultMunicipio));
-                requestParams.add("idproceso", String.valueOf(idDefaultProceso));
-                requestParams.add("idcontrato", String.valueOf(idDefaultContrato));
-                requestParams.add("elemento", txtBuscarElemento.getText().toString());
-                client.setTimeout(Constantes.TIMEOUT);
-
-                //Log.d("resultado","parametros:"+requestParams.toString());
-
-                RequestHandle post = client.post(ServicioWeb.urlConsultarElemento, requestParams, new AsyncHttpResponseHandler() {
-
-                    @Override
-                    public void onStart() {
-                        super.onStart();
-                        progressBar.setVisibility(View.VISIBLE);
-                    }
-
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                        String respuesta = new String(responseBody);
-                        //Log.d("resultado",""+respuesta);
-                        try{
-                            JSONObject jsonObject = new JSONObject(new String(responseBody));
-                            String mensaje = jsonObject.getString("mensaje");
-                            alert.setTitle(R.string.titulo_alerta);
-                            alert.setMessage(mensaje);
-
-                            alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    dialogInterface.cancel();
-                                }
-                            });
-                            alert.create().show();
-
-                            txtIdElemento.setText(jsonObject.getString("id"));
-                            txtPosteno.setText(jsonObject.getString("posteno"));
-                            txtAlturaPoste.setText(jsonObject.getString("alturaposte"));
-                            txtInterdistancia.setText(jsonObject.getString("interdistancia"));
-                            txtTransformadorno.setText(jsonObject.getString("transformador"));
-                            txtPotenciaTransformador.setText(jsonObject.getString("potenciatransformador"));
-                            txtDireccion.setText(jsonObject.getString("direccion"));
-                            txtLatitud.setText(jsonObject.getString("latitud"));
-                            txtLongitud.setText(jsonObject.getString("longitud"));
-                            idMobiliarioBusqueda = parseInt(jsonObject.getString("idmobiliario"));
-                            idReferenciaBusqueda = parseInt(jsonObject.getString("idreferencia"));
-
-                            //tipologiaList
-                            for(int i=0;i<tipologiaList.size();i++){
-                                if(tipologiaList.get(i).getId() == parseInt(jsonObject.getString("idtipologia"))){
-                                    sltTipologia.setAdapter(sltTipologia.getAdapter());
-                                    sltTipologia.setSelection(i);
-                                }
-                            }
-                            // this.cargarMobiliario(database);
-                            // this.cargarReferencia(database);
-                            //EstadoList
-                            for(int i=0;i<estadoMobiliarioList.size();i++){
-                                if(estadoMobiliarioList.get(i).getId() == parseInt(jsonObject.getString("idestadomobiliario"))){
-                                    sltEstadoMobiliario.setSelection(i);
-                                }
-                            }
-                            //barrioList
-                            for(int i=0;i<barrioList.size();i++){
-                                if(barrioList.get(i).getId() == parseInt(jsonObject.getString("idbarrio"))){
-                                    sltBarrio.setSelection(i);
-                                }
-                            }
-                            //TipoPosteList
-                            for(int i=0;i<tipoPosteList.size();i++){
-                                if(tipoPosteList.get(i).getId() == parseInt(jsonObject.getString("idtipoposte"))){
-                                    sltTipoPoste.setSelection(i);
-                                }
-                            }
-                            //TipoRedList
-                            for(int i=0;i<tipoRedList.size();i++){
-                                if(tipoRedList.get(i).getId() == parseInt(jsonObject.getString("idtipored"))){
-                                    sltTipoRed.setSelection(i);
-                                }
-                            }
-                            //ClaseVia
-                            for(int i=0;i<claseViaList.size();i++){
-                                if(claseViaList.get(i).getId() == parseInt(jsonObject.getString("idclasevia"))){
-                                    sltClaseVia.setSelection(i);
-                                }
-                            }
-                            progressBar.setVisibility(View.INVISIBLE);
-                        }catch (JSONException e){
-                            e.printStackTrace();
-                            //Log.d("resultado","Error: onsuccess"+e.getMessage()+"respuesta:"+respuesta);
-                            Toast.makeText(getApplicationContext(),getText(R.string.alert_error_ejecucion)+ " Servicio Web, Código:"+statusCode, Toast.LENGTH_SHORT).show();
-                            progressBar.setVisibility(View.INVISIBLE);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                        String respuesta = new String(responseBody);
-                        Log.d("resultado","Error "+respuesta);
-                        Toast.makeText(getApplicationContext(),getText(R.string.alert_error_ejecucion)+ " Código: "+statusCode, Toast.LENGTH_SHORT).show();
-                        progressBar.setVisibility(View.INVISIBLE);
-                    }
-                });
-            }
-            else{
-                alert.setTitle(R.string.titulo_alerta);
-                alert.setMessage(R.string.alert_conexion);
-                alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.cancel();
-                    }
-                });
-                alert.create().show();
-            }
-        }
-    }
-    //--
-    private boolean validarFrm(){
-        if(txtIdElemento.getText().toString().isEmpty()){
-            alert.setMessage(R.string.alert_censo_tecnico_elemento_no);
-            return false;
-        }
-        else{
-            if (tipologiaList.get(sltTipologia.getSelectedItemPosition()).getId() == 0) {
-                alert.setMessage(R.string.alert_censo_tipologia);
-                return false;
-            }
-            else{
-                if (mobiliarioList.get(sltMobiliario.getSelectedItemPosition()).getIdMobiliario() == 0) {
-                    alert.setMessage(R.string.alert_censo_mobiliario);
-                    return false;
-                }
-                else {
-                    if (barrioList.get(sltBarrio.getSelectedItemPosition()).getId() == 0) {
-                        alert.setMessage(R.string.alert_censo_barrio);
-                        return false;
-                    }
-                    else {
-                        if(txtDireccion.getText().toString().isEmpty()){
-                            alert.setMessage(R.string.alert_censo_direccion);
-                            return false;
-                        }
-                        else {
-                            if(swActualizarPosicion.isChecked() && txtLatitud.getText().toString().isEmpty() && txtLongitud.getText().toString().isEmpty()){
-                                alert.setMessage(R.string.alert_coordenadas);
-                                return false;
-                            }
-                            else {
-                                if(idDefaultProceso == 19){
-                                    if (referenciaMobiliarioList.get(sltReferencia.getSelectedItemPosition()).getIdReferenciaMobiliario() == 0) {
-                                        alert.setMessage(R.string.alert_censo_referencia);
-                                        return false;
-                                    }
-                                    else{
-                                        if (tipoPosteList.get(sltTipoPoste.getSelectedItemPosition()).getId() == 0) {
-                                            alert.setMessage(R.string.alert_censo_tipo_poste);
-                                            return false;
-                                        } else {
-                                            if (tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId() == 0) {
-                                                alert.setMessage(R.string.alert_tipo_red);
-                                                return false;
-                                            } else {
-                                                if (claseViaList.get(sltClaseVia.getSelectedItemPosition()).getId() == 0) {
-                                                    alert.setMessage(R.string.alert_censo_clase_via);
-                                                    return false;
-                                                } else {
-                                                    if (estadoMobiliarioList.get(sltEstadoMobiliario.getSelectedItemPosition()).getId() == 0) {
-                                                        alert.setMessage(R.string.alert_censo_estado_mobiliario);
-                                                        return false;
-                                                    }
-                                                    else{
-                                                        return true;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                else{
-                                    if (estadoMobiliarioList.get(sltEstadoMobiliario.getSelectedItemPosition()).getId() == 0) {
-                                        alert.setMessage(R.string.alert_censo_estado_mobiliario);
-                                        return false;
-                                    }
-                                    else{
-                                        return true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    //--
-    private void ActualizarMobiliario(){
-
-        AsyncHttpClient client = new AsyncHttpClient();
-
-        RequestParams requestParams = new RequestParams();
-        requestParams.put("mobiliario_no",txtBuscarElemento.getText());
-        requestParams.put("id_elemento",txtIdElemento.getText());
-        requestParams.put("id_usuario",idUsuario);
-        requestParams.put("id_municipio",idDefaultMunicipio);
-        requestParams.put("id_proceso",idDefaultProceso);
-        requestParams.put("id_contrato",idDefaultContrato);
-        requestParams.put("id_barrio",barrioList.get(sltBarrio.getSelectedItemPosition()).getId());
-        requestParams.put("latitud",txtLatitud.getText());
-        requestParams.put("longitud",txtLongitud.getText());
-        requestParams.put("id_tipologia",tipologiaList.get(sltTipologia.getSelectedItemPosition()).getId());
-        requestParams.put("id_mobiliario",mobiliarioList.get(sltMobiliario.getSelectedItemPosition()).getIdMobiliario());
-        requestParams.put("id_referencia",referenciaMobiliarioList.get(sltReferencia.getSelectedItemPosition()).getIdReferenciaMobiliario());
-        requestParams.put("id_tipo_poste",tipoPosteList.get(sltTipoPoste.getSelectedItemPosition()).getId());
-        requestParams.put("id_tipo_red",tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId());
-        requestParams.put("id_clase_via",claseViaList.get(sltClaseVia.getSelectedItemPosition()).getId());;
-        requestParams.put("id_estado",estadoMobiliarioList.get(sltEstadoMobiliario.getSelectedItemPosition()).getId());
-        requestParams.put("direccion",txtDireccion.getText());
-        requestParams.put("actualiza_posicion",actualizarCoordenadas);
-        requestParams.put("poste_no",txtPosteno.getText());
-        requestParams.put("altura_poste",txtAlturaPoste.getText());
-        requestParams.put("interdistancia",txtInterdistancia.getText());
-        requestParams.put("transformador_no",txtTransformadorno.getText());
-        requestParams.put("potencia_transformador",txtPotenciaTransformador.getText());
-        requestParams.put("encode_string",encodeString);
-        client.setTimeout(Constantes.TIMEOUT);
-        RequestHandle post = client.post(ServicioWeb.urlActualizarElemento, requestParams, new AsyncHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                super.onStart();
-                progressBar.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                String respuesta = new String(responseBody);
-                Log.d("resultado",""+respuesta);
-                try {
-                    JSONObject jsonObject = new JSONObject(new String(responseBody));
-                    String mensaje = jsonObject.getString("mensaje");
-                    alert.setTitle(R.string.titulo_alerta);
-                    alert.setMessage(mensaje);
-
-                    alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.cancel();
-                        }
-                    });
-                    alert.create().show();
-                    progressBar.setVisibility(View.INVISIBLE);
-                    resetFrm();
-
-                }catch (JSONException e){
-                    e.printStackTrace();
-                    Log.d("resultado","Error: onsuccess"+e.getMessage()+"respuesta:"+respuesta);
-                    Toast.makeText(getApplicationContext(),getText(R.string.alert_error_ejecucion)+ " Servicio Web, Código:"+statusCode, Toast.LENGTH_SHORT).show();
-                    progressBar.setVisibility(View.INVISIBLE);
-                }
-
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                String respuesta = new String(responseBody);
-                Log.d("resultado","Error "+respuesta);
-                Toast.makeText(getApplicationContext(),getText(R.string.alert_error_ejecucion)+ " Código: "+statusCode, Toast.LENGTH_SHORT).show();
-                progressBar.setVisibility(View.INVISIBLE);
-            }
-        });
-    }
-    //-
-    private void resetFrm(){
-        btnGuardar.setEnabled(true);
-        btnCancelar.setEnabled(true);
-        txtPosteno.setText("");
-        txtAlturaPoste.setText("");
-        txtInterdistancia.setText("");
-        txtTransformadorno.setText("");
-        txtPotenciaTransformador.setText("");
-        txtIdElemento.setText("");
-        txtDireccion.setText("");
-        sltTipologia.setSelection(0);
-        sltMobiliario.setSelection(0);
-        sltReferencia.setSelection(0);
-        sltBarrio.setSelection(0);
-        sltTipoPoste.setSelection(0);
-        sltTipoRed.setSelection(0);
-        sltClaseVia.setSelection(0);
-        sltEstadoMobiliario.setSelection(0);
-        swActualizarPosicion.setChecked(false);
-        imgFoto.setImageResource(R.drawable.imagen_no_disponible);
-        encodeString=null;
     }
 
     //--Administracion del GPS
@@ -1160,24 +869,9 @@ public class ActualizarElemento extends AppCompatActivity {
         }
         else {
             if(!gpsListener) {
-                ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, new miLocalizacion());
+                ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, new miLocalizacion());
             }
         }
-    }
-
-    private void listaProvider() {
-        ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
-        List<String> listProvider = ubicacion.getAllProviders();
-
-        LocationProvider locationProvider = ubicacion.getProvider(listProvider.get(1));
-
-        Log.d("Resultado", "Lista de Proveedores:" + listProvider.toString() + "\n" +
-                "Exactitud:" + locationProvider.getAccuracy() + " mts\n" +
-                "Nombre Proveedor:" + locationProvider.getName() + "\n" +
-                "Requerimiento de Batteria:" + locationProvider.getPowerRequirement() + "\n" +
-                "Soporte Altitud:" + locationProvider.supportsAltitude() + "\n" +
-                "Soporte Velocidad:" + locationProvider.supportsSpeed()
-        );
     }
 
     private class miLocalizacion implements LocationListener {

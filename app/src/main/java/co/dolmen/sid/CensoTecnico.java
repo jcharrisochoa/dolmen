@@ -1888,21 +1888,12 @@ public class CensoTecnico extends AppCompatActivity {
 
         @Override
         public void onProviderEnabled(String s) {
-            Toast.makeText(getApplicationContext(),"Enabled:"+s,Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),s+" Activo",Toast.LENGTH_LONG).show();
         }
 
         @Override
         public void onProviderDisabled(String s) {
-            alert.setTitle(getString(R.string.titulo_alerta));
-            alert.setMessage(getString(R.string.alert_gps_deshabilitado));
-            alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.cancel();
-                }
-            });
-            alert.create().show();
-            Toast.makeText(getApplicationContext(),"Disabled:"+s,Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),s+" Inactivo",Toast.LENGTH_LONG).show();
         }
     }
 

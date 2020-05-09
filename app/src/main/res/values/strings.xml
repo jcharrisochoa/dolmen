@@ -28,6 +28,7 @@
     <string name="titulo_generar_actividad_operativa">Generar Actividad Operativa</string>
     <string name="titulo_menu_censo_tecnico">Menú Censo Técnico</string>
     <string name="titulo_actualizar_elemento">Actualizar Elemento</string>
+    <string name="titulo_crear_elemento">Crear Elemento</string>
 
 
     <!--Titulo Tabla-->
@@ -160,4 +161,8 @@
 
     <string name="titulo_actualizar_posicion">Actualizar Posición</string>
     <string name="alert_coordenadas">Tome el punto geográfico</string>
+
+    <string name="separador">-</string>
+    <string name="titulo_conexion_electrica">Conexión Eléctrica</string>
+    <string name="titulo_proveedor">Proveedor Instalador</string>
 </resources>

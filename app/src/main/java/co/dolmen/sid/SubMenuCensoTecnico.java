@@ -73,6 +73,8 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sub_menu_censo_tecnico);
 
+        setTitle(getText(R.string.titulo_menu_censo_tecnico));
+
         alert = new AlertDialog.Builder(this);
 
         conn = new BaseDatos(SubMenuCensoTecnico.this);

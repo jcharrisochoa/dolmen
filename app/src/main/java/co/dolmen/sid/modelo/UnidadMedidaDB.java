@@ -52,7 +52,7 @@ public class UnidadMedidaDB extends UnidadMedida implements DatabaseDLM,Database
 
     @Override
     public void eliminarDatos() {
-
+        db.execSQL("DELETE FROM  "+Constantes.TABLA_UNIDAD_MEDIDA);
     }
 
     @Override

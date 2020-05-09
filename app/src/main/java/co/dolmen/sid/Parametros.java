@@ -23,6 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import co.dolmen.sid.entidad.Barrio;
+import co.dolmen.sid.entidad.Contrato;
 import co.dolmen.sid.entidad.EstadoMobiliario;
 import co.dolmen.sid.entidad.Municipio;
 import co.dolmen.sid.entidad.ProcesoSgc;
@@ -31,6 +32,7 @@ import co.dolmen.sid.entidad.TipoEstructura;
 import co.dolmen.sid.entidad.TipoPoste;
 import co.dolmen.sid.entidad.TipoTension;
 import co.dolmen.sid.entidad.Tipologia;
+import co.dolmen.sid.modelo.ActaContratoDB;
 import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.CensoAsignadoDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
@@ -44,8 +46,10 @@ import co.dolmen.sid.modelo.NormaConstruccionPosteDB;
 import co.dolmen.sid.modelo.NormaConstruccionRedDB;
 import co.dolmen.sid.modelo.ProcesoSgcDB;
 import co.dolmen.sid.modelo.ProgramaDB;
+import co.dolmen.sid.modelo.ProveedorDB;
 import co.dolmen.sid.modelo.ReferenciaMobiliarioDB;
 import co.dolmen.sid.modelo.RetenidaPosteDB;
+import co.dolmen.sid.modelo.SentidoDB;
 import co.dolmen.sid.modelo.TipoActividadDB;
 import co.dolmen.sid.modelo.TipoEspacioDB;
 import co.dolmen.sid.modelo.TipoEstructuraDB;
@@ -585,6 +589,51 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayTipoActividad.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Tipo Actividad "+progress+"%");
+            }
+
+
+            //Sentido
+            SentidoDB sentidoDB = new SentidoDB(database);
+            JSONArray arraySentido = parametros.getJSONArray("sentido_espacio");
+            for (int i = 0;i<arraySentido.length();i++){
+                JSONObject jObjectSentido = arraySentido.getJSONObject(i);
+                sentidoDB.setId(jObjectSentido.getInt("id"));
+                sentidoDB.setDescripcion(jObjectSentido.getString("descripcion"));
+                sentidoDB.agregarDatos(sentidoDB);
+                progress = (int)Math.round((double)(i+1)/arraySentido.length()*100);
+                progressBar.setProgress(progress);
+                txt_porcentaje_carga.setText("Actualizando Sentido "+progress+"%");
+            }
+
+            //Acta Contrato
+            ActaContratoDB actaContratoDB = new ActaContratoDB(database);
+            JSONArray arrayActa = parametros.getJSONArray("acta");
+            for (int i = 0;i<arrayActa.length();i++){
+                JSONObject jObjectActa = arrayActa.getJSONObject(i);
+
+                Contrato contratoActa = new Contrato();
+                contratoActa.setId(jObjectActa.getInt("id_contrato"));
+
+                actaContratoDB.setIdActa(jObjectActa.getInt("id"));
+                actaContratoDB.setContrato(contratoActa);
+                actaContratoDB.setDescripcionActa(jObjectActa.getString("descripcion"));
+                actaContratoDB.agregarDatos(actaContratoDB);
+                progress = (int)Math.round((double)(i+1)/arrayActa.length()*100);
+                progressBar.setProgress(progress);
+                txt_porcentaje_carga.setText("Actualizando Acta contrato "+progress+"%");
+            }
+
+            //Proveedor
+            ProveedorDB proveedorDB = new ProveedorDB(database);
+            JSONArray arrayProveedor = parametros.getJSONArray("proveedor");
+            for (int i = 0;i<arrayProveedor.length();i++){
+                JSONObject jObjectProveedor = arrayProveedor.getJSONObject(i);
+                proveedorDB.setId(jObjectProveedor.getInt("id"));
+                proveedorDB.setNombre(jObjectProveedor.getString("descripcion"));
+                proveedorDB.agregarDatos(proveedorDB);
+                progress = (int)Math.round((double)(i+1)/arrayProveedor.length()*100);
+                progressBar.setProgress(progress);
+                txt_porcentaje_carga.setText("Actualizando Proveedor "+progress+"%");
             }
 
             database.close();

@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import co.dolmen.sid.modelo.ActaContratoDB;
 import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.CensoArchivoDB;
 import co.dolmen.sid.modelo.CensoAsignadoDB;
@@ -18,8 +19,10 @@ import co.dolmen.sid.modelo.NormaConstruccionPosteDB;
 import co.dolmen.sid.modelo.NormaConstruccionRedDB;
 import co.dolmen.sid.modelo.ProcesoSgcDB;
 import co.dolmen.sid.modelo.ProgramaDB;
+import co.dolmen.sid.modelo.ProveedorDB;
 import co.dolmen.sid.modelo.ReferenciaMobiliarioDB;
 import co.dolmen.sid.modelo.RetenidaPosteDB;
+import co.dolmen.sid.modelo.SentidoDB;
 import co.dolmen.sid.modelo.TipoActividadDB;
 import co.dolmen.sid.modelo.TipoEspacioDB;
 import co.dolmen.sid.modelo.TipoEstructuraDB;
@@ -66,6 +69,9 @@ public class BaseDatos extends SQLiteOpenHelper {
     private TipoReporteDanoDB tipoReporteDanoDB;
     private ProgramaDB programaDB;
     private TipoActividadDB tipoActividadDB;
+    private SentidoDB sentidoDB;
+    private ActaContratoDB actaContratoDB;
+    private ProveedorDB proveedorDB;
 
 
     public BaseDatos(Context context){
@@ -162,6 +168,15 @@ public class BaseDatos extends SQLiteOpenHelper {
 
         tipoActividadDB = new TipoActividadDB(sqLiteDatabase);
         tipoActividadDB.crearTabla();
+
+        sentidoDB = new SentidoDB(sqLiteDatabase);
+        sentidoDB.crearTabla();
+
+        actaContratoDB = new ActaContratoDB(sqLiteDatabase);
+        actaContratoDB.crearTabla();
+
+        proveedorDB = new ProveedorDB(sqLiteDatabase);
+        proveedorDB.crearTabla();
         Log.d("DataBase","create");
     }
 
@@ -196,6 +211,9 @@ public class BaseDatos extends SQLiteOpenHelper {
         tipoReporteDanoDB.borrarTabla();
         programaDB.borrarTabla();
         tipoActividadDB.borrarTabla();
+        sentidoDB.borrarTabla();
+        actaContratoDB.borrarTabla();
+        proveedorDB.borrarTabla();
         //onCreate(sqLiteDatabase);
         Log.d("DataBase","update");
 

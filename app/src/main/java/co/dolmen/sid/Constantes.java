@@ -33,16 +33,8 @@ public final class Constantes {
     public static final String TABLA_PROGRAMA                  = "programa";
     public static final String TABLA_ESTADO_ACTIVIDAD          = "estado_actividad";
     public static final String TABLA_POTENCIA_TIPO_LUZ         = "potencia_tipo_luz";
-    public static final String TABLA_TIPO_STOCK                = "tipo_stock";
-    public static final String TABLA_ARTICULO                  = "articulo";
-    public static final String TABLA_CENTRO_COSTO              = "centro_costo";
     public static final String TABLA_TIPO_ESPACIO              = "tipo_espacio";
     public static final String TABLA_ELEMENTO                  = "elemento";
-    public static final String TABLA_STOCK                     = "stock";
-    public static final String TABLA_ACTIVIDAD_OPERATIVA       = "actividad_operativa";
-    public static final String TABLA_ARCHIVO_ACTIVIDAD_OPERATIVA   = "archivo_actividad_operativa";
-    public static final String TABLA_ORDEN_INVENTARIO          = "orden_inventario";
-    public static final String TABLA_DETALLE_ORDEN_INVENTARIO  = "detalle_orden_inventario";
     public static final String TABLA_TIPO_TENSION              = "tipo_tension";
     public static final String TABLA_RETENIDA_POSTE            = "retenida_poste";
     public static final String TABLA_NORMA_CONSTRUCCION_POSTE  = "norma_construccion_poste";
@@ -53,5 +45,13 @@ public final class Constantes {
     public static final String TABLA_CENSO_TECNICO_ARCHIVO      = "censo_tecnico_archivo";
     public static final String TABLA_CENSO_ASIGNADO             = "censo_asignado";
     public static final String TABLA_TIPO_REPORTE_DANO          = "tipo_reporte_dano";
+    public static final String TABLA_TIPO_STOCK                = "tipo_stock";
+    public static final String TABLA_ARTICULO                  = "articulo";
+    public static final String TABLA_CENTRO_COSTO              = "centro_costo";
+    public static final String TABLA_STOCK                     = "stock";
+    public static final String TABLA_ACTIVIDAD_OPERATIVA       = "actividad_operativa";
+    public static final String TABLA_ARCHIVO_ACTIVIDAD_OPERATIVA   = "archivo_actividad_operativa";
+    public static final String TABLA_ORDEN_INVENTARIO          = "orden_inventario";
+    public static final String TABLA_DETALLE_ORDEN_INVENTARIO  = "detalle_orden_inventario";
 
 }

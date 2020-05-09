@@ -136,13 +136,12 @@
 
 
                         <Button
-                            android:id="@+id/btnCrearElemento"
+                            android:id="@+id/btn_crear_elemento"
                             android:layout_width="match_parent"
                             android:layout_height="65dp"
                             android:layout_weight="1"
                             android:background="@android:drawable/btn_default_small"
                             android:drawableLeft="@android:drawable/ic_menu_add"
-                            android:enabled="false"
                             android:text="@string/btn_crear_elemento"
                             android:textSize="14sp" />
 
