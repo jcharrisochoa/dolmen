@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
@@ -135,6 +136,7 @@ public class Parametros extends AppCompatActivity {
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 responseBodyTmp = responseBody;
                 actualizarBaseDatosParamtros();
+
                 Intent i = new Intent(Parametros.this,ConfigurarArea.class);
                 startActivity(i);
                 finish();
@@ -171,6 +173,7 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayCenso.length()*100);
                 progressBar.incrementProgressBy(progress);
                 txt_porcentaje_carga.setText("Actualizando Censo "+progress+"%");
+                Log.d("parametros","->censo:"+progress+"%");
             }
 
             //--Municipio
@@ -184,6 +187,7 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayMunicipio.length()*100);
                 progressBar.incrementProgressBy(progress);
                 txt_porcentaje_carga.setText("Actualizando Municipio "+progress+"%");
+                Log.d("parametros","->municipio:"+progress+"%");
             }
 
             //--Tipologia
@@ -198,6 +202,7 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayTipologia.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Tipologia "+progress+"%");
+                Log.d("parametros","->tipologia:"+progress+"%");
             }
 
             //--Mobiliario
@@ -212,7 +217,9 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayMobiliario.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Mobiliario "+progress+"%");
+                Log.d("parametros","->Mobiliario:"+progress+"%");
             }
+
             //--Referencia Mobiliario
             ReferenciaMobiliarioDB referenciaMobiliarioDB = new ReferenciaMobiliarioDB(database);
             JSONArray arrayReferenciaMobiliario = parametros.getJSONArray("referencia");
@@ -225,6 +232,7 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayReferenciaMobiliario.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Referencia Mobiliario "+progress+"%");
+                Log.d("parametros","->Referencia:"+progress+"%");
             }
 
             /*new Thread(new Runnable() {
@@ -252,6 +260,7 @@ public class Parametros extends AppCompatActivity {
             //--Barrio
             BarrioDB barrioDB = new BarrioDB(database);
             JSONArray arrayBarrio = parametros.getJSONArray("barrio");
+            barrioDB.iniciarTransaccion();
             for (int i = 0;i<arrayBarrio.length();i++){
                 JSONObject jObjectBarrio = arrayBarrio.getJSONObject(i);
                 barrioDB.setIdBarrio(jObjectBarrio.getInt("id"));
@@ -261,7 +270,9 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayBarrio.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Barrios "+progress+"%");
+                Log.d("parametros","->Barrio:"+progress+"%");
             }
+            barrioDB.finalizarTransaccion();
 
             //--Proceso SGC
             ProcesoSgcDB procesoSgcDB = new ProcesoSgcDB(database);
@@ -274,6 +285,7 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayProcesoSgc.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Proceso SGC "+progress+"%");
+                Log.d("parametros","->Proceso:"+progress+"%");
             }
 
             //--Contrato
@@ -297,6 +309,7 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayContrato.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Contratos "+progress+"%");
+                Log.d("parametros","->Contrato:"+progress+"%");
             }
 
             //--Clase Via
@@ -311,6 +324,7 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayClaseVia.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Entidad Clase Via "+progress+"%");
+                Log.d("parametros","->Clase via:"+progress+"%");
             }
 
             //--Estado Mobiliario
@@ -325,6 +339,7 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayEstadoMobiliario.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Estado Mobiliario "+progress+"%");
+                Log.d("parametros","->Estado Mobiliario:"+progress+"%");
             }
 
             //--Estado Actividad
@@ -338,6 +353,7 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayEstadoActividad.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Estado Actividad "+progress+"%");
+                Log.d("parametros","->Estado Actividad:"+progress+"%");
             }
 
             //--Vatiaje
@@ -351,6 +367,7 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayVatiaje.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Vatiaje "+progress+"%");
+                Log.d("parametros","->Vatiaje:"+progress+"%");
             }
 
             //--Unidad Media
@@ -364,6 +381,7 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayUnidadMedida.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Unidad Medida "+progress+"%");
+                Log.d("parametros","->Unidad Medida:"+progress+"%");
             }
             //--Tipo Red
             TipoRedDB tipoRedDB = new TipoRedDB(database);
@@ -376,6 +394,7 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayTipoRed.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Tipo Red "+progress+"%");
+                Log.d("parametros","->Tipo Red:"+progress+"%");
             }
 
             //--Tipo Poste
@@ -389,6 +408,7 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayTipoPoste.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Tipo Poste "+progress+"%");
+                Log.d("parametros","->Tipo Poste:"+progress+"%");
             }
             //--Tipo Interseccion
             TipoInterseccionDB tipoInterseccionDB = new TipoInterseccionDB(database);
@@ -402,6 +422,7 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayTipoInterseccion.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Tipo Interseccion "+progress+"%");
+                Log.d("parametros","->Tipo Interseccion:"+progress+"%");
             }
 
             //--Tipo Espacio
@@ -415,6 +436,7 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayTipoEspacio.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Tipo Espacio "+progress+"%");
+                Log.d("parametros","->Tipo Espacio:"+progress+"%");
             }
 
             //--Tipo Tension
@@ -428,6 +450,7 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayTipoTension.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Tipo Tension "+progress+"%");
+                Log.d("parametros","->Tipo Tension:"+progress+"%");
             }
 
             //Retenida Poste
@@ -442,6 +465,7 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayRetenidaPoste.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Retenida Poste "+progress+"%");
+                Log.d("parametros","->Retenida:"+progress+"%");
             }
 
             //--Norma Construccion Poste
@@ -460,6 +484,7 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayNormaConstruccionPoste.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Norma Construccion Poste "+progress+"%");
+                Log.d("parametros","->Norma Poste:"+progress+"%");
             }
 
             //--Tipo Estructura
@@ -478,6 +503,7 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayTipoEstructura.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Tipo Estructura "+progress+"%");
+                Log.d("parametros","->Tipo Estructura:"+progress+"%");
             }
 
             //--Norma Construccion Red
@@ -497,6 +523,7 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayNormaConstruccionRed.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Norma Construccion Red "+progress+"%");
+                Log.d("parametros","->Norma Red:"+progress+"%");
             }
 
             //--Tipo Reporte Dano
@@ -514,6 +541,7 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayTipoReporteDano.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Tipo Reporte Dano "+progress+"%");
+                Log.d("parametros","->Tipo Reporte Dano:"+progress+"%");
             }
 
             //--Programa
@@ -533,16 +561,33 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayPrograma.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Programa "+progress+"%");
+                Log.d("parametros","->Programa:"+progress+"%");
             }
 
             //--Elementos--
             ElementoDB elementoDB = new ElementoDB(database);
             JSONArray arrayElemento = parametros.getJSONArray("elemento_usuario");
+            elementoDB.iniciarTransaccion();
             for (int i = 0;i<arrayElemento.length();i++){
 
                 JSONObject jObjectElemento = arrayElemento.getJSONObject(i);
+                try {
+                    elementoDB.agregarDatos(
+                            jObjectElemento.getInt("id_elemento"),
+                            jObjectElemento.getString("elemento_no"),
+                            jObjectElemento.getString("direccion"),
+                            jObjectElemento.getInt("id_municipio"),
+                            jObjectElemento.getInt("id_barrio"),
+                            jObjectElemento.getInt("id_proceso_sgc"),
+                            jObjectElemento.getInt("id_tipologia"),
+                            jObjectElemento.getInt("id_mobiliario"),
+                            jObjectElemento.getInt("id_referencia"),
+                            jObjectElemento.getInt("id_estado_mobiliario"));
+                }catch (SQLException e){
+                    e.printStackTrace();
+                }
 
-                elementoDB.setId(jObjectElemento.getInt("id_elemento"));
+               /* elementoDB.setId(jObjectElemento.getInt("id_elemento"));
                 elementoDB.setElemento_no(jObjectElemento.getString("elemento_no"));
                 elementoDB.setDireccion(jObjectElemento.getString("direccion"));
 
@@ -566,12 +611,21 @@ public class Parametros extends AppCompatActivity {
                 elementoDB.setEstadoMobiliario(estadoMobiliarioElem);
 
                 elementoDB.agregarDatos(elementoDB);
-
+                */
                 progress = (int)Math.round((double)(i+1)/arrayElemento.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando elementos "+progress+"%");
+                Log.d("parametros","->Elementos:"+progress+"%");
 
+                /*
+                barrio = null;
+                procesoSgc = null;
+                referenciaMobiliario = null;
+                estadoMobiliarioElem = null;
+                elementoDB = null;
+                 */
             }
+            elementoDB.finalizarTransaccion();
 
             //--Tipo Actividad Operativa
             TipoActividadDB tipoActividadDB = new TipoActividadDB(database);
@@ -589,8 +643,8 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayTipoActividad.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Tipo Actividad "+progress+"%");
+                Log.d("parametros","->Tipo Actividad Operativa:"+progress+"%");
             }
-
 
             //Sentido
             SentidoDB sentidoDB = new SentidoDB(database);
@@ -603,11 +657,13 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arraySentido.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Sentido "+progress+"%");
+                Log.d("parametros","->Sentido:"+progress+"%");
             }
 
             //Acta Contrato
             ActaContratoDB actaContratoDB = new ActaContratoDB(database);
             JSONArray arrayActa = parametros.getJSONArray("acta");
+            actaContratoDB.iniciarTransaccion();
             for (int i = 0;i<arrayActa.length();i++){
                 JSONObject jObjectActa = arrayActa.getJSONObject(i);
 
@@ -621,11 +677,14 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayActa.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Acta contrato "+progress+"%");
+                Log.d("parametros","->Acta:"+progress+"%");
             }
+            actaContratoDB.finalizarTransaccion();
 
             //Proveedor
             ProveedorDB proveedorDB = new ProveedorDB(database);
             JSONArray arrayProveedor = parametros.getJSONArray("proveedor");
+            proveedorDB.iniciarTransaccion();
             for (int i = 0;i<arrayProveedor.length();i++){
                 JSONObject jObjectProveedor = arrayProveedor.getJSONObject(i);
                 proveedorDB.setId(jObjectProveedor.getInt("id"));
@@ -634,10 +693,11 @@ public class Parametros extends AppCompatActivity {
                 progress = (int)Math.round((double)(i+1)/arrayProveedor.length()*100);
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Proveedor "+progress+"%");
+                Log.d("parametros","->Proveedor:"+progress+"%");
             }
+            proveedorDB.finalizarTransaccion();
 
             database.close();
-
 
         }catch (JSONException e){
             e.getMessage();

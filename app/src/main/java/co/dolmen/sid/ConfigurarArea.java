@@ -85,7 +85,13 @@ public class ConfigurarArea extends AppCompatActivity {
         tvNombreUsuario = findViewById(R.id.nombre_usuario);
 
         //--Preferencias--
+
+
         config = getSharedPreferences("config",MODE_PRIVATE);
+        SharedPreferences.Editor editar = config.edit();
+        editar.putBoolean("usuario_logueado",true);
+        editar.commit();
+
         nombreUsuario       = config.getString("nombre_usuario", "");
         idUsuario           = config.getInt("id_usuario", 0);
         idDefaultMunicipio  = config.getInt("id_municipio",0);

@@ -17,6 +17,15 @@ public class BarrioDB extends Barrio implements DatabaseDDL,DatabaseDLM {
         barrio = new Barrio();
         db = sqLiteDatabase;
     }
+    public void iniciarTransaccion(){
+        db.beginTransaction();
+    }
+
+    public void finalizarTransaccion(){
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
     @Override
     public void crearTabla() {
         db.execSQL("create table "+ Constantes.TABLA_BARRIO+"( _id INTEGER PRIMARY KEY,id_municipio INTEGER, descripcion VARCHAR(120));");

@@ -17,6 +17,7 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
     public ElementoDB(SQLiteDatabase sqLiteDatabase){
         this.db = sqLiteDatabase;
     }
+
     @Override
     public void crearTabla() {
         db.execSQL(
@@ -40,6 +41,15 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
     @Override
     public void borrarTabla() {
         db.execSQL("DROP TABLE IF EXISTS "+Constantes.TABLA_ELEMENTO);
+    }
+
+    public void iniciarTransaccion(){
+        db.beginTransaction();
+    }
+
+    public void finalizarTransaccion(){
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 
     @Override
@@ -69,6 +79,29 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
             return false;
     }
 
+    public boolean agregarDatos(int id_elemento,String mobiliario_no,String direccion,
+                                int id_municipio,int id_barrio,int id_proceso_sgc,int id_tipologia,
+            int id_mobiliario,int id_referencia,int id_estado_mobiliario){
+        Cursor result = consultarId(id_elemento);
+
+        if(result.getCount() == 0) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("_id", id_elemento);
+            contentValues.put("elemento_no", mobiliario_no);
+            contentValues.put("direccion", direccion);
+            contentValues.put("id_municipio", id_municipio);
+            contentValues.put("id_barrio", id_barrio);
+            contentValues.put("id_proceso_sgc", id_proceso_sgc);
+            contentValues.put("id_tipologia", id_tipologia);
+            contentValues.put("id_mobiliario", id_mobiliario);
+            contentValues.put("id_referencia", id_referencia);
+            contentValues.put("id_estado_mobiliario", id_estado_mobiliario);
+            //Log.d("VALUE",contentValues.toString());
+            db.insert(Constantes.TABLA_ELEMENTO, null, contentValues);
+        }
+        result.close();
+        return true;
+    }
     @Override
     public void actualizarDatos(Object E) {
 

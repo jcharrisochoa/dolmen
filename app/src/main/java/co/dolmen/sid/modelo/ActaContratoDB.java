@@ -17,6 +17,15 @@ public class ActaContratoDB extends ActaContrato implements DatabaseDDL,Database
         this.actaContrato = new ActaContrato();
     }
 
+    public void iniciarTransaccion(){
+        db.beginTransaction();
+    }
+
+    public void finalizarTransaccion(){
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
     @Override
     public void crearTabla() {
         this.sql = "create table "+ Constantes.TABLA_ACTA_CONTRATO +"(_id INTEGER PRIMARY KEY,id_contrato INTEGER,descripcion VARCHAR(45));";

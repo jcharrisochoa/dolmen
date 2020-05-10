@@ -27,6 +27,15 @@ public class ProveedorDB extends Proveedor implements DatabaseDDL,DatabaseDLM {
         db.execSQL("DROP TABLE IF EXISTS "+Constantes.TABLA_PROVEEDOR);
     }
 
+    public void iniciarTransaccion(){
+        db.beginTransaction();
+    }
+
+    public void finalizarTransaccion(){
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
     @Override
     public boolean agregarDatos(Object o) {
         if(o instanceof Proveedor) {

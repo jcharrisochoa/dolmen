@@ -1145,7 +1145,7 @@ public class CrearElemento extends AppCompatActivity {
         }
         else {
             if(!gpsListener) {
-                ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 0, new miLocalizacion());
+                ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, new miLocalizacion());
             }
         }
     }

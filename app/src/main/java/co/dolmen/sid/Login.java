@@ -176,7 +176,7 @@ public class Login extends AppCompatActivity {
                         }
                         else{
                             SharedPreferences.Editor editar = config.edit();
-                            editar.putBoolean("usuario_logueado",true);
+                            //editar.putBoolean("usuario_logueado",true);
                             editar.putString("nombre_usuario", nombre_usuario);
                             editar.putString("usuario", usuario);
                             editar.putInt("id_usuario",id_usuario);

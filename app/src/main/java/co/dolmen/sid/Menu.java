@@ -3,8 +3,11 @@ package co.dolmen.sid;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import co.dolmen.sid.modelo.CensoArchivoDB;
+import co.dolmen.sid.modelo.CensoAsignadoDB;
 import co.dolmen.sid.modelo.CensoDB;
 import co.dolmen.sid.modelo.CensoTipoArmadoDB;
+import co.dolmen.sid.modelo.ElementoDB;
+import co.dolmen.sid.modelo.ProgramaDB;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -42,6 +45,10 @@ public class Menu extends AppCompatActivity {
     private CensoDB censoDB;
     private CensoTipoArmadoDB censoTipoArmadoDB;
     private CensoArchivoDB censoArchivoDB;
+    private ProgramaDB programaDB;
+    private CensoAsignadoDB censoAsignadoDB;
+    private ElementoDB elementoDB;
+
     SQLiteDatabase database;
     AlertDialog.Builder alert;
 
@@ -105,6 +112,10 @@ public class Menu extends AppCompatActivity {
                             censoTipoArmadoDB.eliminarDatos();
                             censoArchivoDB.eliminarDatos();
                             censoDB.eliminarDatos();
+                            programaDB.eliminarDatos();
+                            censoAsignadoDB.eliminarDatos();
+                            elementoDB.eliminarDatos();
+
                             config.edit().clear().commit();
                             Intent intent = new Intent(Menu.this,Login.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);

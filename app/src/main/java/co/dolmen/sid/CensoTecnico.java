@@ -1830,7 +1830,7 @@ public class CensoTecnico extends AppCompatActivity {
         else {
             if(!gpsListener) {
                 //Log.d("respuesta","activo");
-                ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, new miLocalizacion());
+                ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, new miLocalizacion());
             }
         }
     }
