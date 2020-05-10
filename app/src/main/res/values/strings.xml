@@ -83,7 +83,9 @@
     <string name="alert_observacion">Digite una observacion</string>
     <string name="alert_fotografia">Incluya una fotografía</string>
     <string name="alert_tipo_reporte_dano">Seleccione un tipo de reporte</string>
-
+    <string name="alert_sentido">Seleccione el Sentido del Mobiliario</string>
+    <string name="alert_unidad_medida">Seleccione la Unidad de Medida</string>
+    <string name="alert_cantidad">Digite la cantidad de Mobiliario</string>
     <string name="file_provider_authority" translatable="false">co.dolmen.sid</string>
 
     <!--Menu de Cargar Imagen-->

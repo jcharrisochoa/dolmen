@@ -21,6 +21,7 @@ import co.dolmen.sid.modelo.TipoRedDB;
 import co.dolmen.sid.modelo.TipologiaDB;
 import co.dolmen.sid.modelo.UnidadMedidaDB;
 import co.dolmen.sid.utilidades.DataSpinner;
+import cz.msebera.android.httpclient.Header;
 
 import android.Manifest;
 import android.content.DialogInterface;
@@ -39,6 +40,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.media.MediaScannerConnection;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -51,12 +54,24 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestHandle;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -74,6 +89,9 @@ public class CrearElemento extends AppCompatActivity {
     SharedPreferences config;
     AlertDialog.Builder alertDireccion;
 
+
+    private ProgressBar progressBar;
+
     private String encodeString;
     private String nombreMunicipio;
     private String nombreProceso;
@@ -86,6 +104,7 @@ public class CrearElemento extends AppCompatActivity {
     private int idDefaultContrato;
     private int idMobiliarioBusqueda;
     private int idReferenciaBusqueda;
+    private Integer conexionElectrica = 0;
 
     private boolean gpsListener;
     public LocationManager ubicacion;
@@ -107,6 +126,13 @@ public class CrearElemento extends AppCompatActivity {
     private EditText txtNumeroInterseccion;
     private EditText txtNumeracionA;
     private EditText txtNumeracionB;
+    private EditText txtCantidad;
+    private EditText txtObservacion;
+    private EditText txtPosteno;
+    private EditText txtTransformador;
+    private EditText txtPotenciaTransformador;
+    private EditText txtSerialMedidor;
+    private EditText txtLecturaMedidor;
 
     private Spinner sltTipoInterseccionA;
     private Spinner sltTipoInterseccionB;
@@ -121,7 +147,6 @@ public class CrearElemento extends AppCompatActivity {
     private Spinner sltBarrio;
     private Spinner sltMobiliario;
     private Spinner sltReferencia;
-    private Spinner sltCruce;
     private Spinner sltProveedor;
 
 
@@ -131,6 +156,8 @@ public class CrearElemento extends AppCompatActivity {
     private Button btnBorrarFoto;
     private ImageButton btnEditarDireccion;
     private ImageButton btnCapturarGPS;
+
+    private Switch swConexionElectrica;
 
     private ImageView imgFoto;
 
@@ -148,6 +175,9 @@ public class CrearElemento extends AppCompatActivity {
     ArrayList<DataSpinner> unidadList;
     ArrayList<DataSpinner> sentidoList;
     ArrayList<DataSpinner> proveedorList;
+
+    ToggleButton chkTercero;
+    String tercero = "N";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,6 +226,13 @@ public class CrearElemento extends AppCompatActivity {
         txtDireccion        =  findViewById(R.id.txt_direccion);
         txtLatitud          =  findViewById(R.id.txt_latitud);
         txtLongitud         =  findViewById(R.id.txt_longitud);
+        txtCantidad                 = findViewById(R.id.txtCantidad);
+        txtObservacion              = findViewById(R.id.txtObservacion);
+        txtPosteno                  = findViewById(R.id.txtPosteno);
+        txtTransformador            = findViewById(R.id.txtTranformador);
+        txtPotenciaTransformador    = findViewById(R.id.txtPotenciaTranformador);
+        txtSerialMedidor            = findViewById(R.id.txtSerialMedidor);
+        txtLecturaMedidor           = findViewById(R.id.txtLecturaMedidor);
         //--
         viewLatitud             = findViewById(R.id.gps_latitud);
         viewLongitud            = findViewById(R.id.gps_longitud);
@@ -203,7 +240,9 @@ public class CrearElemento extends AppCompatActivity {
         viewPrecision           = findViewById(R.id.gps_precision);
         viewDireccion           = findViewById(R.id.gps_direccion);
         viewVelocidad           = findViewById(R.id.gps_velocidad);
-
+        //-
+        chkTercero  = findViewById(R.id.chkTercero);
+        swConexionElectrica = findViewById(R.id.swConexionElectrica);
         //-
         btnGuardar              = findViewById(R.id.btnGuardar);
         btnCancelar             = findViewById(R.id.btnCancelar);
@@ -214,7 +253,8 @@ public class CrearElemento extends AppCompatActivity {
         //--
         imgFoto = findViewById(R.id.foto);
         //--
-
+        progressBar            = findViewById(R.id.progressBarGuardarNuevoElemento);
+        //--
         txtNombreMunicipio.setText(nombreMunicipio);
         txtNombreProceso.setText(nombreProceso);
         txtNombreContrato.setText(nombreContrato);
@@ -222,7 +262,7 @@ public class CrearElemento extends AppCompatActivity {
         txtDireccion.setEnabled(false);
         txtLatitud.setEnabled(false);
         txtLongitud.setEnabled(false);
-
+        progressBar.setVisibility(View.INVISIBLE);
 
         btnCancelar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -270,6 +310,61 @@ public class CrearElemento extends AppCompatActivity {
                 else {
                     txtLatitud.setText(viewLatitud.getText().toString().trim());
                     txtLongitud.setText(viewLongitud.getText().toString().trim());
+                }
+            }
+        });
+        btnGuardar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(validarFrm()){
+                    ConnectivityManager conn = (ConnectivityManager) getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
+                    NetworkInfo networkInfo = conn.getActiveNetworkInfo();
+
+                    if(networkInfo != null && networkInfo.isConnected()) {
+                        Toast.makeText(getApplicationContext(),"Conectando con "+networkInfo.getTypeName()+" / "+networkInfo.getExtraInfo(),Toast.LENGTH_LONG).show();
+                        btnGuardar.setEnabled(false);
+                        btnCancelar.setEnabled(false);
+                        GuardarMobiliario();
+                    }
+                    else{
+                        alert.setTitle(R.string.titulo_alerta);
+                        alert.setMessage(R.string.alert_conexion);
+                        alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        });
+                        alert.create().show();
+                    }
+                }
+                else{
+                    alert.setTitle(R.string.titulo_alerta);
+                    alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    });
+                    alert.create().show();
+                }
+            }
+        });
+        chkTercero.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                tercero = (compoundButton.isChecked())?"S":"N";
+
+            }
+        });
+        swConexionElectrica.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if(isChecked){
+                    conexionElectrica = 1;
+                }
+                else {
+                    conexionElectrica = 0;
                 }
             }
         });
@@ -851,6 +946,187 @@ public class CrearElemento extends AppCompatActivity {
         startActivityForResult(intent, Constantes.CONS_TOMAR_FOTO);
     }
 
+    private void resetFrm(){
+        btnGuardar.setEnabled(true);
+        btnCancelar.setEnabled(true);
+        txtObservacion.setText("");
+        txtCantidad.setText("1");
+        chkTercero.setChecked(false);
+        sltProveedor.setSelection(0);
+        imgFoto.setImageResource(R.drawable.imagen_no_disponible);
+        encodeString="";
+    }
+    //-
+    private boolean validarFrm(){
+        if(unidadList.get(sltUnidad.getSelectedItemPosition()).getId()==0){
+            alert.setMessage(R.string.alert_unidad_medida);
+            return false;
+        }
+        else{
+            if(txtCantidad.getText().toString().isEmpty()){
+                alert.setMessage(R.string.alert_cantidad);
+                return false;
+            }
+            else{
+                if (tipologiaList.get(sltTipologia.getSelectedItemPosition()).getId() == 0) {
+                    alert.setMessage(R.string.alert_censo_tipologia);
+                    return false;
+                }
+                else {
+                    if (mobiliarioList.get(sltMobiliario.getSelectedItemPosition()).getIdMobiliario() == 0) {
+                        alert.setMessage(R.string.alert_censo_mobiliario);
+                        return false;
+                    }
+                    else {
+                        if(barrioList.get(sltBarrio.getSelectedItemPosition()).getId()==0){
+                            alert.setMessage(R.string.alert_censo_barrio);
+                            return false;
+                        }
+                        else {
+                            if (txtDireccion.getText().toString().isEmpty()) {
+                                alert.setMessage(R.string.alert_censo_direccion);
+                                return false;
+                            }
+                            else {
+                                if (idDefaultProceso == 19) {
+                                    if (referenciaMobiliarioList.get(sltReferencia.getSelectedItemPosition()).getIdReferenciaMobiliario() == 0) {
+                                        alert.setMessage(R.string.alert_censo_referencia);
+                                        return false;
+                                    }
+                                    else {
+                                        if (tipoPosteList.get(sltTipoPoste.getSelectedItemPosition()).getId() == 0) {
+                                            alert.setMessage(R.string.alert_censo_tipo_poste);
+                                            return false;
+                                        }
+                                        else {
+                                            if (tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId() == 0) {
+                                                alert.setMessage(R.string.alert_tipo_red);
+                                                return false;
+                                            }
+                                            else {
+                                                if (claseViaList.get(sltClaseVia.getSelectedItemPosition()).getId() == 0) {
+                                                    alert.setMessage(R.string.alert_censo_clase_via);
+                                                    return false;
+                                                }
+                                                else {
+                                                    if (estadoMobiliarioList.get(sltEstadoMobiliario.getSelectedItemPosition()).getId() == 0) {
+                                                        alert.setMessage(R.string.alert_censo_estado_mobiliario);
+                                                        return false;
+                                                    }
+                                                    else
+                                                        return true;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                else {
+                                    if (sentidoList.get(sltSentido.getSelectedItemPosition()).getId() == 0) {
+                                        alert.setMessage(R.string.alert_sentido);
+                                        return false;
+                                    }
+                                    else {
+                                        if (unidadList.get(sltUnidad.getSelectedItemPosition()).getId() == 0) {
+                                            alert.setMessage(R.string.alert_unidad_medida);
+                                            return false;
+                                        }
+                                        else {
+                                            if (estadoMobiliarioList.get(sltEstadoMobiliario.getSelectedItemPosition()).getId() == 0) {
+                                                alert.setMessage(R.string.alert_censo_estado_mobiliario);
+                                                return false;
+                                            }
+                                            else
+                                                return true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    //--
+    private void GuardarMobiliario(){
+        AsyncHttpClient client = new AsyncHttpClient();
+        RequestParams requestParams = new RequestParams();
+        requestParams.put("id_usuario",idUsuario);
+        requestParams.put("id_municipio",idDefaultMunicipio);
+        requestParams.put("id_contrato",idDefaultContrato);
+        requestParams.put("id_proceso",idDefaultProceso);
+        requestParams.put("id_acta",actaList.get(sltActaContrato.getSelectedItemPosition()).getId());
+        requestParams.put("id_barrio",barrioList.get(sltBarrio.getSelectedItemPosition()).getId());
+        requestParams.put("direccion",txtDireccion.getText());
+        requestParams.put("latitud",txtLatitud.getText());
+        requestParams.put("longitud",txtLongitud.getText());
+        requestParams.put("id_tipologia",tipologiaList.get(sltTipologia.getSelectedItemPosition()).getId());
+        requestParams.put("id_mobiliario",mobiliarioList.get(sltMobiliario.getSelectedItemPosition()).getIdMobiliario());
+        requestParams.put("id_referencia",referenciaMobiliarioList.get(sltReferencia.getSelectedItemPosition()).getIdReferenciaMobiliario());
+        requestParams.put("id_sentido",sentidoList.get(sltSentido.getSelectedItemPosition()).getId());
+        requestParams.put("tercero",tercero);
+        requestParams.put("id_proveedor",proveedorList.get(sltProveedor.getSelectedItemPosition()).getId());
+        requestParams.put("cantidad",txtCantidad.getText());
+        requestParams.put("id_unidad",unidadList.get(sltUnidad.getSelectedItemPosition()).getId());
+        requestParams.put("id_tipo_poste",tipoPosteList.get(sltTipoPoste.getSelectedItemPosition()).getId());
+        requestParams.put("poste_no",txtPosteno.getText());
+        requestParams.put("id_tipo_red",tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId());
+        requestParams.put("transformador",txtTransformador.getText());
+        requestParams.put("potencia_transformador",txtPotenciaTransformador.getText());
+        requestParams.put("serial_medidor",txtSerialMedidor.getText());
+        requestParams.put("lectura_medidor",txtLecturaMedidor.getText());
+        requestParams.put("id_clase_via",claseViaList.get(sltClaseVia.getSelectedItemPosition()).getId());
+        requestParams.put("id_estado",estadoMobiliarioList.get(sltEstadoMobiliario.getSelectedItemPosition()).getId());
+        requestParams.put("observacion",txtObservacion.getText());
+        requestParams.put("conexion_electrica",conexionElectrica);
+        requestParams.put("encode_string",encodeString);
+        client.setTimeout(Constantes.TIMEOUT);
+
+        RequestHandle post = client.post(ServicioWeb.urlGuardarNuevoElemento, requestParams, new AsyncHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                super.onStart();
+                progressBar.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                String respuesta = new String(responseBody);
+                //Log.d("resultado",""+respuesta);
+                try {
+                    JSONObject jsonObject = new JSONObject(new String(responseBody));
+                    String mensaje = jsonObject.getString("mensaje");
+                    alert.setTitle(R.string.titulo_alerta);
+                    alert.setMessage(mensaje);
+
+                    alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    });
+                    alert.create().show();
+                    progressBar.setVisibility(View.INVISIBLE);
+                    resetFrm();
+
+                }catch (JSONException e){
+                    e.printStackTrace();
+                    Log.d("resultado","Error: onsuccess"+e.getMessage()+"respuesta:"+respuesta);
+                    Toast.makeText(getApplicationContext(),getText(R.string.alert_error_ejecucion)+ " Servicio Web, Código:"+statusCode, Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                String respuesta = new String(responseBody);
+                Log.d("resultado","Error "+respuesta);
+                Toast.makeText(getApplicationContext(),getText(R.string.alert_error_ejecucion)+ " Código: "+statusCode, Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.INVISIBLE);
+            }
+        });
+
+    }
     //--Administracion del GPS
     public boolean estadoGPS() {
         ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
@@ -869,7 +1145,7 @@ public class CrearElemento extends AppCompatActivity {
         }
         else {
             if(!gpsListener) {
-                ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, new miLocalizacion());
+                ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 0, new miLocalizacion());
             }
         }
     }
