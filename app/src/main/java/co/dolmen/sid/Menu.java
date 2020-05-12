@@ -3,12 +3,24 @@ package co.dolmen.sid;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import co.dolmen.sid.entidad.Censo;
+import co.dolmen.sid.modelo.ActaContratoDB;
+import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.CensoArchivoDB;
 import co.dolmen.sid.modelo.CensoAsignadoDB;
 import co.dolmen.sid.modelo.CensoDB;
 import co.dolmen.sid.modelo.CensoTipoArmadoDB;
+import co.dolmen.sid.modelo.ContratoDB;
 import co.dolmen.sid.modelo.ElementoDB;
+import co.dolmen.sid.modelo.EstadoActividadDB;
+import co.dolmen.sid.modelo.EstadoMobiliarioDB;
+import co.dolmen.sid.modelo.MobiliarioDB;
+import co.dolmen.sid.modelo.MunicipioDB;
+import co.dolmen.sid.modelo.ProcesoSgcDB;
 import co.dolmen.sid.modelo.ProgramaDB;
+import co.dolmen.sid.modelo.ReferenciaMobiliarioDB;
+import co.dolmen.sid.modelo.TipoActividadDB;
+import co.dolmen.sid.modelo.TipoReporteDanoDB;
+import co.dolmen.sid.modelo.TipologiaDB;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -50,6 +62,19 @@ public class Menu extends AppCompatActivity {
     private CensoAsignadoDB censoAsignadoDB;
     private ElementoDB elementoDB;
 
+    private ProcesoSgcDB procesoSgcDB;
+    private ContratoDB contratoDB;
+    private ActaContratoDB actaContratoDB;
+    private BarrioDB  barrioDB;
+    private MunicipioDB municipioDB;
+    private TipoReporteDanoDB tipoReporteDanoDB;
+    private TipoActividadDB tipoActividadDB;
+    private EstadoMobiliarioDB estadoMobiliarioDB;
+    private EstadoActividadDB estadoActividadDB;
+    private TipologiaDB tipologiaDB;
+    private MobiliarioDB mobiliarioDB;
+    private ReferenciaMobiliarioDB referenciaMobiliarioDB;
+
     SQLiteDatabase database;
     AlertDialog.Builder alert;
 
@@ -69,6 +94,19 @@ public class Menu extends AppCompatActivity {
         programaDB          = new ProgramaDB(database);
         censoAsignadoDB     = new CensoAsignadoDB(database);
         elementoDB          = new ElementoDB(database);
+
+        procesoSgcDB        = new ProcesoSgcDB(database);
+        contratoDB          = new ContratoDB(database);
+        actaContratoDB      = new ActaContratoDB(database);
+        barrioDB            = new BarrioDB(database);
+        municipioDB         = new MunicipioDB(database);
+        tipoReporteDanoDB   = new TipoReporteDanoDB(database);
+        tipoActividadDB     = new TipoActividadDB(database);
+        estadoMobiliarioDB  = new EstadoMobiliarioDB(database);
+        estadoActividadDB   = new EstadoActividadDB(database);
+        tipologiaDB         = new TipologiaDB(database);
+        mobiliarioDB        = new MobiliarioDB(database);
+        referenciaMobiliarioDB= new ReferenciaMobiliarioDB(database);
 
         alert = new AlertDialog.Builder(this);
 
@@ -119,6 +157,19 @@ public class Menu extends AppCompatActivity {
                             programaDB.eliminarDatos();
                             censoAsignadoDB.eliminarDatos();
                             elementoDB.eliminarDatos();
+
+                            procesoSgcDB.eliminarDatos();
+                            contratoDB.eliminarDatos();
+                            actaContratoDB.eliminarDatos();
+                            barrioDB.eliminarDatos();
+                            municipioDB.eliminarDatos();
+                            tipoReporteDanoDB.eliminarDatos();
+                            tipoActividadDB.eliminarDatos();
+                            estadoMobiliarioDB.eliminarDatos();
+                            estadoActividadDB.eliminarDatos();
+                            tipologiaDB.eliminarDatos();
+                            mobiliarioDB.eliminarDatos();
+                            referenciaMobiliarioDB.eliminarDatos();
 
                             config.edit().clear().commit();
                             Intent intent = new Intent(Menu.this,Login.class);

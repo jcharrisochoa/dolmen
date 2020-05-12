@@ -199,6 +199,7 @@ public class Login extends AppCompatActivity {
                         });
                         alert.create().show();
                         e.printStackTrace();
+                        setlockFrm(true);
                     }
                 }
                 else{

@@ -53,7 +53,7 @@ public class TipoReporteDanoDB extends TipoReporteDano implements  DatabaseDDL,D
 
     @Override
     public void eliminarDatos() {
-
+        db.execSQL("DELETE FROM  "+Constantes.TABLA_TIPO_REPORTE_DANO);
     }
 
     @Override

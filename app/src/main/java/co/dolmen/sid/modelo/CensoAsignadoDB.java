@@ -62,7 +62,7 @@ public class CensoAsignadoDB extends CensoAsignado implements DatabaseDDL,Databa
 
     @Override
     public void eliminarDatos() {
-
+        db.execSQL("DELETE FROM  "+Constantes.TABLA_CENSO_ASIGNADO);
     }
 
     @Override

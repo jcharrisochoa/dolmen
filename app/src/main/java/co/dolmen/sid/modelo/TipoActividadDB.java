@@ -53,7 +53,7 @@ public class TipoActividadDB extends TipoActividad implements  DatabaseDDL,Datab
 
     @Override
     public void eliminarDatos() {
-
+        db.execSQL("DELETE FROM  "+Constantes.TABLA_TIPO_ACTIVIDAD);
     }
 
     @Override

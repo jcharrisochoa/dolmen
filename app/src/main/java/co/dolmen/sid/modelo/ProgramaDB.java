@@ -52,7 +52,7 @@ public class ProgramaDB extends Programa implements  DatabaseDDL,DatabaseDLM {
 
     @Override
     public void eliminarDatos() {
-
+        db.execSQL("DELETE FROM  "+Constantes.TABLA_PROGRAMA);
     }
 
     @Override

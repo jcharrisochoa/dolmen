@@ -54,7 +54,7 @@ public class EstadoMobiliarioDB extends EstadoMobiliario implements DatabaseDLM,
 
     @Override
     public void eliminarDatos() {
-
+        db.execSQL("DELETE FROM  "+Constantes.TABLA_ESTADO_MOBILIARIO);
     }
 
     @Override

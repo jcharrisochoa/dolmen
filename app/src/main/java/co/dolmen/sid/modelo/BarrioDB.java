@@ -63,7 +63,7 @@ public class BarrioDB extends Barrio implements DatabaseDDL,DatabaseDLM {
 
     @Override
     public void eliminarDatos() {
-
+        db.execSQL("DELETE FROM  "+Constantes.TABLA_BARRIO);
     }
 
     @Override

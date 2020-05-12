@@ -53,7 +53,7 @@ public class MunicipioDB extends Municipio implements DatabaseDDL,DatabaseDLM {
 
     @Override
     public void eliminarDatos() {
-
+        db.execSQL("DELETE FROM  "+Constantes.TABLA_MUNICIPIO);
     }
 
     @Override

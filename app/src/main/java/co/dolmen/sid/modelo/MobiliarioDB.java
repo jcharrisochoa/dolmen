@@ -53,7 +53,7 @@ public class MobiliarioDB extends Mobiliario implements DatabaseDDL,DatabaseDLM 
 
     @Override
     public void eliminarDatos() {
-
+        db.execSQL("DELETE FROM  "+Constantes.TABLA_MOBILIARIO);
     }
 
     @Override

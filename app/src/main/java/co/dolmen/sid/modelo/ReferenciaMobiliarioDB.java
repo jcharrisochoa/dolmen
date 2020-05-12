@@ -52,7 +52,7 @@ public class ReferenciaMobiliarioDB extends ReferenciaMobiliario implements Data
 
     @Override
     public void eliminarDatos() {
-
+        db.execSQL("DELETE FROM  "+Constantes.TABLA_REFERNCIA_MOBILIARIO);
     }
 
     @Override

@@ -54,7 +54,7 @@ public class ContratoDB extends Contrato implements DatabaseDDL,DatabaseDLM {
 
     @Override
     public void eliminarDatos() {
-
+        db.execSQL("DELETE FROM  "+Constantes.TABLA_CONTRATO);
     }
 
     @Override

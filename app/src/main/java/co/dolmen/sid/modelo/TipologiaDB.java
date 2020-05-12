@@ -54,7 +54,7 @@ public class TipologiaDB extends Tipologia implements DatabaseDLM,DatabaseDDL {
 
     @Override
     public void eliminarDatos() {
-
+        db.execSQL("DELETE FROM  "+Constantes.TABLA_TIPOLOGIA_MOBILIARIO);
     }
 
     @Override

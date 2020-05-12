@@ -109,7 +109,7 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
 
     @Override
     public void eliminarDatos() {
-
+        db.execSQL("DELETE FROM  "+Constantes.TABLA_ELEMENTO);
     }
 
     @Override

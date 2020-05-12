@@ -53,7 +53,7 @@ public class EstadoActividadDB extends EstadoActividad implements DatabaseDLM,Da
 
     @Override
     public void eliminarDatos() {
-
+        db.execSQL("DELETE FROM  "+Constantes.TABLA_ESTADO_ACTIVIDAD);
     }
 
     @Override
