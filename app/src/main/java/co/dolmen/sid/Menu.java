@@ -2,6 +2,7 @@ package co.dolmen.sid;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import co.dolmen.sid.entidad.Censo;
 import co.dolmen.sid.modelo.CensoArchivoDB;
 import co.dolmen.sid.modelo.CensoAsignadoDB;
 import co.dolmen.sid.modelo.CensoDB;
@@ -62,9 +63,12 @@ public class Menu extends AppCompatActivity {
         conn = new BaseDatos(Menu.this);
         database = conn.getReadableDatabase();
 
-        censoDB = new CensoDB(database);
-        censoTipoArmadoDB = new CensoTipoArmadoDB(database);
-        censoArchivoDB = new CensoArchivoDB(database);
+        censoDB             = new CensoDB(database);
+        censoTipoArmadoDB   = new CensoTipoArmadoDB(database);
+        censoArchivoDB      = new CensoArchivoDB(database);
+        programaDB          = new ProgramaDB(database);
+        censoAsignadoDB     = new CensoAsignadoDB(database);
+        elementoDB          = new ElementoDB(database);
 
         alert = new AlertDialog.Builder(this);
 

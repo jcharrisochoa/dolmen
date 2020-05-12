@@ -4,11 +4,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import co.dolmen.sid.modelo.CensoArchivoDB;
+import co.dolmen.sid.modelo.CensoAsignadoDB;
 import co.dolmen.sid.modelo.CensoDB;
 import co.dolmen.sid.modelo.CensoTipoArmadoDB;
 import co.dolmen.sid.modelo.ContratoDB;
+import co.dolmen.sid.modelo.ElementoDB;
 import co.dolmen.sid.modelo.MunicipioDB;
 import co.dolmen.sid.modelo.ProcesoSgcDB;
+import co.dolmen.sid.modelo.ProgramaDB;
 import co.dolmen.sid.utilidades.DataSpinner;
 
 import android.content.DialogInterface;
@@ -61,6 +64,9 @@ public class ConfigurarArea extends AppCompatActivity {
     private CensoDB censoDB;
     private CensoTipoArmadoDB censoTipoArmadoDB;
     private CensoArchivoDB censoArchivoDB;
+    private ProgramaDB programaDB;
+    private CensoAsignadoDB censoAsignadoDB;
+    private ElementoDB elementoDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,10 +75,13 @@ public class ConfigurarArea extends AppCompatActivity {
         conn = new BaseDatos(ConfigurarArea.this);
         database = conn.getReadableDatabase();
 
+        censoDB             = new CensoDB(database);
+        censoTipoArmadoDB   = new CensoTipoArmadoDB(database);
+        censoArchivoDB      = new CensoArchivoDB(database);
+        programaDB          = new ProgramaDB(database);
+        censoAsignadoDB     = new CensoAsignadoDB(database);
+        elementoDB          = new ElementoDB(database);
 
-        censoDB = new CensoDB(database);
-        censoTipoArmadoDB = new CensoTipoArmadoDB(database);
-        censoArchivoDB = new CensoArchivoDB(database);
 
         alert = new AlertDialog.Builder(this);
 
@@ -135,6 +144,11 @@ public class ConfigurarArea extends AppCompatActivity {
                             censoTipoArmadoDB.eliminarDatos();
                             censoArchivoDB.eliminarDatos();
                             censoDB.eliminarDatos();
+                            programaDB.eliminarDatos();
+                            censoAsignadoDB.eliminarDatos();
+                            elementoDB.eliminarDatos();
+
+
                             config.edit().clear().commit();
                             Intent intent = new Intent(ConfigurarArea.this,Login.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);

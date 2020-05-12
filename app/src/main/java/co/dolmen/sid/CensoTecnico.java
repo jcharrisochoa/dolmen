@@ -1236,6 +1236,9 @@ public class CensoTecnico extends AppCompatActivity {
 
                 swLuminariaVisible.setEnabled(false);
                 swLuminariaVisible.setChecked(true);
+                swPoseeLuminaria.setEnabled(false);
+                swPoseeLuminaria.setChecked(true);
+
                 txtElementoNo.setText(cursorElemento.getString(cursorElemento.getColumnIndex("elemento_no")));
                 txtDireccion.setText(cursorElemento.getString(cursorElemento.getColumnIndex("direccion")));
 
@@ -1338,15 +1341,15 @@ public class CensoTecnico extends AppCompatActivity {
                 alert.setMessage(R.string.alert_censo_tecnico_elemento_no);
                 return false;
             } else {
-                if (tipologiaList.get(sltTipologia.getSelectedItemPosition()).getId() == 0) {
+                if (tipologiaList.get(sltTipologia.getSelectedItemPosition()).getId() == 0 && swPoseeLuminaria.isChecked()) {
                     alert.setMessage(R.string.alert_censo_tipologia);
                     return false;
                 } else {
-                    if (mobiliarioList.get(sltMobiliario.getSelectedItemPosition()).getIdMobiliario() == 0) {
+                    if (mobiliarioList.get(sltMobiliario.getSelectedItemPosition()).getIdMobiliario() == 0 && swPoseeLuminaria.isChecked()) {
                         alert.setMessage(R.string.alert_censo_mobiliario);
                         return false;
                     } else {
-                        if (referenciaMobiliarioList.get(sltReferencia.getSelectedItemPosition()).getIdReferenciaMobiliario() == 0) {
+                        if (referenciaMobiliarioList.get(sltReferencia.getSelectedItemPosition()).getIdReferenciaMobiliario() == 0 && swPoseeLuminaria.isChecked()) {
                             alert.setMessage(R.string.alert_censo_referencia);
                             return false;
                         } else {
@@ -1355,7 +1358,7 @@ public class CensoTecnico extends AppCompatActivity {
                                 return false;
                             } else {
                                 if (barrioList.get(sltBarrio.getSelectedItemPosition()).getId() == 0) {
-                                    alert.setMessage(R.string.alert_censo_referencia);
+                                    alert.setMessage(R.string.alert_censo_barrio);
                                     return false;
                                 } else {
                                     if (txtDireccion.getText().toString().isEmpty()) {
@@ -1427,6 +1430,7 @@ public class CensoTecnico extends AppCompatActivity {
         idMobiliarioBusqueda = 0;
         idReferenciaBusqueda = 0;
         swLuminariaVisible.setEnabled(enabled);
+        swPoseeLuminaria.setEnabled(enabled);
 
         if (enabled) {
             txtElementoNo.setText("");
@@ -1445,9 +1449,9 @@ public class CensoTecnico extends AppCompatActivity {
         txtLatitud.setText("");
         txtLongitud.setText("");
         txtInterdistancia.setText("");
-        txtPotenciaTransformador.setText("");
-        txtMtTransformador.setText("");
-        txtCtTransformador.setText("");
+        //txtPotenciaTransformador.setText("");
+        //txtMtTransformador.setText("");
+        //txtCtTransformador.setText("");
         txtPosteNo.setText("");
         txtObservacion.setText("");
 
