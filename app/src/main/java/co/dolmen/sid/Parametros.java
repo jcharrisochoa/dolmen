@@ -52,6 +52,7 @@ import co.dolmen.sid.modelo.ReferenciaMobiliarioDB;
 import co.dolmen.sid.modelo.RetenidaPosteDB;
 import co.dolmen.sid.modelo.SentidoDB;
 import co.dolmen.sid.modelo.TipoActividadDB;
+import co.dolmen.sid.modelo.TipoEscenarioDB;
 import co.dolmen.sid.modelo.TipoEspacioDB;
 import co.dolmen.sid.modelo.TipoEstructuraDB;
 import co.dolmen.sid.modelo.TipoInterseccionDB;
@@ -144,6 +145,8 @@ public class Parametros extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+               // String respuesta = new String(responseBody);
+                Log.d("resultado","error "+responseBody);
                 progressBar.setProgress(0);
                 txt_porcentaje_carga.setText(getText(R.string.alert_error_ejecucion)+ " Code:"+statusCode);
             }
@@ -696,6 +699,20 @@ public class Parametros extends AppCompatActivity {
                 Log.d("parametros","->Proveedor:"+progress+"%");
             }
             proveedorDB.finalizarTransaccion();
+
+            //--Tipo Escenario
+            TipoEscenarioDB tipoEscenarioDB = new TipoEscenarioDB(database);
+            JSONArray arrayEscenario = parametros.getJSONArray("tipo_escenario");
+            for (int i = 0;i<arrayEscenario.length();i++){
+                JSONObject jObjectEscenario = arrayEscenario.getJSONObject(i);
+                tipoEscenarioDB.setId(jObjectEscenario.getInt("id"));
+                tipoEscenarioDB.setDescripcion(jObjectEscenario.getString("descripcion"));
+                tipoEscenarioDB.agregarDatos(tipoEscenarioDB);
+                progress = (int)Math.round((double)(i+1)/arrayEscenario.length()*100);
+                progressBar.setProgress(progress);
+                txt_porcentaje_carga.setText("Actualizando Tipo Escenario "+progress+"%");
+                Log.d("parametros","->Escenario:"+progress+"%");
+            }
 
             database.close();
 

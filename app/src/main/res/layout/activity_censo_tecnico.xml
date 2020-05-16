@@ -182,13 +182,68 @@
                     android:id="@+id/textView24"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Estado Mobiliario" />
+                    android:text="Funcionamiento del mobiliario" />
 
                 <Spinner
                     android:id="@+id/slt_estado_mobiliario"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:drawable/btn_dropdown" />
+
+                <View
+                    android:id="@+id/divider7"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?android:attr/listDivider" />
+
+                <Switch
+                    android:id="@+id/sw_mobiliario_en_buenas_condiciones"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:checked="true"
+                    android:text="¿Mobiliario en buenas condiciones físicas?" />
+
+                <View
+                    android:id="@+id/divider8"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?android:attr/listDivider" />
+
+                <TextView
+                    android:id="@+id/textView27"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Otras Caracteristicas del Estado del Mobiliario" />
+
+                <CheckBox
+                    android:id="@+id/chk_brazo_mal_estado"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:text="Brazo en mal estado" />
+
+                <CheckBox
+                    android:id="@+id/chk_visor_mal_estado"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:text="Visor en mal estado" />
+
+                <CheckBox
+                    android:id="@+id/chk_mobiliario_mal_posicionado"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:text="Mobiliario mal posicionado" />
+
+                <CheckBox
+                    android:id="@+id/chk_mobiliario_obsoleto"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:text="Mobiliario Obsoleto" />
+
+                <CheckBox
+                    android:id="@+id/chk_sin_bombillo"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:text="Sin Bombillo" />
 
                 <TextView
                     android:id="@+id/textView5"
@@ -201,6 +256,77 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:drawable/btn_dropdown" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/textView25"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Zona" />
+
+                        <RadioGroup
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <RadioButton
+                                android:id="@+id/rd_urbano"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:checked="true"
+                                android:text="Urbana" />
+
+                            <RadioButton
+                                android:id="@+id/rd_rutal"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:text="Rural" />
+
+                        </RadioGroup>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/textView26"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Sector" />
+
+                        <RadioGroup
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <RadioButton
+                                android:id="@+id/rd_normal"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:checked="true"
+                                android:text="Normal" />
+
+                            <RadioButton
+                                android:id="@+id/rd_subnormal"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:text="SubNormal" />
+                        </RadioGroup>
+
+                    </LinearLayout>
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/textView23"
@@ -506,7 +632,21 @@
                     android:id="@+id/sw_poste_exclulsivo_alumbrado_publico"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
-                    android:text="¿Poste Exclusivo Alumbrado Público?" />
+                    android:text="¿Poste Exclusivo Alumbrado Público?"
+                    />
+
+                <View
+                    android:id="@+id/divider6"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?android:attr/listDivider" />
+
+                <Switch
+                    android:id="@+id/sw_poste_en_buen_estado"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:text="¿El Poste está en buen estado?"
+                    android:checked="true" />
 
                 <TextView
                     android:id="@+id/textView13"
@@ -577,7 +717,7 @@
                     android:layout_height="wrap_content"
                     android:background="@android:drawable/edit_text"
                     android:ems="10"
-                    android:inputType="number" />
+                    android:inputType="textPersonName" />
 
                 <TextView
                     android:id="@+id/textView22"
@@ -591,7 +731,31 @@
                     android:layout_height="wrap_content"
                     android:background="@android:drawable/edit_text"
                     android:ems="10"
-                    android:inputType="number" />
+                    android:inputType="textPersonName" />
+
+                <TextView
+                    android:id="@+id/textView29"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Propiedad del Trasnformador" />
+
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" >
+
+                    <RadioButton
+                        android:id="@+id/rd_transformador_publico"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:text="Público" />
+
+                    <RadioButton
+                        android:id="@+id/rd_transformador_privado"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:checked="true"
+                        android:text="Privado" />
+                </RadioGroup>
 
                 <View
                     android:id="@+id/divider"

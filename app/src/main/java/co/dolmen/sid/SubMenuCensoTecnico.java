@@ -81,7 +81,6 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
         database = conn.getReadableDatabase();
 
 
-
         try {
             censoDB = new CensoDB(database);
             censoTipoArmadoDB = new CensoTipoArmadoDB(database);
@@ -92,7 +91,6 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
         }catch (SQLException e){
             Toast.makeText(getApplicationContext(),"ERROR"+e.getMessage(),Toast.LENGTH_LONG).show();
         }
-
 
 
         config = getSharedPreferences("config", MODE_PRIVATE);
@@ -154,14 +152,13 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
             if (censoDB.consultarTodo().getCount() > 0) {
                 try {
                     principal.put("json",armarJson());
-                    //Log.d("JSON",principal.toString());
+                   // Log.d("JSON",principal.toString());
                     final AsyncHttpClient client = new AsyncHttpClient();
                     StringEntity jsonParams = new StringEntity(principal.toString(), "UTF-8");
                     jsonParams.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
                     client.setTimeout(Constantes.TIMEOUT);
+
                     RequestHandle post = client.post(getApplicationContext(), ServicioWeb.urlSincronizarCensoTecnico, jsonParams, "application/json", new AsyncHttpResponseHandler() {
-
-
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                             String respuesta = new String(responseBody);
@@ -217,6 +214,7 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
                             Log.d("JSON-RESPONSE:",error.getMessage());
                         }
                     });
+
 
                 } catch (JSONException e){
                     Toast.makeText(getApplicationContext(),"Error generando empaquetando los datos",Toast.LENGTH_LONG).show();
@@ -306,6 +304,17 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
                 jsonObject.put("potencia_transformador", cursor.getDouble(cursor.getColumnIndex("potencia_transformador")));
                 jsonObject.put("placa_mt_transformador", cursor.getString(cursor.getColumnIndex("placa_mt_transformador")));
                 jsonObject.put("placa_ct_transformador", cursor.getString(cursor.getColumnIndex("placa_ct_transformador")));
+                jsonObject.put("poste_buen_estado", cursor.getString(cursor.getColumnIndex("poste_buen_estado")));
+                jsonObject.put("sector", cursor.getString(cursor.getColumnIndex("sector")));
+                jsonObject.put("zona", cursor.getString(cursor.getColumnIndex("zona")));
+                jsonObject.put("id_tipo_escenario", cursor.getString(cursor.getColumnIndex("id_tipo_escenario")));
+                jsonObject.put("mobiliario_buen_estado", cursor.getString(cursor.getColumnIndex("mobiliario_buen_estado")));
+                jsonObject.put("tipo_propietario_transformador", cursor.getString(cursor.getColumnIndex("tipo_propietario_transformador")));
+                jsonObject.put("brazo_mal_estado",cursor.getString(cursor.getColumnIndex("brazo_mal_estado")));
+                jsonObject.put("visor_mal_estado",cursor.getString(cursor.getColumnIndex("visor_mal_estado")));
+                jsonObject.put("mobiliario_mal_posicionado",cursor.getString(cursor.getColumnIndex("mobiliario_mal_posicionado")));
+                jsonObject.put("mobiliario_obsoleto",cursor.getString(cursor.getColumnIndex("mobiliario_obsoleto")));
+                jsonObject.put("mobiliario_sin_bombillo",cursor.getString(cursor.getColumnIndex("mobiliario_sin_bombillo")));
 
                 //--Tipo Armado
                 JSONArray jsonArrayTipoArmado = new JSONArray();

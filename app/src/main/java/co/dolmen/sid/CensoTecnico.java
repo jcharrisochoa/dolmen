@@ -26,6 +26,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -35,11 +36,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -82,6 +85,7 @@ import co.dolmen.sid.entidad.NormaConstruccionPoste;
 import co.dolmen.sid.entidad.NormaConstruccionRed;
 import co.dolmen.sid.entidad.ReferenciaMobiliario;
 import co.dolmen.sid.entidad.RetenidaPoste;
+import co.dolmen.sid.entidad.TipoEscenario;
 import co.dolmen.sid.entidad.TipoEstructura;
 import co.dolmen.sid.entidad.TipoPoste;
 import co.dolmen.sid.entidad.TipoRed;
@@ -100,6 +104,7 @@ import co.dolmen.sid.modelo.NormaConstruccionPosteDB;
 import co.dolmen.sid.modelo.NormaConstruccionRedDB;
 import co.dolmen.sid.modelo.ReferenciaMobiliarioDB;
 import co.dolmen.sid.modelo.RetenidaPosteDB;
+import co.dolmen.sid.modelo.TipoEscenarioDB;
 import co.dolmen.sid.modelo.TipoEstructuraDB;
 import co.dolmen.sid.modelo.TipoInterseccionDB;
 import co.dolmen.sid.modelo.TipoPosteDB;
@@ -138,6 +143,7 @@ public class CensoTecnico extends AppCompatActivity {
     Spinner sltTipoEstructura;
     Spinner sltNormaConstruccionRed;
     Spinner sltCensoAsignado;
+    Spinner sltTipoEscenario;
     //--
     EditText txtElementoNo;
     EditText txtLatitud;
@@ -159,6 +165,8 @@ public class CensoTecnico extends AppCompatActivity {
     Switch swPoseeLuminaria;
     Switch swPuestaTierra;
     Switch swPosteExclusivoAp;
+    Switch swPosteBuenEstado;
+    Switch swMobiliarioBuenEstado;
     //--
     Button btnGuardar;
     Button btnCancelar;
@@ -193,6 +201,7 @@ public class CensoTecnico extends AppCompatActivity {
     ArrayList<DataSpinner> tipoEstructuraList;
     ArrayList<DataSpinner> normaConstruccionRedList;
     ArrayList<DataSpinner> censoAsignadoList;
+    ArrayList<DataSpinner> tipoEscenarioList;
     ComponenteNormaConstruccionRed componenteNormaConstruccionRed;
     //--
     ImageView imgFoto1;
@@ -210,6 +219,19 @@ public class CensoTecnico extends AppCompatActivity {
     TextView viewDireccion;
     TextView viewVelocidad;
 
+    RadioButton rdZonaUrbano;
+    RadioButton rdZonaRural;
+    RadioButton rdSectorNormal;
+    RadioButton rdSectorSubNormal;
+    RadioButton rdTransformadorPrivado;
+    RadioButton rdTransformadorPublico;
+
+    CheckBox chkBrazoMalEstado;
+    CheckBox chkVisorMalEstado;
+    CheckBox chkMobiliarioMalPosicionado;
+    CheckBox chkMobiliarioObsoleto;
+    CheckBox chkSinBombillo;
+
     private boolean accionarFoto1;
     private boolean accionarFoto2;
     private int idUsuario;
@@ -219,9 +241,11 @@ public class CensoTecnico extends AppCompatActivity {
     private int idMobiliarioBusqueda;
     private int idReferenciaBusqueda;
     private int idCenso;
+    private int idTipoEscenario;
     private String encodeStringFoto_1;
     private String encodeStringFoto_2;
     private String path;
+
     private ArrayList<ComponenteNormaConstruccionRed> tipoArmadoList;
     private boolean gpsListener;
     private ProgressBar progressBarGuardarCenso;
@@ -229,10 +253,20 @@ public class CensoTecnico extends AppCompatActivity {
     Elemento elemento;
 
 
-    String chkSwLuminariaVisible = "S";
-    String chkSwPoseeLuminaria = "S";
-    String chkSwPuestaTierra = "N";
-    String chkSwPosteExclusivoAp = "N";
+    private String chkSwLuminariaVisible = "S";
+    private String chkSwPoseeLuminaria = "S";
+    private String chkSwPuestaTierra = "N";
+    private String chkSwPosteExclusivoAp = "N";
+    private String chkSwPosteBuenEstado = "S";
+    private String chkSwMobiliarioBuenEstado = "S";
+    private String zona ="U";
+    private String sector = "N";
+    private String tipoPropietarioTranformador = "PV";
+    private String brazoMalEstado = "N";
+    private String visorMalEstado = "N";
+    private String sinBombillo = "N";
+    private String mobiliarioObsoleto = "N";
+    private String mobiliarioMalPosicionado = "N";
 
     //private final String CARPETA_RAIZ="ImagenesCenso/";
     //private final String RUTA_IMAGEN= CARPETA_RAIZ+"Img";
@@ -304,7 +338,22 @@ public class CensoTecnico extends AppCompatActivity {
         swPoseeLuminaria = findViewById(R.id.sw_tiene_luminaria);
         swPosteExclusivoAp = findViewById(R.id.sw_poste_exclulsivo_alumbrado_publico);
         swPuestaTierra = findViewById(R.id.sw_puesta_tierra);
+        swPosteBuenEstado = findViewById(R.id.sw_poste_en_buen_estado);
+        swMobiliarioBuenEstado = findViewById(R.id.sw_mobiliario_en_buenas_condiciones);
         //--
+        rdZonaUrbano        = findViewById(R.id.rd_urbano);
+        rdZonaRural         = findViewById(R.id.rd_rutal);
+        rdSectorNormal      = findViewById(R.id.rd_normal);
+        rdSectorSubNormal   = findViewById(R.id.rd_subnormal);
+        rdTransformadorPrivado = findViewById(R.id.rd_transformador_privado);
+        rdTransformadorPublico = findViewById(R.id.rd_transformador_publico);
+        //--
+        chkBrazoMalEstado           = findViewById(R.id.chk_brazo_mal_estado);
+        chkVisorMalEstado           = findViewById(R.id.chk_visor_mal_estado);
+        chkMobiliarioMalPosicionado = findViewById(R.id.chk_mobiliario_mal_posicionado);
+        chkMobiliarioObsoleto       = findViewById(R.id.chk_mobiliario_obsoleto);
+        chkSinBombillo              = findViewById(R.id.chk_sin_bombillo);
+        //-
         btnCapturarGPS = findViewById(R.id.btn_capturar_gps);
         btnGuardar = findViewById(R.id.btn_guardar);
         btnCancelar = findViewById(R.id.btn_cancelar);
@@ -340,6 +389,8 @@ public class CensoTecnico extends AppCompatActivity {
         txtDireccion.setEnabled(false);
         txtLatitud.setEnabled(false);
         txtLongitud.setEnabled(false);
+        swPosteBuenEstado.setChecked(true);
+
         progressBarGuardarCenso.setVisibility(View.INVISIBLE);
 
         btnLimpiar.setOnClickListener(new View.OnClickListener() {
@@ -348,6 +399,7 @@ public class CensoTecnico extends AppCompatActivity {
                 resetFrm(true);
             }
         });
+
         swLuminariaVisible.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
@@ -372,9 +424,88 @@ public class CensoTecnico extends AppCompatActivity {
                 chkSwPosteExclusivoAp = (isChecked) ? "S" : "N";
             }
         });
-        //swLuminariaVisible.setEnabled(false);
-        //swPoseeLuminaria.setEnabled(false);
+        swPosteBuenEstado.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                chkSwPosteBuenEstado = (isChecked)?"S":"N";
+            }
+        });
+        swMobiliarioBuenEstado.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                chkSwMobiliarioBuenEstado = (isChecked)?"S":"N";
+            }
+        });
 
+        rdZonaUrbano.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                zona = "U";
+            }
+        });
+        rdZonaRural.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                zona = "R";
+            }
+        });
+        rdSectorNormal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sector = "N";
+            }
+        });
+        rdSectorSubNormal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sector = "S";
+            }
+        });
+        rdTransformadorPrivado.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tipoPropietarioTranformador = "PV";
+            }
+        });
+        rdTransformadorPublico.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tipoPropietarioTranformador = "PB";
+            }
+        });
+        //--
+        chkBrazoMalEstado.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                brazoMalEstado = (isChecked) ? "S":"N";
+            }
+        });
+        chkVisorMalEstado.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                visorMalEstado = (isChecked) ? "S":"N";
+            }
+        });
+        chkMobiliarioMalPosicionado.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                mobiliarioMalPosicionado = (isChecked) ? "S":"N";
+            }
+        });
+        chkMobiliarioObsoleto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                mobiliarioObsoleto = (isChecked) ? "S":"N";
+            }
+        });
+        chkSinBombillo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                sinBombillo = (isChecked) ? "S":"N";
+            }
+        });
+
+        //--
         btnCapturarGPS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -865,10 +996,14 @@ public class CensoTecnico extends AppCompatActivity {
         if (cursor.getCount() > 0) {
             if (cursor.moveToFirst()) {
                 do {
-                    i++;
-                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(2).toUpperCase());
-                    estadoMobiliarioList.add(dataSpinner);
-                    labels.add(cursor.getString(2).toUpperCase());
+                    if (    cursor.getInt(0) == 11 ||
+                            cursor.getInt(0) == 13 ||
+                            cursor.getInt(0) == 15){
+                        i++;
+                        dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(2).toUpperCase());
+                        estadoMobiliarioList.add(dataSpinner);
+                        labels.add(cursor.getString(2).toUpperCase());
+                    }
                 } while (cursor.moveToNext());
             }
         }
@@ -935,6 +1070,33 @@ public class CensoTecnico extends AppCompatActivity {
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltTipoInterseccionA.setAdapter(dataAdapter);
         sltTipoInterseccionB.setAdapter(dataAdapter);
+    }
+
+    //--
+    private void cargarTipoEscenario(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        tipoEscenarioList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        TipoEscenarioDB tipoEscenarioDB = new TipoEscenarioDB(sqLiteDatabase);
+        Cursor cursor = tipoEscenarioDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        tipoEscenarioList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    tipoEscenarioList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltTipoEscenario.setAdapter(dataAdapter);
     }
 
     //--
@@ -1279,10 +1441,12 @@ public class CensoTecnico extends AppCompatActivity {
         txtMensajeDireccion = content.findViewById(R.id.txt_mensaje_direccion);
         sltTipoInterseccionA = content.findViewById(R.id.slt_tipo_interseccion_a);
         sltTipoInterseccionB = content.findViewById(R.id.slt_tipo_interseccion_b);
+        sltTipoEscenario = content.findViewById(R.id.slt_tipo_escenario);
         txtNumeroInterseccion = content.findViewById(R.id.numero_interseccion);
         txtNumeracionA = content.findViewById(R.id.txt_numeracion_a);
         txtNumeracionB = content.findViewById(R.id.txt_numeracion_b);
         cargarTipoInterseccion(database);
+        cargarTipoEscenario(database);
         alertDireccion.setTitle(R.string.titulo_direccion);
         alertDireccion.setView(content)
                 // Add action buttons
@@ -1291,7 +1455,7 @@ public class CensoTecnico extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int id) {
                         if (tipoInterseccionA.get(sltTipoInterseccionA.getSelectedItemPosition()).getId() == 0) {
                             txtMensajeDireccion.setText("Seleccione Tipo Intersección");
-                            Log.d("Busqueda", "Seleccione Tipo Intersección");
+                            //Log.d("Busqueda", "Seleccione Tipo Intersección");
                         } else {
                             if (TextUtils.isEmpty(txtNumeroInterseccion.getText().toString())) {
                                 txtMensajeDireccion.setText("Digite el Número de la Intersección");
@@ -1318,6 +1482,7 @@ public class CensoTecnico extends AppCompatActivity {
                                     txtDireccion.setText(miDireccion);
                             }
                         }
+                        idTipoEscenario = tipoEscenarioList.get(sltTipoEscenario.getSelectedItemPosition()).getId();
                     }
                 })
                 .setNegativeButton(R.string.btn_cancelar, new DialogInterface.OnClickListener() {
@@ -1459,6 +1624,16 @@ public class CensoTecnico extends AppCompatActivity {
         swPoseeLuminaria.setChecked(true);
         swPosteExclusivoAp.setChecked(false);
         swPuestaTierra.setChecked(false);
+        swPosteBuenEstado.setChecked(true);
+        swMobiliarioBuenEstado.setChecked(true);
+        swPosteBuenEstado.setChecked(true);
+
+        chkBrazoMalEstado.setChecked(false);
+        chkMobiliarioMalPosicionado.setChecked(false);
+        chkMobiliarioObsoleto.setChecked(false);
+        chkSinBombillo.setChecked(false);
+        chkVisorMalEstado.setChecked(false);
+
 
         borrarItemTablaArmado(0);
         borrarItemTablaArmado(1);
@@ -1470,7 +1645,20 @@ public class CensoTecnico extends AppCompatActivity {
         txtBuscarElemento.setText("");
         tipoArmadoList.clear();
         mostrarTablaArmado();
+
+        brazoMalEstado = "N";
+        visorMalEstado = "N";
+        sinBombillo = "N";
+        mobiliarioObsoleto = "N";
+        mobiliarioMalPosicionado = "N";
+        chkSwLuminariaVisible = "S";
+        chkSwPoseeLuminaria = "S";
+        chkSwPuestaTierra = "N";
+        chkSwPosteExclusivoAp = "N";
+        chkSwPosteBuenEstado = "S";
+        chkSwMobiliarioBuenEstado = "S";
     }
+
 
     //--
     private void guardarFormulario(char tipoAlmacenamiento, SQLiteDatabase sqLiteDatabase) {
@@ -1553,6 +1741,9 @@ public class CensoTecnico extends AppCompatActivity {
         tipoRed.setId(tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId());
         tipoRed.setDescripcion(tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getDescripcion());
 
+        TipoEscenario tipoEscenario = new TipoEscenario();
+        tipoEscenario.setId(idTipoEscenario);
+
         Censo censo = new Censo();
         censo.setId_censo(censoAsignadoList.get(sltCensoAsignado.getSelectedItemPosition()).getId());
         censo.setElemento(elemento);
@@ -1583,6 +1774,19 @@ public class CensoTecnico extends AppCompatActivity {
         censo.setChkSwPoseeLuminaria(chkSwPoseeLuminaria);
         censo.setChkSwPuestaTierra(chkSwPuestaTierra);
         censo.setChkSwPosteExclusivoAp(chkSwPosteExclusivoAp);
+        censo.setChkSwPosteBuenEstado(chkSwPosteBuenEstado);
+        censo.setSector(sector);
+        censo.setZona(zona);
+        censo.setChkSwMobiliarioBuenEstado(chkSwMobiliarioBuenEstado);
+        censo.setTipoPropietarioTransformador(tipoPropietarioTranformador);
+        censo.setTipoEscenario(tipoEscenario);
+
+        censo.setBrazoMalEstado(brazoMalEstado);
+        censo.setVisorMalEstado(visorMalEstado);
+        censo.setSinBombillo(sinBombillo);
+        censo.setMobiliarioMalPosicionado(mobiliarioMalPosicionado);
+        censo.setMobiliarioObsoleto(mobiliarioObsoleto);
+
         censo.setObservacion(txtObservacion.getText().toString());
 
         CensoDB censoDB = new CensoDB(sqLiteDatabase);
@@ -1682,6 +1886,17 @@ public class CensoTecnico extends AppCompatActivity {
         requestParams.put("potencia_transformador", txtPotenciaTransformador.getText());
         requestParams.put("placa_mt_transformador", txtMtTransformador.getText());
         requestParams.put("placa_ct_transformador", txtCtTransformador.getText());
+        requestParams.put("poste_buen_estado", chkSwPosteBuenEstado);
+        requestParams.put("sector",sector);
+        requestParams.put("zona", zona);
+        requestParams.put("id_tipo_escenario", tipoEscenarioList.get(sltTipoEscenario.getSelectedItemPosition()).getId());
+        requestParams.put("mobiliario_buen_estado", chkSwMobiliarioBuenEstado);
+        requestParams.put("tipo_propietario_transformador", tipoPropietarioTranformador);
+        requestParams.put("brazo_mal_estado",brazoMalEstado);
+        requestParams.put("visor_mal_estado",visorMalEstado);
+        requestParams.put("mobiliario_mal_posicionado",mobiliarioMalPosicionado);
+        requestParams.put("mobiliario_obsoleto",mobiliarioObsoleto);
+        requestParams.put("mobiliario_sin_bombillo",sinBombillo);
         requestParams.put("foto_1", encodeStringFoto_1);
         requestParams.put("foto_2", encodeStringFoto_2);
         int index = 0;
@@ -1741,7 +1956,7 @@ public class CensoTecnico extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 String respuesta = new String(responseBody);
-                //Log.d("resultado","error "+respuesta);
+                Log.d("resultado","error "+respuesta);
                 Toast.makeText(getApplicationContext(), getText(R.string.alert_error_ejecucion) + " Código: " + statusCode, Toast.LENGTH_SHORT).show();
                 btnGuardar.setEnabled(true);
                 btnCancelar.setEnabled(true);

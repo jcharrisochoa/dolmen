@@ -55,13 +55,24 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
                         "interdistancia INTEGER NOT NULL DEFAULT 0,"+
                         "puesta_a_tierra VARCHAR(1) NOT NULL DEFAULT 'N',"+
                         "poste_exclusivo_ap VARCHAR(1) NOT NULL DEFAULT 'N',"+
+                        "poste_buen_estado VARCHAR(1) NOT NULL DEFAULT 'N',"+
+                        "sector VARCHAR(1) NOT NULL DEFAULT 'N',"+
+                        "zona VARCHAR(1) NOT NULL DEFAULT 'U',"+
                         "id_tipo_retenida INTEGER DEFAULT NULL,"+
                         "id_clase_via INTEGER DEFAULT NULL,"+
                         "serial_medidor VARCHAR(12) NOT NULL DEFAULT '0',"+
                         "lectura_medidor INTEGER NOT NULL DEFAULT 0,"+
                         "potencia_transformador NUMERIC(5,1) NOT NULL DEFAULT 0.0,"+
                         "placa_mt_transformador VARCHAR(12) DEFAULT NULL,"+
-                        "placa_ct_transformador VARCHAR(12) DEFAULT NULL"+
+                        "placa_ct_transformador VARCHAR(12) DEFAULT NULL,"+
+                        "id_tipo_escenario INTEGER DEFAULT NULL,"+
+                        "mobiliario_buen_estado VARCHAR(1) NOT NULL DEFAULT 'S',"+
+                        "brazo_mal_estado VARCHAR(1) NOT NULL DEFAULT 'N',"+
+                        "visor_mal_estado VARCHAR(1) NOT NULL DEFAULT 'N',"+
+                        "mobiliario_mal_posicionado VARCHAR(1) NOT NULL DEFAULT 'N',"+
+                        "mobiliario_obsoleto VARCHAR(1) NOT NULL DEFAULT 'N',"+
+                        "mobiliario_sin_bombillo VARCHAR(1) NOT NULL DEFAULT 'N',"+
+                        "tipo_propietario_transformador VARCHAR(2) NOT NULL DEFAULT 'PV'"+
                         ");"
         );
     }
@@ -103,6 +114,9 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
             contentValues.put("interdistancia",censo.getInterdistancia());
             contentValues.put("puesta_a_tierra",censo.getChkSwPuestaTierra());
             contentValues.put("poste_exclusivo_ap",censo.getChkSwPosteExclusivoAp());
+            contentValues.put("poste_buen_estado",censo.getChkSwPosteBuenEstado());
+            contentValues.put("sector",censo.getSector());
+            contentValues.put("zona",censo.getZona());
             contentValues.put("id_tipo_retenida",censo.getRetenidaPoste().getId());
             contentValues.put("id_clase_via",censo.getClaseVia().getId());
             contentValues.put("serial_medidor",0);
@@ -110,6 +124,14 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
             contentValues.put("potencia_transformador",censo.getPotenciaTransformador());
             contentValues.put("placa_mt_transformador",censo.getPlacaMtTransformador());
             contentValues.put("placa_ct_transformador",censo.getPlacaCtTransformador());
+            contentValues.put("id_tipo_escenario",censo.getTipoEscenario().getId());
+            contentValues.put("mobiliario_buen_estado",censo.getChkSwMobiliarioBuenEstado());
+            contentValues.put("tipo_propietario_transformador",censo.getTipoPropietarioTransformador());
+            contentValues.put("brazo_mal_estado",censo.getBrazoMalEstado());
+            contentValues.put("visor_mal_estado",censo.getVisorMalEstado());
+            contentValues.put("mobiliario_mal_posicionado",censo.getMobiliarioMalPosicionado());
+            contentValues.put("mobiliario_obsoleto",censo.getMobiliarioObsoleto());
+            contentValues.put("mobiliario_sin_bombillo",censo.getSinBombillo());
 
             try {
                 lastId = db.insertWithOnConflict(Constantes.TABLA_CENSO_TECNICO, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);

@@ -28,11 +28,24 @@ public class Censo {
     private ClaseVia claseVia;
     private TipoRed tipoRed;
     private EstadoMobiliario estadoMobiliario;
+    private TipoEscenario tipoEscenario;
 
     private String chkSwLuminariaVisible;
     private String chkSwPoseeLuminaria;
     private String chkSwPuestaTierra;
     private String chkSwPosteExclusivoAp;
+    private String chkSwPosteBuenEstado;
+    private String sector;
+    private String zona;
+    private String tipoPropietarioTransformador;
+    private String chkSwMobiliarioBuenEstado;
+    private String brazoMalEstado;
+    private String visorMalEstado;
+    private String sinBombillo;
+    private String mobiliarioObsoleto;
+    private String mobiliarioMalPosicionado;
+
+
 
     public Censo(){
 
@@ -268,5 +281,93 @@ public class Censo {
 
     public void setLastId(long lastId) {
         this.lastId = lastId;
+    }
+
+    public String getChkSwPosteBuenEstado() {
+        return chkSwPosteBuenEstado;
+    }
+
+    public void setChkSwPosteBuenEstado(String chkSwPosteBuenEstado) {
+        this.chkSwPosteBuenEstado = chkSwPosteBuenEstado;
+    }
+
+    public String getSector() {
+        return sector;
+    }
+
+    public void setSector(String sector) {
+        this.sector = sector;
+    }
+
+    public String getZona() {
+        return zona;
+    }
+
+    public void setZona(String zona) {
+        this.zona = zona;
+    }
+
+    public TipoEscenario getTipoEscenario() {
+        return tipoEscenario;
+    }
+
+    public void setTipoEscenario(TipoEscenario tipoEscenario) {
+        this.tipoEscenario = tipoEscenario;
+    }
+
+    public String getChkSwMobiliarioBuenEstado() {
+        return chkSwMobiliarioBuenEstado;
+    }
+
+    public void setChkSwMobiliarioBuenEstado(String chkSwMobiliarioBuenEstado) {
+        this.chkSwMobiliarioBuenEstado = chkSwMobiliarioBuenEstado;
+    }
+
+    public String getTipoPropietarioTransformador() {
+        return tipoPropietarioTransformador;
+    }
+
+    public void setTipoPropietarioTransformador(String tipoPropietarioTransformador) {
+        this.tipoPropietarioTransformador = tipoPropietarioTransformador;
+    }
+
+    public String getBrazoMalEstado() {
+        return brazoMalEstado;
+    }
+
+    public void setBrazoMalEstado(String brazoMalEstado) {
+        this.brazoMalEstado = brazoMalEstado;
+    }
+
+    public String getVisorMalEstado() {
+        return visorMalEstado;
+    }
+
+    public void setVisorMalEstado(String visorMalEstado) {
+        this.visorMalEstado = visorMalEstado;
+    }
+
+    public String getSinBombillo() {
+        return sinBombillo;
+    }
+
+    public void setSinBombillo(String sinBombillo) {
+        this.sinBombillo = sinBombillo;
+    }
+
+    public String getMobiliarioObsoleto() {
+        return mobiliarioObsoleto;
+    }
+
+    public void setMobiliarioObsoleto(String mobiliarioObsoleto) {
+        this.mobiliarioObsoleto = mobiliarioObsoleto;
+    }
+
+    public String getMobiliarioMalPosicionado() {
+        return mobiliarioMalPosicionado;
+    }
+
+    public void setMobiliarioMalPosicionado(String mobiliarioMalPosicionado) {
+        this.mobiliarioMalPosicionado = mobiliarioMalPosicionado;
     }
 }

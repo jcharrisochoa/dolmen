@@ -45,6 +45,7 @@ public final class Constantes {
     public static final String TABLA_CENSO_TECNICO_ARCHIVO      = "censo_tecnico_archivo";
     public static final String TABLA_CENSO_ASIGNADO             = "censo_asignado";
     public static final String TABLA_TIPO_REPORTE_DANO          = "tipo_reporte_dano";
+    public static final String TABLA_TIPO_ESCENARIO             = "tipo_escenario";
     public static final String TABLA_TIPO_STOCK                = "tipo_stock";
     public static final String TABLA_ARTICULO                  = "articulo";
     public static final String TABLA_CENTRO_COSTO              = "centro_costo";
