@@ -996,7 +996,8 @@ public class CensoTecnico extends AppCompatActivity {
         if (cursor.getCount() > 0) {
             if (cursor.moveToFirst()) {
                 do {
-                    if (    cursor.getInt(0) == 11 ||
+                    if (    cursor.getInt(0) == 10 ||
+                            cursor.getInt(0) == 11 ||
                             cursor.getInt(0) == 13 ||
                             cursor.getInt(0) == 15){
                         i++;
@@ -1659,7 +1660,6 @@ public class CensoTecnico extends AppCompatActivity {
         chkSwMobiliarioBuenEstado = "S";
     }
 
-
     //--
     private void guardarFormulario(char tipoAlmacenamiento, SQLiteDatabase sqLiteDatabase) {
         switch (tipoAlmacenamiento) {
@@ -2111,6 +2111,5 @@ public class CensoTecnico extends AppCompatActivity {
             Toast.makeText(getApplicationContext(),s+" Inactivo",Toast.LENGTH_LONG).show();
         }
     }
-
 
 }

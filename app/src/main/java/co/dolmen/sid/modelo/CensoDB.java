@@ -72,7 +72,8 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
                         "mobiliario_mal_posicionado VARCHAR(1) NOT NULL DEFAULT 'N',"+
                         "mobiliario_obsoleto VARCHAR(1) NOT NULL DEFAULT 'N',"+
                         "mobiliario_sin_bombillo VARCHAR(1) NOT NULL DEFAULT 'N',"+
-                        "tipo_propietario_transformador VARCHAR(2) NOT NULL DEFAULT 'PV'"+
+                        "tipo_propietario_transformador VARCHAR(2) NOT NULL DEFAULT 'PV',"+
+                        "id_tipo_conductor_electrico INTEGER DEFAULT NULL"+
                         ");"
         );
     }

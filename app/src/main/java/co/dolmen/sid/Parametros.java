@@ -52,6 +52,7 @@ import co.dolmen.sid.modelo.ReferenciaMobiliarioDB;
 import co.dolmen.sid.modelo.RetenidaPosteDB;
 import co.dolmen.sid.modelo.SentidoDB;
 import co.dolmen.sid.modelo.TipoActividadDB;
+import co.dolmen.sid.modelo.TipoConductorElectricoDB;
 import co.dolmen.sid.modelo.TipoEscenarioDB;
 import co.dolmen.sid.modelo.TipoEspacioDB;
 import co.dolmen.sid.modelo.TipoEstructuraDB;
@@ -712,6 +713,20 @@ public class Parametros extends AppCompatActivity {
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Tipo Escenario "+progress+"%");
                 Log.d("parametros","->Escenario:"+progress+"%");
+            }
+
+            //--Tipo Conductor Electrico
+            TipoConductorElectricoDB tipoConductorElectricoDB = new TipoConductorElectricoDB(database);
+            JSONArray arrayTipoConductor = parametros.getJSONArray("tipo_conductor_electrico");
+            for (int i = 0;i<arrayTipoConductor.length();i++){
+                JSONObject jObjectConductor = arrayTipoConductor.getJSONObject(i);
+                tipoConductorElectricoDB.setId(jObjectConductor.getInt("id"));
+                tipoConductorElectricoDB.setDescripcion(jObjectConductor.getString("descripcion"));
+                tipoConductorElectricoDB.agregarDatos(tipoConductorElectricoDB);
+                progress = (int)Math.round((double)(i+1)/arrayTipoConductor.length()*100);
+                progressBar.setProgress(progress);
+                txt_porcentaje_carga.setText("Actualizando Tipo Conductor Electrico "+progress+"%");
+                Log.d("parametros","->Conductor Electrico:"+progress+"%");
             }
 
             database.close();

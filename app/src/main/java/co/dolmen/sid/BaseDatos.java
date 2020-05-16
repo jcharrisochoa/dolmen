@@ -24,6 +24,7 @@ import co.dolmen.sid.modelo.ReferenciaMobiliarioDB;
 import co.dolmen.sid.modelo.RetenidaPosteDB;
 import co.dolmen.sid.modelo.SentidoDB;
 import co.dolmen.sid.modelo.TipoActividadDB;
+import co.dolmen.sid.modelo.TipoConductorElectricoDB;
 import co.dolmen.sid.modelo.TipoEscenarioDB;
 import co.dolmen.sid.modelo.TipoEspacioDB;
 import co.dolmen.sid.modelo.TipoEstructuraDB;
@@ -74,6 +75,7 @@ public class BaseDatos extends SQLiteOpenHelper {
     private ActaContratoDB actaContratoDB;
     private ProveedorDB proveedorDB;
     private TipoEscenarioDB tipoEscenarioDB;
+    private TipoConductorElectricoDB tipoConductorElectricoDB;
 
 
     public BaseDatos(Context context){
@@ -182,6 +184,9 @@ public class BaseDatos extends SQLiteOpenHelper {
 
         tipoEscenarioDB = new TipoEscenarioDB(sqLiteDatabase);
         tipoEscenarioDB.crearTabla();
+
+        tipoConductorElectricoDB = new TipoConductorElectricoDB(sqLiteDatabase);
+        tipoConductorElectricoDB.crearTabla();
         Log.d("DataBase","create");
     }
 
@@ -220,6 +225,7 @@ public class BaseDatos extends SQLiteOpenHelper {
         actaContratoDB.borrarTabla();
         proveedorDB.borrarTabla();
         tipoEscenarioDB.borrarTabla();
+        tipoConductorElectricoDB.borrarTabla();
         //onCreate(sqLiteDatabase);
         Log.d("DataBase","update");
 
