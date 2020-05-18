@@ -321,6 +321,7 @@ public class CensoTecnico extends AppCompatActivity {
         sltTipoEstructura = findViewById(R.id.slt_tipo_estructura);
         sltNormaConstruccionRed = findViewById(R.id.slt_norma_construccion_red);
         sltCensoAsignado = findViewById(R.id.slt_censo_asignado);
+        sltTipoEscenario = findViewById(R.id.slt_tipo_escenario);
         //--
         txtElementoNo = findViewById(R.id.txt_elemento_no);
         txtLatitud = findViewById(R.id.txt_latitud);
@@ -737,6 +738,7 @@ public class CensoTecnico extends AppCompatActivity {
         cargarTension(database);
         cargarRetenidaPoste(database);
         cargarCensoAsignado(database);
+        cargarTipoEscenario(database);
     }
 
     @Override
@@ -1442,12 +1444,12 @@ public class CensoTecnico extends AppCompatActivity {
         txtMensajeDireccion = content.findViewById(R.id.txt_mensaje_direccion);
         sltTipoInterseccionA = content.findViewById(R.id.slt_tipo_interseccion_a);
         sltTipoInterseccionB = content.findViewById(R.id.slt_tipo_interseccion_b);
-        sltTipoEscenario = content.findViewById(R.id.slt_tipo_escenario);
+
         txtNumeroInterseccion = content.findViewById(R.id.numero_interseccion);
         txtNumeracionA = content.findViewById(R.id.txt_numeracion_a);
         txtNumeracionB = content.findViewById(R.id.txt_numeracion_b);
         cargarTipoInterseccion(database);
-        cargarTipoEscenario(database);
+
         alertDireccion.setTitle(R.string.titulo_direccion);
         alertDireccion.setView(content)
                 // Add action buttons
@@ -1483,7 +1485,6 @@ public class CensoTecnico extends AppCompatActivity {
                                     txtDireccion.setText(miDireccion);
                             }
                         }
-                        idTipoEscenario = tipoEscenarioList.get(sltTipoEscenario.getSelectedItemPosition()).getId();
                     }
                 })
                 .setNegativeButton(R.string.btn_cancelar, new DialogInterface.OnClickListener() {
@@ -1742,7 +1743,7 @@ public class CensoTecnico extends AppCompatActivity {
         tipoRed.setDescripcion(tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getDescripcion());
 
         TipoEscenario tipoEscenario = new TipoEscenario();
-        tipoEscenario.setId(idTipoEscenario);
+        tipoEscenario.setId(tipoEscenarioList.get(sltTipoEscenario.getSelectedItemPosition()).getId());
 
         Censo censo = new Censo();
         censo.setId_censo(censoAsignadoList.get(sltCensoAsignado.getSelectedItemPosition()).getId());
@@ -1850,6 +1851,7 @@ public class CensoTecnico extends AppCompatActivity {
         btnCancelar.setEnabled(true);
         progressBarGuardarCenso.setVisibility(View.INVISIBLE);
     }
+
     //--
     private void almacenarDatosEnRemoto() {
         final AsyncHttpClient client = new AsyncHttpClient();
