@@ -411,6 +411,7 @@ public class CensoTecnico extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 chkSwPoseeLuminaria = (isChecked) ? "S" : "N";
+                estadoPropiedadMobiliario(isChecked);
             }
         });
         swPuestaTierra.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -1520,7 +1521,7 @@ public class CensoTecnico extends AppCompatActivity {
                             alert.setMessage(R.string.alert_censo_referencia);
                             return false;
                         } else {
-                            if (estadoMobiliarioList.get(sltEstadoMobiliario.getSelectedItemPosition()).getId() == 0) {
+                            if (estadoMobiliarioList.get(sltEstadoMobiliario.getSelectedItemPosition()).getId() == 0 && swPoseeLuminaria.isChecked()) {
                                 alert.setMessage(R.string.alert_censo_estado_mobiliario);
                                 return false;
                             } else {
@@ -1659,6 +1660,21 @@ public class CensoTecnico extends AppCompatActivity {
         chkSwPosteExclusivoAp = "N";
         chkSwPosteBuenEstado = "S";
         chkSwMobiliarioBuenEstado = "S";
+    }
+
+    //--
+    private void estadoPropiedadMobiliario(boolean estado){
+
+        sltTipologia.setSelection(0);
+        sltEstadoMobiliario.setSelection(0);
+
+        sltTipologia.setEnabled(estado);
+        sltMobiliario.setEnabled(estado);
+        sltReferencia.setEnabled(estado);
+        sltEstadoMobiliario.setEnabled(estado);
+        swLuminariaVisible.setChecked(estado);
+        swLuminariaVisible.setEnabled(estado);
+
     }
 
     //--
@@ -2019,9 +2035,9 @@ public class CensoTecnico extends AppCompatActivity {
 
         if (iscreada == false) {
             iscreada = mediaStorageDir.mkdir();
-        } else {
-            nombreImagen = "IMG_" + (System.currentTimeMillis() / 100) + ".jpg";
         }
+
+        nombreImagen = "IMG_" + (System.currentTimeMillis() / 100) + ".jpg";
 
         path = mediaStorageDir.getPath() + File.separator + nombreImagen;
         File imagen = new File(path);
