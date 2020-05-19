@@ -95,8 +95,8 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
             contentValues.put("id_mobiliario",censo.getElemento().getMobiliario().getIdMobiliario());
             contentValues.put("id_referencia",censo.getElemento().getReferenciaMobiliario().getIdReferenciaMobiliario());
             contentValues.put("id_estado_mobiliario",censo.getEstadoMobiliario().getIdEstadoMobiliario());
-            contentValues.put("longitud",censo.getLatitud());
-            contentValues.put("latitud",censo.getLongitud());
+            contentValues.put("longitud",censo.getLongitud());
+            contentValues.put("latitud",censo.getLatitud());
             contentValues.put("direccion",censo.getElemento().getDireccion());
             contentValues.put("fch_registro",censo.getFchRegistro());
             contentValues.put("observacion",censo.getObservacion());
