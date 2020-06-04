@@ -195,6 +195,15 @@
                             android:text="@string/btn_censo_tecnico" />
 
                         <Button
+                            android:id="@+id/btn_censo_carga"
+                            android:layout_width="match_parent"
+                            android:layout_height="65dp"
+                            android:layout_weight="1"
+                            android:background="@android:drawable/btn_default_small"
+                            android:drawableLeft="@android:drawable/ic_lock_idle_low_battery"
+                            android:text="@string/btn_censo_carga" />
+
+                        <Button
                             android:id="@+id/btn_salir"
                             android:layout_width="match_parent"
                             android:layout_height="65dp"

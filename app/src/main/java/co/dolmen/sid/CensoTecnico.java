@@ -280,6 +280,7 @@ public class CensoTecnico extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_censo_tecnico);
 
+
         conn = new BaseDatos(CensoTecnico.this);
         database = conn.getReadableDatabase();
 
@@ -291,6 +292,8 @@ public class CensoTecnico extends AppCompatActivity {
 
         //--
         alert = new AlertDialog.Builder(this);
+        alert.setCancelable(false);
+        alert.setIcon(android.R.drawable.ic_dialog_alert);
 
         //--Datos de la tabla Armado Red--
         tipoArmadoList = new ArrayList<ComponenteNormaConstruccionRed>();
@@ -1364,6 +1367,8 @@ public class CensoTecnico extends AppCompatActivity {
             alert.create().show();
         } else {
             alertBuscarElemento = new AlertDialog.Builder(this);
+            alertBuscarElemento.setCancelable(false);
+            alertBuscarElemento.setIcon(android.R.drawable.ic_dialog_alert);
             ElementoDB elementoDB = new ElementoDB(sqLiteDatabase);
             Cursor cursorElemento = elementoDB.consultarElemento(idDefaultMunicipio, idDefaultProceso, parseInt(txtBuscarElemento.getText().toString()));
             if (cursorElemento.getCount() == 0) {
@@ -1388,50 +1393,56 @@ public class CensoTecnico extends AppCompatActivity {
                 alertBuscarElemento.create().show();
 
             } else {
+                if(cursorElemento.getCount()>1){
+                    alertBuscarElemento.setMessage("Existe mas de un elemento con el mismo número,Seleccione");
+                    alertBuscarElemento.setNeutralButton("Aceptar",null);
+                    alertBuscarElemento.create().show();
+                }else {
+                    cursorElemento.moveToFirst();
 
-                cursorElemento.moveToFirst();
+                    elemento = new Elemento();
+                    elemento.setId(Integer.parseInt(cursorElemento.getString(cursorElemento.getColumnIndex("_id"))));
+                    elemento.setElemento_no(cursorElemento.getString(cursorElemento.getColumnIndex("elemento_no")));
 
-                elemento = new Elemento();
-                elemento.setId(Integer.parseInt(cursorElemento.getString(cursorElemento.getColumnIndex("_id"))));
-                elemento.setElemento_no(cursorElemento.getString(cursorElemento.getColumnIndex("elemento_no")));
+                    EstadoMobiliario estadoMobiliario = new EstadoMobiliario();
+                    estadoMobiliario.setIdEstadoMobiliario(cursorElemento.getInt(cursorElemento.getColumnIndex("id_estado_mobiliario")));
 
-                EstadoMobiliario estadoMobiliario = new EstadoMobiliario();
-                estadoMobiliario.setIdEstadoMobiliario(cursorElemento.getInt(cursorElemento.getColumnIndex("id_estado_mobiliario")));
+                    elemento.setEstadoMobiliario(estadoMobiliario);
 
-                elemento.setEstadoMobiliario(estadoMobiliario);
+                    swLuminariaVisible.setEnabled(false);
+                    swLuminariaVisible.setChecked(true);
+                    swPoseeLuminaria.setEnabled(false);
+                    swPoseeLuminaria.setChecked(true);
 
-                swLuminariaVisible.setEnabled(false);
-                swLuminariaVisible.setChecked(true);
-                swPoseeLuminaria.setEnabled(false);
-                swPoseeLuminaria.setChecked(true);
+                    txtElementoNo.setText(cursorElemento.getString(cursorElemento.getColumnIndex("elemento_no")));
+                    txtDireccion.setText(cursorElemento.getString(cursorElemento.getColumnIndex("direccion")));
 
-                txtElementoNo.setText(cursorElemento.getString(cursorElemento.getColumnIndex("elemento_no")));
-                txtDireccion.setText(cursorElemento.getString(cursorElemento.getColumnIndex("direccion")));
+                    idMobiliarioBusqueda = cursorElemento.getInt(cursorElemento.getColumnIndex("id_mobiliario"));
+                    idReferenciaBusqueda = cursorElemento.getInt(cursorElemento.getColumnIndex("id_referencia"));
 
-                idMobiliarioBusqueda = cursorElemento.getInt(cursorElemento.getColumnIndex("id_mobiliario"));
-                idReferenciaBusqueda = cursorElemento.getInt(cursorElemento.getColumnIndex("id_referencia"));
-
-                //tipologiaList
-                for (int i = 0; i < tipologiaList.size(); i++) {
-                    if (tipologiaList.get(i).getId() == cursorElemento.getInt(cursorElemento.getColumnIndex("id_tipologia"))) {
-                        sltTipologia.setAdapter(sltTipologia.getAdapter());
-                        sltTipologia.setSelection(i);
+                    //tipologiaList
+                    for (int i = 0; i < tipologiaList.size(); i++) {
+                        if (tipologiaList.get(i).getId() == cursorElemento.getInt(cursorElemento.getColumnIndex("id_tipologia"))) {
+                            sltTipologia.setAdapter(sltTipologia.getAdapter());
+                            sltTipologia.setSelection(i);
+                        }
+                    }
+                    // this.cargarMobiliario(database);
+                    // this.cargarReferencia(database);
+                    //EstadoList
+                    for (int i = 0; i < estadoMobiliarioList.size(); i++) {
+                        if (estadoMobiliarioList.get(i).getId() == cursorElemento.getInt(cursorElemento.getColumnIndex("id_estado_mobiliario"))) {
+                            sltEstadoMobiliario.setSelection(i);
+                        }
+                    }
+                    //barrioList
+                    for (int i = 0; i < barrioList.size(); i++) {
+                        if (barrioList.get(i).getId() == cursorElemento.getInt(cursorElemento.getColumnIndex("id_barrio"))) {
+                            sltBarrio.setSelection(i);
+                        }
                     }
                 }
-                // this.cargarMobiliario(database);
-                // this.cargarReferencia(database);
-                //EstadoList
-                for (int i = 0; i < estadoMobiliarioList.size(); i++) {
-                    if (estadoMobiliarioList.get(i).getId() == cursorElemento.getInt(cursorElemento.getColumnIndex("id_estado_mobiliario"))) {
-                        sltEstadoMobiliario.setSelection(i);
-                    }
-                }
-                //barrioList
-                for (int i = 0; i < barrioList.size(); i++) {
-                    if (barrioList.get(i).getId() == cursorElemento.getInt(cursorElemento.getColumnIndex("id_barrio"))) {
-                        sltBarrio.setSelection(i);
-                    }
-                }
+
             }
             cursorElemento.close();
         }
@@ -1441,6 +1452,9 @@ public class CensoTecnico extends AppCompatActivity {
     //--Administrar Direccion
     private void armarDireccion() {
         alertDireccion = new AlertDialog.Builder(this);
+        alertDireccion.setTitle(R.string.titulo_direccion);
+        alertDireccion.setCancelable(false);
+
         View content = LayoutInflater.from(getApplicationContext()).inflate(R.layout.direccion, null);
         txtMensajeDireccion = content.findViewById(R.id.txt_mensaje_direccion);
         sltTipoInterseccionA = content.findViewById(R.id.slt_tipo_interseccion_a);
@@ -1451,18 +1465,64 @@ public class CensoTecnico extends AppCompatActivity {
         txtNumeracionB = content.findViewById(R.id.txt_numeracion_b);
         cargarTipoInterseccion(database);
 
-        alertDireccion.setTitle(R.string.titulo_direccion);
-        alertDireccion.setView(content)
+        alertDireccion.setView(content);
+        alertDireccion.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (tipoInterseccionA.get(sltTipoInterseccionA.getSelectedItemPosition()).getId() == 0) {
+                    //txtMensajeDireccion.setText("Seleccione Tipo Intersección");
+                    //Log.d("Busqueda", "Seleccione Tipo Intersección");
+                    Toast.makeText(getApplicationContext(),"No selecciono un Tipo de Interseccion",Toast.LENGTH_LONG).show();
+                } else {
+                    if (TextUtils.isEmpty(txtNumeroInterseccion.getText().toString())) {
+                        //txtMensajeDireccion.setText("Digite el Número de la Intersección");
+                        Toast.makeText(getApplicationContext(),"No digitó el número de la intersección",Toast.LENGTH_LONG).show();
+                    } else {
+                        String miDireccion = "";
+
+                        miDireccion = miDireccion + tipoInterseccionA.get(sltTipoInterseccionA.getSelectedItemPosition()).getDescripcion();
+                        miDireccion = miDireccion + " " + txtNumeroInterseccion.getText().toString();
+
+                        if (tipoInterseccionA.get(sltTipoInterseccionB.getSelectedItemPosition()).getId() != 0) {
+                            miDireccion = miDireccion + " " + tipoInterseccionB.get(sltTipoInterseccionB.getSelectedItemPosition()).getDescripcion();
+                        }
+                        if (!TextUtils.isEmpty(txtNumeracionA.getText().toString())) {
+                            if (tipoInterseccionA.get(sltTipoInterseccionB.getSelectedItemPosition()).getId() != 0) {
+                                miDireccion = miDireccion + " " + txtNumeracionA.getText().toString();
+                            } else {
+                                miDireccion = miDireccion + " N " + txtNumeracionA.getText().toString();
+                            }
+                        }
+                        if (!TextUtils.isEmpty(txtNumeracionB.getText().toString())) {
+                            miDireccion = miDireccion + " - " + txtNumeracionB.getText().toString();
+                        }
+                        if (!miDireccion.isEmpty())
+                            txtDireccion.setText(miDireccion);
+                    }
+                }
+            }
+        });
+        alertDireccion.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        alertDireccion.create().show();
+
+        /*alertDireccion.setView(content)
                 // Add action buttons
                 .setPositiveButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         if (tipoInterseccionA.get(sltTipoInterseccionA.getSelectedItemPosition()).getId() == 0) {
-                            txtMensajeDireccion.setText("Seleccione Tipo Intersección");
+                            //txtMensajeDireccion.setText("Seleccione Tipo Intersección");
                             //Log.d("Busqueda", "Seleccione Tipo Intersección");
+                            Toast.makeText(getApplicationContext(),"No selecciono un Tipo de Interseccion",Toast.LENGTH_LONG).show();
                         } else {
                             if (TextUtils.isEmpty(txtNumeroInterseccion.getText().toString())) {
-                                txtMensajeDireccion.setText("Digite el Número de la Intersección");
+                                //txtMensajeDireccion.setText("Digite el Número de la Intersección");
+                                Toast.makeText(getApplicationContext(),"No digitó el número de la intersección",Toast.LENGTH_LONG).show();
                             } else {
                                 String miDireccion = "";
 
@@ -1495,7 +1555,8 @@ public class CensoTecnico extends AppCompatActivity {
                 });
 
         alertDireccion.create().setCancelable(false);
-        alertDireccion.create().show();
+        alertDireccion.create().show();*/
+
     }
 
     //--Validar Formulario para enviar--
@@ -1991,20 +2052,29 @@ public class CensoTecnico extends AppCompatActivity {
         alertOpciones.setItems(opciones, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                int PERMISSIONS_REQUEST_CAMERA = 0;
+                int PERMISSIONS_REQUEST_INTERNAL_STORAGE = 0;
                 switch (i) { //Tomar Foto
                     case 0:
-                        int PERMISSIONS_REQUEST_CAMERA = 0;
+
                         if (ContextCompat.checkSelfPermission(CensoTecnico.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                             ActivityCompat.requestPermissions(CensoTecnico.this,
                                     new String[]{Manifest.permission.CAMERA},
                                     PERMISSIONS_REQUEST_CAMERA);
-                        } else {
-                            tomarFoto();
+                        }
+                        else {
+                            if (ContextCompat.checkSelfPermission(CensoTecnico.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                ActivityCompat.requestPermissions(CensoTecnico.this,
+                                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                        PERMISSIONS_REQUEST_INTERNAL_STORAGE);
+                            } else {
+                                tomarFoto();
+                            }
                         }
                         dialogInterface.dismiss();
                         break;
                     case 1: //Seleccionar Imagen
-                        int PERMISSIONS_REQUEST_INTERNAL_STORAGE = 0;
+                       // int PERMISSIONS_REQUEST_INTERNAL_STORAGE = 0;
                         if (ContextCompat.checkSelfPermission(CensoTecnico.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                             ActivityCompat.requestPermissions(CensoTecnico.this,
                                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},

@@ -29,7 +29,7 @@
     <string name="titulo_menu_censo_tecnico">Menú Censo Técnico</string>
     <string name="titulo_actualizar_elemento">Actualizar Elemento</string>
     <string name="titulo_crear_elemento">Crear Elemento</string>
-
+    <string name="titulo_censo_carga">Censo Carga</string>
 
     <!--Titulo Tabla-->
     <string name="titulo_norma">Norma</string>
@@ -167,4 +167,5 @@
     <string name="separador">-</string>
     <string name="titulo_conexion_electrica">Conexión Eléctrica</string>
     <string name="titulo_proveedor">Proveedor Instalador</string>
+    <string name="btn_censo_carga">Censo de Carga</string>
 </resources>

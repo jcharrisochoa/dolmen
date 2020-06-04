@@ -786,7 +786,7 @@ public class CrearElemento extends AppCompatActivity {
                 do {
                     i++;
                     dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(2).toUpperCase());
-                    sentidoList.add(dataSpinner);
+                    actaList.add(dataSpinner);
                     labels.add(cursor.getString(2).toUpperCase());
                 } while (cursor.moveToNext());
             }
@@ -824,6 +824,7 @@ public class CrearElemento extends AppCompatActivity {
     //--
     private void armarDireccion(){
         alertDireccion = new AlertDialog.Builder(this);
+        alertDireccion.setCancelable(false);
         View content = LayoutInflater.from(getApplicationContext()).inflate(R.layout.direccion,null);
         txtMensajeDireccion         = content.findViewById(R.id.txt_mensaje_direccion);
         sltTipoInterseccionA        = content.findViewById(R.id.slt_tipo_interseccion_a);
@@ -839,12 +840,14 @@ public class CrearElemento extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         if(tipoInterseccionA.get(sltTipoInterseccionA.getSelectedItemPosition()).getId() == 0){
-                            txtMensajeDireccion.setText("Seleccione Tipo Intersección");
-                            Log.d("Busqueda","Seleccione Tipo Intersección");
+                            //txtMensajeDireccion.setText("Seleccione Tipo Intersección");
+                            //Log.d("Busqueda","Seleccione Tipo Intersección");
+                            Toast.makeText(getApplicationContext(),"No selecciono un Tipo de Interseccion",Toast.LENGTH_LONG).show();
                         }
                         else{
                             if(TextUtils.isEmpty(txtNumeroInterseccion.getText().toString())){
-                                txtMensajeDireccion.setText("Digite el Número de la Intersección");
+                                //txtMensajeDireccion.setText("Digite el Número de la Intersección");
+                                Toast.makeText(getApplicationContext(),"No digitó el número de la intersección",Toast.LENGTH_LONG).show();
                             }
                             else{
                                 String miDireccion = "";
@@ -889,20 +892,29 @@ public class CrearElemento extends AppCompatActivity {
         alertOpciones.setItems(opciones, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                int PERMISSIONS_REQUEST_INTERNAL_STORAGE = 0;
+                int PERMISSIONS_REQUEST_CAMERA = 0;
                 switch (i) { //Tomar Foto
                     case 0:
-                        int PERMISSIONS_REQUEST_CAMERA = 0;
                         if (ContextCompat.checkSelfPermission(CrearElemento.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                             ActivityCompat.requestPermissions(CrearElemento.this,
                                     new String[]{Manifest.permission.CAMERA},
                                     PERMISSIONS_REQUEST_CAMERA);
-                        } else {
-                            tomarFoto();
+                        }
+                        else {
+                            if (ContextCompat.checkSelfPermission(CrearElemento.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                ActivityCompat.requestPermissions(CrearElemento.this,
+                                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                        PERMISSIONS_REQUEST_INTERNAL_STORAGE);
+                            }
+                            else {
+                                tomarFoto();
+                            }
                         }
                         dialogInterface.dismiss();
                         break;
                     case 1: //Seleccionar Imagen
-                        int PERMISSIONS_REQUEST_INTERNAL_STORAGE = 0;
+
                         if (ContextCompat.checkSelfPermission(CrearElemento.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                             ActivityCompat.requestPermissions(CrearElemento.this,
                                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},

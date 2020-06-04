@@ -10,4 +10,7 @@ final class ServicioWeb {
     public static final String urlConsultarElemento = "http://www.dolmen.net.co/sid_v1/elementos/webservice/consultarElemento.php";
     public static final String urlActualizarElemento = "http://www.dolmen.net.co/sid_v1/elementos/webservice/actualizarElemento.php";
     public static final String urlGuardarNuevoElemento = "http://www.dolmen.net.co/sid_v1/elementos/webservice/guardarElemento.php";
+
+    public static final String urlGuardarCensoCarga = "http://www.dolmen.net.co/sid_v1/webservice/censo_tecnico/guardarCensoCarga.php";
+    public static final String urlSincronizarCensoCarga = "http://www.dolmen.net.co/sid_v1/webservice/censo_tecnico/sincronizarCensoCarga.php";
 }

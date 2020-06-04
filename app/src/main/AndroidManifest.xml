@@ -12,7 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".CrearElemento"></activity>
+        <activity android:name=".CensoCarga"></activity>
+        <activity android:name=".CrearElemento" />
         <activity android:name=".GenerarActividadOperativa" />
         <activity android:name=".ActualizarElemento" />
         <activity android:name=".ReporteDano" />
@@ -36,7 +37,6 @@
             </intent-filter>
         </activity>
 
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="@string/file_provider_authority"
@@ -55,12 +55,12 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
 </manifest>
