@@ -53,6 +53,15 @@
             android:tint="@color/colorAccent"
             app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
 
+        <ImageButton
+            android:id="@+id/btn_sincronizar_carga"
+            android:layout_width="wrap_content"
+            android:layout_height="46dp"
+            android:layout_weight="1"
+            android:background="@android:drawable/btn_default_small"
+            android:tint="@color/colorPrimary"
+            app:srcCompat="@android:drawable/stat_notify_sync" />
+
 
     </LinearLayout>
 

@@ -32,6 +32,9 @@ import co.dolmen.sid.modelo.TipoInterseccionDB;
 import co.dolmen.sid.modelo.TipologiaDB;
 import co.dolmen.sid.utilidades.DataSpinner;
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.entity.StringEntity;
+import cz.msebera.android.httpclient.message.BasicHeader;
+import cz.msebera.android.httpclient.protocol.HTTP;
 
 import android.Manifest;
 import android.content.DialogInterface;
@@ -39,6 +42,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.location.Address;
@@ -71,6 +75,7 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestHandle;
 import com.loopj.android.http.RequestParams;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -94,6 +99,8 @@ public class CensoCarga extends AppCompatActivity {
     AlertDialog.Builder alert;
     AlertDialog.Builder alertDireccion;
     AlertDialog.Builder alertBuscarElemento;
+    AlertDialog.Builder alertSincronizar;
+    AlertDialog.Builder alertLogs;
 
     Spinner sltTipologia;
     Spinner sltMobiliario;
@@ -113,6 +120,7 @@ public class CensoCarga extends AppCompatActivity {
     EditText txtNumeracionA;
     EditText txtNumeracionB;
     EditText txtObservacion;
+    EditText txtLog;
 
     Switch swLuminariaVisible;
     Switch swPoseeLuminaria;
@@ -125,6 +133,7 @@ public class CensoCarga extends AppCompatActivity {
     ImageButton btnBuscarElemento;
     ImageButton btnEditarDireccion;
     ImageButton btnLimpiar;
+    ImageButton btnSincronizar;
 
     ArrayList<DataSpinner> tipologiaList;
     ArrayList<Mobiliario> mobiliarioList;
@@ -141,6 +150,7 @@ public class CensoCarga extends AppCompatActivity {
     TextView viewPrecision;
     TextView viewDireccion;
     TextView viewVelocidad;
+
 
     RadioButton rdZonaUrbano;
     RadioButton rdZonaRural;
@@ -159,6 +169,7 @@ public class CensoCarga extends AppCompatActivity {
     private ProgressBar progressBarGuardarCenso;
 
     Elemento elemento;
+    private CensoDB censoDB;
 
     private String chkSwLuminariaVisible = "S";
     private String chkSwPoseeLuminaria = "S";
@@ -168,6 +179,7 @@ public class CensoCarga extends AppCompatActivity {
 
     public LocationManager ubicacion;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -175,6 +187,12 @@ public class CensoCarga extends AppCompatActivity {
 
         conn = new BaseDatos(getApplicationContext());
         database = conn.getReadableDatabase();
+
+        try {
+            censoDB = new CensoDB(database);
+        }catch (SQLException e){
+            Toast.makeText(getApplicationContext(),"ERROR"+e.getMessage(),Toast.LENGTH_LONG).show();
+        }
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
@@ -186,6 +204,12 @@ public class CensoCarga extends AppCompatActivity {
         alert = new AlertDialog.Builder(this);
         alert.setCancelable(false);
         alert.setIcon(android.R.drawable.ic_dialog_alert);
+
+        alertSincronizar = new AlertDialog.Builder(this);
+        alertSincronizar.setCancelable(false);
+        alertSincronizar.setIcon(android.R.drawable.ic_dialog_info);
+
+
 
         //--
         config = getSharedPreferences("config", MODE_PRIVATE);
@@ -227,6 +251,8 @@ public class CensoCarga extends AppCompatActivity {
         btnEditarDireccion = findViewById(R.id.btn_editar_direccion);
         btnLimpiar = findViewById(R.id.btn_limpiar);
         btnBuscarElemento = findViewById(R.id.btn_buscar_elemento);
+        btnSincronizar = findViewById(R.id.btn_sincronizar_carga);
+
         //--
         viewLatitud = findViewById(R.id.gps_latitud);
         viewLongitud = findViewById(R.id.gps_longitud);
@@ -332,7 +358,7 @@ public class CensoCarga extends AppCompatActivity {
                     NetworkInfo networkInfo = conn.getActiveNetworkInfo();
 
                     if (networkInfo != null && networkInfo.isConnected()) {
-                        //Toast.makeText(getApplicationContext(),"Conectando con "+networkInfo.getTypeName()+" / "+networkInfo.getExtraInfo(),Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(),"Conectando con "+networkInfo.getTypeName()+" / "+networkInfo.getExtraInfo(),Toast.LENGTH_LONG).show();
                         guardarFormulario('R', database);
                     } else {
                         alert.setTitle(R.string.titulo_alerta);
@@ -364,6 +390,15 @@ public class CensoCarga extends AppCompatActivity {
                 buscarElemento(database);
             }
         });
+
+        btnSincronizar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sincronizar();
+            }
+        });
+
+
 
         btnEditarDireccion.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -815,6 +850,7 @@ public class CensoCarga extends AppCompatActivity {
         chkSwMobiliarioBuenEstado = "S";
     }
 
+    //--
     private void guardarFormulario(char tipoAlmacenamiento, SQLiteDatabase sqLiteDatabase) {
         switch (tipoAlmacenamiento) {
             case 'L':
@@ -827,12 +863,8 @@ public class CensoCarga extends AppCompatActivity {
     }
 
     //--
-
     private void almacenarDatosLocal(SQLiteDatabase sqLiteDatabase) {
-        btnGuardar.setEnabled(false);
-        btnCancelar.setEnabled(false);
-        progressBarGuardarCenso.setVisibility(View.VISIBLE);
-
+        setButton(false);
         Barrio barrio = new Barrio();
         barrio.setIdBarrio(barrioList.get(sltBarrio.getSelectedItemPosition()).getId());
         barrio.setNombreBarrio(barrioList.get(sltBarrio.getSelectedItemPosition()).getDescripcion());
@@ -859,8 +891,6 @@ public class CensoCarga extends AppCompatActivity {
         estadoMobiliario.setIdEstadoMobiliario(estadoMobiliarioList.get(sltEstadoMobiliario.getSelectedItemPosition()).getId());
         estadoMobiliario.setDescripcionEstadoMobiliario(estadoMobiliarioList.get(sltEstadoMobiliario.getSelectedItemPosition()).getDescripcion());
 
-        Contrato contrato = new Contrato();
-        contrato.setId(idDefaultContrato);
 
         if (txtElementoNo.getText().toString().isEmpty() && !swLuminariaVisible.isChecked()) {
             elemento = new Elemento();
@@ -872,51 +902,11 @@ public class CensoCarga extends AppCompatActivity {
         elemento.setTipologia(tipologia);
         elemento.setMobiliario(mobiliario);
         elemento.setReferenciaMobiliario(referenciaMobiliario);
-        elemento.setContrato(contrato);
 
-/*
-        TipoPoste tipoPoste = new TipoPoste();
-        tipoPoste.setId(tipoPosteList.get(sltTipoPoste.getSelectedItemPosition()).getId());
-        tipoPoste.setDescripcion(tipoPosteList.get(sltTipoPoste.getSelectedItemPosition()).getDescripcion());
-
-        NormaConstruccionPoste normaConstruccionPoste = new NormaConstruccionPoste();
-        normaConstruccionPoste.setId(normaConstruccionPosteList.get(sltNormaConstruccionPoste.getSelectedItemPosition()).getId());
-        normaConstruccionPoste.setDescripcion(normaConstruccionPosteList.get(sltNormaConstruccionPoste.getSelectedItemPosition()).getDescripcion());
-        normaConstruccionPoste.setTipoPoste(tipoPoste);
-
-        RetenidaPoste retenidaPoste = new RetenidaPoste();
-        retenidaPoste.setId(tipoRetenidaList.get(sltTipoRetenida.getSelectedItemPosition()).getId());
-        retenidaPoste.setDescripcion(tipoRetenidaList.get(sltTipoRetenida.getSelectedItemPosition()).getDescripcion());
-
-        ClaseVia claseVia = new ClaseVia();
-        claseVia.setId(claseViaList.get(sltClaseVia.getSelectedItemPosition()).getId());
-        claseVia.setAbreviatura(claseViaList.get(sltClaseVia.getSelectedItemPosition()).getDescripcion());
-
-        TipoRed tipoRed = new TipoRed();
-        tipoRed.setId(tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId());
-        tipoRed.setDescripcion(tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getDescripcion());
-
-        TipoEscenario tipoEscenario = new TipoEscenario();
-        tipoEscenario.setId(tipoEscenarioList.get(sltTipoEscenario.getSelectedItemPosition()).getId());
-*/
         Censo censo = new Censo();
         censo.setId_censo(censoAsignadoList.get(sltCensoAsignado.getSelectedItemPosition()).getId());
         censo.setElemento(elemento);
-        //censo.setClaseVia(claseVia);
-        //censo.setTipoRed(tipoRed);
         censo.setEstadoMobiliario(estadoMobiliario);
-        //Poste
-        //censo.setRetenidaPoste(retenidaPoste);
-        //censo.setInterdistancia(Integer.parseInt(txtInterdistancia.getText().toString()));
-        //censo.setPosteNo(txtPosteNo.getText().toString());
-        //censo.setNormaConstruccionPoste(normaConstruccionPoste);
-        //Transformador
-        //Double potencia = (txtPotenciaTransformador.getText().toString().isEmpty()) ? 0.0 : Double.parseDouble(txtPotenciaTransformador.getText().toString());
-        //--
-        //censo.setPotenciaTransformador(potencia);
-        //censo.setPlacaCtTransformador(txtCtTransformador.getText().toString());
-        //censo.setPlacaMtTransformador(txtMtTransformador.getText().toString());
-        //--
 
         String fechaHora = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
         censo.setFchRegistro(fechaHora);
@@ -927,35 +917,22 @@ public class CensoCarga extends AppCompatActivity {
         censo.setLongitud(longitud);
         censo.setChkSwLuminariaVisible(chkSwLuminariaVisible);
         censo.setChkSwPoseeLuminaria(chkSwPoseeLuminaria);
-        //censo.setChkSwPuestaTierra(chkSwPuestaTierra);
-        //censo.setChkSwPosteExclusivoAp(chkSwPosteExclusivoAp);
-        //censo.setChkSwPosteBuenEstado(chkSwPosteBuenEstado);
         censo.setSector(sector);
         censo.setZona(zona);
         censo.setChkSwMobiliarioBuenEstado(chkSwMobiliarioBuenEstado);
-        //censo.setTipoPropietarioTransformador(tipoPropietarioTranformador);
-        //censo.setTipoEscenario(tipoEscenario);
-
-        //censo.setBrazoMalEstado(brazoMalEstado);
-        //censo.setVisorMalEstado(visorMalEstado);
-        //censo.setSinBombillo(sinBombillo);
-        //censo.setMobiliarioMalPosicionado(mobiliarioMalPosicionado);
-        //censo.setMobiliarioObsoleto(mobiliarioObsoleto);
-
         censo.setObservacion(txtObservacion.getText().toString());
 
         CensoDB censoDB = new CensoDB(sqLiteDatabase);
-        if (censoDB.agregarDatos(censo)) {
-            //resetFrm(false);
+        if (censoDB.agregarDatosCensoCarga(censo)) {
+
             alert.setTitle(R.string.titulo_alerta);
             alert.setMessage(R.string.alert_almacenamiento_local);
             alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     dialogInterface.cancel();
-                    btnGuardar.setEnabled(true);
-                    btnCancelar.setEnabled(true);
-                    progressBarGuardarCenso.setVisibility(View.INVISIBLE);
+                    resetFrm(false);
+                    setButton(true);
                 }
             });
             alert.create().show();
@@ -966,16 +943,194 @@ public class CensoCarga extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     dialogInterface.cancel();
-                    btnGuardar.setEnabled(true);
-                    btnCancelar.setEnabled(true);
-                    progressBarGuardarCenso.setVisibility(View.INVISIBLE);
+                    setButton(true);
                 }
             });
             alert.create().show();
         }
-        btnGuardar.setEnabled(true);
-        btnCancelar.setEnabled(true);
-        progressBarGuardarCenso.setVisibility(View.INVISIBLE);
+        //setButton(true);
+    }
+
+    //--
+    private void sincronizar(){
+        final String tag = "Log:\n";
+        if (censoDB.consultarTodo().getCount() > 0) {
+            alertSincronizar.setTitle(R.string.titulo_alerta);
+            alertSincronizar.setMessage("Se va(n) a sincronizar  "+censoDB.consultarTodo().getCount()+" elemento(s).");
+
+            alertSincronizar.setPositiveButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    setButton(false);
+                    ConnectivityManager conn = (ConnectivityManager) getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
+                    NetworkInfo networkInfo = conn.getActiveNetworkInfo();
+                    if (networkInfo != null && networkInfo.isConnected()) {
+                        Toast.makeText(getApplicationContext(), "Conectando con " + networkInfo.getTypeName() + " / " + networkInfo.getExtraInfo(), Toast.LENGTH_LONG).show();
+                        JSONObject principal = new JSONObject();
+                        try{
+                            principal.put("json",armarJson(censoDB.consultarTodo()));
+                            // Log.d("JSON",principal.toString());
+                            final AsyncHttpClient client = new AsyncHttpClient();
+                            StringEntity jsonParams = new StringEntity(principal.toString(), "UTF-8");
+                            jsonParams.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+                            client.setTimeout(Constantes.TIMEOUT);
+                            RequestHandle post = client.post(getApplicationContext(), ServicioWeb.urlSincronizarCensoCarga, jsonParams, "application/json", new AsyncHttpResponseHandler() {
+                                @Override
+                                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                                    String respuesta = new String(responseBody);
+                                    String logs = tag;
+                                    //Log.d("JSON-RESPONSE:",respuesta);
+                                    try {
+                                        JSONObject jsonResponse = new JSONObject(new String(responseBody));
+                                        JSONArray jArrayLog = jsonResponse.getJSONArray("log");
+                                        for (int i=0;i<jArrayLog.length();i++){
+                                            JSONObject jLog = jArrayLog.getJSONObject(i);
+                                            jLog.getInt("id");
+                                            jLog.getInt("id_censo");
+                                            jLog.getInt("mobiliario");
+                                            jLog.getString("mensaje");
+                                            jLog.getBoolean("procesar");
+                                            logs = logs + "Mobiliario No: "+jLog.getInt("mobiliario")+","+jLog.getString("mensaje")+"\n";
+                                            if (jLog.getBoolean("procesar")){
+                                                censoDB.eliminarDatos(jLog.getInt("id"));
+                                            }
+                                        }
+                                        visualizarLogs(logs,jsonResponse.getString("mensaje"));
+                                        setButton(true);
+
+                                    }catch (JSONException e){
+                                        e.printStackTrace();
+                                    }
+                                    setButton(true);
+                                }
+
+                                @Override
+                                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                                    String respuesta = new String(responseBody);
+                                    Log.d("JSON-RESPONSE-ERROR:",respuesta);
+                                    Toast.makeText(getApplicationContext(),getText(R.string.alert_error_ejecucion)+ " Código: "+statusCode+" "+error.getMessage(), Toast.LENGTH_LONG).show();
+                                    setButton(true);
+                                }
+                            });
+                        }catch (JSONException e){
+                            Toast.makeText(getApplicationContext(),"Error generando empaquetando de datos",Toast.LENGTH_LONG).show();
+                            e.printStackTrace();
+                            setButton(true);
+                        }
+
+                    } else {
+                        alert.setTitle(R.string.titulo_alerta);
+                        alert.setMessage(R.string.alert_conexion);
+                        alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                setButton(true);
+                                dialogInterface.cancel();
+                            }
+                        });
+                        alert.create().show();
+                    }
+                }
+            });
+            alertSincronizar.setNegativeButton(R.string.btn_cancelar, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    setButton(true);
+                    Toast.makeText(getApplicationContext(),"Accion Cancelada",Toast.LENGTH_LONG).show();
+                    dialogInterface.cancel();
+                }
+            });
+            alertSincronizar.create().show();
+
+        }
+        else{
+            alert.setTitle(R.string.titulo_alerta);
+            alert.setMessage(R.string.alert_sin_datos_por_sincronizar);
+            alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    setButton(true);
+                    dialogInterface.cancel();
+                }
+            });
+            alert.create().show();
+        }
+    }
+    //--
+    private JSONArray armarJson(Cursor cursor) throws JSONException{
+        JSONArray datos = new JSONArray();
+        if (cursor.moveToFirst()) {
+            do {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("id", cursor.getInt(cursor.getColumnIndex("id")));
+                jsonObject.put("id_usuario", idUsuario);
+                jsonObject.put("id_municipio", cursor.getInt(cursor.getColumnIndex("id_municipio")));
+                jsonObject.put("id_barrio", cursor.getInt(cursor.getColumnIndex("id_barrio")));
+                jsonObject.put("id_tipologia", cursor.getInt(cursor.getColumnIndex("id_tipologia")));
+                jsonObject.put("id_mobiliario", cursor.getInt(cursor.getColumnIndex("id_mobiliario")));
+                jsonObject.put("id_referencia", cursor.getInt(cursor.getColumnIndex("id_referencia")));
+                jsonObject.put("id_estado_mobiliario", cursor.getInt(cursor.getColumnIndex("id_estado_mobiliario")));
+                jsonObject.put("longitud", cursor.getFloat(cursor.getColumnIndex("longitud")));
+                jsonObject.put("latitud", cursor.getFloat(cursor.getColumnIndex("latitud")));
+                jsonObject.put("direccion", cursor.getString(cursor.getColumnIndex("direccion")));
+                jsonObject.put("fch_registro", cursor.getString(cursor.getColumnIndex("fch_registro")));
+                jsonObject.put("observacion", cursor.getString(cursor.getColumnIndex("observacion")));
+                jsonObject.put("id_censo", cursor.getInt(cursor.getColumnIndex("id_censo")));
+                jsonObject.put("id_elemento", cursor.getInt(cursor.getColumnIndex("id_elemento")));
+                jsonObject.put("mobiliario_no", cursor.getInt(cursor.getColumnIndex("mobiliario_no")));
+                jsonObject.put("numero_mobiliario_visible", cursor.getString(cursor.getColumnIndex("numero_mobiliario_visible")));
+                jsonObject.put("mobiliario_en_sitio", cursor.getString(cursor.getColumnIndex("mobiliario_en_sitio")));
+                jsonObject.put("id_sentido", 0);
+                jsonObject.put("cantidad", 1);
+                jsonObject.put("serial_medidor", 0);
+                jsonObject.put("lectura_medidor", 0);
+                jsonObject.put("sector", cursor.getString(cursor.getColumnIndex("sector")));
+                jsonObject.put("zona", cursor.getString(cursor.getColumnIndex("zona")));
+                jsonObject.put("mobiliario_buen_estado", cursor.getString(cursor.getColumnIndex("mobiliario_buen_estado")));
+
+                datos.put(jsonObject);
+            } while (cursor.moveToNext());
+        }
+
+        return datos;
+    }
+
+    //--
+    private void visualizarLogs(String logs,String msg){
+        alertLogs = new AlertDialog.Builder(this);
+        View content = LayoutInflater.from(getApplicationContext()).inflate(R.layout.visualizar_logs,null);
+        txtLog         = content.findViewById(R.id.txt_log);
+        txtLog.setEnabled(false);
+        txtLog.setText(msg+"\n\n"+logs);
+        alertLogs.setTitle(R.string.titulo_alerta);
+        alert.setMessage(msg);
+        alertLogs.setView(content);
+        alertLogs.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                setButton(true);
+                dialogInterface.cancel();
+            }
+        });
+
+        alertLogs.create().setCancelable(false);
+        alertLogs.create().show();
+    }
+
+    //--
+    private void setButton(boolean estado){
+        btnSincronizar.setEnabled(estado);
+        btnGuardar.setEnabled(estado);
+        btnCancelar.setEnabled(estado);
+        btnBuscarElemento.setEnabled(estado);
+        btnLimpiar.setEnabled(estado);
+
+        if(estado) {
+            progressBarGuardarCenso.setVisibility(View.INVISIBLE);
+        }
+        else{
+            progressBarGuardarCenso.setVisibility(View.VISIBLE);
+        }
     }
 
     //--
@@ -1012,9 +1167,7 @@ public class CensoCarga extends AppCompatActivity {
             @Override
             public void onStart() {
                 super.onStart();
-                btnGuardar.setEnabled(false);
-                btnCancelar.setEnabled(false);
-                progressBarGuardarCenso.setVisibility(View.VISIBLE);
+                setButton(false);
             }
 
             @Override
@@ -1043,9 +1196,7 @@ public class CensoCarga extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), getText(R.string.alert_error_ejecucion) + " Servicio Web, Código:" + statusCode, Toast.LENGTH_SHORT).show();
                 }
                 resetFrm(true);
-                btnGuardar.setEnabled(true);
-                btnCancelar.setEnabled(true);
-                progressBarGuardarCenso.setVisibility(View.INVISIBLE);
+                setButton(true);
             }
 
             @Override
@@ -1053,12 +1204,11 @@ public class CensoCarga extends AppCompatActivity {
                 String respuesta = new String(responseBody);
                 Log.d("resultado","error "+respuesta);
                 Toast.makeText(getApplicationContext(), getText(R.string.alert_error_ejecucion) + " Código: " + statusCode, Toast.LENGTH_SHORT).show();
-                btnGuardar.setEnabled(true);
-                btnCancelar.setEnabled(true);
-                progressBarGuardarCenso.setVisibility(View.INVISIBLE);
+                setButton(true);
             }
         });
     }
+
     //--Administrar Direccion
     private void armarDireccion() {
         alertDireccion = new AlertDialog.Builder(this);

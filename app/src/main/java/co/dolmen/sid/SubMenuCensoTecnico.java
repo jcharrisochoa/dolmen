@@ -223,7 +223,6 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
                 }
             }
             else {
-
                 alert.setTitle(R.string.titulo_alerta);
                 alert.setMessage(R.string.alert_sin_datos_por_sincronizar);
                 alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
@@ -234,9 +233,7 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
                     }
                 });
                 alert.create().show();
-                //txtLog.setText(tag);
             }
-            //cursor.close();
         }
         else{
             alert.setTitle(R.string.titulo_alerta);

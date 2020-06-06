@@ -83,6 +83,51 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
         db.execSQL("DROP TABLE IF EXISTS "+Constantes.TABLA_CENSO_TECNICO);
     }
 
+    public boolean agregarDatosCensoCarga(Object o){
+        long lastId;
+        if(o instanceof Censo) {
+            censo = (Censo) o;
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("id_municipio",censo.getElemento().getBarrio().getId());
+            contentValues.put("id_barrio",censo.getElemento().getBarrio().getIdBarrio());
+            contentValues.put("id_tipologia",censo.getElemento().getTipologia().getIdTipologia());
+            contentValues.put("id_mobiliario",censo.getElemento().getMobiliario().getIdMobiliario());
+            contentValues.put("id_referencia",censo.getElemento().getReferenciaMobiliario().getIdReferenciaMobiliario());
+            contentValues.put("id_estado_mobiliario",censo.getEstadoMobiliario().getIdEstadoMobiliario());
+            contentValues.put("longitud",censo.getLongitud());
+            contentValues.put("latitud",censo.getLatitud());
+            contentValues.put("direccion",censo.getElemento().getDireccion());
+            contentValues.put("fch_registro",censo.getFchRegistro());
+            contentValues.put("observacion",censo.getObservacion());
+            contentValues.put("id_censo",censo.getId_censo());
+            contentValues.put("id_elemento",censo.getElemento().getId());
+            contentValues.put("mobiliario_no",censo.getElemento().getElemento_no());
+            contentValues.put("numero_mobiliario_visible",censo.getChkSwLuminariaVisible());
+            contentValues.put("mobiliario_en_sitio",censo.getChkSwPoseeLuminaria());
+            contentValues.put("id_sentido",0);
+            contentValues.put("cantidad",1);
+            contentValues.put("estado","P");
+            contentValues.put("sector",censo.getSector());
+            contentValues.put("zona",censo.getZona());
+            contentValues.put("serial_medidor",0);
+            contentValues.put("lectura_medidor",0);
+            contentValues.put("mobiliario_buen_estado",censo.getChkSwMobiliarioBuenEstado());
+
+            try {
+                lastId = db.insertWithOnConflict(Constantes.TABLA_CENSO_TECNICO, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
+                censo.setLastId(lastId);
+            }catch (SQLiteException e){
+                Log.d("ErrorI",""+e.getMessage());
+                return false;
+            }finally {
+                //db.close();
+            }
+            return true;
+        }
+        else
+            return false;
+    }
+
     @Override
     public boolean agregarDatos(Object o) {
         long lastId;
