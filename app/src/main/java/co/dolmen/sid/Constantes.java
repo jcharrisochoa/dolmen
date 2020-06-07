@@ -10,7 +10,8 @@ public final class Constantes {
     public static final int MEDIA_TYPE_IMAGE = 1;
 
     //--Base Datos
-    public static final int VERSION_BASEDATOS = 2;
+    public static final int VERSION_BASEDATOS = 3;
+    public static int OLD_VERSION_BASEDATOS;
     public static final String NOMBRE_BASEDATOS = "sid.db";
 
     public static final String TABLA_ESTADO_MOBILIARIO         = "estado_mobiliario";

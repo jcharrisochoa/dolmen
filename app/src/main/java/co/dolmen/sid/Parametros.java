@@ -93,6 +93,7 @@ public class Parametros extends AppCompatActivity {
         cargarParametros(config.getInt("id_usuario",0));
         db = new BaseDatos(Parametros.this);
         database = db.getWritableDatabase();
+        Constantes.OLD_VERSION_BASEDATOS = database.getVersion();
     }
     private void cargarParametros(final Integer id_usuario){
         final AsyncHttpClient client = new AsyncHttpClient();
@@ -172,6 +173,7 @@ public class Parametros extends AppCompatActivity {
                 censoAsignadoDB.setId(jObjectCenso.getInt("id"));
                 censoAsignadoDB.setId_municipio(jObjectCenso.getInt("id_municipio"));
                 censoAsignadoDB.setId_proceso_sgc(jObjectCenso.getInt("id_proceso_sgc"));
+                censoAsignadoDB.setTipo(jObjectCenso.getString("tipo"));
                 censoAsignadoDB.agregarDatos(censoAsignadoDB);
 
                 progress = (int)Math.round((double)(i+1)/arrayCenso.length()*100);

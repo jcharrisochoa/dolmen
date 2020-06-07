@@ -22,7 +22,7 @@ public class CensoAsignadoDB extends CensoAsignado implements DatabaseDDL,Databa
 
     @Override
     public void crearTabla() {
-        db.execSQL("create table "+ Constantes.TABLA_CENSO_ASIGNADO + "(id_censo INTEGER NOT NULL ,id_municipio INTEGER NOT NULL,id_proceso_sgc INTEGER NOT NULL)");
+        db.execSQL("create table "+ Constantes.TABLA_CENSO_ASIGNADO + "(id_censo INTEGER NOT NULL ,id_municipio INTEGER NOT NULL,id_proceso_sgc INTEGER NOT NULL,tipo VARCHAR(1))");
     }
 
     @Override
@@ -34,12 +34,13 @@ public class CensoAsignadoDB extends CensoAsignado implements DatabaseDDL,Databa
     public boolean agregarDatos(Object o) {
         if(o instanceof CensoAsignado) {
             censoAsignado = (CensoAsignado) o;
-            Cursor result = consultarTodo(censoAsignado.getId_municipio(),censoAsignado.getId_proceso_sgc());
+            Cursor result = consultarTodo(censoAsignado.getId_municipio(),censoAsignado.getId_proceso_sgc(),censoAsignado.getTipo());
             if(result.getCount() == 0) {
                 ContentValues contentValues = new ContentValues();
                 contentValues.put("id_municipio",censoAsignado.getId_municipio());
                 contentValues.put("id_proceso_sgc",censoAsignado.getId_proceso_sgc());
                 contentValues.put("id_censo",censoAsignado.getId());
+                contentValues.put("tipo",censoAsignado.getTipo());
                 try {
                     db.insertWithOnConflict(Constantes.TABLA_CENSO_ASIGNADO, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
                 }catch (SQLiteException e){
@@ -72,9 +73,13 @@ public class CensoAsignadoDB extends CensoAsignado implements DatabaseDDL,Databa
         return result;
     }
 
-    public Cursor consultarTodo(int idMunicipio,int idProcesoSGC) {
-        this.sql = "SELECT * FROM "+ Constantes.TABLA_CENSO_ASIGNADO+" where id_municipio="+idMunicipio+" and id_proceso_sgc="+idProcesoSGC
-                +" ORDER BY id_censo";
+    public Cursor consultarTodo(int idMunicipio,int idProcesoSGC,String tipo) {
+        this.sql = "SELECT * FROM "+
+                Constantes.TABLA_CENSO_ASIGNADO+
+                " where id_municipio="+idMunicipio+
+                " and id_proceso_sgc="+idProcesoSGC+
+                " and tipo='"+tipo+"'"+
+                " ORDER BY id_censo";
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }

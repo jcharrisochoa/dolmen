@@ -97,6 +97,12 @@ public class ConfigurarArea extends AppCompatActivity {
         conn = new BaseDatos(ConfigurarArea.this);
         database = conn.getReadableDatabase();
 
+        if(database.getVersion() != Constantes.OLD_VERSION_BASEDATOS){
+            Intent i = new Intent(ConfigurarArea.this, Parametros.class);
+            startActivity(i);
+            finish();
+        }
+
         censoDB             = new CensoDB(database);
         censoTipoArmadoDB   = new CensoTipoArmadoDB(database);
         censoArchivoDB      = new CensoArchivoDB(database);

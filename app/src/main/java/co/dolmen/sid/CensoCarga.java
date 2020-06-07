@@ -636,7 +636,7 @@ public class CensoCarga extends AppCompatActivity {
         censoAsignadoList = new ArrayList<DataSpinner>();
         List<String> labels = new ArrayList<>();
         CensoAsignadoDB censoAsignadoDB = new CensoAsignadoDB(sqLiteDatabase);
-        Cursor cursor = censoAsignadoDB.consultarTodo(idDefaultMunicipio, idDefaultProceso);
+        Cursor cursor = censoAsignadoDB.consultarTodo(idDefaultMunicipio, idDefaultProceso,"C");
         DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
         censoAsignadoList.add(dataSpinner);
         labels.add(getText(R.string.seleccione).toString());

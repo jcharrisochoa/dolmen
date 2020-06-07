@@ -200,7 +200,7 @@
                             android:layout_height="65dp"
                             android:layout_weight="1"
                             android:background="@android:drawable/btn_default_small"
-                            android:drawableLeft="@android:drawable/ic_lock_idle_low_battery"
+                            android:drawableLeft="@mipmap/ic_launcher_carga"
                             android:text="@string/btn_censo_carga" />
 
                         <Button

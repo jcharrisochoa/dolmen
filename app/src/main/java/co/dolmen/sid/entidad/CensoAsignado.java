@@ -4,6 +4,8 @@ public class CensoAsignado {
     private int id;
     private int id_municipio;
     private int id_proceso_sgc;
+    private String tipo;
+
 
     public CensoAsignado(int id, int id_municipio, int id_proceso_sgc) {
         this.id = id;
@@ -35,5 +37,13 @@ public class CensoAsignado {
 
     public void setId_proceso_sgc(int id_proceso_sgc) {
         this.id_proceso_sgc = id_proceso_sgc;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 }

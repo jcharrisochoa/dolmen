@@ -1,6 +1,8 @@
 package co.dolmen.sid;
 
 import android.content.Context;
+import android.content.Intent;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -187,47 +189,85 @@ public class BaseDatos extends SQLiteOpenHelper {
 
         tipoConductorElectricoDB = new TipoConductorElectricoDB(sqLiteDatabase);
         tipoConductorElectricoDB.crearTabla();
-        Log.d("DataBase","create");
+        //Log.d("DataBase","create");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        tipologiaDB.borrarTabla();
-        mobiliarioDB.borrarTabla();
-        referenciaMobiliarioDB.borrarTabla();
-        claseViaDB.borrarTabla();
-        estadoMobiliarioDB.borrarTabla();
-        estadoActividadDB.borrarTabla();
-        vatiajeDB.borrarTabla();
-        unidadMedidaDB.borrarTabla();
-        tipoRedDB.borrarTabla();
-        tipoPosteDB.borrarTabla();
-        tipoInterseccionDB.borrarTabla();
-        tipoEspacioDB.borrarTabla();
-        municipioDB.borrarTabla();
-        procesoSgcDB.borrarTabla();
-        barrioDB.borrarTabla();
-        tipoTensionDB.borrarTabla();
-        retenidaPosteDB.borrarTabla();
-        contratoDB.borrarTabla();
-        normaConstruccionPosteDB.borrarTabla();
-        tipoEstructuraDB.borrarTabla();
-        normaConstruccionRedDB.borrarTabla();
-        elementoDB.borrarTabla();
-        censoDB.borrarTabla();
-        censoArchivoDB.borrarTabla();
-        censoTipoArmadoDB.borrarTabla();
-        censoAsignadoDB.borrarTabla();
-        tipoReporteDanoDB.borrarTabla();
-        programaDB.borrarTabla();
-        tipoActividadDB.borrarTabla();
-        sentidoDB.borrarTabla();
-        actaContratoDB.borrarTabla();
-        proveedorDB.borrarTabla();
-        tipoEscenarioDB.borrarTabla();
-        tipoConductorElectricoDB.borrarTabla();
-        //onCreate(sqLiteDatabase);
-        Log.d("DataBase","update");
+        try {
+            tipologiaDB = new TipologiaDB(sqLiteDatabase);
+            mobiliarioDB = new MobiliarioDB(sqLiteDatabase);
+            referenciaMobiliarioDB = new ReferenciaMobiliarioDB(sqLiteDatabase);
+            claseViaDB = new ClaseViaDB(sqLiteDatabase);
+            estadoMobiliarioDB = new EstadoMobiliarioDB(sqLiteDatabase);
+            estadoActividadDB = new EstadoActividadDB(sqLiteDatabase);
+            vatiajeDB = new VatiajeDB(sqLiteDatabase);
+            unidadMedidaDB = new UnidadMedidaDB(sqLiteDatabase);
+            tipoRedDB = new TipoRedDB(sqLiteDatabase);
+            tipoPosteDB = new TipoPosteDB(sqLiteDatabase);
+            tipoInterseccionDB = new TipoInterseccionDB(sqLiteDatabase);
+            tipoEspacioDB = new TipoEspacioDB(sqLiteDatabase);
+            municipioDB = new MunicipioDB(sqLiteDatabase);
+            procesoSgcDB = new ProcesoSgcDB(sqLiteDatabase);
+            barrioDB = new BarrioDB(sqLiteDatabase);
+            tipoTensionDB = new TipoTensionDB(sqLiteDatabase);
+            retenidaPosteDB = new RetenidaPosteDB(sqLiteDatabase);
+            contratoDB = new ContratoDB(sqLiteDatabase);
+            normaConstruccionPosteDB = new NormaConstruccionPosteDB(sqLiteDatabase);
+            tipoEstructuraDB = new TipoEstructuraDB(sqLiteDatabase);
+            normaConstruccionRedDB = new NormaConstruccionRedDB(sqLiteDatabase);
+            elementoDB = new ElementoDB(sqLiteDatabase);
+            censoDB = new CensoDB(sqLiteDatabase);
+            censoArchivoDB = new CensoArchivoDB(sqLiteDatabase);
+            censoTipoArmadoDB = new CensoTipoArmadoDB(sqLiteDatabase);
+            censoAsignadoDB = new CensoAsignadoDB(sqLiteDatabase);
+            tipoReporteDanoDB = new TipoReporteDanoDB(sqLiteDatabase);
+            programaDB = new ProgramaDB(sqLiteDatabase);
+            tipoActividadDB = new TipoActividadDB(sqLiteDatabase);
+            sentidoDB = new SentidoDB(sqLiteDatabase);
+            actaContratoDB = new ActaContratoDB(sqLiteDatabase);
+            proveedorDB = new ProveedorDB(sqLiteDatabase);
+            tipoEscenarioDB = new TipoEscenarioDB(sqLiteDatabase);
+            tipoConductorElectricoDB = new TipoConductorElectricoDB(sqLiteDatabase);
+
+            tipologiaDB.borrarTabla();
+            mobiliarioDB.borrarTabla();
+            referenciaMobiliarioDB.borrarTabla();
+            claseViaDB.borrarTabla();
+            estadoMobiliarioDB.borrarTabla();
+            estadoActividadDB.borrarTabla();
+            vatiajeDB.borrarTabla();
+            unidadMedidaDB.borrarTabla();
+            tipoRedDB.borrarTabla();
+            tipoPosteDB.borrarTabla();
+            tipoInterseccionDB.borrarTabla();
+            tipoEspacioDB.borrarTabla();
+            municipioDB.borrarTabla();
+            procesoSgcDB.borrarTabla();
+            barrioDB.borrarTabla();
+            tipoTensionDB.borrarTabla();
+            retenidaPosteDB.borrarTabla();
+            contratoDB.borrarTabla();
+            normaConstruccionPosteDB.borrarTabla();
+            tipoEstructuraDB.borrarTabla();
+            normaConstruccionRedDB.borrarTabla();
+            elementoDB.borrarTabla();
+            censoDB.borrarTabla();
+            censoArchivoDB.borrarTabla();
+            censoTipoArmadoDB.borrarTabla();
+            censoAsignadoDB.borrarTabla();
+            tipoReporteDanoDB.borrarTabla();
+            programaDB.borrarTabla();
+            tipoActividadDB.borrarTabla();
+            sentidoDB.borrarTabla();
+            actaContratoDB.borrarTabla();
+            proveedorDB.borrarTabla();
+            tipoEscenarioDB.borrarTabla();
+            tipoConductorElectricoDB.borrarTabla();
+            onCreate(sqLiteDatabase);
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
 
     }
 }
