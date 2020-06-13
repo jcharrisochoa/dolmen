@@ -612,6 +612,18 @@
                     android:background="@android:drawable/btn_dropdown" />
 
                 <TextView
+                    android:id="@+id/textView30"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Calibre del conductro de la conexión al Elemento" />
+
+                <Spinner
+                    android:id="@+id/slt_calibre_conexion_elemento"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/btn_dropdown" />
+
+                <TextView
                     android:id="@+id/textView11"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -826,6 +838,18 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@android:drawable/btn_dropdown" />
+
+                        <TextView
+                            android:id="@+id/textView31"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Calibre del Conductor Eléctrico*" />
+
+                        <Spinner
+                            android:id="@+id/slt_calibre_conductor_armado"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@android:drawable/btn_dropdown" />
 
                         <TextView
                             android:id="@+id/textView18"

@@ -29,6 +29,7 @@ public class Censo {
     private TipoRed tipoRed;
     private EstadoMobiliario estadoMobiliario;
     private TipoEscenario tipoEscenario;
+    private Calibre calibre;
 
     private String chkSwLuminariaVisible;
     private String chkSwPoseeLuminaria;
@@ -369,5 +370,13 @@ public class Censo {
 
     public void setMobiliarioMalPosicionado(String mobiliarioMalPosicionado) {
         this.mobiliarioMalPosicionado = mobiliarioMalPosicionado;
+    }
+
+    public Calibre getCalibre() {
+        return calibre;
+    }
+
+    public void setCalibre(Calibre calibre) {
+        this.calibre = calibre;
     }
 }

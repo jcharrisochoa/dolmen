@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
@@ -73,6 +74,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import co.dolmen.sid.entidad.Barrio;
+import co.dolmen.sid.entidad.Calibre;
 import co.dolmen.sid.entidad.Censo;
 import co.dolmen.sid.entidad.CensoTipoArmado;
 import co.dolmen.sid.entidad.ClaseVia;
@@ -92,6 +94,7 @@ import co.dolmen.sid.entidad.TipoRed;
 import co.dolmen.sid.entidad.TipoTension;
 import co.dolmen.sid.entidad.Tipologia;
 import co.dolmen.sid.modelo.BarrioDB;
+import co.dolmen.sid.modelo.CalibreDB;
 import co.dolmen.sid.modelo.CensoArchivoDB;
 import co.dolmen.sid.modelo.CensoAsignadoDB;
 import co.dolmen.sid.modelo.CensoDB;
@@ -144,6 +147,8 @@ public class CensoTecnico extends AppCompatActivity {
     Spinner sltNormaConstruccionRed;
     Spinner sltCensoAsignado;
     Spinner sltTipoEscenario;
+    Spinner sltCalibreConexionElemento;
+    Spinner sltCalibreTipoArmado;
     //--
     EditText txtElementoNo;
     EditText txtLatitud;
@@ -202,6 +207,8 @@ public class CensoTecnico extends AppCompatActivity {
     ArrayList<DataSpinner> normaConstruccionRedList;
     ArrayList<DataSpinner> censoAsignadoList;
     ArrayList<DataSpinner> tipoEscenarioList;
+    ArrayList<DataSpinner> calibreList;
+
     ComponenteNormaConstruccionRed componenteNormaConstruccionRed;
     //--
     ImageView imgFoto1;
@@ -325,6 +332,8 @@ public class CensoTecnico extends AppCompatActivity {
         sltNormaConstruccionRed = findViewById(R.id.slt_norma_construccion_red);
         sltCensoAsignado = findViewById(R.id.slt_censo_asignado);
         sltTipoEscenario = findViewById(R.id.slt_tipo_escenario);
+        sltCalibreConexionElemento = findViewById(R.id.slt_calibre_conexion_elemento);
+        sltCalibreTipoArmado        = findViewById(R.id.slt_calibre_conductor_armado);
         //--
         txtElementoNo = findViewById(R.id.txt_elemento_no);
         txtLatitud = findViewById(R.id.txt_latitud);
@@ -588,6 +597,10 @@ public class CensoTecnico extends AppCompatActivity {
                         tipoTensionArmado.setId(tipoTensionList.get(sltTipoTension.getSelectedItemPosition()).getId());
                         tipoTensionArmado.setDescripcion(tipoTensionList.get(sltTipoTension.getSelectedItemPosition()).getDescripcion());
 
+                        Calibre calibre = new Calibre();
+                        calibre.setId_calibre(calibreList.get(sltCalibreTipoArmado.getSelectedItemPosition()).getId());
+                        calibre.setDescripcion(calibreList.get(sltCalibreTipoArmado.getSelectedItemPosition()).getDescripcion());
+
                         NormaConstruccionRed normaConstruccionRed = new NormaConstruccionRed();
 
                         TipoEstructura tipoEstructuraArmado = normaConstruccionRed.getTipoEstructura();
@@ -600,6 +613,7 @@ public class CensoTecnico extends AppCompatActivity {
                         componenteNormaConstruccionRed = new ComponenteNormaConstruccionRed(
                                 tipoRedArmamdo,
                                 tipoTensionArmado,
+                                calibre,
                                 normaConstruccionRed
                         );
                         tipoArmadoList.add(componenteNormaConstruccionRed);
@@ -743,6 +757,7 @@ public class CensoTecnico extends AppCompatActivity {
         cargarRetenidaPoste(database);
         cargarCensoAsignado(database);
         cargarTipoEscenario(database);
+        cargarCalibre(database);
     }
 
     @Override
@@ -841,15 +856,20 @@ public class CensoTecnico extends AppCompatActivity {
                 alert.setMessage(R.string.alert_tipo_tension);
                 return false;
             } else {
-                if (tipoEstructuraList.get(sltTipoEstructura.getSelectedItemPosition()).getId() == 0) {
-                    alert.setMessage(R.string.alert_tipo_estructura);
+                if (calibreList.get(sltCalibreTipoArmado.getSelectedItemPosition()).getId() == 0) {
+                    alert.setMessage(R.string.alert_tipo_calibre);
                     return false;
                 } else {
-                    if (normaConstruccionRedList.get(sltNormaConstruccionRed.getSelectedItemPosition()).getId() == 0) {
-                        alert.setMessage(R.string.alert_norma_construccion_red);
+                    if (tipoEstructuraList.get(sltTipoEstructura.getSelectedItemPosition()).getId() == 0) {
+                        alert.setMessage(R.string.alert_tipo_estructura);
                         return false;
                     } else {
-                        return true;
+                        if (normaConstruccionRedList.get(sltNormaConstruccionRed.getSelectedItemPosition()).getId() == 0) {
+                            alert.setMessage(R.string.alert_norma_construccion_red);
+                            return false;
+                        } else {
+                            return true;
+                        }
                     }
                 }
             }
@@ -1354,6 +1374,35 @@ public class CensoTecnico extends AppCompatActivity {
     }
 
     //--
+    private void cargarCalibre(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        calibreList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        CalibreDB calibreDB = new CalibreDB(sqLiteDatabase);
+        Cursor cursor = calibreDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        calibreList.add(dataSpinner);
+
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    calibreList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltCalibreConexionElemento.setAdapter(dataAdapter);
+        sltCalibreTipoArmado.setAdapter(dataAdapter);
+    }
+
+    //--
     private void buscarElemento(SQLiteDatabase sqLiteDatabase) {
         if (txtBuscarElemento.getText().toString().trim().length() == 0) {
             alert.setTitle(R.string.titulo_alerta);
@@ -1369,82 +1418,86 @@ public class CensoTecnico extends AppCompatActivity {
             alertBuscarElemento = new AlertDialog.Builder(this);
             alertBuscarElemento.setCancelable(false);
             alertBuscarElemento.setIcon(android.R.drawable.ic_dialog_alert);
-            ElementoDB elementoDB = new ElementoDB(sqLiteDatabase);
-            Cursor cursorElemento = elementoDB.consultarElemento(idDefaultMunicipio, idDefaultProceso, parseInt(txtBuscarElemento.getText().toString()));
-            if (cursorElemento.getCount() == 0) {
-                alertBuscarElemento.setTitle(R.string.titulo_alerta);
-                alertBuscarElemento.setMessage(getText(R.string.alert_elemento_no_encontrado) + " sobre el Elemento: " + txtBuscarElemento.getText() + ". ¿Desea registrar el Elemento?");
-                alertBuscarElemento.setPositiveButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        txtElementoNo.setText(txtBuscarElemento.getText());
-                        elemento = new Elemento();
-                        elemento.setId(0);
-                        elemento.setElemento_no(txtBuscarElemento.getText().toString());
-                        resetFrm(false);
-                    }
-                });
-                alertBuscarElemento.setNegativeButton(R.string.btn_cancelar, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        resetFrm(true);
-                    }
-                });
-                alertBuscarElemento.create().show();
-
-            } else {
-                if(cursorElemento.getCount()>1){
-                    alertBuscarElemento.setMessage("Existe mas de un elemento con el mismo número,Seleccione");
-                    alertBuscarElemento.setNeutralButton("Aceptar",null);
+            try {
+                ElementoDB elementoDB = new ElementoDB(sqLiteDatabase);
+                Cursor cursorElemento = elementoDB.consultarElemento(idDefaultMunicipio, idDefaultProceso, parseInt(txtBuscarElemento.getText().toString()));
+                if (cursorElemento.getCount() == 0) {
+                    alertBuscarElemento.setTitle(R.string.titulo_alerta);
+                    alertBuscarElemento.setMessage(getText(R.string.alert_elemento_no_encontrado) + " sobre el Elemento: " + txtBuscarElemento.getText() + ". ¿Desea registrar el Elemento?");
+                    alertBuscarElemento.setPositiveButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            txtElementoNo.setText(txtBuscarElemento.getText());
+                            elemento = new Elemento();
+                            elemento.setId(0);
+                            elemento.setElemento_no(txtBuscarElemento.getText().toString());
+                            resetFrm(false);
+                        }
+                    });
+                    alertBuscarElemento.setNegativeButton(R.string.btn_cancelar, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            resetFrm(true);
+                        }
+                    });
                     alertBuscarElemento.create().show();
-                }else {
-                    cursorElemento.moveToFirst();
 
-                    elemento = new Elemento();
-                    elemento.setId(Integer.parseInt(cursorElemento.getString(cursorElemento.getColumnIndex("_id"))));
-                    elemento.setElemento_no(cursorElemento.getString(cursorElemento.getColumnIndex("elemento_no")));
+                } else {
+                    if (cursorElemento.getCount() > 1) {
+                        alertBuscarElemento.setMessage("Existe mas de un elemento con el mismo número,Seleccione");
+                        alertBuscarElemento.setNeutralButton("Aceptar", null);
+                        alertBuscarElemento.create().show();
+                    } else {
+                        cursorElemento.moveToFirst();
 
-                    EstadoMobiliario estadoMobiliario = new EstadoMobiliario();
-                    estadoMobiliario.setIdEstadoMobiliario(cursorElemento.getInt(cursorElemento.getColumnIndex("id_estado_mobiliario")));
+                        elemento = new Elemento();
+                        elemento.setId(Integer.parseInt(cursorElemento.getString(cursorElemento.getColumnIndex("_id"))));
+                        elemento.setElemento_no(cursorElemento.getString(cursorElemento.getColumnIndex("elemento_no")));
 
-                    elemento.setEstadoMobiliario(estadoMobiliario);
+                        EstadoMobiliario estadoMobiliario = new EstadoMobiliario();
+                        estadoMobiliario.setIdEstadoMobiliario(cursorElemento.getInt(cursorElemento.getColumnIndex("id_estado_mobiliario")));
 
-                    swLuminariaVisible.setEnabled(false);
-                    swLuminariaVisible.setChecked(true);
-                    swPoseeLuminaria.setEnabled(false);
-                    swPoseeLuminaria.setChecked(true);
+                        elemento.setEstadoMobiliario(estadoMobiliario);
 
-                    txtElementoNo.setText(cursorElemento.getString(cursorElemento.getColumnIndex("elemento_no")));
-                    txtDireccion.setText(cursorElemento.getString(cursorElemento.getColumnIndex("direccion")));
+                        swLuminariaVisible.setEnabled(false);
+                        swLuminariaVisible.setChecked(true);
+                        swPoseeLuminaria.setEnabled(false);
+                        swPoseeLuminaria.setChecked(true);
 
-                    idMobiliarioBusqueda = cursorElemento.getInt(cursorElemento.getColumnIndex("id_mobiliario"));
-                    idReferenciaBusqueda = cursorElemento.getInt(cursorElemento.getColumnIndex("id_referencia"));
+                        txtElementoNo.setText(cursorElemento.getString(cursorElemento.getColumnIndex("elemento_no")));
+                        txtDireccion.setText(cursorElemento.getString(cursorElemento.getColumnIndex("direccion")));
 
-                    //tipologiaList
-                    for (int i = 0; i < tipologiaList.size(); i++) {
-                        if (tipologiaList.get(i).getId() == cursorElemento.getInt(cursorElemento.getColumnIndex("id_tipologia"))) {
-                            sltTipologia.setAdapter(sltTipologia.getAdapter());
-                            sltTipologia.setSelection(i);
+                        idMobiliarioBusqueda = cursorElemento.getInt(cursorElemento.getColumnIndex("id_mobiliario"));
+                        idReferenciaBusqueda = cursorElemento.getInt(cursorElemento.getColumnIndex("id_referencia"));
+
+                        //tipologiaList
+                        for (int i = 0; i < tipologiaList.size(); i++) {
+                            if (tipologiaList.get(i).getId() == cursorElemento.getInt(cursorElemento.getColumnIndex("id_tipologia"))) {
+                                sltTipologia.setAdapter(sltTipologia.getAdapter());
+                                sltTipologia.setSelection(i);
+                            }
+                        }
+                        // this.cargarMobiliario(database);
+                        // this.cargarReferencia(database);
+                        //EstadoList
+                        for (int i = 0; i < estadoMobiliarioList.size(); i++) {
+                            if (estadoMobiliarioList.get(i).getId() == cursorElemento.getInt(cursorElemento.getColumnIndex("id_estado_mobiliario"))) {
+                                sltEstadoMobiliario.setSelection(i);
+                            }
+                        }
+                        //barrioList
+                        for (int i = 0; i < barrioList.size(); i++) {
+                            if (barrioList.get(i).getId() == cursorElemento.getInt(cursorElemento.getColumnIndex("id_barrio"))) {
+                                sltBarrio.setSelection(i);
+                            }
                         }
                     }
-                    // this.cargarMobiliario(database);
-                    // this.cargarReferencia(database);
-                    //EstadoList
-                    for (int i = 0; i < estadoMobiliarioList.size(); i++) {
-                        if (estadoMobiliarioList.get(i).getId() == cursorElemento.getInt(cursorElemento.getColumnIndex("id_estado_mobiliario"))) {
-                            sltEstadoMobiliario.setSelection(i);
-                        }
-                    }
-                    //barrioList
-                    for (int i = 0; i < barrioList.size(); i++) {
-                        if (barrioList.get(i).getId() == cursorElemento.getInt(cursorElemento.getColumnIndex("id_barrio"))) {
-                            sltBarrio.setSelection(i);
-                        }
-                    }
+
                 }
-
+                cursorElemento.close();
+            }catch (SQLException e){
+               Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
             }
-            cursorElemento.close();
         }
     }
 
@@ -1673,6 +1726,8 @@ public class CensoTecnico extends AppCompatActivity {
         sltTipoRetenida.setSelection(0);
         sltTipoRed.setSelection(0);
         sltTipoTension.setSelection(0);
+        sltCalibreConexionElemento.setSelection(0);
+        sltCalibreTipoArmado.setSelection(0);
 
         txtDireccion.setText("");
         txtLatitud.setText("");
@@ -1822,11 +1877,15 @@ public class CensoTecnico extends AppCompatActivity {
         TipoEscenario tipoEscenario = new TipoEscenario();
         tipoEscenario.setId(tipoEscenarioList.get(sltTipoEscenario.getSelectedItemPosition()).getId());
 
+        Calibre calibre = new Calibre();
+        calibre.setId_calibre(calibreList.get(sltCalibreConexionElemento.getSelectedItemPosition()).getId());
+
         Censo censo = new Censo();
         censo.setId_censo(censoAsignadoList.get(sltCensoAsignado.getSelectedItemPosition()).getId());
         censo.setElemento(elemento);
         censo.setClaseVia(claseVia);
         censo.setTipoRed(tipoRed);
+        censo.setCalibre(calibre);
         censo.setEstadoMobiliario(estadoMobiliario);
         //Poste
         censo.setRetenidaPoste(retenidaPoste);
@@ -1876,6 +1935,9 @@ public class CensoTecnico extends AppCompatActivity {
                 TipoRed tipoRedArmado = new TipoRed();
                 tipoRedArmado.setId(tipoArmadoList.get(n).getTipoRed().getId());
 
+                Calibre calibreArmado = new Calibre();
+                calibreArmado.setId_calibre(tipoArmadoList.get(n).getCalibre().getId_calibre());
+
                 NormaConstruccionRed normaConstruccionRedTipoArmado = new NormaConstruccionRed();
                 normaConstruccionRedTipoArmado.setId(tipoArmadoList.get(n).getNormaConstruccionRed().getId());
 
@@ -1883,6 +1945,7 @@ public class CensoTecnico extends AppCompatActivity {
                 censoTipoArmado.setId_censo_tecnico(censo.getLastId());
                 censoTipoArmado.setTipoRed(tipoRedArmado);
                 censoTipoArmado.setNormaConstruccionRed(normaConstruccionRedTipoArmado);
+                censoTipoArmado.setCalibre(calibreArmado);
 
                 CensoTipoArmadoDB censoTipoArmadoDB = new CensoTipoArmadoDB(sqLiteDatabase);
                 censoTipoArmadoDB.agregarDatos(censoTipoArmado);
@@ -1976,6 +2039,7 @@ public class CensoTecnico extends AppCompatActivity {
         requestParams.put("mobiliario_mal_posicionado",mobiliarioMalPosicionado);
         requestParams.put("mobiliario_obsoleto",mobiliarioObsoleto);
         requestParams.put("mobiliario_sin_bombillo",sinBombillo);
+        requestParams.put("id_calibre",calibreList.get(sltCalibreConexionElemento.getSelectedItemPosition()).getId());
         requestParams.put("foto_1", encodeStringFoto_1);
         requestParams.put("foto_2", encodeStringFoto_2);
         int index = 0;
@@ -1984,6 +2048,7 @@ public class CensoTecnico extends AppCompatActivity {
             Map<String, Integer> map = new HashMap<String, Integer>();
             map.put("id_tipo_red", tipoArmadoList.get(index).getTipoRed().getId());
             map.put("id_tipo_tension", tipoArmadoList.get(index).getTipoTension().getId());
+            map.put("id_calibre", tipoArmadoList.get(index).getCalibre().getId_calibre());
             map.put("id_tipo_estructura", tipoArmadoList.get(index).getNormaConstruccionRed().getTipoEstructura().getId());
             map.put("id_norma_construccion", tipoArmadoList.get(index).getNormaConstruccionRed().getId());
             list.add(map);
@@ -2023,10 +2088,10 @@ public class CensoTecnico extends AppCompatActivity {
                     //Log.d("resultado", "statusCode:" + statusCode + ", mensaje:" + mensaje+" ,respuesta:"+respuesta);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    //Log.d("resultado","Error: onsuccess"+e.getMessage()+"respuesta:"+respuesta);
+                    Log.d("resultado","Error: onsuccess"+e.getMessage()+"respuesta:"+respuesta);
                     Toast.makeText(getApplicationContext(), getText(R.string.alert_error_ejecucion) + " Servicio Web, Código:" + statusCode, Toast.LENGTH_SHORT).show();
                 }
-                resetFrm(true);
+                //resetFrm(true);
                 btnGuardar.setEnabled(true);
                 btnCancelar.setEnabled(true);
                 progressBarGuardarCenso.setVisibility(View.INVISIBLE);

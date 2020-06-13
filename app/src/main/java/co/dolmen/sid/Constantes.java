@@ -10,7 +10,7 @@ public final class Constantes {
     public static final int MEDIA_TYPE_IMAGE = 1;
 
     //--Base Datos
-    public static final int VERSION_BASEDATOS = 3;
+    public static final int VERSION_BASEDATOS = 5;
     public static int OLD_VERSION_BASEDATOS;
     public static final String NOMBRE_BASEDATOS = "sid.db";
 
@@ -48,6 +48,7 @@ public final class Constantes {
     public static final String TABLA_TIPO_REPORTE_DANO          = "tipo_reporte_dano";
     public static final String TABLA_TIPO_ESCENARIO             = "tipo_escenario";
     public static final String TABLA_CONDUCTOR_ELECTRICO        = "tipo_conductor_electrico";
+    public static final String TABLA_CALIBRE                    = "calibre";
     public static final String TABLA_TIPO_STOCK                = "tipo_stock";
     public static final String TABLA_ARTICULO                  = "articulo";
     public static final String TABLA_CENTRO_COSTO              = "centro_costo";

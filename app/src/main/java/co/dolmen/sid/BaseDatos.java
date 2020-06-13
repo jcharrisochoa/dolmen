@@ -9,6 +9,7 @@ import android.util.Log;
 
 import co.dolmen.sid.modelo.ActaContratoDB;
 import co.dolmen.sid.modelo.BarrioDB;
+import co.dolmen.sid.modelo.CalibreDB;
 import co.dolmen.sid.modelo.CensoArchivoDB;
 import co.dolmen.sid.modelo.CensoAsignadoDB;
 import co.dolmen.sid.modelo.CensoDB;
@@ -78,6 +79,7 @@ public class BaseDatos extends SQLiteOpenHelper {
     private ProveedorDB proveedorDB;
     private TipoEscenarioDB tipoEscenarioDB;
     private TipoConductorElectricoDB tipoConductorElectricoDB;
+    private CalibreDB calibreDB;
 
 
     public BaseDatos(Context context){
@@ -189,6 +191,9 @@ public class BaseDatos extends SQLiteOpenHelper {
 
         tipoConductorElectricoDB = new TipoConductorElectricoDB(sqLiteDatabase);
         tipoConductorElectricoDB.crearTabla();
+
+        calibreDB  = new CalibreDB(sqLiteDatabase);
+        calibreDB.crearTabla();
         //Log.d("DataBase","create");
     }
 
@@ -229,6 +234,7 @@ public class BaseDatos extends SQLiteOpenHelper {
             proveedorDB = new ProveedorDB(sqLiteDatabase);
             tipoEscenarioDB = new TipoEscenarioDB(sqLiteDatabase);
             tipoConductorElectricoDB = new TipoConductorElectricoDB(sqLiteDatabase);
+            calibreDB  = new CalibreDB(sqLiteDatabase);
 
             tipologiaDB.borrarTabla();
             mobiliarioDB.borrarTabla();
@@ -264,6 +270,7 @@ public class BaseDatos extends SQLiteOpenHelper {
             proveedorDB.borrarTabla();
             tipoEscenarioDB.borrarTabla();
             tipoConductorElectricoDB.borrarTabla();
+            calibreDB.borrarTabla();
             onCreate(sqLiteDatabase);
         }catch (SQLException e){
             e.printStackTrace();

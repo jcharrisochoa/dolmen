@@ -5,10 +5,10 @@ android {
     buildToolsVersion "29.0.0"
     defaultConfig {
         applicationId "co.dolmen.sid"
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 29
-        versionCode 6
-        versionName '3.3'
+        versionCode 9
+        versionName '3.5'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

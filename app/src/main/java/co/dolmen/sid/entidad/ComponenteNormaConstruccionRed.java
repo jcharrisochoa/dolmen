@@ -5,11 +5,13 @@ public class ComponenteNormaConstruccionRed {
     NormaConstruccionRed normaConstruccionRed;
     TipoRed tipoRed;
     TipoTension tipoTension;
+    Calibre calibre;
 
-    public ComponenteNormaConstruccionRed(TipoRed tipoRed, TipoTension tipoTension,NormaConstruccionRed normaConstruccionRed) {
+    public ComponenteNormaConstruccionRed(TipoRed tipoRed, TipoTension tipoTension,Calibre calibre,NormaConstruccionRed normaConstruccionRed) {
         this.normaConstruccionRed = normaConstruccionRed;
         this.tipoRed = tipoRed;
         this.tipoTension = tipoTension;
+        this.calibre = calibre;
     }
 
     public NormaConstruccionRed getNormaConstruccionRed() {
@@ -36,4 +38,11 @@ public class ComponenteNormaConstruccionRed {
         this.tipoTension = tipoTension;
     }
 
+    public Calibre getCalibre() {
+        return calibre;
+    }
+
+    public void setCalibre(Calibre calibre) {
+        this.calibre = calibre;
+    }
 }

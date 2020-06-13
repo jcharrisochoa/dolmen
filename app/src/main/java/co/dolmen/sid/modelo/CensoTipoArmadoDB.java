@@ -28,7 +28,8 @@ public class CensoTipoArmadoDB extends CensoTipoArmado implements DatabaseDLM,Da
                         "id INTEGER PRIMARY KEY ASC NOT NULL,"+
                         "id_censo_tecnico INTEGER NOT NULL,"+
                         "id_tipo_red INTEGER NOT NULL,"+
-                        "id_norma_construccion_red INTEGER NOT NULL)"
+                        "id_norma_construccion_red INTEGER NOT NULL,"+
+                        "id_calibre INTEGER NOT NULL )"
         );
     }
 
@@ -45,6 +46,7 @@ public class CensoTipoArmadoDB extends CensoTipoArmado implements DatabaseDLM,Da
             contentValues.put("id_censo_tecnico", censoTipoArmado.getId_censo_tecnico());
             contentValues.put("id_tipo_red", censoTipoArmado.getTipoRed().getId());
             contentValues.put("id_norma_construccion_red", censoTipoArmado.getNormaConstruccionRed().getId());
+            contentValues.put("id_calibre", censoTipoArmado.getCalibre().getId_calibre());
             try {
                 db.insertWithOnConflict(Constantes.TABLA_CENSO_TECNICO_TIPO_ARMADO, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
             }catch (SQLiteException e){

@@ -4,6 +4,7 @@ public class CensoTipoArmado {
     private  long id_censo_tecnico;
     private  TipoRed tipoRed;
     private  NormaConstruccionRed normaConstruccionRed;
+    private Calibre calibre;
 
     public CensoTipoArmado(){
 
@@ -31,5 +32,13 @@ public class CensoTipoArmado {
 
     public void setNormaConstruccionRed(NormaConstruccionRed normaConstruccionRed) {
         this.normaConstruccionRed = normaConstruccionRed;
+    }
+
+    public Calibre getCalibre() {
+        return calibre;
+    }
+
+    public void setCalibre(Calibre calibre) {
+        this.calibre = calibre;
     }
 }

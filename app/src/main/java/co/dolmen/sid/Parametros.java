@@ -35,6 +35,7 @@ import co.dolmen.sid.entidad.TipoTension;
 import co.dolmen.sid.entidad.Tipologia;
 import co.dolmen.sid.modelo.ActaContratoDB;
 import co.dolmen.sid.modelo.BarrioDB;
+import co.dolmen.sid.modelo.CalibreDB;
 import co.dolmen.sid.modelo.CensoAsignadoDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
 import co.dolmen.sid.modelo.ContratoDB;
@@ -729,6 +730,20 @@ public class Parametros extends AppCompatActivity {
                 progressBar.setProgress(progress);
                 txt_porcentaje_carga.setText("Actualizando Tipo Conductor Electrico "+progress+"%");
                 Log.d("parametros","->Conductor Electrico:"+progress+"%");
+            }
+
+            //--Calibre
+            CalibreDB calibreDB = new CalibreDB(database);
+            JSONArray arrayCalibre = parametros.getJSONArray("calibre");
+            for (int i = 0;i<arrayCalibre.length();i++){
+                JSONObject jObjectCalibre = arrayCalibre.getJSONObject(i);
+                calibreDB.setId_calibre(jObjectCalibre.getInt("id"));
+                calibreDB.setDescripcion(jObjectCalibre.getString("descripcion"));
+                calibreDB.agregarDatos(calibreDB);
+                progress = (int)Math.round((double)(i+1)/arrayCalibre.length()*100);
+                progressBar.setProgress(progress);
+                txt_porcentaje_carga.setText("Actualizando Calibre "+progress+"%");
+                Log.d("parametros","->Tipo Tension:"+progress+"%");
             }
 
             database.close();

@@ -127,22 +127,21 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
         this.sql = "SELECT e._id,e.elemento_no,e.direccion,e.id_municipio,e.id_barrio,e.id_proceso_sgc,e.id_tipologia,e.id_mobiliario,e.id_referencia,e.id_estado_mobiliario," +
                     "tm.descripcion as tipologia,mb.descripcion as mobiliario,rm.descripcion as referencia,em.descripcion as estado_mobiliario,b.descripcion as barrio " +
                     "FROM "+
-                        Constantes.TABLA_ELEMENTO+" e,"+
+                        Constantes.TABLA_ELEMENTO+" e LEFT JOIN "+
+                        Constantes.TABLA_BARRIO+" b ON (e.id_barrio = b._id )," +
                         Constantes.TABLA_TIPOLOGIA_MOBILIARIO+" tm,"+
                         Constantes.TABLA_MOBILIARIO+" mb,"+
                         Constantes.TABLA_REFERNCIA_MOBILIARIO+" rm,"+
-                        Constantes.TABLA_ESTADO_MOBILIARIO+" em,"+
-                        Constantes.TABLA_BARRIO+" b " +
-                    "WHERE " +
+                        Constantes.TABLA_ESTADO_MOBILIARIO+" em "+
+                    " WHERE " +
                     "e.id_tipologia = tm._id and " +
                     "e.id_mobiliario = mb._id and " +
                     "e.id_referencia = rm._id and " +
                     "e.id_estado_mobiliario = em._id and " +
-                    "e.id_barrio = b._id and " +
                     "e.id_municipio="+idMunicipio+" and " +
                     "e.id_proceso_sgc="+idProceso+" and " +
                     "e.elemento_no="+elementoNo;
-
+        //Log.d("respuesta",""+this.sql);
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }
