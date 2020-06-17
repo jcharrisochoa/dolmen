@@ -2091,7 +2091,7 @@ public class CensoTecnico extends AppCompatActivity {
                     Log.d("resultado","Error: onsuccess"+e.getMessage()+"respuesta:"+respuesta);
                     Toast.makeText(getApplicationContext(), getText(R.string.alert_error_ejecucion) + " Servicio Web, Código:" + statusCode, Toast.LENGTH_SHORT).show();
                 }
-                //resetFrm(true);
+                resetFrm(true);
                 btnGuardar.setEnabled(true);
                 btnCancelar.setEnabled(true);
                 progressBarGuardarCenso.setVisibility(View.INVISIBLE);

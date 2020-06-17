@@ -7,8 +7,8 @@ android {
         applicationId "co.dolmen.sid"
         minSdkVersion 16
         targetSdkVersion 29
-        versionCode 9
-        versionName '3.5'
+        versionCode 10
+        versionName '3.7'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
