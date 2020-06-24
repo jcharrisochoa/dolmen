@@ -112,11 +112,13 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
             contentValues.put("zona",censo.getZona());
             contentValues.put("serial_medidor",0);
             contentValues.put("lectura_medidor",0);
+            contentValues.put("id_calibre",0);
             contentValues.put("mobiliario_buen_estado",censo.getChkSwMobiliarioBuenEstado());
 
             try {
                 lastId = db.insertWithOnConflict(Constantes.TABLA_CENSO_TECNICO, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
                 censo.setLastId(lastId);
+                //Log.d("sql","-"+contentValues);
             }catch (SQLiteException e){
                 Log.d("ErrorI",""+e.getMessage());
                 return false;

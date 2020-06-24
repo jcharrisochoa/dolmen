@@ -362,7 +362,7 @@ public class CensoCarga extends AppCompatActivity {
                         guardarFormulario('R', database);
                     } else {
                         alert.setTitle(R.string.titulo_alerta);
-                        alert.setMessage(R.string.alert_conexion);
+                        alert.setMessage(getString(R.string.alert_conexion) +" los datos se guardarán en el dispositivo");
                         alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {

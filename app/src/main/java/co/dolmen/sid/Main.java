@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -11,10 +13,15 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Main extends AppCompatActivity {
+    //SQLiteOpenHelper db;
+    //SQLiteDatabase database;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //db = new BaseDatos(Main.this);
+        //database = db.getWritableDatabase();
+
         SharedPreferences config = getSharedPreferences("config",MODE_PRIVATE);
         Boolean userLogged      = config.getBoolean("usuario_logueado",false);
         String nombre_usuario   = config.getString("nombre_usuario","");
@@ -27,7 +34,7 @@ public class Main extends AppCompatActivity {
             t.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    //Toast.makeText(Main.this,"Menu",Toast.LENGTH_LONG).show();
+                    //Constantes.OLD_VERSION_BASEDATOS = database.getVersion();
                     Intent i = new Intent(Main.this,ConfigurarArea.class);
                     startActivity(i);
                     finish();

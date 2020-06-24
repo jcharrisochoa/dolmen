@@ -95,6 +95,7 @@ public class Parametros extends AppCompatActivity {
         db = new BaseDatos(Parametros.this);
         database = db.getWritableDatabase();
         Constantes.OLD_VERSION_BASEDATOS = database.getVersion();
+        //Log.d("versiondb","db:"+Constantes.OLD_VERSION_BASEDATOS);
     }
     private void cargarParametros(final Integer id_usuario){
         final AsyncHttpClient client = new AsyncHttpClient();
