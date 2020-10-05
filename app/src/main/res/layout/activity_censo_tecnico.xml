@@ -366,7 +366,7 @@
                     android:id="@+id/textView28"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Tipo Escenario" />
+                    android:text="Tipo Espacio" />
 
                 <Spinner
                     android:id="@+id/slt_tipo_escenario"

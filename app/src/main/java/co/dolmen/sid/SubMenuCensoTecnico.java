@@ -68,6 +68,14 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
     ProgressBar progressBar;
     EditText txtLog;
     int cant = 0;
+    String limite = "50";
+
+    /*AsyncHttpClientConfig configHttp;
+
+    configHttp = new AsyncHttpClientConfig.Builder().setMaximumConnectionsPerHost(10)
+                .setMaximumConnectionsTotal(100)
+                .build();
+    */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +84,7 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
         setTitle(getText(R.string.titulo_menu_censo_tecnico));
 
         alert = new AlertDialog.Builder(this);
+
 
         conn = new BaseDatos(SubMenuCensoTecnico.this);
         database = conn.getReadableDatabase();
@@ -137,10 +146,11 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
                 sincronizar();
             }
         });
-        btnSincronizar.setText(getText(R.string.btn_sincronizar)+" ("+cant+")");
+        btnSincronizar.setText( getText(R.string.btn_sincronizar)+" ("+limite+" de "+cant+")");
     }
 
     private void sincronizar(){
+
         setButton(false);
         final String tag = "Log:\n";
         ConnectivityManager conn = (ConnectivityManager) getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
@@ -152,7 +162,7 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
             if (censoDB.consultarTodo().getCount() > 0) {
                 try {
                     principal.put("json",armarJson());
-                   // Log.d("JSON",principal.toString());
+                    //Log.d("JSON",principal.toString());
                     final AsyncHttpClient client = new AsyncHttpClient();
                     StringEntity jsonParams = new StringEntity(principal.toString(), "UTF-8");
                     jsonParams.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
@@ -192,7 +202,7 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
                                     }
                                 }
                                 visualizarLogs(logs,jsonResponse.getString("mensaje"));
-                                btnSincronizar.setText(getText(R.string.btn_sincronizar)+" ("+censoDB.consultarTodo().getCount()+")");
+                                btnSincronizar.setText(getText(R.string.btn_sincronizar)+" ("+limite+" de "+censoDB.consultarTodo().getCount()+")");
                                 setButton(true);
 
                             }catch (JSONException e){
@@ -321,6 +331,7 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
                         JSONObject jsonTipoArmado = new JSONObject();
                         jsonTipoArmado.put("id_tipo_red",cursorTipoArmado.getInt(cursorTipoArmado.getColumnIndex("id_tipo_red")));
                         jsonTipoArmado.put("id_norma_construccion",cursorTipoArmado.getInt(cursorTipoArmado.getColumnIndex("id_norma_construccion_red")));
+                        jsonTipoArmado.put("id_calibre",cursorTipoArmado.getInt(cursorTipoArmado.getColumnIndex("id_calibre")));
                         jsonArrayTipoArmado.put(jsonTipoArmado);
                     } while (cursorTipoArmado.moveToNext());
                 }

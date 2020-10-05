@@ -587,36 +587,51 @@ public class CensoTecnico extends AppCompatActivity {
         btnAgregarArmadoRed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                boolean sw = true;
                 if (validarArmadoRed()) {
                     if (tipoArmadoList.size() < 3) {
-                        TipoRed tipoRedArmamdo = new TipoRed();
-                        tipoRedArmamdo.setId(tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId());
-                        tipoRedArmamdo.setDescripcion(tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getDescripcion());
+                        //--Consultar si el tipo de armado ya existe en el array
+                        int index = 0;
+                        while (index < tipoArmadoList.size()) {
+                            if (tipoArmadoList.get(index).getTipoRed().getId() == tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId()
+                                    &&
+                                    tipoArmadoList.get(index).getNormaConstruccionRed().getId() == normaConstruccionRedList.get(sltNormaConstruccionRed.getSelectedItemPosition()).getId()
+                            ) {
+                                sw = false;
+                                break;
+                            }
+                            index++;
+                        }
+                        if (sw){
+                            TipoRed tipoRedArmamdo = new TipoRed();
+                            tipoRedArmamdo.setId(tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId());
+                            tipoRedArmamdo.setDescripcion(tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getDescripcion());
 
-                        TipoTension tipoTensionArmado = new TipoTension();
-                        tipoTensionArmado.setId(tipoTensionList.get(sltTipoTension.getSelectedItemPosition()).getId());
-                        tipoTensionArmado.setDescripcion(tipoTensionList.get(sltTipoTension.getSelectedItemPosition()).getDescripcion());
+                            TipoTension tipoTensionArmado = new TipoTension();
+                            tipoTensionArmado.setId(tipoTensionList.get(sltTipoTension.getSelectedItemPosition()).getId());
+                            tipoTensionArmado.setDescripcion(tipoTensionList.get(sltTipoTension.getSelectedItemPosition()).getDescripcion());
 
-                        Calibre calibre = new Calibre();
-                        calibre.setId_calibre(calibreList.get(sltCalibreTipoArmado.getSelectedItemPosition()).getId());
-                        calibre.setDescripcion(calibreList.get(sltCalibreTipoArmado.getSelectedItemPosition()).getDescripcion());
+                            Calibre calibre = new Calibre();
+                            calibre.setId_calibre(calibreList.get(sltCalibreTipoArmado.getSelectedItemPosition()).getId());
+                            calibre.setDescripcion(calibreList.get(sltCalibreTipoArmado.getSelectedItemPosition()).getDescripcion());
 
-                        NormaConstruccionRed normaConstruccionRed = new NormaConstruccionRed();
+                            NormaConstruccionRed normaConstruccionRed = new NormaConstruccionRed();
 
-                        TipoEstructura tipoEstructuraArmado = normaConstruccionRed.getTipoEstructura();
-                        tipoEstructuraArmado.setId(tipoEstructuraList.get(sltTipoEstructura.getSelectedItemPosition()).getId());
-                        tipoEstructuraArmado.setDescripcion(tipoEstructuraList.get(sltTipoEstructura.getSelectedItemPosition()).getDescripcion());
+                            TipoEstructura tipoEstructuraArmado = normaConstruccionRed.getTipoEstructura();
+                            tipoEstructuraArmado.setId(tipoEstructuraList.get(sltTipoEstructura.getSelectedItemPosition()).getId());
+                            tipoEstructuraArmado.setDescripcion(tipoEstructuraList.get(sltTipoEstructura.getSelectedItemPosition()).getDescripcion());
 
-                        normaConstruccionRed.setId(normaConstruccionRedList.get(sltNormaConstruccionRed.getSelectedItemPosition()).getId());
-                        normaConstruccionRed.setDescripcion(normaConstruccionRedList.get(sltNormaConstruccionRed.getSelectedItemPosition()).getDescripcion());
+                            normaConstruccionRed.setId(normaConstruccionRedList.get(sltNormaConstruccionRed.getSelectedItemPosition()).getId());
+                            normaConstruccionRed.setDescripcion(normaConstruccionRedList.get(sltNormaConstruccionRed.getSelectedItemPosition()).getDescripcion());
 
-                        componenteNormaConstruccionRed = new ComponenteNormaConstruccionRed(
-                                tipoRedArmamdo,
-                                tipoTensionArmado,
-                                calibre,
-                                normaConstruccionRed
-                        );
-                        tipoArmadoList.add(componenteNormaConstruccionRed);
+                            componenteNormaConstruccionRed = new ComponenteNormaConstruccionRed(
+                                    tipoRedArmamdo,
+                                    tipoTensionArmado,
+                                    calibre,
+                                    normaConstruccionRed
+                            );
+                            tipoArmadoList.add(componenteNormaConstruccionRed);
+                        }
                     }
                     mostrarTablaArmado();
 
