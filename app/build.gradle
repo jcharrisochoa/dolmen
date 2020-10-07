@@ -7,8 +7,8 @@ android {
         applicationId "co.dolmen.sid"
         minSdkVersion 16
         targetSdkVersion 29
-        versionCode 11
-        versionName '3.8'
+        versionCode 12
+        versionName '3.9'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -16,6 +16,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
     }
 }
 

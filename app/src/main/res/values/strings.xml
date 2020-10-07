@@ -61,7 +61,7 @@
     <string name="btn_sincronizar">Sincronizar Pendientes</string>
     <string name="btn_registrar_elemento">Registrar Elemento</string>
     <string name="btn_buscar_elemento">Registrar Elemento</string>
-
+    <string name="btn_mis_actividades">Mis Actividades</string>
 
     <!--Alertas Generales-->
     <string name="titulo_alerta">Atención</string>

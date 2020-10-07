@@ -1,6 +1,7 @@
 package co.dolmen.sid;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 
 public class ListaActividadActivity extends AppCompatActivity {

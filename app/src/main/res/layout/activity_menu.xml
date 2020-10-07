@@ -204,6 +204,16 @@
                             android:text="@string/btn_censo_carga" />
 
                         <Button
+                            android:id="@+id/btn_mis_actividades"
+                            android:layout_width="match_parent"
+                            android:layout_height="65dp"
+                            android:layout_weight="1"
+                            android:background="@android:drawable/btn_default_small"
+                            android:drawableLeft="@android:drawable/ic_menu_myplaces"
+                            android:text="@string/btn_mis_actividades"
+                            android:visibility="visible" />
+
+                        <Button
                             android:id="@+id/btn_salir"
                             android:layout_width="match_parent"
                             android:layout_height="65dp"
