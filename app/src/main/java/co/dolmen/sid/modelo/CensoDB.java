@@ -74,7 +74,9 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
                         "mobiliario_sin_bombillo VARCHAR(1) NOT NULL DEFAULT 'N',"+
                         "tipo_propietario_transformador VARCHAR(2) NOT NULL DEFAULT 'PV',"+
                         "id_tipo_conductor_electrico INTEGER DEFAULT NULL,"+
-                        "id_calibre INTEGER NOT NULL"+
+                        "id_calibre INTEGER NOT NULL,"+
+                        "ancho_via INTEGER NOT NULL DEFAULT 0,"+
+                        "transformador_exclusivo_ap VARCHAR(1) NOT NULL DEFAULT 'N'"+
                         ");"
         );
     }
@@ -182,6 +184,8 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
             contentValues.put("mobiliario_obsoleto",censo.getMobiliarioObsoleto());
             contentValues.put("mobiliario_sin_bombillo",censo.getSinBombillo());
             contentValues.put("id_calibre",censo.getCalibre().getId_calibre());
+            contentValues.put("ancho_via",censo.getAncho_via());
+            contentValues.put("transformador_exclusivo_ap",censo.getChkSwTransformadorExclusivoAP());
 
             try {
                 lastId = db.insertWithOnConflict(Constantes.TABLA_CENSO_TECNICO, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
@@ -209,7 +213,7 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
 
     @Override
     public Cursor consultarTodo() {
-        this.sql = "SELECT * FROM "+ Constantes.TABLA_CENSO_TECNICO+" limit 0,50";
+        this.sql = "SELECT * FROM "+ Constantes.TABLA_CENSO_TECNICO;
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }

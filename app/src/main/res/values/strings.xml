@@ -153,7 +153,7 @@
     <string name="alert_tipo_actividad">Seleccione el tipo de actividad</string>
 
 
-    <string name="titulo_ancho_via">Ancho Via</string>
+    <string name="titulo_ancho_via">Ancho Via*</string>
     <string name="titulo_interdistancia">Intedistancia</string>
     <string name="alert_ancho_via">Ancho de la Via</string>
     <string name="alert_interdistancia">Interdistancia</string>

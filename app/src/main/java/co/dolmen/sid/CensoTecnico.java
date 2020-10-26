@@ -164,6 +164,7 @@ public class CensoTecnico extends AppCompatActivity {
     EditText txtCtTransformador;
     EditText txtPosteNo;
     EditText txtObservacion;
+    EditText txtAnchoVia;
 
     //--
     Switch swLuminariaVisible;
@@ -172,6 +173,7 @@ public class CensoTecnico extends AppCompatActivity {
     Switch swPosteExclusivoAp;
     Switch swPosteBuenEstado;
     Switch swMobiliarioBuenEstado;
+    Switch swTranformadorExclusivoAP;
     //--
     Button btnGuardar;
     Button btnCancelar;
@@ -232,6 +234,7 @@ public class CensoTecnico extends AppCompatActivity {
     RadioButton rdSectorSubNormal;
     RadioButton rdTransformadorPrivado;
     RadioButton rdTransformadorPublico;
+    RadioButton rdTransformadorNoAplica;
 
     CheckBox chkBrazoMalEstado;
     CheckBox chkVisorMalEstado;
@@ -268,12 +271,13 @@ public class CensoTecnico extends AppCompatActivity {
     private String chkSwMobiliarioBuenEstado = "S";
     private String zona ="U";
     private String sector = "N";
-    private String tipoPropietarioTranformador = "PV";
+    private String tipoPropietarioTranformador = "NA";
     private String brazoMalEstado = "N";
     private String visorMalEstado = "N";
     private String sinBombillo = "N";
     private String mobiliarioObsoleto = "N";
     private String mobiliarioMalPosicionado = "N";
+    private String chkSwTransformadorExclusivoAp = "N";
 
     //private final String CARPETA_RAIZ="ImagenesCenso/";
     //private final String RUTA_IMAGEN= CARPETA_RAIZ+"Img";
@@ -346,6 +350,7 @@ public class CensoTecnico extends AppCompatActivity {
         txtCtTransformador = findViewById(R.id.txt_ct_transformador);
         txtPosteNo = findViewById(R.id.txt_poste_no);
         txtObservacion = findViewById(R.id.txt_observacion);
+        txtAnchoVia     = findViewById(R.id.txt_ancho_via);
         //--
         swLuminariaVisible = findViewById(R.id.sw_numero_luminaria_visible);
         swPoseeLuminaria = findViewById(R.id.sw_tiene_luminaria);
@@ -353,6 +358,7 @@ public class CensoTecnico extends AppCompatActivity {
         swPuestaTierra = findViewById(R.id.sw_puesta_tierra);
         swPosteBuenEstado = findViewById(R.id.sw_poste_en_buen_estado);
         swMobiliarioBuenEstado = findViewById(R.id.sw_mobiliario_en_buenas_condiciones);
+        swTranformadorExclusivoAP = findViewById(R.id.sw_transformador_exclusivo_ap);
         //--
         rdZonaUrbano        = findViewById(R.id.rd_urbano);
         rdZonaRural         = findViewById(R.id.rd_rutal);
@@ -360,6 +366,7 @@ public class CensoTecnico extends AppCompatActivity {
         rdSectorSubNormal   = findViewById(R.id.rd_subnormal);
         rdTransformadorPrivado = findViewById(R.id.rd_transformador_privado);
         rdTransformadorPublico = findViewById(R.id.rd_transformador_publico);
+        rdTransformadorNoAplica = findViewById(R.id.rd_transformador_no_aplica);
         //--
         chkBrazoMalEstado           = findViewById(R.id.chk_brazo_mal_estado);
         chkVisorMalEstado           = findViewById(R.id.chk_visor_mal_estado);
@@ -451,6 +458,13 @@ public class CensoTecnico extends AppCompatActivity {
             }
         });
 
+        swTranformadorExclusivoAP.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                chkSwTransformadorExclusivoAp = (isChecked) ? "S" : "N";
+            }
+        });
+
         rdZonaUrbano.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -475,6 +489,8 @@ public class CensoTecnico extends AppCompatActivity {
                 sector = "S";
             }
         });
+
+
         rdTransformadorPrivado.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -485,6 +501,12 @@ public class CensoTecnico extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 tipoPropietarioTranformador = "PB";
+            }
+        });
+        rdTransformadorNoAplica.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tipoPropietarioTranformador = "NA";
             }
         });
         //--
@@ -1913,6 +1935,8 @@ public class CensoTecnico extends AppCompatActivity {
         censo.setPotenciaTransformador(potencia);
         censo.setPlacaCtTransformador(txtCtTransformador.getText().toString());
         censo.setPlacaMtTransformador(txtMtTransformador.getText().toString());
+        censo.setAncho_via(Integer.parseInt(txtAnchoVia.getText().toString()));
+        censo.setChkSwTransformadorExclusivoAP(chkSwTransformadorExclusivoAp);
         //--
 
         String fechaHora = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
@@ -2055,6 +2079,8 @@ public class CensoTecnico extends AppCompatActivity {
         requestParams.put("mobiliario_obsoleto",mobiliarioObsoleto);
         requestParams.put("mobiliario_sin_bombillo",sinBombillo);
         requestParams.put("id_calibre",calibreList.get(sltCalibreConexionElemento.getSelectedItemPosition()).getId());
+        requestParams.put("ancho_via",txtAnchoVia.getText());
+        requestParams.put("transformador_exclusivo_ap",chkSwTransformadorExclusivoAp);
         requestParams.put("foto_1", encodeStringFoto_1);
         requestParams.put("foto_2", encodeStringFoto_2);
         int index = 0;

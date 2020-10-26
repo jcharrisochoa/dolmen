@@ -4,6 +4,7 @@ public class Censo {
     private long lastId;
     private int id_censo;
     private int interdistancia;
+    private int ancho_via;
 
     private double potenciaTransformador;
 
@@ -44,7 +45,25 @@ public class Censo {
     private String visorMalEstado;
     private String sinBombillo;
     private String mobiliarioObsoleto;
+
+    public int getAncho_via() {
+        return ancho_via;
+    }
+
+    public void setAncho_via(int ancho_via) {
+        this.ancho_via = ancho_via;
+    }
+
+    public String getChkSwTransformadorExclusivoAP() {
+        return chkSwTransformadorExclusivoAP;
+    }
+
+    public void setChkSwTransformadorExclusivoAP(String chkSwTransformadorExclusivoAP) {
+        this.chkSwTransformadorExclusivoAP = chkSwTransformadorExclusivoAP;
+    }
+
     private String mobiliarioMalPosicionado;
+    private String chkSwTransformadorExclusivoAP;
 
 
 

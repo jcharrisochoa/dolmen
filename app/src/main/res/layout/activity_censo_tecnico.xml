@@ -612,6 +612,21 @@
                     android:background="@android:drawable/btn_dropdown" />
 
                 <TextView
+                    android:id="@+id/textView33"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/alert_ancho_via" />
+
+                <EditText
+                    android:id="@+id/txt_ancho_via"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/edit_text"
+                    android:ems="10"
+                    android:hint="Ej: 20mts"
+                    android:inputType="number" />
+
+                <TextView
                     android:id="@+id/textView30"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -764,6 +779,12 @@
                     android:ems="10"
                     android:inputType="textPersonName" />
 
+                <Switch
+                    android:id="@+id/sw_transformador_exclusivo_ap"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:text="¿El tranformador es Exclusivo AP?" />
+
                 <TextView
                     android:id="@+id/textView29"
                     android:layout_width="match_parent"
@@ -775,6 +796,13 @@
                     android:layout_height="match_parent" >
 
                     <RadioButton
+                        android:id="@+id/rd_transformador_no_aplica"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:checked="true"
+                        android:text="No Aplica" />
+
+                    <RadioButton
                         android:id="@+id/rd_transformador_publico"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
@@ -784,8 +812,8 @@
                         android:id="@+id/rd_transformador_privado"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
-                        android:checked="true"
                         android:text="Privado" />
+
                 </RadioGroup>
 
                 <View

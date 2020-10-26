@@ -322,6 +322,8 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
                 jsonObject.put("mobiliario_mal_posicionado",cursor.getString(cursor.getColumnIndex("mobiliario_mal_posicionado")));
                 jsonObject.put("mobiliario_obsoleto",cursor.getString(cursor.getColumnIndex("mobiliario_obsoleto")));
                 jsonObject.put("mobiliario_sin_bombillo",cursor.getString(cursor.getColumnIndex("mobiliario_sin_bombillo")));
+                jsonObject.put("ancho_via",cursor.getString(cursor.getColumnIndex("ancho_via")));
+                jsonObject.put("transformador_exclusivo_ap",cursor.getString(cursor.getColumnIndex("transformador_exclusivo_ap")));
 
                 //--Tipo Armado
                 JSONArray jsonArrayTipoArmado = new JSONArray();
