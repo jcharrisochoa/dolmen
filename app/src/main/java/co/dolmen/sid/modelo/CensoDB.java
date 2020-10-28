@@ -218,6 +218,12 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
         return result;
     }
 
+    public Cursor consultarTodo(int limit){
+        this.sql = "SELECT * FROM "+ Constantes.TABLA_CENSO_TECNICO + " limit 0,"+limit;
+        Cursor result = db.rawQuery(this.sql, null);
+        return result;
+    }
+
     @Override
     public void actualizarDatos(Object E) {
 

@@ -68,7 +68,7 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
     ProgressBar progressBar;
     EditText txtLog;
     int cant = 0;
-    String limite = "50";
+    int limite = 50;
 
     /*AsyncHttpClientConfig configHttp;
 
@@ -94,9 +94,9 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
             censoDB = new CensoDB(database);
             censoTipoArmadoDB = new CensoTipoArmadoDB(database);
             censoArchivoDB = new CensoArchivoDB(database);
-            cursor = censoDB.consultarTodo();
+            cursor = censoDB.consultarTodo(limite);
             cursorCensoArchivo = censoArchivoDB.consultarTodo();
-            cant = cursor.getCount();
+            cant = censoDB.consultarTodo().getCount();
         }catch (SQLException e){
             Toast.makeText(getApplicationContext(),"ERROR"+e.getMessage(),Toast.LENGTH_LONG).show();
         }
@@ -146,6 +146,7 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
                 sincronizar();
             }
         });
+        limite = (cant>50)?50:cant;
         btnSincronizar.setText( getText(R.string.btn_sincronizar)+" ("+limite+" de "+cant+")");
     }
 
@@ -202,7 +203,10 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
                                     }
                                 }
                                 visualizarLogs(logs,jsonResponse.getString("mensaje"));
-                                btnSincronizar.setText(getText(R.string.btn_sincronizar)+" ("+limite+" de "+censoDB.consultarTodo().getCount()+")");
+
+                                cant = censoDB.consultarTodo().getCount();
+                                limite = (cant>50)?50:cant;
+                                btnSincronizar.setText(getText(R.string.btn_sincronizar)+" ("+limite+" de "+cant+")");
                                 setButton(true);
 
                             }catch (JSONException e){
