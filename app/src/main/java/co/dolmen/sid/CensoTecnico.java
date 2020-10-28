@@ -1783,12 +1783,18 @@ public class CensoTecnico extends AppCompatActivity {
         swPosteBuenEstado.setChecked(true);
         swMobiliarioBuenEstado.setChecked(true);
         swPosteBuenEstado.setChecked(true);
+        swTranformadorExclusivoAP.setChecked(false);
 
         chkBrazoMalEstado.setChecked(false);
         chkMobiliarioMalPosicionado.setChecked(false);
         chkMobiliarioObsoleto.setChecked(false);
         chkSinBombillo.setChecked(false);
         chkVisorMalEstado.setChecked(false);
+
+
+        rdTransformadorPrivado.setChecked(false);
+        rdTransformadorPublico.setChecked(false);
+        rdTransformadorNoAplica.setChecked(true);
 
 
         borrarItemTablaArmado(0);
@@ -1813,6 +1819,8 @@ public class CensoTecnico extends AppCompatActivity {
         chkSwPosteExclusivoAp = "N";
         chkSwPosteBuenEstado = "S";
         chkSwMobiliarioBuenEstado = "S";
+        chkSwTransformadorExclusivoAp = "N";
+        tipoPropietarioTranformador = "NA";
     }
 
     //--
