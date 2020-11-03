@@ -169,4 +169,23 @@
     <string name="titulo_proveedor">Proveedor Instalador</string>
     <string name="btn_censo_carga">Censo de Carga</string>
     <string name="alert_tipo_calibre">Seleccione el calibre del conductor eléctrico</string>
+
+    <!--label de barra de progreso inicial-->
+    <string name="titulo_censo_asignado">Censo Asignado</string>
+    <string name="titulo_elemento">Elemento</string>
+    <string name="titulo_estado_actividad">Estado Actividad</string>
+    <string name="titulo_vatiaje">Vatiaje</string>
+    <string name="titulo_unidad_medida">Unidad Medida</string>
+    <string name="titulo_tipo_interseccion">Tipo Interseccion</string>
+    <string name="titulo_tipo_espacio">Tipo Espacio</string>
+    <string name="titulo_tipo_tension">Tipo Tension</string>
+    <string name="titulo_tipo_retenida">Tipo Retenida</string>
+    <string name="titulo_norma_construccion_poste">Norma Construcción Poste</string>
+    <string name="titulo_tipo_estructura">Tipo Estructura</string>
+    <string name="titulo_norma_construccion_red">Norma Construcción Red</string>
+    <string name="titulo_calibre">Calibre</string>
+    <string name="titulo_conductor_electrico">Tipo Conductor Eléctrico</string>
+    <string name="titulo_tipo_escenario">Tipo Escenario</string>
+
+
 </resources>
