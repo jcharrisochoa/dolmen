@@ -7,7 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import co.dolmen.sid.entidad.Articulo;
 import co.dolmen.sid.modelo.ActaContratoDB;
+import co.dolmen.sid.modelo.ArticuloDB;
 import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.CalibreDB;
 import co.dolmen.sid.modelo.CensoArchivoDB;
@@ -35,6 +37,7 @@ import co.dolmen.sid.modelo.TipoInterseccionDB;
 import co.dolmen.sid.modelo.TipoPosteDB;
 import co.dolmen.sid.modelo.TipoRedDB;
 import co.dolmen.sid.modelo.TipoReporteDanoDB;
+import co.dolmen.sid.modelo.TipoStockDB;
 import co.dolmen.sid.modelo.TipoTensionDB;
 import co.dolmen.sid.modelo.TipologiaDB;
 import co.dolmen.sid.modelo.UnidadMedidaDB;
@@ -80,6 +83,8 @@ public class BaseDatos extends SQLiteOpenHelper {
     private TipoEscenarioDB tipoEscenarioDB;
     private TipoConductorElectricoDB tipoConductorElectricoDB;
     private CalibreDB calibreDB;
+    private TipoStockDB tipoStockDB;
+    private ArticuloDB articuloDB;
 
 
     public BaseDatos(Context context){
@@ -194,6 +199,12 @@ public class BaseDatos extends SQLiteOpenHelper {
 
         calibreDB  = new CalibreDB(sqLiteDatabase);
         calibreDB.crearTabla();
+
+        tipoStockDB  = new TipoStockDB(sqLiteDatabase);
+        tipoStockDB.crearTabla();
+
+        articuloDB = new ArticuloDB(sqLiteDatabase);
+        articuloDB.crearTabla();
         //Log.d("DataBase","create");
     }
 
@@ -235,6 +246,8 @@ public class BaseDatos extends SQLiteOpenHelper {
             tipoEscenarioDB = new TipoEscenarioDB(sqLiteDatabase);
             tipoConductorElectricoDB = new TipoConductorElectricoDB(sqLiteDatabase);
             calibreDB  = new CalibreDB(sqLiteDatabase);
+            tipoStockDB  = new TipoStockDB(sqLiteDatabase);
+            articuloDB  = new ArticuloDB(sqLiteDatabase);
 
             tipologiaDB.borrarTabla();
             mobiliarioDB.borrarTabla();
@@ -271,6 +284,9 @@ public class BaseDatos extends SQLiteOpenHelper {
             tipoEscenarioDB.borrarTabla();
             tipoConductorElectricoDB.borrarTabla();
             calibreDB.borrarTabla();
+            tipoStockDB.borrarTabla();
+            articuloDB.borrarTabla();
+
             onCreate(sqLiteDatabase);
         }catch (SQLException e){
             e.printStackTrace();

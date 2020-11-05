@@ -37,6 +37,7 @@ import co.dolmen.sid.entidad.TipoPoste;
 import co.dolmen.sid.entidad.TipoTension;
 import co.dolmen.sid.entidad.Tipologia;
 import co.dolmen.sid.modelo.ActaContratoDB;
+import co.dolmen.sid.modelo.ArticuloDB;
 import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.CalibreDB;
 import co.dolmen.sid.modelo.CensoAsignadoDB;
@@ -64,6 +65,7 @@ import co.dolmen.sid.modelo.TipoInterseccionDB;
 import co.dolmen.sid.modelo.TipoPosteDB;
 import co.dolmen.sid.modelo.TipoRedDB;
 import co.dolmen.sid.modelo.TipoReporteDanoDB;
+import co.dolmen.sid.modelo.TipoStockDB;
 import co.dolmen.sid.modelo.TipoTensionDB;
 import co.dolmen.sid.modelo.TipologiaDB;
 import co.dolmen.sid.modelo.UnidadMedidaDB;
@@ -100,6 +102,7 @@ public class Parametros extends AppCompatActivity {
         database = db.getWritableDatabase();
         Constantes.OLD_VERSION_BASEDATOS = database.getVersion();
         //Log.d("versiondb","db:"+Constantes.OLD_VERSION_BASEDATOS);
+
     }
 
     private void cargarParametros(final Integer id_usuario){
@@ -147,7 +150,6 @@ public class Parametros extends AppCompatActivity {
                 responseBodyTmp = responseBody;
                 EscribirBD escribir = new EscribirBD();
                 escribir.execute();
-
                /* Intent i = new Intent(Parametros.this,ConfigurarArea.class);
                 startActivity(i);
                 finish();*/
@@ -400,6 +402,19 @@ public class Parametros extends AppCompatActivity {
                     Log.d("parametros","->Unidad Medida:"+progress+"%");
                 }
 
+                //--Tipo Stock
+                TipoStockDB tipoStockDB = new TipoStockDB(database);
+                JSONArray arrayTipoStock = parametros.getJSONArray("tipo_stock");
+                for (int i = 0;i<arrayTipoStock.length();i++){
+                    JSONObject jObjectTipoStock = arrayTipoStock.getJSONObject(i);
+                    tipoStockDB.setId(jObjectTipoStock.getInt("id"));
+                    tipoStockDB.setDescripcion(jObjectTipoStock.getString("descripcion"));
+                    tipoStockDB.agregarDatos(tipoStockDB);
+                    progress = (int)Math.round((double)(i+1)/arrayTipoStock.length()*100);
+                    publishProgress(progress, R.string.titulo_tipo_stock);
+                    Log.d("parametros","->Tipo Stock:"+progress+"%");
+                }
+
                 //--Tipo Red
                 TipoRedDB tipoRedDB = new TipoRedDB(database);
                 JSONArray arrayTipoRed = parametros.getJSONArray("tipored");
@@ -412,6 +427,7 @@ public class Parametros extends AppCompatActivity {
                     publishProgress(progress, R.string.titulo_tipo_red);
                     Log.d("parametros","->Tipo Red:"+progress+"%");
                 }
+
                 //--Tipo Poste
                 TipoPosteDB tipoPosteDB = new TipoPosteDB(database);
                 JSONArray arrayTipoPoste = parametros.getJSONArray("tipoposte");
@@ -635,6 +651,20 @@ public class Parametros extends AppCompatActivity {
                 }
                 proveedorDB.finalizarTransaccion();
 
+                //--Articulo
+                ArticuloDB articuloDB = new ArticuloDB(database);
+                JSONArray arrayArticulo = parametros.getJSONArray("inventario");
+                for (int i = 0;i<arrayArticulo.length();i++){
+                    JSONObject jObjectArticulo = arrayArticulo.getJSONObject(i);
+                    articuloDB.setId(jObjectArticulo.getInt("id"));
+                    articuloDB.setDescripcion(jObjectArticulo.getString("descripcion"));
+                    articuloDB.agregarDatos(articuloDB);
+                    progress = (int)Math.round((double)(i+1)/arrayArticulo.length()*100);
+                    publishProgress(progress,R.string.titulo_articulo);
+                    Log.d("parametros","->Articulo:"+progress+"%");
+                }
+
+                //Elementos
                 elementoDB.iniciarTransaccion();
                 for (int i = 0;i<arrayElemento.length();i++){
 
@@ -660,7 +690,6 @@ public class Parametros extends AppCompatActivity {
 
                 }
                 elementoDB.finalizarTransaccion();
-
 
                 //--Programa
                 ProgramaDB programaDB = new ProgramaDB(database);
@@ -692,10 +721,15 @@ public class Parametros extends AppCompatActivity {
         @Override
         protected void onPostExecute(Boolean result) {
             if(result) {
-                Toast.makeText(Parametros.this, "Actualización finalizada!", Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(Parametros.this,ConfigurarArea.class);
-                startActivity(i);
-                finish();
+                Toast.makeText(Parametros.this, "Actualización de la configuracion finalizada!", Toast.LENGTH_SHORT).show();
+                MisActividade misActividade = new MisActividade(progressBar,txt_nombre_tipo_descarga,txt_porcentaje_carga,Parametros.this,config.getInt("id_usuario",0));
+                misActividade.consultarActividades();
+
+                if(misActividade.getNotificador()) {
+                    Intent i = new Intent(Parametros.this,ConfigurarArea.class);
+                    startActivity(i);
+                    finish();
+                }
             }
         }
     }

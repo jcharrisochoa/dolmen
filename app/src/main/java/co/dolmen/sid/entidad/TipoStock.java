@@ -1,6 +1,6 @@
 package co.dolmen.sid.entidad;
 
-public class TipoStock {
+public class TipoStock{
     int id;
     String descripcion;
 
