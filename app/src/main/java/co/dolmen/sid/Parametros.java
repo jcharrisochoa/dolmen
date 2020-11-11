@@ -722,14 +722,14 @@ public class Parametros extends AppCompatActivity {
         protected void onPostExecute(Boolean result) {
             if(result) {
                 Toast.makeText(Parametros.this, "Actualización de la configuracion finalizada!", Toast.LENGTH_SHORT).show();
-                MisActividade misActividade = new MisActividade(progressBar,txt_nombre_tipo_descarga,txt_porcentaje_carga,Parametros.this,config.getInt("id_usuario",0));
-                misActividade.consultarActividades();
+                //MisActividades misActividades = new MisActividades(progressBar,txt_nombre_tipo_descarga,txt_porcentaje_carga,Parametros.this,config.getInt("id_usuario",0));
+                //misActividades.consultarActividades();
 
-                if(misActividade.getNotificador()) {
+                //if(misActividades.getNotificador()) {
                     Intent i = new Intent(Parametros.this,ConfigurarArea.class);
                     startActivity(i);
                     finish();
-                }
+                //}
             }
         }
     }

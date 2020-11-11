@@ -21,7 +21,7 @@ import org.w3c.dom.Text;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.HttpResponse;
 
-class MisActividade {
+class MisActividades {
 
     private ProgressBar progressBar;
     private TextView titulo;
@@ -33,7 +33,7 @@ class MisActividade {
     byte[] responseBodyTmp;
     private boolean notifcador;
 
-    public MisActividade(ProgressBar progressBar, TextView titulo, TextView porcentaje, Context context,Integer id_usuario){
+    public MisActividades(ProgressBar progressBar, TextView titulo, TextView porcentaje, Context context,Integer id_usuario){
         this.progressBar = progressBar;
         this.titulo = titulo;
         this.porcentaje = porcentaje;
