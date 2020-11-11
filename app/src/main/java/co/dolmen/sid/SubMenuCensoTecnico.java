@@ -97,12 +97,14 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
             cursor = censoDB.consultarTodo(limite);
             cursorCensoArchivo = censoArchivoDB.consultarTodo();
             cant = censoDB.consultarTodo().getCount();
+
+            Log.d("cantidad",""+cant);
         }catch (SQLException e){
             Toast.makeText(getApplicationContext(),"ERROR"+e.getMessage(),Toast.LENGTH_LONG).show();
         }
 
 
-        config = getSharedPreferences("config", MODE_PRIVATE);
+       config = getSharedPreferences("config", MODE_PRIVATE);
         nombreMunicipio     = config.getString("nombreMunicipio", "");
         nombreProceso       = config.getString("nombreProceso", "");
         nombreContrato      = config.getString("nombreContrato", "");
@@ -208,6 +210,7 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
                                 limite = (cant>50)?50:cant;
                                 btnSincronizar.setText(getText(R.string.btn_sincronizar)+" ("+limite+" de "+cant+")");
                                 setButton(true);
+                                //database.close();
 
                             }catch (JSONException e){
                                 e.printStackTrace();
@@ -278,6 +281,7 @@ public class SubMenuCensoTecnico extends AppCompatActivity {
 
     private JSONArray armarJson() throws JSONException{
         JSONArray datos = new JSONArray();
+        cursor = censoDB.consultarTodo(limite);
         if (cursor.moveToFirst()) {
             do {
                 JSONObject jsonObject = new JSONObject();
