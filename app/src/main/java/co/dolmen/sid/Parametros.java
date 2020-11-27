@@ -26,6 +26,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.concurrent.ExecutionException;
+
 import co.dolmen.sid.entidad.Barrio;
 import co.dolmen.sid.entidad.Contrato;
 import co.dolmen.sid.entidad.EstadoMobiliario;
@@ -70,6 +72,7 @@ import co.dolmen.sid.modelo.TipoTensionDB;
 import co.dolmen.sid.modelo.TipologiaDB;
 import co.dolmen.sid.modelo.UnidadMedidaDB;
 import co.dolmen.sid.modelo.VatiajeDB;
+import co.dolmen.sid.utilidades.ResponseHandle;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.HttpResponse;
 
@@ -85,7 +88,6 @@ public class Parametros extends AppCompatActivity {
     JSONObject json;
     byte[] responseBodyTmp;
     int progress;
-
     private Handler hdlr = new Handler();
 
     @Override
@@ -148,11 +150,22 @@ public class Parametros extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 responseBodyTmp = responseBody;
-                EscribirBD escribir = new EscribirBD();
+                final EscribirBD escribir = new EscribirBD();
                 escribir.execute();
-               /* Intent i = new Intent(Parametros.this,ConfigurarArea.class);
-                startActivity(i);
-                finish();*/
+               /* new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if(escribir.get()){
+
+                            }
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();*/
             }
 
             @Override
@@ -721,17 +734,37 @@ public class Parametros extends AppCompatActivity {
         @Override
         protected void onPostExecute(Boolean result) {
             if(result) {
-                Toast.makeText(Parametros.this, "Actualización de la configuracion finalizada!", Toast.LENGTH_SHORT).show();
-                //MisActividades misActividades = new MisActividades(progressBar,txt_nombre_tipo_descarga,txt_porcentaje_carga,Parametros.this,config.getInt("id_usuario",0));
-                //misActividades.consultarActividades();
+                Toast.makeText(Parametros.this, "Actualización de parametros finalizada!", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(Parametros.this,ConfigurarArea.class);
 
-                //if(misActividades.getNotificador()) {
-                    Intent i = new Intent(Parametros.this,ConfigurarArea.class);
-                    startActivity(i);
-                    finish();
-                //}
+                //--consultar las actividades
+                final MisActividades misActividades = new MisActividades(progressBar,txt_nombre_tipo_descarga,txt_porcentaje_carga,Parametros.this,config.getInt("id_usuario",0));
+                misActividades.consultarActividades(new ResponseHandle() {
+                    @Override
+                    public void onSuccess(byte[] response) { //esperar el resultado para ejecutar la tarea asincrona de almacenado en la base datos
+                       // Log.d("values", new String(response));
+                        misActividades.almacenarBaseDatos.execute();
+                    }
+                });
+
+                new Thread(new Runnable() { //otro hilo para verificar el estado de la tarea asincrona de las actividades
+                    @Override
+                    public void run() {
+                        try {
+                            if(misActividades.almacenarBaseDatos.get()){ //al finalizar cambiar la actividad
+                                Intent i = new Intent(Parametros.this,ConfigurarArea.class);
+                                startActivity(i);
+                                finish();
+                            }
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+
             }
         }
     }
-
 }

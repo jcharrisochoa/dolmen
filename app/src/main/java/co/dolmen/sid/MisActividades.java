@@ -1,6 +1,7 @@
 package co.dolmen.sid;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ProgressBar;
@@ -16,8 +17,8 @@ import com.loopj.android.http.ResponseHandlerInterface;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
+import co.dolmen.sid.utilidades.ResponseHandle;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.HttpResponse;
 
@@ -30,8 +31,9 @@ class MisActividades {
     private int contenLenght =  0;
     private int progress = 0;
     private Integer id_usuario;
-    byte[] responseBodyTmp;
-    private boolean notifcador;
+    public byte[] responseBodyTmp;
+    AlmacenarBaseDatos almacenarBaseDatos;
+
 
     public MisActividades(ProgressBar progressBar, TextView titulo, TextView porcentaje, Context context,Integer id_usuario){
         this.progressBar = progressBar;
@@ -39,20 +41,14 @@ class MisActividades {
         this.porcentaje = porcentaje;
         this.context = context;
         this.id_usuario = id_usuario;
+        almacenarBaseDatos = new AlmacenarBaseDatos();
     }
 
     public void setMaxprogressBar(int max){
         progressBar.setMax(max);
     }
 
-    private void setNotificador(boolean notifcador){
-        this.notifcador = notifcador;
-    }
-    public boolean getNotificador(){
-        return this.notifcador;
-    }
-
-    public void consultarActividades(){
+    public void consultarActividades(final ResponseHandle callback){
         String urlConsultarActividad = ServicioWeb.urlConsultarActividad;
         final AsyncHttpClient client = new AsyncHttpClient();
         final RequestParams requestParams = new RequestParams();
@@ -97,9 +93,7 @@ class MisActividades {
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 //Log.d("programacion","datos "+new String(responseBody));
                 responseBodyTmp = responseBody;
-                AlmacenarBaseDatos almacenarBaseDatos = new AlmacenarBaseDatos();
-                almacenarBaseDatos.execute().getStatus();
-                Log.d("notificador","stado "+almacenarBaseDatos.getStatus());
+                callback.onSuccess(responseBody);
             }
 
             @Override
@@ -111,7 +105,7 @@ class MisActividades {
         });
     }
 
-    private class AlmacenarBaseDatos extends AsyncTask<Void,Integer,Boolean>{
+    public class AlmacenarBaseDatos extends AsyncTask<Void,Integer,Boolean>{
         @Override
         protected Boolean doInBackground(Void... voids) {
             try {
@@ -123,13 +117,12 @@ class MisActividades {
                     publishProgress(progress, R.string.titulo_programa);
                     Log.d("programacion","->:"+jObjectProgramacion.getInt("programa"));
                     Log.d("programacion","->programacion:"+progress+"%");
-                    Thread.sleep(100);
+                    Thread.sleep(5000);
                 }
             }
             catch (JSONException | InterruptedException e){
                 e.getMessage();
             }
-            //
             return true;
         }
 
@@ -156,10 +149,7 @@ class MisActividades {
             int progreso = values[0].intValue();
             progressBar.setProgress(progreso);
             porcentaje.setText(context.getText(values[1])+" "+progreso+"%");
-        }
 
-        public AlmacenarBaseDatos() {
-            super();
         }
     }
 }
