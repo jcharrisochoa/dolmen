@@ -50,7 +50,7 @@ public class InventarioRemoto {
         String urlConsultarExisencia = ServicioWeb.urlConsultarExisencia;
         final AsyncHttpClient client = new AsyncHttpClient();
         final RequestParams requestParams = new RequestParams();
-        requestParams.add("id_usuario",id_usuario.toString());
+        requestParams.add("id_usuario",this.id_usuario.toString());
         client.setTimeout(180000);
         RequestHandle GET = client.get(urlConsultarExisencia, requestParams,new AsyncHttpResponseHandler() {
             @Override
@@ -78,7 +78,7 @@ public class InventarioRemoto {
                 super.onStart();
                 progressBar.setProgress(0);
                 porcentaje.setText("0%");
-                titulo.setText(context.getText(R.string.descargando_actividades));
+                titulo.setText(context.getText(R.string.descargando_inventario));
             }
 
             @Override
@@ -95,7 +95,7 @@ public class InventarioRemoto {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Log.d("programacion","error "+responseBody.toString());
+                Log.d("Inventario","error "+responseBody.toString());
                 progressBar.setProgress(0);
                 porcentaje.setText(context.getText(R.string.alert_error_ejecucion)+ " Code:"+statusCode);
             }

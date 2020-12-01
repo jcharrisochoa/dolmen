@@ -1,7 +1,6 @@
 package co.dolmen.sid;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ProgressBar;
@@ -18,6 +17,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.concurrent.ExecutionException;
+
+import co.dolmen.sid.utilidades.HandleTaskResponse;
 import co.dolmen.sid.utilidades.ResponseHandle;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.HttpResponse;
@@ -32,8 +34,6 @@ class MisActividades {
     private int progress = 0;
     private Integer id_usuario;
     public byte[] responseBodyTmp;
-    AlmacenarBaseDatos almacenarBaseDatos;
-
 
     public MisActividades(ProgressBar progressBar, TextView titulo, TextView porcentaje, Context context,Integer id_usuario){
         this.progressBar = progressBar;
@@ -41,7 +41,6 @@ class MisActividades {
         this.porcentaje = porcentaje;
         this.context = context;
         this.id_usuario = id_usuario;
-        almacenarBaseDatos = new AlmacenarBaseDatos();
     }
 
     public void setMaxprogressBar(int max){
@@ -73,14 +72,14 @@ class MisActividades {
                 super.onProgress(bytesWritten, totalSize);
                 progress = (int)Math.round(((double)bytesWritten/(double)contenLenght)*100);
                 progressBar.setProgress(progress);
-                porcentaje.setText(progress+"%");
+                porcentaje.setText(context.getText(R.string.titulo_mis_actividades)+" "+progress+"%");
             }
 
             @Override
             public void onStart() {
                 super.onStart();
                 progressBar.setProgress(0);
-                porcentaje.setText("0%");
+                porcentaje.setText(context.getText(R.string.titulo_mis_actividades)+" 0%");
                 titulo.setText(context.getText(R.string.descargando_actividades));
             }
 
@@ -90,10 +89,23 @@ class MisActividades {
             }
 
             @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+            public void onSuccess(int statusCode, Header[] headers, final byte[] responseBody) {
                 //Log.d("programacion","datos "+new String(responseBody));
-                responseBodyTmp = responseBody;
-                callback.onSuccess(responseBody);
+                //responseBodyTmp = responseBody;
+                AlmacenarBaseDatos almacenarBaseDatos = new AlmacenarBaseDatos(context, responseBody, new HandleTaskResponse() {
+                    @Override
+                    public void onSuccess(Object response) {
+                        callback.onSuccess(responseBody);
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        callback.onFailure(e);
+
+                    }
+                });
+                almacenarBaseDatos.execute();
+
             }
 
             @Override
@@ -105,19 +117,31 @@ class MisActividades {
         });
     }
 
-    public class AlmacenarBaseDatos extends AsyncTask<Void,Integer,Boolean>{
+    private class AlmacenarBaseDatos extends AsyncTask<Void,Integer,Boolean>{
+
+        private HandleTaskResponse<Boolean> mCallBack;
+        private Context mContext;
+        public Exception mException;
+        private byte[] mResponseBody;
+
+        public AlmacenarBaseDatos(Context context, byte[] responseBody, HandleTaskResponse callback) {
+            mCallBack = callback;
+            mContext = context;
+            mResponseBody = responseBody;
+        }
+
         @Override
         protected Boolean doInBackground(Void... voids) {
             try {
-                JSONObject json = new JSONObject(new String(responseBodyTmp));
+                JSONObject json = new JSONObject(new String(mResponseBody));
                 JSONArray arrayProgramacion = json.getJSONArray("programacion");
                 for (int i = 0;i<arrayProgramacion.length();i++) {
                     JSONObject jObjectProgramacion = arrayProgramacion.getJSONObject(i);
                     progress = (int)Math.round((double)(i+1)/arrayProgramacion.length()*100);
-                    publishProgress(progress, R.string.titulo_programa);
-                    Log.d("programacion","->:"+jObjectProgramacion.getInt("programa"));
-                    Log.d("programacion","->programacion:"+progress+"%");
-                    Thread.sleep(5000);
+                    publishProgress(progress, R.string.titulo_mis_actividades);
+                    Log.d("programacion","Id Programa->:"+jObjectProgramacion.getInt("programa"));
+                    Log.d("programacion","->Progreso de escritura:"+progress+"%");
+                    Thread.sleep(1000);
                 }
             }
             catch (JSONException | InterruptedException e){
@@ -137,9 +161,17 @@ class MisActividades {
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
-            if(result) {
-                Toast.makeText(context, "Actualizacion de actividades Finalizada!", Toast.LENGTH_SHORT).show();
+            if (mCallBack != null) {
+                if (mException == null) {
+                    mCallBack.onSuccess(result);
+                } else {
+                    mCallBack.onFailure(mException);
+                }
             }
+
+            /*if(result) {
+                Toast.makeText(context, "Actualizacion de actividades Finalizada!", Toast.LENGTH_SHORT).show();
+            }*/
         }
 
         @Override

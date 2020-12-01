@@ -189,6 +189,7 @@
     <string name="titulo_tipo_stock">Tipo Stock</string>
     <string name="titulo_articulo">Codigos de Inventario</string>
     <string name="descargando_actividades">Descargando Actvidades</string>
+    <string name="titulo_mis_actividades">Mis Actividades</string>
 
 
 </resources>

@@ -72,6 +72,7 @@ import co.dolmen.sid.modelo.TipoTensionDB;
 import co.dolmen.sid.modelo.TipologiaDB;
 import co.dolmen.sid.modelo.UnidadMedidaDB;
 import co.dolmen.sid.modelo.VatiajeDB;
+import co.dolmen.sid.utilidades.HandleTaskResponse;
 import co.dolmen.sid.utilidades.ResponseHandle;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.HttpResponse;
@@ -152,20 +153,6 @@ public class Parametros extends AppCompatActivity {
                 responseBodyTmp = responseBody;
                 final EscribirBD escribir = new EscribirBD();
                 escribir.execute();
-               /* new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            if(escribir.get()){
-
-                            }
-                        } catch (ExecutionException e) {
-                            e.printStackTrace();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();*/
             }
 
             @Override
@@ -737,33 +724,23 @@ public class Parametros extends AppCompatActivity {
                 Toast.makeText(Parametros.this, "Actualización de parametros finalizada!", Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(Parametros.this,ConfigurarArea.class);
 
-                //--consultar las actividades
-                final MisActividades misActividades = new MisActividades(progressBar,txt_nombre_tipo_descarga,txt_porcentaje_carga,Parametros.this,config.getInt("id_usuario",0));
+                //--consultar Inventario Remoto
+                //final InventarioRemoto inventarioRemoto = new InventarioRemoto(progressBar,txt_nombre_tipo_descarga,txt_porcentaje_carga,Parametros.this,config.getInt("id_usuario",0));
+
+                //--Consultar actividades
+                final MisActividades misActividades = new MisActividades(progressBar,txt_nombre_tipo_descarga,txt_porcentaje_carga,getApplicationContext(),config.getInt("id_usuario",0));
                 misActividades.consultarActividades(new ResponseHandle() {
                     @Override
-                    public void onSuccess(byte[] response) { //esperar el resultado para ejecutar la tarea asincrona de almacenado en la base datos
-                       // Log.d("values", new String(response));
-                        misActividades.almacenarBaseDatos.execute();
+                    public void onSuccess(byte[] response) {
+                        Log.d("programacion"," Fin Escritura"+new String(response));
+                        Toast.makeText(getApplicationContext(), "Actualizacion de actividades Finalizada totalmente!", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        Log.d("programacion","Error Escritura"+e.getMessage());
                     }
                 });
-
-                new Thread(new Runnable() { //otro hilo para verificar el estado de la tarea asincrona de las actividades
-                    @Override
-                    public void run() {
-                        try {
-                            if(misActividades.almacenarBaseDatos.get()){ //al finalizar cambiar la actividad
-                                Intent i = new Intent(Parametros.this,ConfigurarArea.class);
-                                startActivity(i);
-                                finish();
-                            }
-                        } catch (ExecutionException e) {
-                            e.printStackTrace();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
-
             }
         }
     }
