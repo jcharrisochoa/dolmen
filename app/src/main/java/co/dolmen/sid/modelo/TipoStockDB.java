@@ -55,7 +55,7 @@ public class TipoStockDB extends TipoStock implements DatabaseDDL, DatabaseDLM {
 
     @Override
     public void eliminarDatos() {
-
+        db.execSQL("DELETE FROM  "+Constantes.TABLA_TIPO_STOCK);
     }
 
     @Override

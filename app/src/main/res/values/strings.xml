@@ -190,6 +190,7 @@
     <string name="titulo_articulo">Codigos de Inventario</string>
     <string name="descargando_actividades">Descargando Actvidades</string>
     <string name="titulo_mis_actividades">Mis Actividades</string>
+    <string name="titulo_mi_inventario">Mi Inventario</string>
 
 
 </resources>

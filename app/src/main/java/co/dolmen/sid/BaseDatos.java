@@ -9,6 +9,7 @@ import android.util.Log;
 
 import co.dolmen.sid.entidad.Articulo;
 import co.dolmen.sid.modelo.ActaContratoDB;
+import co.dolmen.sid.modelo.ActividadOperativaDB;
 import co.dolmen.sid.modelo.ArticuloDB;
 import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.CalibreDB;
@@ -28,6 +29,7 @@ import co.dolmen.sid.modelo.ProveedorDB;
 import co.dolmen.sid.modelo.ReferenciaMobiliarioDB;
 import co.dolmen.sid.modelo.RetenidaPosteDB;
 import co.dolmen.sid.modelo.SentidoDB;
+import co.dolmen.sid.modelo.StockDB;
 import co.dolmen.sid.modelo.TipoActividadDB;
 import co.dolmen.sid.modelo.TipoConductorElectricoDB;
 import co.dolmen.sid.modelo.TipoEscenarioDB;
@@ -85,6 +87,8 @@ public class BaseDatos extends SQLiteOpenHelper {
     private CalibreDB calibreDB;
     private TipoStockDB tipoStockDB;
     private ArticuloDB articuloDB;
+    private StockDB stockDB;
+    private ActividadOperativaDB actividadOperativaDB;
 
 
     public BaseDatos(Context context){
@@ -205,6 +209,12 @@ public class BaseDatos extends SQLiteOpenHelper {
 
         articuloDB = new ArticuloDB(sqLiteDatabase);
         articuloDB.crearTabla();
+
+        stockDB = new StockDB(sqLiteDatabase);
+        stockDB.crearTabla();
+
+        actividadOperativaDB = new ActividadOperativaDB(sqLiteDatabase);
+        actividadOperativaDB.crearTabla();
         //Log.d("DataBase","create");
     }
 
@@ -248,6 +258,8 @@ public class BaseDatos extends SQLiteOpenHelper {
             calibreDB  = new CalibreDB(sqLiteDatabase);
             tipoStockDB  = new TipoStockDB(sqLiteDatabase);
             articuloDB  = new ArticuloDB(sqLiteDatabase);
+            stockDB = new StockDB(sqLiteDatabase);
+            actividadOperativaDB = new ActividadOperativaDB(sqLiteDatabase);
 
             tipologiaDB.borrarTabla();
             mobiliarioDB.borrarTabla();
@@ -286,6 +298,8 @@ public class BaseDatos extends SQLiteOpenHelper {
             calibreDB.borrarTabla();
             tipoStockDB.borrarTabla();
             articuloDB.borrarTabla();
+            stockDB.borrarTabla();
+            actividadOperativaDB.borrarTabla();
 
             onCreate(sqLiteDatabase);
         }catch (SQLException e){

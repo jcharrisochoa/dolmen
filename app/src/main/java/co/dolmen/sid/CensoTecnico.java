@@ -1177,9 +1177,9 @@ public class CensoTecnico extends AppCompatActivity {
             if (cursor.moveToFirst()) {
                 do {
                     i++;
-                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(2).toUpperCase());
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
                     claseViaList.add(dataSpinner);
-                    labels.add(cursor.getString(2).toUpperCase());
+                    labels.add(cursor.getString(1).toUpperCase());
                 } while (cursor.moveToNext());
             }
         }

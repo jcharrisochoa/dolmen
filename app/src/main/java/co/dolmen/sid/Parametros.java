@@ -665,55 +665,36 @@ public class Parametros extends AppCompatActivity {
                 }
 
                 //Elementos
-                elementoDB.iniciarTransaccion();
-                for (int i = 0;i<arrayElemento.length();i++){
-
-                    JSONObject jObjectElemento = arrayElemento.getJSONObject(i);
-                    try {
+                try {
+                    elementoDB.iniciarTransaccion();
+                    for (int i = 0; i < arrayElemento.length(); i++) {
+                        JSONObject jObjectElemento = arrayElemento.getJSONObject(i);
                         elementoDB.agregarDatos(
-                                jObjectElemento.getInt("id_elemento"),
-                                jObjectElemento.getString("elemento_no"),
-                                jObjectElemento.getString("direccion"),
-                                jObjectElemento.getInt("id_municipio"),
-                                jObjectElemento.getInt("id_barrio"),
-                                jObjectElemento.getInt("id_proceso_sgc"),
-                                jObjectElemento.getInt("id_tipologia"),
-                                jObjectElemento.getInt("id_mobiliario"),
-                                jObjectElemento.getInt("id_referencia"),
-                                jObjectElemento.getInt("id_estado_mobiliario"));
-                    }catch (SQLException e){
-                        e.printStackTrace();
+                        jObjectElemento.getInt("id_elemento"),
+                        jObjectElemento.getString("elemento_no"),
+                        jObjectElemento.getString("direccion"),
+                        jObjectElemento.getInt("id_municipio"),
+                        jObjectElemento.getInt("id_barrio"),
+                        jObjectElemento.getInt("id_proceso_sgc"),
+                        jObjectElemento.getInt("id_tipologia"),
+                        jObjectElemento.getInt("id_mobiliario"),
+                        jObjectElemento.getInt("id_referencia"),
+                        jObjectElemento.getInt("id_estado_mobiliario"));
+                        progress = (int) Math.round((double) (i + 1) / arrayElemento.length() * 100);
+                        publishProgress(progress, R.string.titulo_elemento);
+                        Log.d("parametros", "->Elementos:" + progress + "%");
                     }
-                    progress = (int)Math.round((double)(i+1)/arrayElemento.length()*100);
-                    publishProgress(progress,R.string.titulo_elemento);
-                    Log.d("parametros","->Elementos:"+progress+"%");
-
-                }
-                elementoDB.finalizarTransaccion();
-
-                //--Programa
-                ProgramaDB programaDB = new ProgramaDB(database);
-                JSONArray arrayPrograma = parametros.getJSONArray("programausuario");
-                for (int i = 0;i<arrayPrograma.length();i++){
-                    JSONObject jObjectPrograma = arrayPrograma.getJSONObject(i);
-                    programaDB.setId(jObjectPrograma.getInt("id"));
-                    ProcesoSgc procesoPrograma = new ProcesoSgc();
-                    procesoPrograma.setId(jObjectPrograma.getInt("id_proceso_sgc"));
-                    Municipio municipioPrograma = new Municipio();
-                    municipioPrograma.setId(jObjectPrograma.getInt("id_municipio"));
-                    programaDB.setProcesoSgc(procesoPrograma);
-                    programaDB.setMunicipio(municipioPrograma);
-                    programaDB.agregarDatos(programaDB);
-
-                    progress = (int)Math.round((double)(i+1)/arrayPrograma.length()*100);
-                    publishProgress(progress,R.string.titulo_programa);
-                    Log.d("parametros","->Programa:"+progress+"%");
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    Log.d("Error","Error->"+e.getMessage());
+                }finally {
+                    elementoDB.finalizarTransaccion();
                 }
 
-
-                database.close();
+                //database.close();
             } catch (JSONException e) {
                 e.getMessage();
+                Log.d("Error","Error->"+e.getMessage());
             }
             return true;
         }
@@ -725,7 +706,7 @@ public class Parametros extends AppCompatActivity {
                 Intent i = new Intent(Parametros.this,ConfigurarArea.class);
 
                 //--consultar Inventario Remoto
-                //final InventarioRemoto inventarioRemoto = new InventarioRemoto(progressBar,txt_nombre_tipo_descarga,txt_porcentaje_carga,Parametros.this,config.getInt("id_usuario",0));
+                final InventarioRemoto inventarioRemoto = new InventarioRemoto(database,progressBar,txt_nombre_tipo_descarga,txt_porcentaje_carga,Parametros.this,config.getInt("id_usuario",0));
 
                 //--Consultar actividades
                 final MisActividades misActividades = new MisActividades(progressBar,txt_nombre_tipo_descarga,txt_porcentaje_carga,getApplicationContext(),config.getInt("id_usuario",0));
@@ -733,12 +714,27 @@ public class Parametros extends AppCompatActivity {
                     @Override
                     public void onSuccess(byte[] response) {
                         Log.d("programacion"," Fin Escritura"+new String(response));
-                        Toast.makeText(getApplicationContext(), "Actualizacion de actividades Finalizada totalmente!", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), "Actualizacion de actividades Finalizada totalmente!", Toast.LENGTH_SHORT).show();
+                        inventarioRemoto.consultarExistencia(new ResponseHandle() {
+                            @Override
+                            public void onSuccess(byte[] response) {
+                                database.close();
+                                //Log.d("programacion"," Fin Escritura Inventario"+new String(response));
+                                Intent intent = new Intent(Parametros.this,ConfigurarArea.class);
+                                startActivity(intent);
+                                finish();
+                            }
+
+                            @Override
+                            public void onFailure(Exception e) {
+                                Toast.makeText(getApplicationContext(),"Error actualizando la base de datos de Inventario "+e.getMessage(),Toast.LENGTH_LONG);
+                            }
+                        });
                     }
 
                     @Override
                     public void onFailure(Exception e) {
-                        Log.d("programacion","Error Escritura"+e.getMessage());
+                        Toast.makeText(getApplicationContext(),"Error actualizando la base de datos de Actividades "+e.getMessage(),Toast.LENGTH_LONG);
                     }
                 });
             }

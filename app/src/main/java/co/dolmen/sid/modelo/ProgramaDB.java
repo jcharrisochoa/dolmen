@@ -4,6 +4,9 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 import co.dolmen.sid.Constantes;
 import co.dolmen.sid.entidad.Programa;
 
@@ -11,12 +14,18 @@ public class ProgramaDB extends Programa implements  DatabaseDDL,DatabaseDLM {
     private SQLiteDatabase db;
     private String sql;
 
+
     public ProgramaDB(SQLiteDatabase db) {
         this.db = db;
     }
     @Override
     public void crearTabla() {
-        this.sql = "create table "+ Constantes.TABLA_PROGRAMA +"(_id INTEGER PRIMARY KEY,id_proceso_sgc INTEGER,id_municipio INTEGER);";
+        this.sql = "create table "+ Constantes.TABLA_PROGRAMA +"("+
+                "_id INTEGER PRIMARY KEY NOT NULL,"+
+                "descripcion TEXT NOT NULL,"+
+                "fecha_programa date not null,"+
+                "id_proceso_sgc INTEGER NOT NULL," +
+                "id_municipio INTEGER NOT NULL);";
         db.execSQL(this.sql);
     }
 
@@ -33,6 +42,8 @@ public class ProgramaDB extends Programa implements  DatabaseDDL,DatabaseDLM {
             if(result.getCount() == 0) {
                 ContentValues contentValues = new ContentValues();
                 contentValues.put("_id", programa.getId());
+                contentValues.put("descripcion",programa.getDescripcion());
+                contentValues.put("fecha_programa",new SimpleDateFormat("yyyy-mm-dd", Locale.getDefault()).format( programa.getFechaPrograma()));
                 contentValues.put("id_proceso_sgc", programa.getProcesoSgc().getId());
                 contentValues.put("id_municipio", programa.getMunicipio().getId());
                 db.insert(Constantes.TABLA_PROGRAMA, null, contentValues);

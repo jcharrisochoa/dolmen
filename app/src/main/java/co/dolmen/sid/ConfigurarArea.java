@@ -4,6 +4,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import co.dolmen.sid.modelo.ActaContratoDB;
+import co.dolmen.sid.modelo.ActividadOperativaDB;
 import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.CensoArchivoDB;
 import co.dolmen.sid.modelo.CensoAsignadoDB;
@@ -89,6 +90,7 @@ public class ConfigurarArea extends AppCompatActivity {
     private TipologiaDB tipologiaDB;
     private MobiliarioDB mobiliarioDB;
     private ReferenciaMobiliarioDB referenciaMobiliarioDB;
+    private ActividadOperativaDB actividadOperativaDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,6 +126,7 @@ public class ConfigurarArea extends AppCompatActivity {
         tipologiaDB         = new TipologiaDB(database);
         mobiliarioDB        = new MobiliarioDB(database);
         referenciaMobiliarioDB= new ReferenciaMobiliarioDB(database);
+        actividadOperativaDB= new ActividadOperativaDB(database);
 
 
                 alert = new AlertDialog.Builder(this);

@@ -118,11 +118,13 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }
+
     public Cursor consultarId(int id){
         this.sql = "SELECT _id FROM "+Constantes.TABLA_ELEMENTO+" WHERE _id="+id;
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }
+
     public Cursor consultarElemento(int idMunicipio,int idProceso,int elementoNo){
         this.sql = "SELECT e._id,e.elemento_no,e.direccion,e.id_municipio,e.id_barrio,e.id_proceso_sgc,e.id_tipologia,e.id_mobiliario,e.id_referencia,e.id_estado_mobiliario," +
                     "tm.descripcion as tipologia,mb.descripcion as mobiliario,rm.descripcion as referencia,em.descripcion as estado_mobiliario,b.descripcion as barrio " +
