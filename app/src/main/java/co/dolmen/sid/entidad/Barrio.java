@@ -1,6 +1,8 @@
 package co.dolmen.sid.entidad;
 
-public class Barrio extends Municipio{
+import java.io.Serializable;
+
+public class Barrio extends Municipio implements Serializable {
     int idBarrio;
     String nombreBarrio;
     public Barrio (){

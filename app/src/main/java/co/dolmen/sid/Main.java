@@ -4,10 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -35,7 +32,8 @@ public class Main extends AppCompatActivity {
                 @Override
                 public void run() {
                     //Constantes.OLD_VERSION_BASEDATOS = database.getVersion();
-                    Intent i = new Intent(Main.this,ConfigurarArea.class);
+                    //Intent i = new Intent(Main.this,ConfigurarArea.class);
+                    Intent i = new Intent(Main.this, ListaActividad.class);
                     startActivity(i);
                     finish();
                 }

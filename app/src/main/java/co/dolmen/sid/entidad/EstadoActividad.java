@@ -1,6 +1,8 @@
 package co.dolmen.sid.entidad;
 
-public class EstadoActividad {
+import java.io.Serializable;
+
+public class EstadoActividad implements Serializable {
     int id;
     String descripcion;
 

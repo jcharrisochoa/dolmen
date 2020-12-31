@@ -1,6 +1,8 @@
 package co.dolmen.sid.entidad;
 
-public class CentroCosto {
+import java.io.Serializable;
+
+public class CentroCosto implements Serializable {
     int idCentroCosto;
     String descripcionCentroCosto;
 

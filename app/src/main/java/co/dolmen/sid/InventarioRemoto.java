@@ -157,16 +157,15 @@ public class InventarioRemoto {
 
                     Bodega bodega = new Bodega(jObjectStock.getInt("id_bodega"),jObjectStock.getString("bodega"));
 
-                    Stock stock = new Stock(
+                    StockDB stockDB = new StockDB(database);
+
+                    stockDB.agregarDatos( new Stock(
                             bodega,
                             centroCosto,
                             articulo,
                             tipoStock,
                             jObjectStock.getDouble("cantidad")
-                    );
-
-                    StockDB stockDB = new StockDB(database);
-                    stockDB.agregarDatos(stock);
+                    ));
 
                     progress = (int)Math.round((double)(i+1)/arrayStock.length()*100);
                     publishProgress(progress, R.string.titulo_mi_inventario);
@@ -175,6 +174,7 @@ public class InventarioRemoto {
             }
             catch (JSONException e){
                 e.getMessage();
+                Log.d("Error","Error->"+e.getMessage());
             }
             return true;
         }

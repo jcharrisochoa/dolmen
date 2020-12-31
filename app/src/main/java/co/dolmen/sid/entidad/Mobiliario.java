@@ -1,6 +1,8 @@
 package co.dolmen.sid.entidad;
 
-public class Mobiliario extends Tipologia {
+import java.io.Serializable;
+
+public class Mobiliario extends Tipologia implements Serializable {
     int idMobiliario;
     String descripcionMobiliario;
     Tipologia tipologia;

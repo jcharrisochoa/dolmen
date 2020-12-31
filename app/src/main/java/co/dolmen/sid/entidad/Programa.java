@@ -1,10 +1,11 @@
 package co.dolmen.sid.entidad;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 
-public class Programa {
+public class Programa implements Serializable {
     int id;
     String descripcion;
     Date fechaPrograma;

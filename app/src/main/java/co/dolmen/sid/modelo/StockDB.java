@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import co.dolmen.sid.Constantes;
+import co.dolmen.sid.entidad.ActividadOperativa;
 import co.dolmen.sid.entidad.Stock;
 import co.dolmen.sid.entidad.TipoStock;
 
@@ -41,7 +42,13 @@ public class StockDB extends Stock implements DatabaseDDL,DatabaseDLM {
     public boolean agregarDatos(Object o) {
         if(o instanceof Stock) {
             stock = (Stock) o;
-            Cursor result = consultarTodo(stock.getBodega().getIdBodega(),stock.getArticulo().getId(),stock.getTipoStock().getId(),stock.getCentroCosto().getIdCentroCosto());
+
+            Cursor result = consultarTodo(
+                    stock.getBodega().getIdBodega(),
+                    stock.getArticulo().getId(),
+                    stock.getTipoStock().getId(),
+                    stock.getCentroCosto().getIdCentroCosto()
+            );
             if(result.getCount() == 0) {
                 ContentValues contentValues = new ContentValues();
                 contentValues.put("id_bodega", stock.getBodega().getIdBodega());
@@ -51,6 +58,9 @@ public class StockDB extends Stock implements DatabaseDDL,DatabaseDLM {
                 contentValues.put("cantidad", stock.getCantidad());
                 db.insert(Constantes.TABLA_STOCK, null, contentValues);
             }
+            else {
+                actualizarDatos(o);
+            }
             result.close();
             return true;
         }
@@ -59,8 +69,17 @@ public class StockDB extends Stock implements DatabaseDDL,DatabaseDLM {
     }
 
     @Override
-    public void actualizarDatos(Object E) {
-
+    public void actualizarDatos(Object o) {
+        if(o instanceof Stock) {
+            stock = (Stock) o;
+            db.execSQL("UPDATE "+Constantes.TABLA_STOCK +
+                    " SET cantidad = cantidad + "+stock.getCantidad()+
+                    " WHERE " +
+                    " id_bodega="+stock.getBodega().getIdBodega()+
+                    " and id_tipo_stock="+stock.getTipoStock().getId()+
+                    " and id_centro_costo="+stock.getCentroCosto().getIdCentroCosto()+
+                    " and id_articulo="+stock.getArticulo().getId());
+        }
     }
 
     @Override
@@ -84,7 +103,7 @@ public class StockDB extends Stock implements DatabaseDDL,DatabaseDLM {
             q += " and id_centro_costo="+id_centro_costo;
         }
 
-        this.sql = "SELECT sum(cantidad) as cantidad FROM "+ Constantes.TABLA_STOCK+" where id_bodega= "+id_bodega+" and id_articulo="+id_articulo+" "+q;
+        this.sql = "SELECT * FROM "+ Constantes.TABLA_STOCK+" where id_bodega= "+id_bodega+" and id_articulo="+id_articulo+" "+q;
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }

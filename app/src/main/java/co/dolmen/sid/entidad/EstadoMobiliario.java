@@ -1,6 +1,8 @@
 package co.dolmen.sid.entidad;
 
-public class EstadoMobiliario extends ProcesoSgc {
+import java.io.Serializable;
+
+public class EstadoMobiliario extends ProcesoSgc implements Serializable {
     int id;
     String descripcion;
 

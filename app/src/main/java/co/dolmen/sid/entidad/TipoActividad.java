@@ -1,6 +1,8 @@
 package co.dolmen.sid.entidad;
 
-public class TipoActividad {
+import java.io.Serializable;
+
+public class TipoActividad implements Serializable {
     int id;
     String descripcion;
     ProcesoSgc procesoSgc;

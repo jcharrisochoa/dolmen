@@ -3,6 +3,7 @@ package co.dolmen.sid.modelo;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -44,14 +45,16 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
                 "id_elemento INTEGER,"+
                 "id_tipo_elemento INTEGER,"+
                 "id_centro_costo INTEGER NOT NULL,"+
+                "centro_costo VARCHAR(45) NOT NULL,"+
                 "id_barrio INTEGER NOT NULL,"+
                 "barrio VARCHAR(80),"+
                 "id_tipo_reporte_dano INTEGER,"+
                 "id_tipo_operacion INTEGER NOT NULL,"+
                 "id_equipo INTEGER,"+
+                "serial_equipo VARCHAR(12),"+
                 "id_estado_actividad INTEGER NOT NULL,"+
                 "id_usuario_descarga INTEGER,"+
-                "fecha_programa DATE NOT NULL,"+
+                "fch_programa DATE NOT NULL,"+
                 "fch_actividad DATETIME NOT NULL,"+
                 "fch_en_sitio DATETIME,"+
                 "fch_ejecucion DATETIME,"+
@@ -85,13 +88,15 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
             contentValues.put("id_elemento", actividad.getElemento().getId());
             contentValues.put("id_tipo_elemento", 0);
             contentValues.put("id_centro_costo", actividad.getCentroCosto().getIdCentroCosto());
+            contentValues.put("centro_costo", actividad.getCentroCosto().getDescripcionCentroCosto());
             contentValues.put("id_barrio", actividad.getBarrio().getIdBarrio());
             contentValues.put("id_tipo_reporte_dano", actividad.getTipoReporteDano().getId());
             contentValues.put("id_tipo_operacion", actividad.getTipoActividad().getId());
             contentValues.put("id_equipo", actividad.getEquipo().getIdEquipo());
+            contentValues.put("serial_equipo", actividad.getEquipo().getSerial());
             contentValues.put("id_estado_actividad", actividad.getEstadoActividad().getId());
-            contentValues.put("fecha_programa", new SimpleDateFormat("yyyy-mm-dd", Locale.getDefault()).format(actividad.getFechaPrograma()));
-            contentValues.put("fch_actividad", new SimpleDateFormat("yyyy-mm-dd H:m:s", Locale.getDefault()).format(actividad.getFechaActividad()));
+            contentValues.put("fch_programa", new SimpleDateFormat("yyyy-MM-dd").format(actividad.getFechaPrograma()));
+            contentValues.put("fch_actividad", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(actividad.getFechaActividad()));
             contentValues.put("direccion",actividad.getDireccion());
             contentValues.put("barrio",actividad.getBarrio().getNombreBarrio());
             contentValues.put("et",actividad.getEt());
@@ -107,7 +112,7 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
             actividad = (ActividadOperativa) o;
             ContentValues contentValues = new ContentValues();
             contentValues.put("pendiente_sincronizar", "S");
-            //contentValues.put("id_tipo_operacion", actividad.getTipoActividad().getId());
+            contentValues.put("id_tipo_operacion", actividad.getTipoActividad().getId());
             contentValues.put("id_elemento", actividad.getElemento().getId());
             contentValues.put("id_barrio", actividad.getBarrio().getIdBarrio());
             contentValues.put("direccion", actividad.getDireccion());
@@ -124,8 +129,33 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
         db.execSQL("DELETE FROM  "+Constantes.TABLA_ACTIVIDAD_OPERATIVA);
     }
 
+    public void eliminarDatos(char pendiente) {
+        db.execSQL("DELETE FROM  "+Constantes.TABLA_ACTIVIDAD_OPERATIVA+ " where pendiente_sincronizar'"+pendiente+"'");
+    }
+
     @Override
     public Cursor consultarTodo() {
-        return null;
+        this.sql = "select ao.id_municipio,pg.descripcion,m.descripcion as municipio, p.descripcion as proceso,ta.descripcion as tipo_operacion," +
+                "ea.descripcion as estado_actividad,e.elemento_no,e.direccion as direccion_elemento,e.id_barrio," +
+                "b.descripcion as barrio_elemento,tm.descripcion as tipologia,mb.descripcion as mobiliario,rm.descripcion,ao.id_actividad," +
+                "ao.id_programa,ao.id_proceso_sgc,ao.id_espacio_publicitario,ao.id_elemento,ao.id_centro_costo,ao.centro_costo," +
+                "ao.barrio,ao.id_tipo_reporte_dano,tr.descripcion as tipo_reporte_dano,ao.id_tipo_operacion,ao.id_equipo,ao.serial_equipo,ao.id_estado_actividad," +
+                "ao.fch_programa,ao.fch_actividad,ao.direccion,ao.et,ao.usuario_programa_actividad," +
+                "ao.pendiente_sincronizar,pg.descripcion as programa,ao.id_espacio_publicitario " +
+                "from "+Constantes.TABLA_ACTIVIDAD_OPERATIVA+" ao " +
+                "join "+Constantes.TABLA_PROGRAMA+" pg on(ao.id_programa = pg._id) " +
+                "join "+Constantes.TABLA_MUNICIPIO+" m on(ao.id_municipio = m._id) " +
+                "join "+Constantes.TABLA_PROCESO+" p on(ao.id_proceso_sgc = p._id) " +
+                "join "+Constantes.TABLA_ESTADO_ACTIVIDAD+" ea on(ao.id_estado_actividad = ea._id) " +
+                "join "+Constantes.TABLA_TIPO_ACTIVIDAD+" ta on(ao.id_tipo_operacion = ta._id) " +
+                "left JOIN "+Constantes.TABLA_TIPO_REPORTE_DANO+" tr on(ao.id_tipo_reporte_dano = tr._id) " +
+                "left join "+Constantes.TABLA_ELEMENTO+" e on(ao.id_elemento = e._id) " +
+                "left join "+Constantes.TABLA_TIPOLOGIA_MOBILIARIO+" tm on(e.id_tipologia = tm._id) " +
+                "left join "+Constantes.TABLA_MOBILIARIO+" mb on(e.id_mobiliario = mb._id) " +
+                "left join "+Constantes.TABLA_REFERNCIA_MOBILIARIO+" rm on(e.id_referencia = rm._id) " +
+                "left join "+Constantes.TABLA_BARRIO+" b on(e.id_barrio = b._id) " +
+                "order by ao.id_actividad";
+        Cursor result = db.rawQuery(this.sql, null);
+        return result;
     }
 }

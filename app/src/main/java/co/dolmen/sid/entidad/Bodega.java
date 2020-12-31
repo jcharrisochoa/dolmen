@@ -1,6 +1,8 @@
 package co.dolmen.sid.entidad;
 
-public class Bodega {
+import java.io.Serializable;
+
+public class Bodega implements Serializable {
     int idBodega;
     String descripcion;
 

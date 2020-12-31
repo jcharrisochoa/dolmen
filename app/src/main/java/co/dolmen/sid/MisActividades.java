@@ -163,7 +163,7 @@ class MisActividades {
 
                     programaDB.setId(jObjectProgramacion.getInt("programa"));
                     programaDB.setDescripcion(jObjectProgramacion.getString("descripcion_programa"));
-                    programaDB.setFechaPrograma(new SimpleDateFormat("yyyy-mm-dd").parse(jObjectProgramacion.getString("fecha_programa")));
+                    programaDB.setFechaPrograma(new SimpleDateFormat("yyyy-MM-dd").parse(jObjectProgramacion.getString("fecha_programa")));
 
                     ProcesoSgc procesoPrograma = new ProcesoSgc();
                     procesoPrograma.setId(jObjectProgramacion.getInt("id_proceso_sgc"));
@@ -178,7 +178,11 @@ class MisActividades {
                     JSONArray arrayActividad = jObjectProgramacion.getJSONArray("actividad");
                     for (int j=0;j<arrayActividad.length();j++){
                         JSONObject jObjectActividad = arrayActividad.getJSONObject(j);
-                        Log.d("Programacion","Programa->"+jObjectProgramacion.getInt("programa")+" Actividad->"+jObjectActividad.getInt("id_actividad"));
+                        /*Log.d("Programacion", "Programa->"+jObjectProgramacion.getInt("programa")+
+                                    " Actividad->"+jObjectActividad.getInt("id_actividad")+
+                                    " Fecha->"+jObjectActividad.getString("fch_actividad")+
+                                " FechaObj->"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(jObjectActividad.getString("fch_actividad"))
+                        );*/
 
                         progress = (int)Math.round((double)(j+1)/arrayActividad.length()*100);
                         publishProgress(progress, jObjectProgramacion.getInt("programa"));
@@ -224,7 +228,7 @@ class MisActividades {
                                 tipoActividad,
                                 equipo,
                                 programaDB.getFechaPrograma(),
-                                new SimpleDateFormat("yyyy-mm-dd H:m:s").parse(jObjectActividad.getString("fch_actividad")),
+                                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(jObjectActividad.getString("fch_actividad")),
                                 jObjectActividad.getString("direccion"),
                                 jObjectActividad.getString("et"),
                                 jObjectActividad.getString("usuario_programa_actividad")

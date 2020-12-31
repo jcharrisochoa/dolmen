@@ -713,7 +713,7 @@ public class Parametros extends AppCompatActivity {
                 misActividades.consultarActividades(new ResponseHandle() {
                     @Override
                     public void onSuccess(byte[] response) {
-                        Log.d("programacion"," Fin Escritura"+new String(response));
+                        //Log.d("programacion"," Fin Escritura"+new String(response));
                         //Toast.makeText(getApplicationContext(), "Actualizacion de actividades Finalizada totalmente!", Toast.LENGTH_SHORT).show();
                         inventarioRemoto.consultarExistencia(new ResponseHandle() {
                             @Override

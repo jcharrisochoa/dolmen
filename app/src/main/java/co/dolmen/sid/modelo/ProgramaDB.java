@@ -43,7 +43,7 @@ public class ProgramaDB extends Programa implements  DatabaseDDL,DatabaseDLM {
                 ContentValues contentValues = new ContentValues();
                 contentValues.put("_id", programa.getId());
                 contentValues.put("descripcion",programa.getDescripcion());
-                contentValues.put("fecha_programa",new SimpleDateFormat("yyyy-mm-dd", Locale.getDefault()).format( programa.getFechaPrograma()));
+                contentValues.put("fecha_programa",new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format( programa.getFechaPrograma()));
                 contentValues.put("id_proceso_sgc", programa.getProcesoSgc().getId());
                 contentValues.put("id_municipio", programa.getMunicipio().getId());
                 db.insert(Constantes.TABLA_PROGRAMA, null, contentValues);

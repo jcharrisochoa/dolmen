@@ -1,6 +1,8 @@
 package co.dolmen.sid.entidad;
 
-public class Contrato {
+import java.io.Serializable;
+
+public class Contrato implements Serializable {
     int id;
     String descripcion;
     Municipio municipio;

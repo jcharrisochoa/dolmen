@@ -1,6 +1,8 @@
 package co.dolmen.sid.entidad;
 
-public class Equipo {
+import java.io.Serializable;
+
+public class Equipo implements Serializable {
     private int idEquipo;
     private String codigo;
     private String serial;
@@ -13,6 +15,11 @@ public class Equipo {
         this.codigo = codigo;
         this.serial = serial;
         this.descripcion = descripcion;
+    }
+
+    public Equipo (int idEquipo,String serial){
+        this.idEquipo = idEquipo;
+        this.serial = serial;
     }
 
     public int getIdEquipo() {

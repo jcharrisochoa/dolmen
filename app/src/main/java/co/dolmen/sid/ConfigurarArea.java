@@ -19,6 +19,7 @@ import co.dolmen.sid.modelo.MunicipioDB;
 import co.dolmen.sid.modelo.ProcesoSgcDB;
 import co.dolmen.sid.modelo.ProgramaDB;
 import co.dolmen.sid.modelo.ReferenciaMobiliarioDB;
+import co.dolmen.sid.modelo.StockDB;
 import co.dolmen.sid.modelo.TipoActividadDB;
 import co.dolmen.sid.modelo.TipoReporteDanoDB;
 import co.dolmen.sid.modelo.TipologiaDB;
@@ -91,6 +92,7 @@ public class ConfigurarArea extends AppCompatActivity {
     private MobiliarioDB mobiliarioDB;
     private ReferenciaMobiliarioDB referenciaMobiliarioDB;
     private ActividadOperativaDB actividadOperativaDB;
+    private StockDB stockDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +129,7 @@ public class ConfigurarArea extends AppCompatActivity {
         mobiliarioDB        = new MobiliarioDB(database);
         referenciaMobiliarioDB= new ReferenciaMobiliarioDB(database);
         actividadOperativaDB= new ActividadOperativaDB(database);
+        stockDB = new StockDB(database);
 
 
                 alert = new AlertDialog.Builder(this);
@@ -206,6 +209,8 @@ public class ConfigurarArea extends AppCompatActivity {
                             tipologiaDB.eliminarDatos();
                             mobiliarioDB.eliminarDatos();
                             referenciaMobiliarioDB.eliminarDatos();
+                            actividadOperativaDB.eliminarDatos();
+                            stockDB.eliminarDatos();
 
 
                             config.edit().clear().commit();

@@ -2,7 +2,7 @@ package co.dolmen.sid;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import co.dolmen.sid.entidad.Censo;
+
 import co.dolmen.sid.modelo.ActaContratoDB;
 import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.CensoArchivoDB;
@@ -250,7 +250,7 @@ public class Menu extends AppCompatActivity {
         btnMisActividades.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(Menu.this,ListaActividadActivity.class);
+                Intent i = new Intent(Menu.this, ListaActividad.class);
                 startActivity(i);
                 Menu.this.finish();
             }

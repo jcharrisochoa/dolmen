@@ -1,8 +1,9 @@
 package co.dolmen.sid.entidad;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class ActividadOperativa {
+public class ActividadOperativa implements Serializable {
 
     private int idActividad;
     private int idEspacioPublicitario;
@@ -154,5 +155,105 @@ public class ActividadOperativa {
 
     public String getUsuarioProgramaActividad() {
         return usuarioProgramaActividad;
+    }
+
+    public void setIdActividad(int idActividad) {
+        this.idActividad = idActividad;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
+    public void setElemento(Elemento elemento){
+        this.elemento = elemento;
+    }
+
+    public void setEstadoActividad(EstadoActividad estadoActividad){
+        this.estadoActividad = estadoActividad;
+    }
+
+    public void setFechaActividad(Date fechaActividad){
+        this.fechaActividad = fechaActividad;
+    }
+
+    public void setProcesoSgc(ProcesoSgc procesoSgc){
+        this.procesoSgc = procesoSgc;
+    }
+
+    public void setTipoActividad(TipoActividad tipoActividad){
+        this.tipoActividad = tipoActividad;
+    }
+
+    public void setIdEspacioPublicitario(int idEspacioPublicitario) {
+        this.idEspacioPublicitario = idEspacioPublicitario;
+    }
+
+    public void setIdUsuarioDescarga(int idUsuarioDescarga) {
+        this.idUsuarioDescarga = idUsuarioDescarga;
+    }
+
+    public void setPrograma(Programa programa) {
+        this.programa = programa;
+    }
+
+    public void setCentroCosto(CentroCosto centroCosto) {
+        this.centroCosto = centroCosto;
+    }
+
+    public void setBarrio(Barrio barrio) {
+        this.barrio = barrio;
+    }
+
+    public void setTipoReporteDano(TipoReporteDano tipoReporteDano) {
+        this.tipoReporteDano = tipoReporteDano;
+    }
+
+    public void setEquipo(Equipo equipo) {
+        this.equipo = equipo;
+    }
+
+    public void setFechaPrograma(Date fechaPrograma) {
+        this.fechaPrograma = fechaPrograma;
+    }
+
+    public void setFechaEnSitio(Date fechaEnSitio) {
+        this.fechaEnSitio = fechaEnSitio;
+    }
+
+    public void setFechaEjecucion(Date fechaEjecucion) {
+        this.fechaEjecucion = fechaEjecucion;
+    }
+
+    public void setLongitud(float longitud) {
+        this.longitud = longitud;
+    }
+
+    public void setLatitud(float latitud) {
+        this.latitud = latitud;
+    }
+
+    public void setEt(String et) {
+        this.et = et;
+    }
+
+    public void setUsuarioProgramaActividad(String usuarioProgramaActividad) {
+        this.usuarioProgramaActividad = usuarioProgramaActividad;
+    }
+
+    public void setNroElementoDesmontado(String nroElementoDesmontado) {
+        this.nroElementoDesmontado = nroElementoDesmontado;
+    }
+
+    public void setUsuarioGeneraActividad(String usuarioGeneraActividad) {
+        this.usuarioGeneraActividad = usuarioGeneraActividad;
+    }
+
+    public void setObservacion(String observacion) {
+        this.observacion = observacion;
+    }
+
+    public void setPendienteSincronizar(String pendienteSincronizar) {
+        this.pendienteSincronizar = pendienteSincronizar;
     }
 }

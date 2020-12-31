@@ -1,6 +1,8 @@
 package co.dolmen.sid.entidad;
 
-public class Tipologia extends ProcesoSgc {
+import java.io.Serializable;
+
+public class Tipologia extends ProcesoSgc implements Serializable {
     int idTipologia;
     String descripcionTipologia;
     ProcesoSgc procesoSgc;
