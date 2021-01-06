@@ -137,11 +137,12 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
     public Cursor consultarTodo() {
         this.sql = "select ao.id_municipio,pg.descripcion,m.descripcion as municipio, p.descripcion as proceso,ta.descripcion as tipo_operacion," +
                 "ea.descripcion as estado_actividad,e.elemento_no,e.direccion as direccion_elemento,e.id_barrio," +
-                "b.descripcion as barrio_elemento,tm.descripcion as tipologia,mb.descripcion as mobiliario,rm.descripcion,ao.id_actividad," +
+                "b.descripcion as barrio_elemento,tm.descripcion as tipologia,mb.descripcion as mobiliario,rm.descripcion as referencia,ao.id_actividad," +
                 "ao.id_programa,ao.id_proceso_sgc,ao.id_espacio_publicitario,ao.id_elemento,ao.id_centro_costo,ao.centro_costo," +
                 "ao.barrio,ao.id_tipo_reporte_dano,tr.descripcion as tipo_reporte_dano,ao.id_tipo_operacion,ao.id_equipo,ao.serial_equipo,ao.id_estado_actividad," +
                 "ao.fch_programa,ao.fch_actividad,ao.direccion,ao.et,ao.usuario_programa_actividad," +
-                "ao.pendiente_sincronizar,pg.descripcion as programa,ao.id_espacio_publicitario " +
+                "ao.pendiente_sincronizar,pg.descripcion as programa,ao.id_espacio_publicitario," +
+                "e.id_tipologia,e.id_mobiliario,e.id_referencia "+
                 "from "+Constantes.TABLA_ACTIVIDAD_OPERATIVA+" ao " +
                 "join "+Constantes.TABLA_PROGRAMA+" pg on(ao.id_programa = pg._id) " +
                 "join "+Constantes.TABLA_MUNICIPIO+" m on(ao.id_municipio = m._id) " +

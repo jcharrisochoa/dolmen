@@ -32,8 +32,8 @@ public class Main extends AppCompatActivity {
                 @Override
                 public void run() {
                     //Constantes.OLD_VERSION_BASEDATOS = database.getVersion();
-                    //Intent i = new Intent(Main.this,ConfigurarArea.class);
-                    Intent i = new Intent(Main.this, ListaActividad.class);
+                    Intent i = new Intent(Main.this,ConfigurarArea.class);
+                    //Intent i = new Intent(Main.this, ListaActividad.class);
                     startActivity(i);
                     finish();
                 }

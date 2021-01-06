@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.io.Serializable;
@@ -30,11 +31,14 @@ import co.dolmen.sid.entidad.CentroCosto;
 import co.dolmen.sid.entidad.Elemento;
 import co.dolmen.sid.entidad.Equipo;
 import co.dolmen.sid.entidad.EstadoActividad;
+import co.dolmen.sid.entidad.Mobiliario;
 import co.dolmen.sid.entidad.Municipio;
 import co.dolmen.sid.entidad.ProcesoSgc;
 import co.dolmen.sid.entidad.Programa;
+import co.dolmen.sid.entidad.ReferenciaMobiliario;
 import co.dolmen.sid.entidad.TipoActividad;
 import co.dolmen.sid.entidad.TipoReporteDano;
+import co.dolmen.sid.entidad.Tipologia;
 import co.dolmen.sid.modelo.ActividadOperativaDB;
 import co.dolmen.sid.utilidades.AdapterData;
 
@@ -88,9 +92,6 @@ public class ListaActividad extends AppCompatActivity  {
             @SuppressLint("ResourceAsColor")
             @Override
             public void onClick(View v) {
-                /*Toast.makeText(getApplicationContext(),
-                        "hola:"+actividadOperativaArrayList.get(recyclerView.getChildAdapterPosition(v)).getIdActividad(),
-                        Toast.LENGTH_SHORT).show();*/
                 Intent i = new Intent(ListaActividad.this,DetalleActividad.class);
                 ActividadOperativa actividadOperativa  =  actividadOperativaArrayList.get(recyclerView.getChildAdapterPosition(v));
                 i.putExtra("actividadOperativa",actividadOperativa);
@@ -134,9 +135,29 @@ public class ListaActividad extends AppCompatActivity  {
                 elemento.setId(cursor.getInt(cursor.getColumnIndex("id_elemento")));
                 if(cursor.getString(cursor.getColumnIndex("elemento_no")) == null){
                     elemento.setElemento_no("-");
+                    elemento.setTipologia(new Tipologia());
+                    elemento.setMobiliario(new Mobiliario());
+                    elemento.setReferenciaMobiliario(new ReferenciaMobiliario());
                 }
                 else {
                     elemento.setElemento_no(cursor.getString(cursor.getColumnIndex("elemento_no")));
+                    elemento.setTipologia(
+                            new Tipologia(
+                                    cursor.getInt(cursor.getColumnIndex("id_tipologia")),
+                                    cursor.getString(cursor.getColumnIndex("tipologia"))
+                            )
+                    );
+                    elemento.setMobiliario(new Mobiliario(
+                            cursor.getInt(cursor.getColumnIndex("id_mobiliario")),
+                            cursor.getString(cursor.getColumnIndex("mobiliario"))
+                    ));
+
+                    elemento.setReferenciaMobiliario(
+                            new ReferenciaMobiliario(
+                                    cursor.getInt(cursor.getColumnIndex("id_referencia")),
+                                    cursor.getString(cursor.getColumnIndex("referencia"))
+                            )
+                    );
                 }
 
                 ProcesoSgc procesoSgc = new ProcesoSgc();

@@ -11,6 +11,12 @@ public class Tipologia extends ProcesoSgc implements Serializable {
         super();
     }
 
+    public Tipologia(int idTipologia,String descripcionTipologia){
+        super();
+        this.idTipologia = idTipologia;
+        this.descripcionTipologia = descripcionTipologia;
+    }
+
     public int getIdTipologia() {
         return idTipologia;
     }

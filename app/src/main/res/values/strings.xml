@@ -1,6 +1,6 @@
 <resources>
     <!--Label-->
-    <string name="app_name">CENSO v2</string>
+    <string name="app_name">SID MOVIL</string>
     <string name="cargando">Cargando</string>
     <string name="usuario">Usuario</string>
 
@@ -154,7 +154,6 @@
     <string name="titulo_actividad">Actividad</string>
 
 
-
     <string name="titulo_ancho_via">Ancho Via*</string>
     <string name="titulo_interdistancia">Intedistancia</string>
     <string name="alert_ancho_via">Ancho de la Via</string>
@@ -194,6 +193,13 @@
     <string name="titulo_mis_actividades">Mis Actividades</string>
     <string name="titulo_mi_inventario">Mi Inventario</string>
     <string name="btn_ejecutar">Ejecutar</string>
+    <string name="title_activity_ejecuta_actividad">EjecutaActividad</string>
+    <string name="tab_text_1">Foto Antes</string>
+    <string name="tab_text_2">Foto Despues</string>
+    <string name="tab_text_3">Material</string>
+    <string name="tab_text_4">Info</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>
