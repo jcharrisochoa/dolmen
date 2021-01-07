@@ -77,19 +77,19 @@
                 android:orientation="horizontal">
 
                 <EditText
-                    android:id="@+id/txt_buscar_elemento"
+                    android:id="@+id/txt_dato_busqueda"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:autofillHints="@string/buscar_elemento"
                     android:ems="10"
-                    android:hint="Dato"
-                    android:inputType="number"
+                    android:hint="Digite el dato a buscar"
+                    android:inputType="textPersonName|text|textAutoComplete"
                     android:maxLength="7"
                     tools:text="@string/buscar_elemento" />
 
                 <ImageButton
-                    android:id="@+id/btn_buscar_elemento"
+                    android:id="@+id/btn_buscar_actividad"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="3"
@@ -99,7 +99,7 @@
                     android:tint="@color/colorIconText" />
 
                 <ImageButton
-                    android:id="@+id/btn_limpiar"
+                    android:id="@+id/btn_cancelar_busqueda"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="3"

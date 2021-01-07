@@ -21,7 +21,8 @@ import co.dolmen.sid.entidad.ActividadOperativa;
 
 public class AdapterData extends RecyclerView.Adapter<AdapterData.ViewHolderData> implements View.OnClickListener {
 
-    ArrayList<ActividadOperativa> actividadOperativaArrayList;
+    private  ArrayList<ActividadOperativa> actividadOperativaArrayList;
+
     private View.OnClickListener listener;
 
     public AdapterData(ArrayList<ActividadOperativa> actividadOperativaArrayList) {
@@ -58,6 +59,11 @@ public class AdapterData extends RecyclerView.Adapter<AdapterData.ViewHolderData
         this.listener = listener;
     }
 
+    public void filterList(ArrayList<ActividadOperativa> list){
+        this.actividadOperativaArrayList = list;
+        notifyDataSetChanged();
+    }
+
     public class ViewHolderData extends RecyclerView.ViewHolder {
         TextView itemActividad;
         TextView itemFecha;
@@ -87,5 +93,6 @@ public class AdapterData extends RecyclerView.Adapter<AdapterData.ViewHolderData
             //itemProceso.setText(actividadOperativa.getProcesoSgc().getDescripcion());
             itemTipoOperacion.setText(actividadOperativa.getTipoActividad().getDescripcion());
         }
+
     }
 }

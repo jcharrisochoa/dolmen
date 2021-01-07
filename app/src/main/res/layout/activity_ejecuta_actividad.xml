@@ -17,15 +17,6 @@
             android:gravity="center|start"
             android:orientation="horizontal">
 
-            <ImageButton
-                android:id="@+id/imageButton"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="3"
-                android:background="@color/colorPrimary"
-                android:src="@drawable/icon_undo"
-                android:tint="@color/colorIconText" />
-
             <TextView
                 android:id="@+id/txt_titulo_tab_actividad"
                 android:layout_width="match_parent"
@@ -38,14 +29,6 @@
                 android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
                 android:textSize="18sp" />
 
-            <ImageButton
-                android:id="@+id/imageButton4"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="3"
-                android:background="@color/colorPrimary"
-                android:src="@drawable/icon_save"
-                android:tint="@color/colorIconText" />
         </LinearLayout>
 
         <com.google.android.material.tabs.TabLayout
