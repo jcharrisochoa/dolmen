@@ -155,7 +155,7 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
                 "left join "+Constantes.TABLA_MOBILIARIO+" mb on(e.id_mobiliario = mb._id) " +
                 "left join "+Constantes.TABLA_REFERNCIA_MOBILIARIO+" rm on(e.id_referencia = rm._id) " +
                 "left join "+Constantes.TABLA_BARRIO+" b on(e.id_barrio = b._id) " +
-                "order by ao.id_actividad";
+                "order by ao.direccion";
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }

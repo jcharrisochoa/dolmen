@@ -1,6 +1,9 @@
 package co.dolmen.sid;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -23,6 +26,9 @@ public class EjecutaActividad extends AppCompatActivity {
     private TextView txtTituloTabActividad;
     private ViewPager viewPager;
     private TabLayout tabLayout;
+    SQLiteOpenHelper conn;
+    SQLiteDatabase database;
+    SharedPreferences config;
 
     //--Fragment
     private FragmentFotoAntes fragmentFotoAntes;
@@ -35,26 +41,33 @@ public class EjecutaActividad extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ejecuta_actividad);
 
+        conn = new BaseDatos(EjecutaActividad.this);
+        database = conn.getReadableDatabase();
+
         Intent i = getIntent();
         actividadOperativa = (ActividadOperativa)i.getSerializableExtra("actividadOperativa");
 
         txtTituloTabActividad  = findViewById(R.id.txt_titulo_tab_actividad);
-        txtTituloTabActividad.setText(getString(R.string.titulo_actividad)+" No "+actividadOperativa.getIdActividad()+" / Elem No "+actividadOperativa.getElemento().getElemento_no());
+        txtTituloTabActividad.setText("Act No "+actividadOperativa.getIdActividad()+" / Elem No "+actividadOperativa.getElemento().getElemento_no());
 
         viewPager = findViewById(R.id.view_pager);
         tabLayout = findViewById(R.id.tabs);
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("actividadOperativa",actividadOperativa);
 
         fragmentFotoAntes = new FragmentFotoAntes();
         fragmentFotoDespues = new FragmentFotoDespues();
         fragmentMateriales = new FragmentMateriales();
         fragmentInformacion = new FragmentInformacion();
+        fragmentInformacion.setArguments(bundle);
 
         tabLayout.setupWithViewPager(viewPager);
 
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-        viewPagerAdapter.addFragment(fragmentFotoAntes,"Foto Antes");
-        viewPagerAdapter.addFragment(fragmentFotoDespues,"Foto Despues");
-        viewPagerAdapter.addFragment(fragmentMateriales,"Materiales");
+        viewPagerAdapter.addFragment(fragmentFotoAntes,"Antes");
+        viewPagerAdapter.addFragment(fragmentFotoDespues,"Despues");
+        viewPagerAdapter.addFragment(fragmentMateriales,"Material");
         viewPagerAdapter.addFragment(fragmentInformacion,"Info");
         viewPager.setAdapter(viewPagerAdapter);
 

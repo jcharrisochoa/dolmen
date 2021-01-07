@@ -18,6 +18,8 @@ import android.widget.Button;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -74,7 +76,8 @@ public class ListaActividad extends AppCompatActivity  {
 
         alert = new AlertDialog.Builder(this);
 
-        btnCancelar = findViewById(R.id.btn_cancelar);
+       // btnCancelar = findViewById(R.id.btn_cancelar);
+        FloatingActionButton fabCancelar = findViewById(R.id.fab_cancelar);
 
         recyclerView = findViewById(R.id.rw_actividades);
         recyclerView.setLayoutManager(
@@ -106,9 +109,20 @@ public class ListaActividad extends AppCompatActivity  {
         recyclerView.setAdapter(adapterData);
 
 
-        btnCancelar.setOnClickListener(new View.OnClickListener() {
+        /*btnCancelar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                database.close();
+                Intent i = new Intent(ListaActividad.this, Menu.class);
+                startActivity(i);
+                ListaActividad.this.finish();
+            }
+        });*/
+        fabCancelar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               /* Snackbar.make(view, "Cancelar", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();*/
                 database.close();
                 Intent i = new Intent(ListaActividad.this, Menu.class);
                 startActivity(i);

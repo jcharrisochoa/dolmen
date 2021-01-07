@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -22,6 +23,7 @@
             android:layout_height="match_parent">
 
 
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -30,64 +32,123 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/textView"
+                    android:id="@+id/text_info_elemento"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Elemento Desmontado No:" />
+                    android:text="Información del Elemento" />
 
                 <LinearLayout
-                    android:id="@+id/linearLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
                     android:orientation="horizontal">
 
                     <EditText
-                        android:id="@+id/txt_buscar_elemento"
+                        android:id="@+id/txt_mobiliario_no"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:autofillHints="@string/buscar_elemento"
-                        android:background="@android:drawable/edit_text"
                         android:ems="10"
-                        android:hint="@string/buscar_elemento"
-                        android:inputType="number"
-                        android:maxLength="7"
-                        tools:text="@string/buscar_elemento" />
+                        android:hint="Elemento No"
+                        android:inputType="number" />
 
                     <ImageButton
-                        android:id="@+id/btn_buscar_elemento"
+                        android:id="@+id/imageButton"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_weight="2"
+                        android:layout_weight="3"
                         android:background="@android:drawable/btn_default_small"
-                        android:contentDescription="@string/buscar_elemento"
                         android:src="@drawable/icon_search" />
 
                     <ImageButton
-                        android:id="@+id/btn_limpiar"
+                        android:id="@+id/imageButton2"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_weight="2"
+                        android:layout_weight="3"
                         android:background="@android:drawable/btn_default_small"
                         android:src="@drawable/icon_cancel"
                         android:tint="@color/colorAccentCancel" />
-
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/textView35"
+                        android:id="@+id/textView46"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Array de Elementos Desmontados"
-                        android:textSize="36sp" />
+                        android:layout_height="match_parent"
+                        android:layout_weight="3"
+                        android:text="Mobiliario"
+                        android:textColor="@color/colorPrimaryText" />
 
+                    <TextView
+                        android:id="@+id/txt_mobiliario"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:textSize="18sp" />
                 </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textView37"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="3"
+                        android:text="Referencia"
+                        android:textColor="@color/colorPrimaryText" />
+
+                    <TextView
+                        android:id="@+id/txt_referencia"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+
+                <Switch
+                    android:id="@+id/sw_elemento_no_encontrado"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:checked="false"
+                    android:text="Elemento NO encontrado" />
+
+                <Switch
+                    android:id="@+id/sw_afectado_vandalismo"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:checked="false"
+                    android:text="¿Afectado por Vandalismo?" />
+
+                <TextView
+                    android:id="@+id/text_tipo_operacion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tipo Operacion *" />
+
+
+                <Spinner
+                    android:id="@+id/slt_tipo_actividad"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/btn_dropdown" />
 
                 <TextView
                     android:id="@+id/textView5"
@@ -101,77 +162,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:drawable/btn_dropdown" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/textView25"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Zona" />
-
-                        <RadioGroup
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-
-                            <RadioButton
-                                android:id="@+id/rd_urbano"
-                                android:layout_width="match_parent"
-                                android:layout_height="40dp"
-                                android:checked="true"
-                                android:text="Urbana" />
-
-                            <RadioButton
-                                android:id="@+id/rd_rutal"
-                                android:layout_width="match_parent"
-                                android:layout_height="40dp"
-                                android:text="Rural" />
-
-                        </RadioGroup>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/textView26"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Sector" />
-
-                        <RadioGroup
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-
-                            <RadioButton
-                                android:id="@+id/rd_normal"
-                                android:layout_width="match_parent"
-                                android:layout_height="40dp"
-                                android:checked="true"
-                                android:text="Normal" />
-
-                            <RadioButton
-                                android:id="@+id/rd_subnormal"
-                                android:layout_width="match_parent"
-                                android:layout_height="40dp"
-                                android:text="SubNormal" />
-                        </RadioGroup>
-
-                    </LinearLayout>
-                </LinearLayout>
 
                 <TextView
                     android:id="@+id/textView23"
@@ -189,7 +179,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:background="@android:drawable/edit_text"
                         android:ems="10"
                         android:inputType="text" />
 
@@ -200,20 +189,9 @@
                         android:layout_weight="4"
                         android:background="@android:drawable/btn_default_small"
                         android:src="@drawable/icon_edit"
-                        android:tint="@android:color/holo_green_dark" />
+                        android:tint="@color/colorAccentOk" />
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/textView28"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Tipo Espacio" />
-
-                <Spinner
-                    android:id="@+id/slt_tipo_escenario"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown" />
 
                 <TextView
                     android:id="@+id/txt_mensaje_direccion"
@@ -332,111 +310,107 @@
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <EditText
-                            android:id="@+id/txt_latitud"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:ems="10"
-                            android:hint="Latitud"
-                            android:inputType="textPersonName" />
-
-                        <EditText
-                            android:id="@+id/txt_longitud"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:ems="10"
-                            android:hint="Longitud"
-                            android:inputType="textPersonName" />
-                    </LinearLayout>
-
-                    <ImageButton
-                        android:id="@+id/btn_capturar_gps"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@android:drawable/btn_default_small"
-                        android:src="@drawable/icon_location"
-                        android:tint="@android:color/holo_green_dark" />
-
-                </LinearLayout>
-
                 <TextView
-                    android:id="@+id/textView10"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/textV_estado_actividad"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Clase Via (M1,M2,M3) *" />
+                    android:text="Estado Actividad *" />
+
 
                 <Spinner
-                    android:id="@+id/slt_clase_via"
+                    android:id="@+id/slt_estado_actividad"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:drawable/btn_dropdown" />
 
                 <TextView
-                    android:id="@+id/textView33"
+                    android:id="@+id/textView43"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/alert_ancho_via" />
+                    android:text="@string/titulo_observacion" />
 
                 <EditText
-                    android:id="@+id/txt_ancho_via"
+                    android:id="@+id/editTextTextPersonName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:drawable/edit_text"
                     android:ems="10"
-                    android:hint="Ej: 20mts"
-                    android:inputType="number" />
+                    android:gravity="top|left"
+                    android:inputType="textMultiLine"
+                    android:maxLines="10"
+                    android:minLines="6"
+                    android:scrollbars="vertical"
+                    android:singleLine="false" />
 
-                <TextView
-                    android:id="@+id/textView30"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="16dp"
+                    android:background="@android:drawable/divider_horizontal_dim_dark"
+                    android:orientation="vertical"></LinearLayout>
+
+                <!--<TextView
+                    android:id="@+id/textView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Calibre del conductro de la conexión al Elemento" />
+                    android:text="Elemento Desmontado No:" />
 
-                <Spinner
-                    android:id="@+id/slt_calibre_conexion_elemento"
+                <LinearLayout
+                    android:id="@+id/linearLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown" />
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/textView11"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Tipo Poste *" />
+                    <EditText
+                        android:id="@+id/txt_buscar_elemento"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:autofillHints="@string/buscar_elemento"
+                        android:background="@android:drawable/edit_text"
+                        android:ems="10"
+                        android:hint="@string/buscar_elemento"
+                        android:inputType="number"
+                        android:maxLength="7"
+                        tools:text="@string/buscar_elemento" />
 
-                <Spinner
-                    android:id="@+id/slt_tipo_poste"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown" />
+                    <ImageButton
+                        android:id="@+id/btn_buscar_elemento"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:background="@android:drawable/btn_default_small"
+                        android:contentDescription="@string/buscar_elemento"
+                        android:src="@drawable/icon_search" />
 
-                <TextView
-                    android:id="@+id/textView12"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Norma Construcción Tipo Poste *" />
+                    <ImageButton
+                        android:id="@+id/btn_limpiar"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:background="@android:drawable/btn_default_small"
+                        android:src="@drawable/icon_cancel"
+                        android:tint="@color/colorAccentCancel" />
 
-                <Spinner
-                    android:id="@+id/slt_norma_construccion_poste"
+
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown" />
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textView35"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Array de Elementos Desmontados"
+                        android:textSize="36sp" />
+
+                </LinearLayout>-->
+
+
+
+
 
 
             </LinearLayout>
