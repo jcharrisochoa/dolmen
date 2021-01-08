@@ -157,7 +157,6 @@ public class ListaActividad extends AppCompatActivity  {
             }
         });
 
-
         btnBuscarActividad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

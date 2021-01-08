@@ -6,8 +6,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.w3c.dom.Text;
@@ -72,6 +74,7 @@ public class AdapterData extends RecyclerView.Adapter<AdapterData.ViewHolderData
         TextView itemEstado;
         //TextView itemProceso;
         TextView itemTipoOperacion;
+        ImageView itemImgElemento;
 
         public ViewHolderData(View itemView) {
             super(itemView);
@@ -82,6 +85,7 @@ public class AdapterData extends RecyclerView.Adapter<AdapterData.ViewHolderData
             itemEstado = itemView.findViewById(R.id.item_estado);
             //itemProceso = itemView.findViewById(R.id.item_proceso);
             itemTipoOperacion = itemView.findViewById(R.id.item_tipo_operacion);
+            itemImgElemento = itemView.findViewById(R.id.item_img_elemento);
         }
 
         public void asignarDatos(ActividadOperativa actividadOperativa) {
@@ -92,6 +96,12 @@ public class AdapterData extends RecyclerView.Adapter<AdapterData.ViewHolderData
             itemFecha.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(actividadOperativa.getFechaActividad()));
             //itemProceso.setText(actividadOperativa.getProcesoSgc().getDescripcion());
             itemTipoOperacion.setText(actividadOperativa.getTipoActividad().getDescripcion());
+            if(actividadOperativa.getElemento().getElemento_no()=="-"){
+                itemImgElemento.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.colorLightPrimary), android.graphics.PorterDuff.Mode.SRC_IN);
+            }
+            else{
+                itemImgElemento.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.colorVerifed), android.graphics.PorterDuff.Mode.SRC_IN);
+            }
         }
 
     }

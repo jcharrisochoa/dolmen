@@ -61,6 +61,7 @@ public class EjecutaActividad extends AppCompatActivity {
         fragmentMateriales = new FragmentMateriales();
         fragmentInformacion = new FragmentInformacion();
         fragmentInformacion.setArguments(bundle);
+        fragmentMateriales.setArguments(bundle);
 
         tabLayout.setupWithViewPager(viewPager);
 

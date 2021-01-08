@@ -10,4 +10,5 @@
     <color name="colorSecondaryText">#757575</color>
     <color name="colorLightPrimary">#cfd8dc</color>
     <color name="backgroundApp">#ffffff</color>
+    <color name="colorVerifed">#ff99CC00</color>
 </resources>

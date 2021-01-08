@@ -8,33 +8,28 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/item_img_actividad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_weight="4"
+            android:src="@drawable/icon_actividad"
+            android:tint="@color/colorPrimary" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/imageView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|center_horizontal|center_vertical"
-                android:layout_margin="5dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_marginBottom="5dp"
-                app:srcCompat="@drawable/logo" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -44,73 +39,54 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/textView40"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="10"
-                    android:text="Act:"
-                    android:textColor="@android:color/darker_gray"
-                    android:textStyle="bold" />
-
-                <TextView
                     android:id="@+id/item_actividad"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="7"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
                     android:text="Actividad No"
-                    android:textColor="@android:color/holo_blue_dark"
-                    android:textSize="14sp" />
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="18sp" />
 
-                <TextView
-                    android:id="@+id/textView41"
+                <ImageView
+                    android:id="@+id/item_img_elemento"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="8"
-                    android:gravity="right"
-                    android:text="Elem:"
-                    android:textColor="@android:color/darker_gray"
-                    android:textStyle="bold" />
+                    android:layout_height="match_parent"
+                    android:layout_weight="4"
+                    android:src="@drawable/icon_verified"
+                    android:tint="@color/colorLightPrimary" />
 
                 <TextView
                     android:id="@+id/item_elemento_no"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="8"
-                    android:gravity="center"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:gravity="left"
                     android:text="Elemento"
-                    android:textColor="@android:color/holo_blue_dark"
-                    android:textSize="14sp" />
+                    android:textColor="@color/colorAccentOk"
+                    android:textSize="16sp"
+                    android:textStyle="italic" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/textView36"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="10"
-                        android:text="Dir:"
-                        android:textColor="@android:color/darker_gray"
-                        android:textStyle="bold" />
-
-                    <TextView
                         android:id="@+id/item_direccion"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:text="Dirección"
                         android:textSize="14sp" />
                 </LinearLayout>
-<!--
+                <!--
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -137,23 +113,14 @@
 -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/textView38"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="10"
-                        android:text="Fch:"
-                        android:textColor="@android:color/darker_gray"
-                        android:textStyle="bold" />
-
-                    <TextView
                         android:id="@+id/item_fecha"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:text="Fecha Actividad"
                         android:textSize="12sp" />
@@ -161,23 +128,14 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/textView42"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="10"
-                        android:text="Tpo:"
-                        android:textColor="@android:color/darker_gray"
-                        android:textStyle="bold" />
-
-                    <TextView
                         android:id="@+id/item_tipo_operacion"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:text="Tipo Operacion"
                         android:textSize="12sp" />
@@ -185,26 +143,17 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/textView39"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="10"
-                        android:text="Est:"
-                        android:textColor="@android:color/darker_gray"
-                        android:textStyle="bold" />
-
-                    <TextView
                         android:id="@+id/item_estado"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:text="Estado"
-                        android:textColor="@android:color/holo_orange_dark" />
+                        android:textColor="@color/colorAccent" />
 
                 </LinearLayout>
 
@@ -212,20 +161,16 @@
 
         </LinearLayout>
 
-        <LinearLayout
+
+        <ImageView
+            android:id="@+id/item_img_detalle_actividad"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center|center_horizontal|center_vertical"
+            android:layout_gravity="center"
             android:layout_weight="4"
-            android:orientation="horizontal">
+            android:src="@drawable/icon_arrow_down"
+            android:tint="@color/colorPrimary" />
 
-            <ImageView
-                android:id="@+id/imageView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|center_horizontal|center_vertical"
-                app:srcCompat="@drawable/icon_arrow_down" />
-        </LinearLayout>
 
     </LinearLayout>
 

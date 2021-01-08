@@ -60,7 +60,7 @@ public class TipoStockDB extends TipoStock implements DatabaseDDL, DatabaseDLM {
 
     @Override
     public Cursor consultarTodo() {
-        this.sql = "SELECT * FROM "+ Constantes.TABLA_TIPO_STOCK+" ORDER BY descripcion";
+        this.sql = "SELECT * FROM "+ Constantes.TABLA_TIPO_STOCK+" ORDER BY descripcion desc";
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }

@@ -9,10 +9,10 @@
         <!--<item name="android:buttonStyle">@style/Widget.AppCompat.Button.Colored</item>-->
     </style>
 
-    <!--<style name="PrimaryColoredButton" parent="Base.Widget.AppCompat.Button.Colored">
+    <style name="PrimaryColoredButton" parent="Base.Widget.AppCompat.Button.Colored">
         <item name="colorButtonNormal">@color/colorPrimary</item>
         <item name="colorControlHighlight">@color/colorLightPrimary</item>
         <item name="android:textColor">@color/colorPrimaryText</item>
-    </style>-->
+    </style>
 
 </resources>
