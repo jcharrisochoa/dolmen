@@ -1,5 +1,6 @@
 package co.dolmen.sid;
 
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -7,16 +8,20 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +30,7 @@ import co.dolmen.sid.entidad.ActividadOperativa;
 import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.EstadoActividadDB;
 import co.dolmen.sid.modelo.TipoActividadDB;
+import co.dolmen.sid.modelo.TipoInterseccionDB;
 import co.dolmen.sid.utilidades.DataSpinner;
 
 public class FragmentInformacion extends Fragment {
@@ -33,15 +39,26 @@ public class FragmentInformacion extends Fragment {
     Spinner sltBarrio;
     Spinner sltTipoActividad;
     Spinner sltEstadoActividad;
+    Spinner sltTipoInterseccionA;
+    Spinner sltTipoInterseccionB;
 
     TextView txtMobiliario;
     TextView txtReferencia;
 
     EditText editMobiliarioNo;
     EditText editDireccion;
+    TextView txtMensajeDireccion;
+    EditText txtNumeroInterseccion;
+    EditText txtNumeracionA;
+    EditText txtNumeracionB;
+
+    ImageButton btnEditarDireccion;
+    ImageButton btnBuscarElemento;
+    ImageButton btnLimpiarBusquedaElemento;
     //-
     View view;
     ActividadOperativa actividadOperativa;
+    AlertDialog.Builder alertDireccion;
     //--
     SQLiteOpenHelper conn;
     SQLiteDatabase database;
@@ -50,6 +67,8 @@ public class FragmentInformacion extends Fragment {
     ArrayList<DataSpinner> barrioList;
     ArrayList<DataSpinner> tipoActividadList;
     ArrayList<DataSpinner> estadoActividadList;
+    ArrayList<DataSpinner> tipoInterseccionA;
+    ArrayList<DataSpinner> tipoInterseccionB;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,6 +86,7 @@ public class FragmentInformacion extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.fragment_informacion, container, false);
+
         sltBarrio           = view.findViewById(R.id.slt_barrio);
         sltTipoActividad    = view.findViewById(R.id.slt_tipo_actividad);
         sltEstadoActividad  = view.findViewById(R.id.slt_estado_actividad);
@@ -76,11 +96,36 @@ public class FragmentInformacion extends Fragment {
 
         editMobiliarioNo    = view.findViewById(R.id.txt_mobiliario_no);
         editDireccion       = view.findViewById(R.id.txt_direccion);
+
+        btnEditarDireccion  = view.findViewById(R.id.btn_editar_direccion);
+        btnBuscarElemento   = view.findViewById(R.id.btn_buscar_elemento);
+        btnLimpiarBusquedaElemento  = view.findViewById(R.id.btn_limpiar_busqueda_elemento);
         //--
         txtMobiliario.setText(actividadOperativa.getElemento().getMobiliario().getDescripcionMobiliario());
         txtReferencia.setText(actividadOperativa.getElemento().getReferenciaMobiliario().getDescripcionReferenciaMobiliario());
         editMobiliarioNo.setText(String.valueOf(actividadOperativa.getElemento().getElemento_no()));
         editDireccion.setText(actividadOperativa.getDireccion());
+
+        btnBuscarElemento.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        btnLimpiarBusquedaElemento.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        btnEditarDireccion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                armarDireccion();
+            }
+        });
 
         cargarBarrio(database);
         cargarTipoActividad(database);
@@ -180,5 +225,97 @@ public class FragmentInformacion extends Fragment {
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltBarrio.setAdapter(dataAdapter);
         sltBarrio.setSelection(pos);
+    }
+    //--
+    private void cargarTipoInterseccion(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        tipoInterseccionA = new ArrayList<DataSpinner>();
+        tipoInterseccionB = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        TipoInterseccionDB tipoInterseccionDB = new TipoInterseccionDB(sqLiteDatabase);
+        Cursor cursor = tipoInterseccionDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        tipoInterseccionA.add(dataSpinner);
+        tipoInterseccionB.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(2).toUpperCase());
+                    tipoInterseccionA.add(dataSpinner);
+                    tipoInterseccionB.add(dataSpinner);
+                    labels.add(cursor.getString(2).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltTipoInterseccionA.setAdapter(dataAdapter);
+        sltTipoInterseccionB.setAdapter(dataAdapter);
+    }
+    //--
+    private void armarDireccion() {
+        alertDireccion = new AlertDialog.Builder(view.getContext());
+        alertDireccion.setTitle(R.string.titulo_direccion);
+        alertDireccion.setCancelable(false);
+
+        View content = LayoutInflater.from(view.getContext()).inflate(R.layout.direccion, null);
+        txtMensajeDireccion = content.findViewById(R.id.txt_mensaje_direccion);
+        sltTipoInterseccionA = content.findViewById(R.id.slt_tipo_interseccion_a);
+        sltTipoInterseccionB = content.findViewById(R.id.slt_tipo_interseccion_b);
+
+        txtNumeroInterseccion = content.findViewById(R.id.numero_interseccion);
+        txtNumeracionA = content.findViewById(R.id.txt_numeracion_a);
+        txtNumeracionB = content.findViewById(R.id.txt_numeracion_b);
+        cargarTipoInterseccion(database);
+
+        alertDireccion.setView(content);
+        alertDireccion.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (tipoInterseccionA.get(sltTipoInterseccionA.getSelectedItemPosition()).getId() == 0) {
+                    //txtMensajeDireccion.setText("Seleccione Tipo Intersección");
+                    //Log.d("Busqueda", "Seleccione Tipo Intersección");
+                    Toast.makeText(view.getContext(),"No selecciono un Tipo de Interseccion",Toast.LENGTH_LONG).show();
+                } else {
+                    if (TextUtils.isEmpty(txtNumeroInterseccion.getText().toString())) {
+                        //txtMensajeDireccion.setText("Digite el Número de la Intersección");
+                        Toast.makeText(view.getContext(),"No digitó el número de la intersección",Toast.LENGTH_LONG).show();
+                    } else {
+                        String miDireccion = "";
+
+                        miDireccion = miDireccion + tipoInterseccionA.get(sltTipoInterseccionA.getSelectedItemPosition()).getDescripcion();
+                        miDireccion = miDireccion + " " + txtNumeroInterseccion.getText().toString();
+
+                        if (tipoInterseccionA.get(sltTipoInterseccionB.getSelectedItemPosition()).getId() != 0) {
+                            miDireccion = miDireccion + " " + tipoInterseccionB.get(sltTipoInterseccionB.getSelectedItemPosition()).getDescripcion();
+                        }
+                        if (!TextUtils.isEmpty(txtNumeracionA.getText().toString())) {
+                            if (tipoInterseccionA.get(sltTipoInterseccionB.getSelectedItemPosition()).getId() != 0) {
+                                miDireccion = miDireccion + " " + txtNumeracionA.getText().toString();
+                            } else {
+                                miDireccion = miDireccion + " N " + txtNumeracionA.getText().toString();
+                            }
+                        }
+                        if (!TextUtils.isEmpty(txtNumeracionB.getText().toString())) {
+                            miDireccion = miDireccion + " - " + txtNumeracionB.getText().toString();
+                        }
+                        if (!miDireccion.isEmpty())
+                            editDireccion.setText(miDireccion);
+                    }
+                }
+            }
+        });
+        alertDireccion.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        alertDireccion.create().show();
+
     }
 }

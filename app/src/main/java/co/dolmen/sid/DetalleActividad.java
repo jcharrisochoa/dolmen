@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 
@@ -15,8 +17,8 @@ import co.dolmen.sid.entidad.ActividadOperativa;
 
 public class DetalleActividad extends AppCompatActivity {
 
-    private Button btnCancelar;
-    private Button btnEjecutar;
+    private FloatingActionButton btnCancelar;
+    private FloatingActionButton btnEnSitio;
 
     private TextView txtMunicipio;
     private TextView txtActividad;
@@ -43,8 +45,8 @@ public class DetalleActividad extends AppCompatActivity {
         actividadOperativa = (ActividadOperativa)i.getSerializableExtra("actividadOperativa");
         setTitle(getString(R.string.titulo_actividad)+" No "+actividadOperativa.getIdActividad());
 
-        btnEjecutar     = findViewById(R.id.btn_ejecutar);
-        btnCancelar     = findViewById(R.id.btn_cancelar);
+        btnEnSitio     = findViewById(R.id.fab_en_sitio);
+        btnCancelar     = findViewById(R.id.fab_cancelar);
 
         txtMunicipio    = findViewById(R.id.txt_municipio);
         txtActividad    = findViewById(R.id.txt_actividad);
@@ -71,7 +73,7 @@ public class DetalleActividad extends AppCompatActivity {
             }
         });
 
-        btnEjecutar.setOnClickListener(new View.OnClickListener() {
+        btnEnSitio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(DetalleActividad.this,EjecutaActividad.class);

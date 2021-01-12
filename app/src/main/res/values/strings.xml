@@ -177,9 +177,9 @@
     <string name="titulo_estado_actividad">Estado Actividad</string>
     <string name="titulo_vatiaje">Vatiaje</string>
     <string name="titulo_unidad_medida">Unidad Medida</string>
-    <string name="titulo_tipo_interseccion">Tipo Interseccion</string>
+    <string name="titulo_tipo_interseccion">Tipo Intersección</string>
     <string name="titulo_tipo_espacio">Tipo Espacio</string>
-    <string name="titulo_tipo_tension">Tipo Tension</string>
+    <string name="titulo_tipo_tension">Tipo Tensión</string>
     <string name="titulo_tipo_retenida">Tipo Retenida</string>
     <string name="titulo_norma_construccion_poste">Norma Construcción Poste</string>
     <string name="titulo_tipo_estructura">Tipo Estructura</string>
@@ -188,7 +188,7 @@
     <string name="titulo_conductor_electrico">Tipo Conductor Eléctrico</string>
     <string name="titulo_tipo_escenario">Tipo Escenario</string>
     <string name="titulo_tipo_stock">Tipo Stock</string>
-    <string name="titulo_articulo">Codigos de Inventario</string>
+    <string name="titulo_articulo">Códigos de Inventario</string>
     <string name="descargando_actividades">Descargando Actvidades</string>
     <string name="titulo_mis_actividades">Mis Actividades</string>
     <string name="titulo_mi_inventario">Mi Inventario</string>
@@ -198,12 +198,12 @@
     <string name="tab_text_2">Foto Despues</string>
     <string name="tab_text_3">Material</string>
     <string name="tab_text_4">Info</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="movimiento_salida">Salida(-)</string>
     <string name="movimiento_entrada">Entrada(+)</string>
     <string name="alert_tipo_stock">Seleccione el tipo de Stock</string>
     <string name="alert_tipo_movimiento">Seleccione el tipo de movimiento</string>
     <string name="alert_articulo">Seleccione un artículo</string>
     <string name="alert_cantidad_articulo">Digite la cantidad</string>
+    <string name="alert_eliminiar_articulo">¿Está seguro(a) de Eliminar el Artículo?</string>
+    <string name="cantidad_insuficiente">Cantidad Insufuciente para realizar la transacción\nCantidad en Stock es:</string>
 </resources>

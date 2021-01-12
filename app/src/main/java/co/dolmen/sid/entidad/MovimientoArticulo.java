@@ -31,7 +31,7 @@ public class MovimientoArticulo implements Serializable {
         return id_tipo_stock;
     }
 
-    public double getCantidad() {
+    public float getCantidad() {
         return cantidad;
     }
 
