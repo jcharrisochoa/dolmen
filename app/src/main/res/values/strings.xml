@@ -202,4 +202,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="movimiento_salida">Salida(-)</string>
     <string name="movimiento_entrada">Entrada(+)</string>
+    <string name="alert_tipo_stock">Seleccione el tipo de Stock</string>
+    <string name="alert_tipo_movimiento">Seleccione el tipo de movimiento</string>
+    <string name="alert_articulo">Seleccione un artículo</string>
+    <string name="alert_cantidad_articulo">Digite la cantidad</string>
 </resources>

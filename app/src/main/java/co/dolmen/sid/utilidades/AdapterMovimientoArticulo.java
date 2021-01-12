@@ -12,10 +12,12 @@ import java.util.ArrayList;
 
 import co.dolmen.sid.R;
 import co.dolmen.sid.entidad.MovimientoArticulo;
+import cz.msebera.android.httpclient.client.UserTokenHandler;
 
-public class AdapterMovimientoArticulo extends RecyclerView.Adapter<AdapterMovimientoArticulo.ViewHolderData>{
+public class AdapterMovimientoArticulo extends RecyclerView.Adapter<AdapterMovimientoArticulo.ViewHolderData> implements  View.OnClickListener{
 
     private ArrayList<MovimientoArticulo> movimientoArticuloArrayList;
+    private View.OnClickListener listener;
 
     public AdapterMovimientoArticulo(ArrayList<MovimientoArticulo> movimientoArticuloArrayList) {
         this.movimientoArticuloArrayList = movimientoArticuloArrayList;
@@ -36,6 +38,29 @@ public class AdapterMovimientoArticulo extends RecyclerView.Adapter<AdapterMovim
     @Override
     public int getItemCount() {
         return movimientoArticuloArrayList.size();
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(listener != null){
+            listener.onClick(v);
+        }
+    }
+
+    public void setOnClickListener(View.OnClickListener listener){
+        this.listener = listener;
+    }
+
+    public void addItem(MovimientoArticulo movimientoArticulo){
+        movimientoArticuloArrayList.add(movimientoArticulo);
+        notifyDataSetChanged();
+    }
+
+
+    public void removeItem(int position){
+        movimientoArticuloArrayList.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, movimientoArticuloArrayList.size());
     }
 
     public class ViewHolderData extends RecyclerView.ViewHolder{

@@ -9,22 +9,17 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="2dp"
-        android:layout_marginEnd="2dp"
-        android:layout_marginLeft="2dp"
-        android:layout_marginRight="2dp"
-        android:layout_marginStart="2dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0">
+        tools:layout_editor_absoluteX="2dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="35dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginRight="5dp"
             android:orientation="horizontal">
 
             <ImageView
@@ -97,7 +92,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -105,125 +100,353 @@
                 android:id="@+id/scContenedor"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
                 tools:ignore="MissingConstraints"
                 tools:layout_editor_absoluteX="8dp"
                 tools:layout_editor_absoluteY="8dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:gravity="center"
                     android:orientation="vertical"
                     tools:layout_editor_absoluteX="8dp"
                     tools:layout_editor_absoluteY="175dp">
 
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
+                        android:layout_marginStart="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginRight="10dp"
+                        android:orientation="horizontal">
 
-                        <!--<Button
-                            android:id="@+id/btnRecorrido"
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="75dp"
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
                             android:layout_weight="1"
-                            android:background="@android:drawable/btn_default_small"
-                            android:drawableLeft="@android:drawable/ic_menu_myplaces"
-                            android:enabled="false"
-                            android:text="@string/btn_recorrido" />-->
+                            android:background="@drawable/button_menu"
+                            android:gravity="center"
+                            android:orientation="vertical">
 
+                            <ImageButton
+                                android:id="@+id/btn_crear_elemento"
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
+                                android:layout_weight="1"
+                                android:background="@color/colorIconText"
+                                android:src="@drawable/icon_menu_crear_elemento" />
 
-                        <Button
-                            android:id="@+id/btn_crear_elemento"
+                            <TextView
+                                android:id="@+id/txt_crear_elemento"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="@string/btn_crear_elemento"
+                                android:textColor="@color/colorSecondaryText"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="65dp"
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
                             android:layout_weight="1"
-                            android:background="@android:drawable/btn_default_small"
-                            android:drawableLeft="@android:drawable/ic_menu_add"
-                            android:text="@string/btn_crear_elemento"
-                            android:textSize="14sp" />
+                            android:background="@drawable/button_menu"
+                            android:gravity="center"
+                            android:orientation="vertical">
 
-                        <Button
-                            android:id="@+id/btn_actualizar_elemento"
+                            <ImageButton
+                                android:id="@+id/btn_actualizar_elemento"
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
+                                android:layout_weight="1"
+                                android:background="@color/backgroundApp"
+                                android:src="@drawable/icon_menu_actualizar_elemento" />
+
+                            <TextView
+                                android:id="@+id/txt_actualizar_elemento"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="@string/btn_actualizar_elemento"
+                                android:textColor="@color/colorSecondaryText"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="65dp"
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
                             android:layout_weight="1"
-                            android:background="@android:drawable/btn_default_small"
-                            android:drawableLeft="@android:drawable/ic_menu_edit"
-                            android:text="@string/btn_actualizar_elemento"
-                            android:textSize="14sp" />
+                            android:background="@drawable/button_menu"
+                            android:gravity="center"
+                            android:orientation="vertical">
 
-                        <Button
-                            android:id="@+id/btn_reportar_dano"
-                            android:layout_width="match_parent"
-                            android:layout_height="65dp"
-                            android:layout_weight="1"
-                            android:background="@android:drawable/btn_default_small"
-                            android:drawableLeft="@android:drawable/ic_dialog_alert"
-                            android:text="@string/btn_crear_reporte_dano"
-                            android:textSize="14sp" />
+                            <ImageButton
+                                android:id="@+id/btn_reportar_dano"
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
+                                android:layout_weight="1"
+                                android:background="@color/backgroundApp"
+                                android:src="@drawable/icon_menu_reportar_dano" />
 
-                        <Button
-                            android:id="@+id/btn_crear_actividad"
-                            android:layout_width="match_parent"
-                            android:layout_height="65dp"
-                            android:layout_weight="1"
-                            android:background="@android:drawable/btn_default_small"
-                            android:drawableLeft="@android:drawable/ic_menu_send"
-                            android:text="@string/btn_crear_actividad"
-                            android:textSize="14sp" />
-
-                        <Button
-                            android:id="@+id/btn_perfil"
-                            android:layout_width="match_parent"
-                            android:layout_height="65dp"
-                            android:layout_weight="1"
-                            android:background="@android:drawable/btn_default_small"
-                            android:drawableLeft="@android:drawable/ic_menu_manage"
-                            android:text="@string/btn_perfil"
-                            android:textSize="14sp" />
-
-                        <Button
-                            android:id="@+id/btn_censo_tecnico"
-                            android:layout_width="match_parent"
-                            android:layout_height="65dp"
-                            android:layout_weight="1"
-                            android:background="@android:drawable/btn_default_small"
-                            android:drawableLeft="@android:drawable/btn_star_big_on"
-                            android:text="@string/btn_censo_tecnico" />
-
-                        <Button
-                            android:id="@+id/btn_censo_carga"
-                            android:layout_width="match_parent"
-                            android:layout_height="65dp"
-                            android:layout_weight="1"
-                            android:background="@android:drawable/btn_default_small"
-                            android:drawableLeft="@mipmap/ic_launcher_carga"
-                            android:text="@string/btn_censo_carga" />
-
-                        <Button
-                            android:id="@+id/btn_mis_actividades"
-                            android:layout_width="match_parent"
-                            android:layout_height="65dp"
-                            android:layout_weight="1"
-                            android:background="@android:drawable/btn_default_small"
-                            android:drawableLeft="@android:drawable/ic_menu_myplaces"
-                            android:text="@string/btn_mis_actividades"
-                            android:visibility="visible" />
-
-                        <Button
-                            android:id="@+id/btn_salir"
-                            android:layout_width="match_parent"
-                            android:layout_height="65dp"
-                            android:layout_weight="1"
-                            android:background="@android:drawable/btn_default_small"
-                            android:drawableLeft="@android:drawable/ic_delete"
-                            android:text="@string/btn_salir"
-                            android:textSize="14sp" />
-
+                            <TextView
+                                android:id="@+id/txt_reportar_dano"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="Reportar Daño"
+                                android:textColor="@color/colorSecondaryText"
+                                android:textSize="12sp" />
+                        </LinearLayout>
                     </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginRight="10dp"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/button_menu"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageButton
+                                android:id="@+id/btn_crear_actividad"
+                                android:layout_width="80dp"
+                                android:layout_height="80dp"
+                                android:layout_weight="1"
+                                android:background="@color/colorIconText"
+                                android:src="@drawable/icon_menu_crear_actividad" />
+
+                            <TextView
+                                android:id="@+id/txt_crear_actividad"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="Nueva Actividad"
+                                android:textColor="@color/colorSecondaryText"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/button_menu"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageButton
+                                android:id="@+id/btn_censo_tecnico"
+                                android:layout_width="80dp"
+                                android:layout_height="80dp"
+                                android:layout_weight="1"
+                                android:background="@color/backgroundApp"
+                                android:src="@drawable/icon_menu_censo_tecnico" />
+
+                            <TextView
+                                android:id="@+id/txt_censo_tecnico"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="Censo Técnico"
+                                android:textColor="@color/colorSecondaryText"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/button_menu"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageButton
+                                android:id="@+id/btn_censo_carga"
+                                android:layout_width="80dp"
+                                android:layout_height="80dp"
+                                android:layout_weight="1"
+                                android:background="@color/backgroundApp"
+                                android:src="@drawable/icon_menu_censo_carga" />
+
+                            <TextView
+                                android:id="@+id/txt_censo_carga"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="Censo Carga"
+                                android:textColor="@color/colorSecondaryText"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginRight="10dp"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/button_menu"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageButton
+                                android:id="@+id/btn_mis_actividades"
+                                android:layout_width="80dp"
+                                android:layout_height="80dp"
+                                android:layout_weight="1"
+                                android:background="@color/colorIconText"
+                                android:src="@drawable/icon_menu_mis_actividades" />
+
+                            <TextView
+                                android:id="@+id/txt_mis_actividades"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="Mis Actividades"
+                                android:textColor="@color/colorSecondaryText"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/button_menu"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageButton
+                                android:id="@+id/btn_mi_inventario"
+                                android:layout_width="80dp"
+                                android:layout_height="80dp"
+                                android:layout_weight="1"
+                                android:background="@color/backgroundApp"
+                                android:src="@drawable/icon_menu_mi_inventario" />
+
+                            <TextView
+                                android:id="@+id/txt_mi_inventario"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="Mi Inventario"
+                                android:textColor="@color/colorSecondaryText"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/button_menu"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageButton
+                                android:id="@+id/btn_perfil"
+                                android:layout_width="80dp"
+                                android:layout_height="80dp"
+                                android:layout_weight="1"
+                                android:background="@color/backgroundApp"
+                                android:src="@drawable/icon_menu_perfil" />
+
+                            <TextView
+                                android:id="@+id/txt_perfil"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="Mi Perfil"
+                                android:textColor="@color/colorSecondaryText"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginRight="10dp"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/button_menu"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageButton
+                                android:id="@+id/btn_salir"
+                                android:layout_width="80dp"
+                                android:layout_height="80dp"
+                                android:layout_weight="1"
+                                android:background="@color/colorIconText"
+                                android:src="@drawable/icon_menu_cerrar_sesion" />
+
+                            <TextView
+                                android:id="@+id/txt_salir"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="Cerrar Sesión"
+                                android:textColor="@color/colorSecondaryText"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical" />
+                    </LinearLayout>
+
 
                 </LinearLayout>
             </ScrollView>

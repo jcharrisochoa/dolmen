@@ -31,6 +31,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,15 +42,15 @@ public class Menu extends AppCompatActivity {
     private String nombreContrato;
     private int idCenso;
 
-    Button btnPerfil;
-    Button btnSalir;
-    Button btnCensoTecnico;
-    Button btnReporteDano;
-    Button btnCrearActividad;
-    Button btnActualizarElemento;
-    Button btnCrearElemento;
-    Button btnCensoCarga;
-    Button btnMisActividades;
+    ImageButton btnPerfil;
+    ImageButton btnSalir;
+    ImageButton btnCensoTecnico;
+    ImageButton btnReporteDano;
+    ImageButton btnCrearActividad;
+    ImageButton btnActualizarElemento;
+    ImageButton btnCrearElemento;
+    ImageButton btnCensoCarga;
+    ImageButton btnMisActividades;
 
     SharedPreferences config;
     TextView txtNombreMunicipio;

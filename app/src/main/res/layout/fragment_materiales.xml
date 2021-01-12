@@ -116,7 +116,8 @@
                     android:background="@android:drawable/edit_text"
                     android:ems="10"
                     android:hint="Digite la Cantidad"
-                    android:inputType="numberDecimal" />
+                    android:inputType="numberDecimal"
+                    android:maxLength="6" />
 
                 <ImageButton
                     android:id="@+id/btn_agregar_articulo"
