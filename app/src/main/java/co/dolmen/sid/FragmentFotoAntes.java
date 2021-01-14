@@ -4,7 +4,10 @@ package co.dolmen.sid;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
@@ -13,6 +16,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +35,10 @@ import androidx.fragment.app.Fragment;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
+
+import co.dolmen.sid.entidad.ActividadOperativa;
+import co.dolmen.sid.utilidades.DataSpinner;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -52,12 +60,38 @@ public class FragmentFotoAntes extends Fragment {
     private boolean accionarFoto2;
     private boolean accionarFoto3;
     private boolean accionarFoto4;
-    private String encodeStringFoto_1;
-    private String encodeStringFoto_2;
-    private String encodeStringFoto_3;
-    private String encodeStringFoto_4;
+    String encodeStringFoto_1 = "";
+    String encodeStringFoto_2 = "";
+    String encodeStringFoto_3 = "";
+    String encodeStringFoto_4 = "";
+//--
+    private SQLiteOpenHelper conn;
+    private SQLiteDatabase database;
+    SharedPreferences config;
+    //--
+    private int idUsuario;
+    private int idDefaultMunicipio;
+    private int idDefaultProceso;
+    private int idDefaultContrato;
 
-    public FragmentFotoAntes() {
+    ActividadOperativa actividadOperativa;
+
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        conn = new BaseDatos(getContext());
+        database = conn.getReadableDatabase();
+
+        config = getContext().getSharedPreferences("config", getContext().MODE_PRIVATE);
+        idUsuario = config.getInt("id_usuario", 0);
+        idDefaultProceso = config.getInt("id_proceso", 0);
+        idDefaultContrato = config.getInt("id_contrato", 0);
+        idDefaultMunicipio = config.getInt("id_municipio", 0);
+
+        Bundle bundle = this.getArguments();
+        actividadOperativa = (ActividadOperativa) bundle.getSerializable("actividadOperativa");
     }
 
     @Nullable
@@ -243,6 +277,10 @@ public class FragmentFotoAntes extends Fragment {
 
     public void quitarFoto(ImageView imageView){
         imageView.setImageResource(R.drawable.icon_no_photography);
+        encodeStringFoto_1 = "";
+        encodeStringFoto_2 = "";
+        encodeStringFoto_3 = "";
+        encodeStringFoto_4 = "";
     }
     //--
     private void cargarImagen(){

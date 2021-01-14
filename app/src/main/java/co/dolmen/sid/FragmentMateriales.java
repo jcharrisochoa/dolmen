@@ -55,7 +55,7 @@ public class FragmentMateriales extends Fragment{
     private ArrayList<DataSpinner> tipoStockList;
     private ArrayList<DataSpinner> articuloList;
     private ArrayList<DataSpinner> tipoMovimientoList;
-    private ArrayList<MovimientoArticulo> movimientoArticuloArrayList;
+    ArrayList<MovimientoArticulo> movimientoArticuloArrayList;
     private RecyclerView recyclerView;
     private AdapterMovimientoArticulo adapterMovimientoArticulo;
     private int idDefaultBodega;

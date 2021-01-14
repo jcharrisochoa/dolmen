@@ -52,10 +52,10 @@ public class FragmentFotoDespues extends Fragment {
     private boolean accionarFoto2;
     private boolean accionarFoto3;
     private boolean accionarFoto4;
-    private String encodeStringFoto_1;
-    private String encodeStringFoto_2;
-    private String encodeStringFoto_3;
-    private String encodeStringFoto_4;
+    String encodeStringFoto_1 = "";
+    String encodeStringFoto_2 = "";
+    String encodeStringFoto_3 = "";
+    String encodeStringFoto_4 = "";
 
     public FragmentFotoDespues(){}
 

@@ -19,42 +19,58 @@
             android:background="@color/colorPrimary"
             android:orientation="vertical">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:text="@string/titulo_tipo_stock"
-                android:textColor="@color/colorIconText" />
+                android:orientation="horizontal">
 
-            <Spinner
-                android:id="@+id/slt_tipo_stock"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginEnd="5dp"
-                android:layout_marginRight="5dp"
-                android:background="@android:drawable/btn_dropdown" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:text="@string/titulo_tipo_stock"
+                    android:textColor="@color/colorIconText" />
 
-            <TextView
-                android:id="@+id/textView58"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:text="Movimiento"
-                android:textColor="@color/colorIconText" />
+                <TextView
+                    android:id="@+id/textView58"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:text="Movimiento"
+                    android:textColor="@color/colorIconText" />
+            </LinearLayout>
 
-            <Spinner
-                android:id="@+id/slt_movimiento"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginEnd="5dp"
-                android:layout_marginRight="5dp"
-                android:background="@android:drawable/btn_dropdown" />
+                android:orientation="horizontal">
+
+                <Spinner
+                    android:id="@+id/slt_tipo_stock"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="1"
+                    android:background="@android:drawable/btn_dropdown" />
+
+                <Spinner
+                    android:id="@+id/slt_movimiento"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="1"
+                    android:background="@android:drawable/btn_dropdown" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/textView47"

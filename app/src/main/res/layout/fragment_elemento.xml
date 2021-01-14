@@ -1,0 +1,631 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FragmentElemento">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay">
+
+            <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/txt_mobiliario_no"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:autofillHints="@string/buscar_elemento"
+                    android:ems="10"
+                    android:hint="Elemento No"
+                    android:inputType="number"
+                    android:maxLength="7"
+                    tools:text="@string/buscar_elemento" />
+
+                <ImageButton
+                    android:id="@+id/btn_buscar_elemento"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:background="@color/colorPrimary"
+                    android:src="@drawable/icon_search"
+                    android:tint="@color/colorIconText" />
+
+                <ImageButton
+                    android:id="@+id/btn_limpiar_busqueda_elemento"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:background="@color/colorPrimary"
+                    android:src="@drawable/icon_cancel"
+                    android:tint="@color/colorIconText" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textView346"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="3"
+                        android:text="Elem No"
+                        android:textColor="@color/colorPrimaryText" />
+
+                    <TextView
+                        android:id="@+id/txt_mobiliario_numero"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textView46"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="3"
+                        android:text="Mobiliario"
+                        android:textColor="@color/colorPrimaryText" />
+
+                    <TextView
+                        android:id="@+id/txt_mobiliario"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textView37"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="3"
+                        android:text="Referencia"
+                        android:textColor="@color/colorPrimaryText" />
+
+                    <TextView
+                        android:id="@+id/txt_referencia"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/textView24"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Funcionamiento del mobiliario" />
+
+                <Spinner
+                    android:id="@+id/slt_estado_mobiliario"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/btn_dropdown" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/textView25"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Zona" />
+
+                        <RadioGroup
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <RadioButton
+                                android:id="@+id/rd_urbano"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:checked="true"
+                                android:text="Urbana" />
+
+                            <RadioButton
+                                android:id="@+id/rd_rutal"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:text="Rural" />
+
+                        </RadioGroup>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/textView26"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Sector" />
+
+                        <RadioGroup
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <RadioButton
+                                android:id="@+id/rd_normal"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:checked="true"
+                                android:text="Normal" />
+
+                            <RadioButton
+                                android:id="@+id/rd_subnormal"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:text="SubNormal" />
+                        </RadioGroup>
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/textView28"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tipo Espacio" />
+
+                <Spinner
+                    android:id="@+id/slt_tipo_escenario"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/btn_dropdown" />
+
+                <TextView
+                    android:id="@+id/txt_mensaje_direccion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/view_latitud"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Lat:" />
+
+                    <TextView
+                        android:id="@+id/gps_latitud"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:text=""
+                        android:textColor="@color/design_default_color_primary_dark" />
+
+                    <TextView
+                        android:id="@+id/view_longitud"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Lon:" />
+
+                    <TextView
+                        android:id="@+id/gps_longitud"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:text=""
+                        android:textColor="@color/design_default_color_primary_dark" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/view_altitud"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Alt:" />
+
+                    <TextView
+                        android:id="@+id/gps_altitud"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:text=""
+                        android:textColor="@color/design_default_color_primary_dark" />
+
+                    <TextView
+                        android:id="@+id/view_precision"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Pre:" />
+
+                    <TextView
+                        android:id="@+id/gps_precision"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:text=""
+                        android:textColor="@color/design_default_color_primary_dark" />
+
+                    <TextView
+                        android:id="@+id/view_velocidad"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Vel:" />
+
+                    <TextView
+                        android:id="@+id/gps_velocidad"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:text=""
+                        android:textColor="@color/design_default_color_primary_dark" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/view_direccion"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Dir:" />
+
+                    <TextView
+                        android:id="@+id/gps_direccion"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="4"
+                        android:text=""
+                        android:textColor="@color/design_default_color_primary_dark" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <EditText
+                            android:id="@+id/txt_latitud"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:ems="10"
+                            android:hint="Latitud"
+                            android:inputType="textPersonName" />
+
+                        <EditText
+                            android:id="@+id/txt_longitud"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:ems="10"
+                            android:hint="Longitud"
+                            android:inputType="textPersonName" />
+                    </LinearLayout>
+
+                    <ImageButton
+                        android:id="@+id/btn_capturar_gps"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@android:drawable/btn_default_small"
+                        android:src="@drawable/icon_marker"
+                        android:tint="@android:color/holo_green_dark" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/textView10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Clase Via (M1,M2,M3) *" />
+
+                <Spinner
+                    android:id="@+id/slt_clase_via"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/btn_dropdown" />
+
+                <TextView
+                    android:id="@+id/textView33"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/alert_ancho_via" />
+
+                <EditText
+                    android:id="@+id/txt_ancho_via"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/edit_text"
+                    android:ems="10"
+                    android:hint="Ej: 20mts"
+                    android:inputType="number" />
+
+                <TextView
+                    android:id="@+id/textView30"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Calibre del conductro de la conexión al Elemento" />
+
+                <Spinner
+                    android:id="@+id/slt_calibre_conexion_elemento"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/btn_dropdown" />
+
+                <TextView
+                    android:id="@+id/textView11"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tipo Poste *" />
+
+                <Spinner
+                    android:id="@+id/slt_tipo_poste"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/btn_dropdown" />
+
+                <TextView
+                    android:id="@+id/textView12"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Norma Construcción Tipo Poste *" />
+
+                <Spinner
+                    android:id="@+id/slt_norma_construccion_poste"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/btn_dropdown" />
+
+                <Switch
+                    android:id="@+id/sw_puesta_tierra"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:text="¿Tiene Puesta a Tierra?" />
+
+                <View
+                    android:id="@+id/divider2"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?android:attr/listDivider" />
+
+                <Switch
+                    android:id="@+id/sw_poste_exclulsivo_alumbrado_publico"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:text="¿Poste Exclusivo Alumbrado Público?"
+                    />
+
+                <View
+                    android:id="@+id/divider6"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?android:attr/listDivider" />
+
+                <Switch
+                    android:id="@+id/sw_poste_en_buen_estado"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:text="¿El Poste está en buen estado?"
+                    android:checked="true" />
+
+                <TextView
+                    android:id="@+id/textView13"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tipo Retenida" />
+
+                <Spinner
+                    android:id="@+id/slt_tipo_retenida"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/btn_dropdown" />
+
+                <TextView
+                    android:id="@+id/textView14"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Poste #" />
+
+                <EditText
+                    android:id="@+id/txt_poste_no"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/edit_text"
+                    android:ems="10"
+                    android:hint="Identificación Poste"
+                    android:inputType="textPersonName" />
+
+                <TextView
+                    android:id="@+id/textView15"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Interdistancia Poste en Mts *" />
+
+                <EditText
+                    android:id="@+id/txt_interdistancia"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/edit_text"
+                    android:ems="10"
+                    android:hint="Ej: 12Mts"
+                    android:inputType="number" />
+
+                <TextView
+                    android:id="@+id/textView20"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Potencia Transformador (KVA)" />
+
+                <EditText
+                    android:id="@+id/txt_potencia_transformador"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/edit_text"
+                    android:ems="10"
+                    android:hint="Ej: 25KVA"
+                    android:inputType="numberDecimal" />
+
+                <TextView
+                    android:id="@+id/textView21"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="MT Transormador" />
+
+                <EditText
+                    android:id="@+id/txt_mt_transformador"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/edit_text"
+                    android:ems="10"
+                    android:inputType="textPersonName" />
+
+                <TextView
+                    android:id="@+id/textView22"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="CT Transformador" />
+
+                <EditText
+                    android:id="@+id/txt_ct_transformador"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/edit_text"
+                    android:ems="10"
+                    android:inputType="textPersonName" />
+
+                <Switch
+                    android:id="@+id/sw_transformador_exclusivo_ap"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:text="¿El tranformador es Exclusivo AP?" />
+
+                <TextView
+                    android:id="@+id/textView29"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Propiedad del Trasnformador" />
+
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" >
+
+                    <RadioButton
+                        android:id="@+id/rd_transformador_no_aplica"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:checked="true"
+                        android:text="No Aplica" />
+
+                    <RadioButton
+                        android:id="@+id/rd_transformador_publico"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:text="Público" />
+
+                    <RadioButton
+                        android:id="@+id/rd_transformador_privado"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:text="Privado" />
+
+                </RadioGroup>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:orientation="vertical"></LinearLayout>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

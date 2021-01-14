@@ -206,4 +206,6 @@
     <string name="alert_cantidad_articulo">Digite la cantidad</string>
     <string name="alert_eliminiar_articulo">¿Está seguro(a) de Eliminar el Artículo?</string>
     <string name="cantidad_insuficiente">Cantidad Insufuciente para realizar la transacción\nCantidad en Stock es:</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

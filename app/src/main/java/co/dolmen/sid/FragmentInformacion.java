@@ -3,6 +3,7 @@ package co.dolmen.sid;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
@@ -17,9 +18,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,11 +30,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.dolmen.sid.entidad.ActividadOperativa;
+import co.dolmen.sid.entidad.Elemento;
+import co.dolmen.sid.entidad.EstadoMobiliario;
+import co.dolmen.sid.entidad.Mobiliario;
+import co.dolmen.sid.entidad.Tipologia;
 import co.dolmen.sid.modelo.BarrioDB;
+import co.dolmen.sid.modelo.ElementoDB;
 import co.dolmen.sid.modelo.EstadoActividadDB;
 import co.dolmen.sid.modelo.TipoActividadDB;
 import co.dolmen.sid.modelo.TipoInterseccionDB;
 import co.dolmen.sid.utilidades.DataSpinner;
+
+import static java.lang.Integer.parseInt;
 
 public class FragmentInformacion extends Fragment {
 
@@ -42,10 +52,7 @@ public class FragmentInformacion extends Fragment {
     Spinner sltTipoInterseccionA;
     Spinner sltTipoInterseccionB;
 
-    TextView txtMobiliario;
-    TextView txtReferencia;
 
-    EditText editMobiliarioNo;
     EditText editDireccion;
     TextView txtMensajeDireccion;
     EditText txtNumeroInterseccion;
@@ -53,12 +60,12 @@ public class FragmentInformacion extends Fragment {
     EditText txtNumeracionB;
 
     ImageButton btnEditarDireccion;
-    ImageButton btnBuscarElemento;
-    ImageButton btnLimpiarBusquedaElemento;
+
     //-
     View view;
     ActividadOperativa actividadOperativa;
     AlertDialog.Builder alertDireccion;
+    AlertDialog.Builder alert;
     //--
     SQLiteOpenHelper conn;
     SQLiteDatabase database;
@@ -69,6 +76,16 @@ public class FragmentInformacion extends Fragment {
     ArrayList<DataSpinner> estadoActividadList;
     ArrayList<DataSpinner> tipoInterseccionA;
     ArrayList<DataSpinner> tipoInterseccionB;
+    //--
+    Switch swVandalismo;
+    Switch swElementoNoEncontrado;
+    //--
+    char vandalismo = 'N';
+    char elementoNoEncontrato = 'N';
+    private int idUsuario;
+    private int idDefaultMunicipio;
+    private int idDefaultProceso;
+    private int idDefaultContrato;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,6 +93,12 @@ public class FragmentInformacion extends Fragment {
 
         conn = new BaseDatos(getContext());
         database = conn.getReadableDatabase();
+
+        config = getContext().getSharedPreferences("config", getContext().MODE_PRIVATE);
+        idUsuario = config.getInt("id_usuario", 0);
+        idDefaultProceso = config.getInt("id_proceso", 0);
+        idDefaultContrato = config.getInt("id_contrato", 0);
+        idDefaultMunicipio = config.getInt("id_municipio", 0);
 
         Bundle bundle = this.getArguments();
         actividadOperativa = (ActividadOperativa) bundle.getSerializable("actividadOperativa");
@@ -87,38 +110,38 @@ public class FragmentInformacion extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_informacion, container, false);
 
+        alert = new AlertDialog.Builder(view.getContext());
+        alert.setCancelable(false);
+        alert.setTitle(R.string.titulo_alerta);
+        alert.setIcon(R.drawable.icon_problem);
+
+        swVandalismo        = view.findViewById(R.id.sw_afectado_vandalismo);
+        swElementoNoEncontrado  = view.findViewById(R.id.sw_elemento_no_encontrado);
+
         sltBarrio           = view.findViewById(R.id.slt_barrio);
         sltTipoActividad    = view.findViewById(R.id.slt_tipo_actividad);
         sltEstadoActividad  = view.findViewById(R.id.slt_estado_actividad);
-
-        txtMobiliario       = view.findViewById(R.id.txt_mobiliario);
-        txtReferencia       = view.findViewById(R.id.txt_referencia);
-
-        editMobiliarioNo    = view.findViewById(R.id.txt_mobiliario_no);
         editDireccion       = view.findViewById(R.id.txt_direccion);
-
         btnEditarDireccion  = view.findViewById(R.id.btn_editar_direccion);
-        btnBuscarElemento   = view.findViewById(R.id.btn_buscar_elemento);
-        btnLimpiarBusquedaElemento  = view.findViewById(R.id.btn_limpiar_busqueda_elemento);
+
         //--
-        txtMobiliario.setText(actividadOperativa.getElemento().getMobiliario().getDescripcionMobiliario());
-        txtReferencia.setText(actividadOperativa.getElemento().getReferenciaMobiliario().getDescripcionReferenciaMobiliario());
-        editMobiliarioNo.setText(String.valueOf(actividadOperativa.getElemento().getElemento_no()));
         editDireccion.setText(actividadOperativa.getDireccion());
 
-        btnBuscarElemento.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
+        swVandalismo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                vandalismo = (isChecked) ? 'S' : 'N';
             }
         });
 
-        btnLimpiarBusquedaElemento.setOnClickListener(new View.OnClickListener() {
+        swElementoNoEncontrado.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                elementoNoEncontrato = (isChecked) ? 'S' : 'N';
             }
         });
+
 
         btnEditarDireccion.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -318,4 +341,5 @@ public class FragmentInformacion extends Fragment {
         alertDireccion.create().show();
 
     }
+
 }
