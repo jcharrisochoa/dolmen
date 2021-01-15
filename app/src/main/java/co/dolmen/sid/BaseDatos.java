@@ -1,13 +1,10 @@
 package co.dolmen.sid;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
-import co.dolmen.sid.entidad.Articulo;
 import co.dolmen.sid.modelo.ActaContratoDB;
 import co.dolmen.sid.modelo.ActividadOperativaDB;
 import co.dolmen.sid.modelo.ArticuloDB;
@@ -18,6 +15,7 @@ import co.dolmen.sid.modelo.CensoAsignadoDB;
 import co.dolmen.sid.modelo.CensoDB;
 import co.dolmen.sid.modelo.CensoTipoArmadoDB;
 import co.dolmen.sid.modelo.ContratoDB;
+import co.dolmen.sid.modelo.ControlEncendidoDB;
 import co.dolmen.sid.modelo.ElementoDB;
 import co.dolmen.sid.modelo.MobiliarioDB;
 import co.dolmen.sid.modelo.MunicipioDB;
@@ -31,10 +29,14 @@ import co.dolmen.sid.modelo.RetenidaPosteDB;
 import co.dolmen.sid.modelo.SentidoDB;
 import co.dolmen.sid.modelo.StockDB;
 import co.dolmen.sid.modelo.TipoActividadDB;
+import co.dolmen.sid.modelo.TipoBalastoDB;
+import co.dolmen.sid.modelo.TipoBaseFotoceldaDB;
+import co.dolmen.sid.modelo.TipoBrazoDB;
 import co.dolmen.sid.modelo.TipoConductorElectricoDB;
 import co.dolmen.sid.modelo.TipoEscenarioDB;
 import co.dolmen.sid.modelo.TipoEspacioDB;
 import co.dolmen.sid.modelo.TipoEstructuraDB;
+import co.dolmen.sid.modelo.TipoInstalacionRedDB;
 import co.dolmen.sid.modelo.TipoInterseccionDB;
 import co.dolmen.sid.modelo.TipoPosteDB;
 import co.dolmen.sid.modelo.TipoRedDB;
@@ -89,6 +91,11 @@ public class BaseDatos extends SQLiteOpenHelper {
     private ArticuloDB articuloDB;
     private StockDB stockDB;
     private ActividadOperativaDB actividadOperativaDB;
+    private TipoBrazoDB tipoBrazoDB;
+    private TipoBalastoDB tipoBalastoDB;
+    private TipoBaseFotoceldaDB tipoBaseFotoceldaDB;
+    private ControlEncendidoDB controlEncendidoDB;
+    private TipoInstalacionRedDB tipoInstalacionRedDB;
 
 
     public BaseDatos(Context context){
@@ -215,6 +222,21 @@ public class BaseDatos extends SQLiteOpenHelper {
 
         actividadOperativaDB = new ActividadOperativaDB(sqLiteDatabase);
         actividadOperativaDB.crearTabla();
+
+        tipoBrazoDB = new TipoBrazoDB(sqLiteDatabase);
+        tipoBrazoDB.crearTabla();
+
+        tipoBalastoDB = new TipoBalastoDB(sqLiteDatabase);
+        tipoBalastoDB.crearTabla();
+
+        tipoBaseFotoceldaDB = new TipoBaseFotoceldaDB(sqLiteDatabase);
+        tipoBaseFotoceldaDB.crearTabla();
+
+        controlEncendidoDB = new ControlEncendidoDB(sqLiteDatabase);
+        controlEncendidoDB.crearTabla();
+
+        tipoInstalacionRedDB = new TipoInstalacionRedDB(sqLiteDatabase);
+        tipoInstalacionRedDB.crearTabla();
         //Log.d("DataBase","create");
     }
 
@@ -260,6 +282,11 @@ public class BaseDatos extends SQLiteOpenHelper {
             articuloDB  = new ArticuloDB(sqLiteDatabase);
             stockDB = new StockDB(sqLiteDatabase);
             actividadOperativaDB = new ActividadOperativaDB(sqLiteDatabase);
+            tipoBrazoDB = new TipoBrazoDB(sqLiteDatabase);
+            tipoBalastoDB = new TipoBalastoDB(sqLiteDatabase);
+            tipoBaseFotoceldaDB = new TipoBaseFotoceldaDB(sqLiteDatabase);
+            controlEncendidoDB = new ControlEncendidoDB(sqLiteDatabase);
+            tipoInstalacionRedDB = new TipoInstalacionRedDB(sqLiteDatabase);
 
             tipologiaDB.borrarTabla();
             mobiliarioDB.borrarTabla();
@@ -300,6 +327,11 @@ public class BaseDatos extends SQLiteOpenHelper {
             articuloDB.borrarTabla();
             stockDB.borrarTabla();
             actividadOperativaDB.borrarTabla();
+            tipoBrazoDB.borrarTabla();
+            tipoBalastoDB.borrarTabla();
+            tipoBaseFotoceldaDB.borrarTabla();
+            controlEncendidoDB.borrarTabla();
+            tipoInstalacionRedDB.borrarTabla();
 
             onCreate(sqLiteDatabase);
         }catch (SQLException e){

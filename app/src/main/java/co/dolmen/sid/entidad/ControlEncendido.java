@@ -1,22 +1,22 @@
 package co.dolmen.sid.entidad;
 
 public class ControlEncendido {
-    int id_control_encendido;
+    int idControlEncendido;
     String descripcion;
 
     public ControlEncendido(){}
 
-    public ControlEncendido(int id_control_encendido, String descripcion) {
-        this.id_control_encendido = id_control_encendido;
+    public ControlEncendido(int idControlEncendido, String descripcion) {
+        this.idControlEncendido = idControlEncendido;
         this.descripcion = descripcion;
     }
 
-    public int getId_control_encendido() {
-        return id_control_encendido;
+    public int getidControlEncendido() {
+        return idControlEncendido;
     }
 
-    public void setId_control_encendido(int id_control_encendido) {
-        this.id_control_encendido = id_control_encendido;
+    public void setidControlEncendido(int idControlEncendido) {
+        this.idControlEncendido = idControlEncendido;
     }
 
     public String getDescripcion() {

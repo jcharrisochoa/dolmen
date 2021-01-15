@@ -29,12 +29,14 @@ import co.dolmen.sid.entidad.ActividadOperativa;
 import co.dolmen.sid.entidad.Elemento;
 import co.dolmen.sid.entidad.Mobiliario;
 import co.dolmen.sid.entidad.ReferenciaMobiliario;
+import co.dolmen.sid.entidad.TipoBrazo;
 import co.dolmen.sid.entidad.Tipologia;
 import co.dolmen.sid.modelo.CalibreDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
 import co.dolmen.sid.modelo.ElementoDB;
 import co.dolmen.sid.modelo.EstadoMobiliarioDB;
 import co.dolmen.sid.modelo.NormaConstruccionPosteDB;
+import co.dolmen.sid.modelo.TipoBrazoDB;
 import co.dolmen.sid.modelo.TipoEscenarioDB;
 import co.dolmen.sid.modelo.TipoPosteDB;
 import co.dolmen.sid.modelo.TipoRedDB;
@@ -60,7 +62,7 @@ public class FragmentElemento extends Fragment {
     Spinner sltTipoRed;
     Spinner sltTipoEscenario;
     Spinner sltCalibreConexionElemento;
-
+    Spinner sltTipoBrazo;
 
     View view;
     ActividadOperativa actividadOperativa;
@@ -78,6 +80,7 @@ public class FragmentElemento extends Fragment {
     ArrayList<DataSpinner> normaConstruccionPosteList;
     ArrayList<DataSpinner> tipoEscenarioList;
     ArrayList<DataSpinner> calibreList;
+    ArrayList<DataSpinner> tipoBrazoList;
 
     private int idUsuario;
     private int idDefaultMunicipio;
@@ -139,6 +142,7 @@ public class FragmentElemento extends Fragment {
         sltTipoRed                  = view.findViewById(R.id.slt_tipo_red);
         sltTipoEscenario            = view.findViewById(R.id.slt_tipo_escenario);
         sltCalibreConexionElemento  = view.findViewById(R.id.slt_calibre_conexion_elemento);
+        sltTipoBrazo                = view.findViewById(R.id.slt_tipo_brazo);
 
         sltTipoPoste.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -173,9 +177,15 @@ public class FragmentElemento extends Fragment {
         cargarTipoEscenario(database);
         cargarCalibre(database);
         cargarNormaConstruccionPoste(database);
-
+        cargarTipoBrazo(database);
+        /*cargarTipoBalasto(database);
+        cargarTipoBaseFotocelda(database);
+        cargarTipoInstalacionRed(database);
+        cargarControlEncendido(database);*/
         return view;
     }
+
+
 
     //--
     private void buscarElemento(SQLiteDatabase sqLiteDatabase) {
@@ -448,5 +458,31 @@ public class FragmentElemento extends Fragment {
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, labels);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltNormaConstruccionPoste.setAdapter(dataAdapter);
+    }
+    //--
+    private void cargarTipoBrazo(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        tipoBrazoList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        TipoBrazoDB tipoBrazoDB = new TipoBrazoDB(sqLiteDatabase);
+        Cursor cursor = tipoBrazoDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        tipoBrazoList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    tipoBrazoList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltTipoBrazo.setAdapter(dataAdapter);
     }
 }

@@ -1,22 +1,22 @@
 package co.dolmen.sid.entidad;
 
 public class TipoInstalacionRed {
-    int id_tipo_instalacion_red;
+    int idTipoInstalacionRed;
     String descripcion;
 
     public TipoInstalacionRed(){}
 
-    public TipoInstalacionRed(int id_tipo_instalacion_red, String descripcion) {
-        this.id_tipo_instalacion_red = id_tipo_instalacion_red;
+    public TipoInstalacionRed(int idTipoInstalacionRed, String descripcion) {
+        this.idTipoInstalacionRed = idTipoInstalacionRed;
         this.descripcion = descripcion;
     }
 
-    public int getId_tipo_instalacion_red() {
-        return id_tipo_instalacion_red;
+    public int getidTipoInstalacionRed() {
+        return idTipoInstalacionRed;
     }
 
-    public void setId_tipo_instalacion_red(int id_tipo_instalacion_red) {
-        this.id_tipo_instalacion_red = id_tipo_instalacion_red;
+    public void setidTipoInstalacionRed(int idTipoInstalacionRed) {
+        this.idTipoInstalacionRed = idTipoInstalacionRed;
     }
 
     public String getDescripcion() {

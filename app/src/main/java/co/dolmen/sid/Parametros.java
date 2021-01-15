@@ -59,6 +59,7 @@ import co.dolmen.sid.modelo.ReferenciaMobiliarioDB;
 import co.dolmen.sid.modelo.RetenidaPosteDB;
 import co.dolmen.sid.modelo.SentidoDB;
 import co.dolmen.sid.modelo.TipoActividadDB;
+import co.dolmen.sid.modelo.TipoBrazoDB;
 import co.dolmen.sid.modelo.TipoConductorElectricoDB;
 import co.dolmen.sid.modelo.TipoEscenarioDB;
 import co.dolmen.sid.modelo.TipoEspacioDB;
@@ -635,6 +636,20 @@ public class Parametros extends AppCompatActivity {
                     publishProgress(progress,R.string.titulo_calibre);
                     Log.d("parametros","->Tipo Tension:"+progress+"%");
                 }
+
+                //--Tipo Brazo
+                TipoBrazoDB tipoBrazoDB = new TipoBrazoDB(database);
+                JSONArray arrayTipoBrazo = parametros.getJSONArray("tipo_brazo");
+                for (int i = 0;i<arrayTipoBrazo.length();i++){
+                    JSONObject jObjectTipoBrazo = arrayTipoBrazo.getJSONObject(i);
+                    tipoBrazoDB.setidTipoBrazo(jObjectTipoBrazo.getInt("id"));
+                    tipoBrazoDB.setDescripcion(jObjectTipoBrazo.getString("descripcion"));
+                    tipoBrazoDB.agregarDatos(tipoBrazoDB);
+                    progress = (int)Math.round((double)(i+1)/arrayTipoBrazo.length()*100);
+                    publishProgress(progress, R.string.titulo_tipo_brazo);
+                    Log.d("parametros","->Tipo Stock:"+progress+"%");
+                }
+
 
                 //Proveedor
                 ProveedorDB proveedorDB = new ProveedorDB(database);

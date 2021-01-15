@@ -51,9 +51,15 @@ public final class Constantes {
     public static final String TABLA_CALIBRE                    = "calibre";
     public static final String TABLA_TIPO_STOCK                = "tipo_stock";
     public static final String TABLA_ARTICULO                  = "articulo";
-    public static final String TABLA_CENTRO_COSTO              = "centro_costo";
     public static final String TABLA_STOCK                     = "stock";
     public static final String TABLA_ACTIVIDAD_OPERATIVA       = "actividad_operativa";
+    public static final String TABLA_TIPO_BRAZO                = "tipo_brazo";
+    public static final String TABLA_TIPO_BALASTO              = "tipo_balasto";
+    public static final String TABLA_CONTROL_ENCENDIDO          = "control_encendido";
+    public static final String TABLA_TIPO_BASE_FOTOCELDA       = "tipo_base_fotocelda";
+    public static final String TABLA_TIPO_INSTALACION_RED      = "tipo_instalacion_red";
+
+    public static final String TABLA_CENTRO_COSTO              = "centro_costo";
     public static final String TABLA_ARCHIVO_ACTIVIDAD_OPERATIVA   = "archivo_actividad_operativa";
     public static final String TABLA_ORDEN_INVENTARIO          = "orden_inventario";
     public static final String TABLA_DETALLE_ORDEN_INVENTARIO  = "detalle_orden_inventario";

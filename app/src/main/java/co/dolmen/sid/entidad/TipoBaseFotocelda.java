@@ -1,24 +1,24 @@
 package co.dolmen.sid.entidad;
 
 public class TipoBaseFotocelda {
-    int id_tipo_base_fotocelda;
+    int idTipoBaseFotocelda;
     String descripcion;
 
     public TipoBaseFotocelda(){
 
     }
 
-    public TipoBaseFotocelda(int id_tipo_base_fotocelda, String descripcion) {
-        this.id_tipo_base_fotocelda = id_tipo_base_fotocelda;
+    public TipoBaseFotocelda(int idTipoBaseFotocelda, String descripcion) {
+        this.idTipoBaseFotocelda = idTipoBaseFotocelda;
         this.descripcion = descripcion;
     }
 
-    public int getId_tipo_base_fotocelda() {
-        return id_tipo_base_fotocelda;
+    public int getidTipoBaseFotocelda() {
+        return idTipoBaseFotocelda;
     }
 
-    public void setId_tipo_base_fotocelda(int id_tipo_base_fotocelda) {
-        this.id_tipo_base_fotocelda = id_tipo_base_fotocelda;
+    public void setidTipoBaseFotocelda(int idTipoBaseFotocelda) {
+        this.idTipoBaseFotocelda = idTipoBaseFotocelda;
     }
 
     public String getDescripcion() {

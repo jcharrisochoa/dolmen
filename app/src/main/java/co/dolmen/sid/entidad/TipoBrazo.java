@@ -1,22 +1,22 @@
 package co.dolmen.sid.entidad;
 
 public class TipoBrazo {
-    int id_tipo_brazo;
+    int idTipoBrazo;
     String descripcion;
 
     public TipoBrazo(){}
 
-    public TipoBrazo(int id_tipo_brazo, String descripcion) {
-        this.id_tipo_brazo = id_tipo_brazo;
+    public TipoBrazo(int idTipoBrazo, String descripcion) {
+        this.idTipoBrazo = idTipoBrazo;
         this.descripcion = descripcion;
     }
 
-    public int getId_tipo_brazo() {
-        return id_tipo_brazo;
+    public int getidTipoBrazo() {
+        return idTipoBrazo;
     }
 
-    public void setId_tipo_brazo(int id_tipo_brazo) {
-        this.id_tipo_brazo = id_tipo_brazo;
+    public void setidTipoBrazo(int idTipoBrazo) {
+        this.idTipoBrazo = idTipoBrazo;
     }
 
     public String getDescripcion() {

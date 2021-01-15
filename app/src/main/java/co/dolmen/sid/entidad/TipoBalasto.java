@@ -1,22 +1,22 @@
 package co.dolmen.sid.entidad;
 
 public class TipoBalasto {
-    int id_tipo_balasto;
+    int idTipoBalasto;
     String descripcion;
 
     public TipoBalasto(){}
 
-    public TipoBalasto(int id_tipo_balasto, String descripcion) {
-        this.id_tipo_balasto = id_tipo_balasto;
+    public TipoBalasto(int idTipoBalasto, String descripcion) {
+        this.idTipoBalasto = idTipoBalasto;
         this.descripcion = descripcion;
     }
 
-    public int getId() {
-        return id_tipo_balasto;
+    public int getIdTipoBalasto() {
+        return idTipoBalasto;
     }
 
-    public void setId(int id_tipo_balasto) {
-        this.id_tipo_balasto = id_tipo_balasto;
+    public void setIdTipoBalasto(int idTipoBalasto) {
+        this.idTipoBalasto = idTipoBalasto;
     }
 
     public String getDescripcion() {
