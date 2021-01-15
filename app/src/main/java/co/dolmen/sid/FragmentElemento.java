@@ -14,18 +14,30 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import co.dolmen.sid.entidad.ActividadOperativa;
 import co.dolmen.sid.entidad.Elemento;
 import co.dolmen.sid.entidad.Mobiliario;
+import co.dolmen.sid.entidad.ReferenciaMobiliario;
 import co.dolmen.sid.entidad.Tipologia;
+import co.dolmen.sid.modelo.CalibreDB;
+import co.dolmen.sid.modelo.ClaseViaDB;
 import co.dolmen.sid.modelo.ElementoDB;
+import co.dolmen.sid.modelo.EstadoMobiliarioDB;
+import co.dolmen.sid.modelo.NormaConstruccionPosteDB;
+import co.dolmen.sid.modelo.TipoEscenarioDB;
+import co.dolmen.sid.modelo.TipoPosteDB;
+import co.dolmen.sid.modelo.TipoRedDB;
 import co.dolmen.sid.utilidades.DataSpinner;
 
 import static java.lang.Integer.parseInt;
@@ -41,6 +53,15 @@ public class FragmentElemento extends Fragment {
 
     EditText editMobiliarioNo;
 
+    Spinner sltEstadoMobiliario;
+    Spinner sltClaseVia;
+    Spinner sltTipoPoste;
+    Spinner sltNormaConstruccionPoste;
+    Spinner sltTipoRed;
+    Spinner sltTipoEscenario;
+    Spinner sltCalibreConexionElemento;
+
+
     View view;
     ActividadOperativa actividadOperativa;
     AlertDialog.Builder alertBuscarElemento;
@@ -49,6 +70,14 @@ public class FragmentElemento extends Fragment {
     SQLiteOpenHelper conn;
     SQLiteDatabase database;
     SharedPreferences config;
+
+    ArrayList<DataSpinner> estadoMobiliarioList;
+    ArrayList<DataSpinner> claseViaList;
+    ArrayList<DataSpinner> tipoPosteList;
+    ArrayList<DataSpinner> tipoRedList;
+    ArrayList<DataSpinner> normaConstruccionPosteList;
+    ArrayList<DataSpinner> tipoEscenarioList;
+    ArrayList<DataSpinner> calibreList;
 
     private int idUsuario;
     private int idDefaultMunicipio;
@@ -103,6 +132,25 @@ public class FragmentElemento extends Fragment {
         editMobiliarioNo.setText(String.valueOf(actividadOperativa.getElemento().getElemento_no()));
 
 
+        sltEstadoMobiliario         = view.findViewById(R.id.slt_estado_mobiliario);
+        sltClaseVia                 = view.findViewById(R.id.slt_clase_via);
+        sltTipoPoste                = view.findViewById(R.id.slt_tipo_poste);
+        sltNormaConstruccionPoste   = view.findViewById(R.id.slt_norma_construccion_poste);
+        sltTipoRed                  = view.findViewById(R.id.slt_tipo_red);
+        sltTipoEscenario            = view.findViewById(R.id.slt_tipo_escenario);
+        sltCalibreConexionElemento  = view.findViewById(R.id.slt_calibre_conexion_elemento);
+
+        sltTipoPoste.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                cargarNormaConstruccionPoste(database);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         btnBuscarElemento.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,6 +165,14 @@ public class FragmentElemento extends Fragment {
                 resetFrmBuscarElemento();
             }
         });
+
+        cargarEstadoMobiliario(database);
+        cargarClaseVia(database);
+        cargarTipoPoste(database);
+        cargarTipoRed(database);
+        cargarTipoEscenario(database);
+        cargarCalibre(database);
+        cargarNormaConstruccionPoste(database);
 
         return view;
     }
@@ -195,12 +251,202 @@ public class FragmentElemento extends Fragment {
             }
         }
     }
-
+    //--
     private void resetFrmBuscarElemento() {
         editMobiliarioNo.setText("");
         txtMobiliarioNo.setText("");
         txtMobiliario.setText("");
         txtReferencia.setText("");
         actividadOperativa.setElemento(new Elemento());
+    }
+    //--
+    private void cargarEstadoMobiliario(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        estadoMobiliarioList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        EstadoMobiliarioDB estadoMobiliarioDB = new EstadoMobiliarioDB(sqLiteDatabase);
+        Cursor cursor = estadoMobiliarioDB.consultarTodo(idDefaultProceso);
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        estadoMobiliarioList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    if (    cursor.getInt(0) == 10 ||
+                            cursor.getInt(0) == 11 ||
+                            cursor.getInt(0) == 13 ||
+                            cursor.getInt(0) == 15){
+                        i++;
+                        dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(2).toUpperCase());
+                        estadoMobiliarioList.add(dataSpinner);
+                        labels.add(cursor.getString(2).toUpperCase());
+                    }
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltEstadoMobiliario.setAdapter(dataAdapter);
+    }
+    //--
+    private void cargarClaseVia(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        claseViaList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        ClaseViaDB claseViaDB = new ClaseViaDB(sqLiteDatabase);
+        Cursor cursor = claseViaDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        claseViaList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    claseViaList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltClaseVia.setAdapter(dataAdapter);
+    }
+    //--
+    private void cargarTipoPoste(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        tipoPosteList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        TipoPosteDB tipoPosteDB = new TipoPosteDB(sqLiteDatabase);
+        Cursor cursor = tipoPosteDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        tipoPosteList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    tipoPosteList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltTipoPoste.setAdapter(dataAdapter);
+    }
+    //--
+    private void cargarTipoRed(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        tipoRedList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        TipoRedDB tipoRedDB = new TipoRedDB(sqLiteDatabase);
+        Cursor cursor = tipoRedDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        tipoRedList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    tipoRedList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltTipoRed.setAdapter(dataAdapter);
+    }
+    //--
+    private void cargarTipoEscenario(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        tipoEscenarioList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        TipoEscenarioDB tipoEscenarioDB = new TipoEscenarioDB(sqLiteDatabase);
+        Cursor cursor = tipoEscenarioDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        tipoEscenarioList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    tipoEscenarioList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltTipoEscenario.setAdapter(dataAdapter);
+    }
+    //--
+    private void cargarCalibre(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        calibreList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        CalibreDB calibreDB = new CalibreDB(sqLiteDatabase);
+        Cursor cursor = calibreDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        calibreList.add(dataSpinner);
+
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    calibreList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltCalibreConexionElemento.setAdapter(dataAdapter);
+        sltCalibreConexionElemento.setAdapter(dataAdapter);
+    }
+    //--
+    private void cargarNormaConstruccionPoste(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        int idTipoPoste = tipoPosteList.get(sltTipoPoste.getSelectedItemPosition()).getId();
+        normaConstruccionPosteList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        NormaConstruccionPosteDB normaConstruccionPosteDB = new NormaConstruccionPosteDB(sqLiteDatabase);
+        Cursor cursor = normaConstruccionPosteDB.consultarTodo(idTipoPoste);
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        normaConstruccionPosteList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(2).toUpperCase());
+                    normaConstruccionPosteList.add(dataSpinner);
+                    labels.add(cursor.getString(2).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltNormaConstruccionPoste.setAdapter(dataAdapter);
     }
 }

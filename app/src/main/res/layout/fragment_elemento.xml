@@ -71,7 +71,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+                android:layout_margin="5dp"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -144,6 +144,54 @@
                         android:layout_weight="1"
                         android:textSize="18sp" />
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/textView36"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tipo Balasto" />
+
+                <Spinner
+                    android:id="@+id/slt_tipo_balasto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/btn_dropdown" />
+
+                <TextView
+                    android:id="@+id/textView38"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Control Encendido" />
+
+                <Spinner
+                    android:id="@+id/slt_control_encendido"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/btn_dropdown" />
+
+                <TextView
+                    android:id="@+id/textView39"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tipo Base Fotocelda" />
+
+                <Spinner
+                    android:id="@+id/slt_tipo_base_fotocelda"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/btn_dropdown" />
+
+                <TextView
+                    android:id="@+id/textView40"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tipo Brazo" />
+
+                <Spinner
+                    android:id="@+id/slt_tipo_brazo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/btn_dropdown" />
 
                 <TextView
                     android:id="@+id/textView24"
@@ -428,18 +476,6 @@
                     android:inputType="number" />
 
                 <TextView
-                    android:id="@+id/textView30"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Calibre del conductro de la conexión al Elemento" />
-
-                <Spinner
-                    android:id="@+id/slt_calibre_conexion_elemento"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown" />
-
-                <TextView
                     android:id="@+id/textView11"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -463,11 +499,6 @@
                     android:layout_height="wrap_content"
                     android:background="@android:drawable/btn_dropdown" />
 
-                <Switch
-                    android:id="@+id/sw_puesta_tierra"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:text="¿Tiene Puesta a Tierra?" />
 
                 <View
                     android:id="@+id/divider2"
@@ -488,24 +519,6 @@
                     android:layout_height="1dp"
                     android:background="?android:attr/listDivider" />
 
-                <Switch
-                    android:id="@+id/sw_poste_en_buen_estado"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:text="¿El Poste está en buen estado?"
-                    android:checked="true" />
-
-                <TextView
-                    android:id="@+id/textView13"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Tipo Retenida" />
-
-                <Spinner
-                    android:id="@+id/slt_tipo_retenida"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown" />
 
                 <TextView
                     android:id="@+id/textView14"
@@ -586,41 +599,49 @@
                     android:layout_height="60dp"
                     android:text="¿El tranformador es Exclusivo AP?" />
 
+
                 <TextView
-                    android:id="@+id/textView29"
+                    android:id="@+id/textView30"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Propiedad del Trasnformador" />
+                    android:text="Calibre del conductro de la conexión al Elemento" />
 
-                <RadioGroup
+                <Spinner
+                    android:id="@+id/slt_calibre_conexion_elemento"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/btn_dropdown" />
 
-                    <RadioButton
-                        android:id="@+id/rd_transformador_no_aplica"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:checked="true"
-                        android:text="No Aplica" />
+                <TextView
+                    android:id="@+id/textView16"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tipo Red *" />
 
-                    <RadioButton
-                        android:id="@+id/rd_transformador_publico"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:text="Público" />
+                <Spinner
+                    android:id="@+id/slt_tipo_red"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/btn_dropdown" />
 
-                    <RadioButton
-                        android:id="@+id/rd_transformador_privado"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:text="Privado" />
+                <TextView
+                    android:id="@+id/textView41"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tipo Instalacion Red" />
 
-                </RadioGroup>
+                <Spinner
+                    android:id="@+id/slt_tipo_instalacion_red"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/btn_dropdown" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
                     android:orientation="vertical"></LinearLayout>
+
+
 
             </LinearLayout>
 

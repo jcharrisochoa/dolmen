@@ -137,10 +137,26 @@ public class EjecutaActividad extends AppCompatActivity {
             public void onClick(View view) {
                /* Snackbar.make(view, "Cancelar", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();*/
-                Intent i = new Intent(EjecutaActividad.this,DetalleActividad.class);
-                i.putExtra("actividadOperativa",actividadOperativa);
-                startActivity(i);
-                EjecutaActividad.this.finish();
+                alert.setTitle(R.string.titulo_alerta);
+                alert.setMessage(R.string.alert_cancelar_actividad);
+                alert.setPositiveButton(R.string.btn_aceptar,new DialogInterface.OnClickListener(){
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        Intent i = new Intent(EjecutaActividad.this,DetalleActividad.class);
+                        i.putExtra("actividadOperativa",actividadOperativa);
+                        startActivity(i);
+                        EjecutaActividad.this.finish();
+                    }
+                });
+                alert.setNegativeButton(R.string.btn_cancelar, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                alert.create().show();
             }
         });
     }
