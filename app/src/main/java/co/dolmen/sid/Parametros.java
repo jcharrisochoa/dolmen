@@ -45,6 +45,7 @@ import co.dolmen.sid.modelo.CalibreDB;
 import co.dolmen.sid.modelo.CensoAsignadoDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
 import co.dolmen.sid.modelo.ContratoDB;
+import co.dolmen.sid.modelo.ControlEncendidoDB;
 import co.dolmen.sid.modelo.ElementoDB;
 import co.dolmen.sid.modelo.EstadoActividadDB;
 import co.dolmen.sid.modelo.EstadoMobiliarioDB;
@@ -59,11 +60,14 @@ import co.dolmen.sid.modelo.ReferenciaMobiliarioDB;
 import co.dolmen.sid.modelo.RetenidaPosteDB;
 import co.dolmen.sid.modelo.SentidoDB;
 import co.dolmen.sid.modelo.TipoActividadDB;
+import co.dolmen.sid.modelo.TipoBalastoDB;
+import co.dolmen.sid.modelo.TipoBaseFotoceldaDB;
 import co.dolmen.sid.modelo.TipoBrazoDB;
 import co.dolmen.sid.modelo.TipoConductorElectricoDB;
 import co.dolmen.sid.modelo.TipoEscenarioDB;
 import co.dolmen.sid.modelo.TipoEspacioDB;
 import co.dolmen.sid.modelo.TipoEstructuraDB;
+import co.dolmen.sid.modelo.TipoInstalacionRedDB;
 import co.dolmen.sid.modelo.TipoInterseccionDB;
 import co.dolmen.sid.modelo.TipoPosteDB;
 import co.dolmen.sid.modelo.TipoRedDB;
@@ -647,9 +651,61 @@ public class Parametros extends AppCompatActivity {
                     tipoBrazoDB.agregarDatos(tipoBrazoDB);
                     progress = (int)Math.round((double)(i+1)/arrayTipoBrazo.length()*100);
                     publishProgress(progress, R.string.titulo_tipo_brazo);
-                    Log.d("parametros","->Tipo Stock:"+progress+"%");
+                    Log.d("parametros","->Tipo Brazo:"+progress+"%");
                 }
 
+
+                //--Tipo Balsto
+                TipoBalastoDB tipoBalastoDB = new TipoBalastoDB(database);
+                JSONArray arrayTipoBalasto = parametros.getJSONArray("tipo_balasto");
+                for (int i = 0;i<arrayTipoBalasto.length();i++){
+                    JSONObject jObjectTipoBalasto = arrayTipoBalasto.getJSONObject(i);
+                    tipoBalastoDB.setIdTipoBalasto(jObjectTipoBalasto.getInt("id"));
+                    tipoBalastoDB.setDescripcion(jObjectTipoBalasto.getString("descripcion"));
+                    tipoBalastoDB.agregarDatos(tipoBalastoDB);
+                    progress = (int)Math.round((double)(i+1)/arrayTipoBalasto.length()*100);
+                    publishProgress(progress, R.string.titulo_tipo_balasto);
+                    Log.d("parametros","->Tipo Balsto:"+progress+"%");
+                }
+
+                //--Tipo Base Fotocelda
+                TipoBaseFotoceldaDB tipoBaseFotoceldaDB = new TipoBaseFotoceldaDB(database);
+                JSONArray arrayTipoBaseFotocelda = parametros.getJSONArray("tipo_base_fotocelda");
+                for (int i = 0;i<arrayTipoBaseFotocelda.length();i++){
+                    JSONObject jObjectTipoBaseFotocelda = arrayTipoBaseFotocelda.getJSONObject(i);
+                    tipoBaseFotoceldaDB.setidTipoBaseFotocelda(jObjectTipoBaseFotocelda.getInt("id"));
+                    tipoBaseFotoceldaDB.setDescripcion(jObjectTipoBaseFotocelda.getString("descripcion"));
+                    tipoBaseFotoceldaDB.agregarDatos(tipoBaseFotoceldaDB);
+                    progress = (int)Math.round((double)(i+1)/arrayTipoBaseFotocelda.length()*100);
+                    publishProgress(progress, R.string.titulo_tipo_base_fotocelda);
+                    Log.d("parametros","->Tipo Base Fotocelda:"+progress+"%");
+                }
+
+                //--Tipo Inst Red
+                TipoInstalacionRedDB tipoInstalacionRedDB = new TipoInstalacionRedDB(database);
+                JSONArray arrayTipoInstalacionRed = parametros.getJSONArray("tipo_instalacion_red_alimentacion");
+                for (int i = 0;i<arrayTipoInstalacionRed.length();i++){
+                    JSONObject jObjectTipoInstalacionRed = arrayTipoInstalacionRed.getJSONObject(i);
+                    tipoInstalacionRedDB.setidTipoInstalacionRed(jObjectTipoInstalacionRed.getInt("id"));
+                    tipoInstalacionRedDB.setDescripcion(jObjectTipoInstalacionRed.getString("descripcion"));
+                    tipoInstalacionRedDB.agregarDatos(tipoInstalacionRedDB);
+                    progress = (int)Math.round((double)(i+1)/arrayTipoInstalacionRed.length()*100);
+                    publishProgress(progress, R.string.titulo_tipo_instalacion_Red);
+                    Log.d("parametros","->Tipo Instalacion Red:"+progress+"%");
+                }
+
+                //--Control Encendido
+                ControlEncendidoDB controlEncendidoDB = new ControlEncendidoDB(database);
+                JSONArray arrayControlEncendido= parametros.getJSONArray("control_encendido");
+                for (int i = 0;i<arrayControlEncendido.length();i++){
+                    JSONObject jObjectControlEncendido = arrayControlEncendido.getJSONObject(i);
+                    controlEncendidoDB.setidControlEncendido(jObjectControlEncendido.getInt("id"));
+                    controlEncendidoDB.setDescripcion(jObjectControlEncendido.getString("descripcion"));
+                    controlEncendidoDB.agregarDatos(controlEncendidoDB);
+                    progress = (int)Math.round((double)(i+1)/arrayControlEncendido.length()*100);
+                    publishProgress(progress, R.string.titulo_control_encendido);
+                    Log.d("parametros","->Control Encendido:"+progress+"%");
+                }
 
                 //Proveedor
                 ProveedorDB proveedorDB = new ProveedorDB(database);

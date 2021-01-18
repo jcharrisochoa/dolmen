@@ -33,11 +33,15 @@ import co.dolmen.sid.entidad.TipoBrazo;
 import co.dolmen.sid.entidad.Tipologia;
 import co.dolmen.sid.modelo.CalibreDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
+import co.dolmen.sid.modelo.ControlEncendidoDB;
 import co.dolmen.sid.modelo.ElementoDB;
 import co.dolmen.sid.modelo.EstadoMobiliarioDB;
 import co.dolmen.sid.modelo.NormaConstruccionPosteDB;
+import co.dolmen.sid.modelo.TipoBalastoDB;
+import co.dolmen.sid.modelo.TipoBaseFotoceldaDB;
 import co.dolmen.sid.modelo.TipoBrazoDB;
 import co.dolmen.sid.modelo.TipoEscenarioDB;
+import co.dolmen.sid.modelo.TipoInstalacionRedDB;
 import co.dolmen.sid.modelo.TipoPosteDB;
 import co.dolmen.sid.modelo.TipoRedDB;
 import co.dolmen.sid.utilidades.DataSpinner;
@@ -63,6 +67,10 @@ public class FragmentElemento extends Fragment {
     Spinner sltTipoEscenario;
     Spinner sltCalibreConexionElemento;
     Spinner sltTipoBrazo;
+    Spinner sltTipoBalasto;
+    Spinner sltTipoBaseFotocelda;
+    Spinner sltTipoInstalacionRed;
+    Spinner sltControlEncendido;
 
     View view;
     ActividadOperativa actividadOperativa;
@@ -81,6 +89,10 @@ public class FragmentElemento extends Fragment {
     ArrayList<DataSpinner> tipoEscenarioList;
     ArrayList<DataSpinner> calibreList;
     ArrayList<DataSpinner> tipoBrazoList;
+    ArrayList<DataSpinner> tipoBalastoList;
+    ArrayList<DataSpinner> tipoBaseFotoceldaList;
+    ArrayList<DataSpinner> tipoInstalacionRedList;
+    ArrayList<DataSpinner> controlEncendidoList;
 
     private int idUsuario;
     private int idDefaultMunicipio;
@@ -143,6 +155,11 @@ public class FragmentElemento extends Fragment {
         sltTipoEscenario            = view.findViewById(R.id.slt_tipo_escenario);
         sltCalibreConexionElemento  = view.findViewById(R.id.slt_calibre_conexion_elemento);
         sltTipoBrazo                = view.findViewById(R.id.slt_tipo_brazo);
+        sltTipoBalasto              = view.findViewById(R.id.slt_tipo_balasto);
+        sltTipoBaseFotocelda        = view.findViewById(R.id.slt_tipo_base_fotocelda);
+        sltTipoInstalacionRed       = view.findViewById(R.id.slt_tipo_instalacion_red);
+        sltControlEncendido         = view.findViewById(R.id.slt_control_encendido);
+
 
         sltTipoPoste.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -170,6 +187,11 @@ public class FragmentElemento extends Fragment {
             }
         });
 
+
+        cargarTipoBalasto(database);
+        cargarTipoBaseFotocelda(database);
+        cargarTipoBrazo(database);
+        cargarControlEncendido(database);
         cargarEstadoMobiliario(database);
         cargarClaseVia(database);
         cargarTipoPoste(database);
@@ -177,11 +199,8 @@ public class FragmentElemento extends Fragment {
         cargarTipoEscenario(database);
         cargarCalibre(database);
         cargarNormaConstruccionPoste(database);
-        cargarTipoBrazo(database);
-        /*cargarTipoBalasto(database);
-        cargarTipoBaseFotocelda(database);
         cargarTipoInstalacionRed(database);
-        cargarControlEncendido(database);*/
+
         return view;
     }
 
@@ -268,6 +287,110 @@ public class FragmentElemento extends Fragment {
         txtMobiliario.setText("");
         txtReferencia.setText("");
         actividadOperativa.setElemento(new Elemento());
+    }
+    //--
+    private void cargarTipoBrazo(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        tipoBrazoList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        TipoBrazoDB tipoBrazoDB = new TipoBrazoDB(sqLiteDatabase);
+        Cursor cursor = tipoBrazoDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        tipoBrazoList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    tipoBrazoList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltTipoBrazo.setAdapter(dataAdapter);
+    }
+    //--
+    private void cargarTipoBalasto(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        tipoBalastoList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        TipoBalastoDB tipoBalastoDB = new TipoBalastoDB(sqLiteDatabase);
+        Cursor cursor = tipoBalastoDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        tipoBalastoList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    tipoBalastoList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltTipoBalasto.setAdapter(dataAdapter);
+    }
+    //--
+    private void cargarTipoBaseFotocelda(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        tipoBaseFotoceldaList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        TipoBaseFotoceldaDB tipoBaseFotoceldaDB = new TipoBaseFotoceldaDB(sqLiteDatabase);
+        Cursor cursor = tipoBaseFotoceldaDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        tipoBaseFotoceldaList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    tipoBaseFotoceldaList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltTipoBaseFotocelda.setAdapter(dataAdapter);
+    }
+    //--
+    private void cargarControlEncendido(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        controlEncendidoList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        ControlEncendidoDB controlEncendidoDB = new ControlEncendidoDB(sqLiteDatabase);
+        Cursor cursor = controlEncendidoDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        controlEncendidoList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    controlEncendidoList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltControlEncendido.setAdapter(dataAdapter);
     }
     //--
     private void cargarEstadoMobiliario(SQLiteDatabase sqLiteDatabase) {
@@ -460,21 +583,21 @@ public class FragmentElemento extends Fragment {
         sltNormaConstruccionPoste.setAdapter(dataAdapter);
     }
     //--
-    private void cargarTipoBrazo(SQLiteDatabase sqLiteDatabase) {
+    private void cargarTipoInstalacionRed(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
-        tipoBrazoList = new ArrayList<DataSpinner>();
+        tipoInstalacionRedList = new ArrayList<DataSpinner>();
         List<String> labels = new ArrayList<>();
-        TipoBrazoDB tipoBrazoDB = new TipoBrazoDB(sqLiteDatabase);
-        Cursor cursor = tipoBrazoDB.consultarTodo();
+        TipoInstalacionRedDB tipoInstalacionRedDB = new TipoInstalacionRedDB(sqLiteDatabase);
+        Cursor cursor = tipoInstalacionRedDB.consultarTodo();
         DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
-        tipoBrazoList.add(dataSpinner);
+        tipoInstalacionRedList.add(dataSpinner);
         labels.add(getText(R.string.seleccione).toString());
         if (cursor.getCount() > 0) {
             if (cursor.moveToFirst()) {
                 do {
                     i++;
                     dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
-                    tipoBrazoList.add(dataSpinner);
+                    tipoInstalacionRedList.add(dataSpinner);
                     labels.add(cursor.getString(1).toUpperCase());
                 } while (cursor.moveToNext());
             }
@@ -483,6 +606,6 @@ public class FragmentElemento extends Fragment {
 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, labels);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sltTipoBrazo.setAdapter(dataAdapter);
+        sltTipoInstalacionRed.setAdapter(dataAdapter);
     }
 }

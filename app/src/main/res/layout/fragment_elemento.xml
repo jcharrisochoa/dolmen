@@ -158,18 +158,6 @@
                     android:background="@android:drawable/btn_dropdown" />
 
                 <TextView
-                    android:id="@+id/textView38"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Control Encendido" />
-
-                <Spinner
-                    android:id="@+id/slt_control_encendido"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown" />
-
-                <TextView
                     android:id="@+id/textView39"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -189,6 +177,18 @@
 
                 <Spinner
                     android:id="@+id/slt_tipo_brazo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/btn_dropdown" />
+
+                <TextView
+                    android:id="@+id/textView38"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Control Encendido" />
+
+                <Spinner
+                    android:id="@+id/slt_control_encendido"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:drawable/btn_dropdown" />
@@ -613,18 +613,6 @@
                     android:background="@android:drawable/btn_dropdown" />
 
                 <TextView
-                    android:id="@+id/textView16"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Tipo Red *" />
-
-                <Spinner
-                    android:id="@+id/slt_tipo_red"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown" />
-
-                <TextView
                     android:id="@+id/textView41"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -632,6 +620,18 @@
 
                 <Spinner
                     android:id="@+id/slt_tipo_instalacion_red"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/btn_dropdown" />
+
+                <TextView
+                    android:id="@+id/textView16"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tipo Red *" />
+
+                <Spinner
+                    android:id="@+id/slt_tipo_red"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:drawable/btn_dropdown" />

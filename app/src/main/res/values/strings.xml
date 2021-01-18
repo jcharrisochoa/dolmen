@@ -210,4 +210,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="alert_cancelar_actividad">¿Esta seguro(a) de abandonar la ejecución de la actividad?</string>
     <string name="titulo_tipo_brazo">Tipo Brazo</string>
+    <string name="titulo_tipo_balasto">Tipo Balasto</string>
+    <string name="titulo_tipo_base_fotocelda">Tipo Base Fotocelda</string>
+    <string name="titulo_tipo_instalacion_Red">Tipo Inst. Red</string>
+    <string name="titulo_control_encendido">Control Encendido</string>
 </resources>
