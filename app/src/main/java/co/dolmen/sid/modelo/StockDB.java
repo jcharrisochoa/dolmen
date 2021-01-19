@@ -89,21 +89,43 @@ public class StockDB extends Stock implements DatabaseDDL,DatabaseDLM {
 
     @Override
     public Cursor consultarTodo() {
-        this.sql = "SELECT * FROM "+ Constantes.TABLA_STOCK+" ORDER BY id_articulo";
+        this.sql = "select s.id_bodega,s.id_tipo_stock,s.id_centro_costo,s.id_articulo,s.cantidad, " +
+                "a.descripcion as articulo,te.descripcion as tipo_stock" +
+                " from "+ Constantes.TABLA_STOCK + " s " +
+                " join "+Constantes.TABLA_TIPO_STOCK+" te on(s.id_tipo_stock = te._id)" +
+                " join "+Constantes.TABLA_ARTICULO+" a on(s.id_articulo = a._id)  ORDER BY id_articulo";
+
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }
 
     public Cursor consultarTodo(int id_bodega,int id_articulo,int id_tipo_stock,int id_centro_costo) {
         String q = "";
-        if (id_tipo_stock != 0){
-            q += " and id_tipo_stock="+id_tipo_stock;
-        }
-        if (id_centro_costo != 0){
-            q += " and id_centro_costo="+id_centro_costo;
+        if (id_bodega != 0){
+            q += " and s.id_bodega="+id_bodega;
         }
 
-        this.sql = "SELECT * FROM "+ Constantes.TABLA_STOCK+" where id_bodega= "+id_bodega+" and id_articulo="+id_articulo+" "+q;
+        if (id_articulo != 0){
+            q += " and s.id_articulo="+id_articulo;
+        }
+
+        if (id_tipo_stock != 0){
+            q += " and s.id_tipo_stock="+id_tipo_stock;
+        }
+
+        if (id_centro_costo != 0){
+            q += " and s.id_centro_costo="+id_centro_costo;
+        }
+
+        this.sql = "select s.id_bodega,s.id_tipo_stock,s.id_centro_costo,s.id_articulo,s.cantidad, " +
+                "a.descripcion as articulo,te.descripcion as tipo_stock" +
+                " from "+ Constantes.TABLA_STOCK + " s " +
+                " join "+Constantes.TABLA_TIPO_STOCK+" te on(s.id_tipo_stock = te._id)" +
+                " join "+Constantes.TABLA_ARTICULO+" a on(s.id_articulo = a._id) " +
+                " where 1=1 " +
+                q+
+                " ORDER BY id_articulo";
+
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }

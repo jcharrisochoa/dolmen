@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ListaActividad">
+    tools:context=".ListaStock">
+
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -37,28 +38,21 @@
                 android:orientation="horizontal">
 
                 <Switch
-                    android:id="@+id/sw_buscar_elemento"
+                    android:id="@+id/sw_buscar_codigo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
                     android:layout_marginRight="5dp"
                     android:checked="true"
-                    android:text="@string/titulo_elemento" />
+                    android:text="Código" />
 
                 <Switch
-                    android:id="@+id/sw_buscar_direccion"
+                    android:id="@+id/sw_buscar_descripcion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
                     android:layout_marginRight="5dp"
-                    android:text="@string/titulo_direccion" />
-
-                <Switch
-                    android:id="@+id/sw_buscar_actividad"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/titulo_actividad" />
-
+                    android:text="Nombre" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -86,7 +80,7 @@
                     tools:text="@string/buscar_elemento" />
 
                 <ImageButton
-                    android:id="@+id/btn_buscar_actividad"
+                    android:id="@+id/btn_buscar_stock"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="3"
@@ -107,22 +101,22 @@
             </androidx.appcompat.widget.LinearLayoutCompat>
         </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rw_actividades"
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="5dp" />
-    </androidx.appcompat.widget.LinearLayoutCompat>
+            android:orientation="vertical">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rw_stock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="5dp" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -136,6 +130,4 @@
         app:backgroundTint="@color/colorAccentCancel"
         app:srcCompat="@drawable/icon_undo"
         tools:ignore="VectorDrawableCompat" />
-
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

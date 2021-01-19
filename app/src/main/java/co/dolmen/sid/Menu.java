@@ -30,7 +30,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +50,7 @@ public class Menu extends AppCompatActivity {
     ImageButton btnCrearElemento;
     ImageButton btnCensoCarga;
     ImageButton btnMisActividades;
+    ImageButton btnMiStock;
 
     SharedPreferences config;
     TextView txtNombreMunicipio;
@@ -128,6 +128,8 @@ public class Menu extends AppCompatActivity {
         btnCensoCarga       = findViewById(R.id.btn_censo_carga);
         btnCensoTecnico     = findViewById(R.id.btn_censo_tecnico);
         btnMisActividades   = findViewById(R.id.btn_mis_actividades);
+        btnMiStock          = findViewById(R.id.btn_mi_stock);
+
         txtNombreMunicipio  = findViewById(R.id.txtNombreMunicipio);
         txtNombreProceso    = findViewById(R.id.txtNombreProceso);
         txtNombreContrato   = findViewById(R.id.txtNombreContrato);
@@ -252,6 +254,14 @@ public class Menu extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(Menu.this, ListaActividad.class);
+                startActivity(i);
+                Menu.this.finish();
+            }
+        });
+        btnMiStock.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Menu.this, ListaStock.class);
                 startActivity(i);
                 Menu.this.finish();
             }

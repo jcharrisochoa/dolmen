@@ -1,6 +1,8 @@
 package co.dolmen.sid.entidad;
 
-public class Stock {
+import java.io.Serializable;
+
+public class Stock implements Serializable {
     Bodega bodega;
     CentroCosto centroCosto;
     Articulo articulo;

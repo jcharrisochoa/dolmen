@@ -24,29 +24,49 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".ListaStock"></activity>
         <activity
             android:name=".EjecutaActividad"
             android:label="@string/title_activity_ejecuta_actividad"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".DetalleActividad" android:screenOrientation="portrait"/>
-        <activity android:name=".ListaActividad" android:screenOrientation="portrait"/>
-        <activity android:name=".CensoCarga" android:screenOrientation="portrait"/>
-        <activity android:name=".CrearElemento" android:screenOrientation="portrait"/>
-        <activity android:name=".GenerarActividadOperativa" android:screenOrientation="portrait"/>
-        <activity android:name=".ActualizarElemento" android:screenOrientation="portrait"/>
-        <activity android:name=".ReporteDano" android:screenOrientation="portrait"/>
-        <activity android:name=".SubMenuCensoTecnico" android:screenOrientation="portrait"/>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".DetalleActividad"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ListaActividad"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".CensoCarga"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".CrearElemento"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".GenerarActividadOperativa"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ActualizarElemento"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ReporteDano"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SubMenuCensoTecnico"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".CensoTecnico"
             android:label="@string/titulo_censo_tecnico"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Menu" android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Menu"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ConfigurarArea"
             android:label="@string/titulo_perfil_usuario" />
-        <activity android:name=".Parametros"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".Parametros"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Login"
             android:label="@string/titulo_actividad_login" />
