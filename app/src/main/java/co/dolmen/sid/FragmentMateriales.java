@@ -222,7 +222,10 @@ public class FragmentMateriales extends Fragment{
                     cantEnLista = movimientoArticuloArrayList.get(pos).getCantidad();
 
                 stock = consultarStock();
+
                 totalMovimiento = cantEnLista + Float.parseFloat(txtCantidad.getText().toString());
+                Log.d("programacion","Stock:"+stock+",Lista:"+cantEnLista+",Digitado:"+Float.parseFloat(txtCantidad.getText().toString())+",Total:"+totalMovimiento);
+
                 if(totalMovimiento >  stock) {
                     alert.setMessage(getString(R.string.cantidad_insuficiente)+(stock - cantEnLista));
                     alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener(){

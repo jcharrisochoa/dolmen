@@ -9,6 +9,7 @@ import co.dolmen.sid.modelo.ActaContratoDB;
 import co.dolmen.sid.modelo.ActividadOperativaDB;
 import co.dolmen.sid.modelo.ArticuloDB;
 import co.dolmen.sid.modelo.BarrioDB;
+import co.dolmen.sid.modelo.BodegaDB;
 import co.dolmen.sid.modelo.CalibreDB;
 import co.dolmen.sid.modelo.CensoArchivoDB;
 import co.dolmen.sid.modelo.CensoAsignadoDB;
@@ -96,6 +97,7 @@ public class BaseDatos extends SQLiteOpenHelper {
     private TipoBaseFotoceldaDB tipoBaseFotoceldaDB;
     private ControlEncendidoDB controlEncendidoDB;
     private TipoInstalacionRedDB tipoInstalacionRedDB;
+    private BodegaDB bodegaDB;
 
 
     public BaseDatos(Context context){
@@ -237,6 +239,9 @@ public class BaseDatos extends SQLiteOpenHelper {
 
         tipoInstalacionRedDB = new TipoInstalacionRedDB(sqLiteDatabase);
         tipoInstalacionRedDB.crearTabla();
+
+        bodegaDB    = new BodegaDB(sqLiteDatabase);
+        bodegaDB.crearTabla();
         //Log.d("DataBase","create");
     }
 
@@ -287,6 +292,7 @@ public class BaseDatos extends SQLiteOpenHelper {
             tipoBaseFotoceldaDB = new TipoBaseFotoceldaDB(sqLiteDatabase);
             controlEncendidoDB = new ControlEncendidoDB(sqLiteDatabase);
             tipoInstalacionRedDB = new TipoInstalacionRedDB(sqLiteDatabase);
+            bodegaDB    = new BodegaDB(sqLiteDatabase);
 
             tipologiaDB.borrarTabla();
             mobiliarioDB.borrarTabla();
@@ -332,6 +338,7 @@ public class BaseDatos extends SQLiteOpenHelper {
             tipoBaseFotoceldaDB.borrarTabla();
             controlEncendidoDB.borrarTabla();
             tipoInstalacionRedDB.borrarTabla();
+            bodegaDB.borrarTabla();
 
             onCreate(sqLiteDatabase);
         }catch (SQLException e){

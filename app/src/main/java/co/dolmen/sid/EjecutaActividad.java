@@ -14,6 +14,10 @@ import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestHandle;
+import com.loopj.android.http.RequestParams;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +28,7 @@ import android.view.View;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -31,6 +36,7 @@ import co.dolmen.sid.entidad.ActividadOperativa;
 import co.dolmen.sid.entidad.MovimientoArticulo;
 import co.dolmen.sid.utilidades.DataSpinner;
 import co.dolmen.sid.utilidades.ViewPagerAdapter;
+import cz.msebera.android.httpclient.Header;
 
 public class EjecutaActividad extends AppCompatActivity {
 
@@ -62,10 +68,18 @@ public class EjecutaActividad extends AppCompatActivity {
     private Switch  swElementoNoEncontrado;
     private Switch  swAfectadoVandalismo;
 
+    private FloatingActionButton fabGuardar;
+    private FloatingActionButton fabCancelar;
+
     private ArrayList<DataSpinner> barrioActividad;
     private ArrayList<MovimientoArticulo> movimientoArticulos;
     private ArrayList<DataSpinner> tipoActividad;
     private ArrayList<DataSpinner> estadoActividad;
+
+    private int idUsuario;
+    private int idDefaultMunicipio;
+    private int idDefaultProceso;
+    private int idDefaultContrato;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +93,12 @@ public class EjecutaActividad extends AppCompatActivity {
 
         conn = new BaseDatos(EjecutaActividad.this);
         database = conn.getReadableDatabase();
+
+        config = getSharedPreferences("config", MODE_PRIVATE);
+        idUsuario = config.getInt("id_usuario", 0);
+        idDefaultProceso = config.getInt("id_proceso", 0);
+        idDefaultContrato = config.getInt("id_contrato", 0);
+        idDefaultMunicipio = config.getInt("id_municipio", 0);
 
         Intent i = getIntent();
         actividadOperativa = (ActividadOperativa)i.getSerializableExtra("actividadOperativa");
@@ -122,8 +142,8 @@ public class EjecutaActividad extends AppCompatActivity {
         tabLayout.getTabAt(4).setIcon(R.drawable.icon_marker);
 
         //--
-        FloatingActionButton fabGuardar = findViewById(R.id.fab_guardar);
-        FloatingActionButton fabCancelar = findViewById(R.id.fab_cancelar);
+        fabGuardar = findViewById(R.id.fab_guardar);
+        fabCancelar = findViewById(R.id.fab_cancelar);
 
         fabGuardar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,7 +164,7 @@ public class EjecutaActividad extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        Intent i = new Intent(EjecutaActividad.this,DetalleActividad.class);
+                        Intent i = new Intent(EjecutaActividad.this,ListaActividad.class);
                         i.putExtra("actividadOperativa",actividadOperativa);
                         startActivity(i);
                         EjecutaActividad.this.finish();
@@ -284,6 +304,38 @@ public class EjecutaActividad extends AppCompatActivity {
     }
 
     private void almacenarDatosEnRemoto() {
+        final AsyncHttpClient client = new AsyncHttpClient();
+        RequestParams requestParams = new RequestParams();
+
+        requestParams.put("id_usuario", idUsuario);
+        requestParams.put("foto_antes_1", fragmentFotoAntes.encodeStringFoto_1);
+        requestParams.put("foto_antes_2", fragmentFotoAntes.encodeStringFoto_2);
+        requestParams.put("foto_antes_3", fragmentFotoAntes.encodeStringFoto_3);
+        requestParams.put("foto_antes_4", fragmentFotoAntes.encodeStringFoto_4);
+        RequestHandle post = client.post(ServicioWeb.urlGuardarActividad, requestParams, new AsyncHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                super.onStart();
+                fabGuardar.setEnabled(false);
+                fabCancelar.setEnabled(false);
+                //progressBarGuardarCenso.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                String respuesta = new String(responseBody);
+                Log.d("resultado","error "+respuesta);
+                Toast.makeText(getApplicationContext(), getText(R.string.alert_error_ejecucion) + " Código: " + statusCode, Toast.LENGTH_SHORT).show();
+                fabGuardar.setEnabled(true);
+                fabCancelar.setEnabled(true);
+                //progressBarGuardarCenso.setVisibility(View.INVISIBLE);
+            }
+        });
 
     }
 

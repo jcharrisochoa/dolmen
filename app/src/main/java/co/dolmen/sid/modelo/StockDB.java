@@ -90,8 +90,9 @@ public class StockDB extends Stock implements DatabaseDDL,DatabaseDLM {
     @Override
     public Cursor consultarTodo() {
         this.sql = "select s.id_bodega,s.id_tipo_stock,s.id_centro_costo,s.id_articulo,s.cantidad, " +
-                "a.descripcion as articulo,te.descripcion as tipo_stock" +
+                "a.descripcion as articulo,te.descripcion as tipo_stock,b.descripcion as bodega " +
                 " from "+ Constantes.TABLA_STOCK + " s " +
+                " join "+Constantes.TABLA_BODEGA+" b on(s.id_bodega = b._id)" +
                 " join "+Constantes.TABLA_TIPO_STOCK+" te on(s.id_tipo_stock = te._id)" +
                 " join "+Constantes.TABLA_ARTICULO+" a on(s.id_articulo = a._id)  ORDER BY id_articulo";
 
@@ -117,14 +118,16 @@ public class StockDB extends Stock implements DatabaseDDL,DatabaseDLM {
             q += " and s.id_centro_costo="+id_centro_costo;
         }
 
-        this.sql = "select s.id_bodega,s.id_tipo_stock,s.id_centro_costo,s.id_articulo,s.cantidad, " +
-                "a.descripcion as articulo,te.descripcion as tipo_stock" +
+        this.sql = "select s.id_bodega,s.id_tipo_stock,s.id_centro_costo,s.id_articulo,s.cantidad," +
+                "a.descripcion as articulo,te.descripcion as tipo_stock,b.descripcion as bodega " +
                 " from "+ Constantes.TABLA_STOCK + " s " +
+                " join "+Constantes.TABLA_BODEGA+" b on(s.id_bodega = b._id)" +
                 " join "+Constantes.TABLA_TIPO_STOCK+" te on(s.id_tipo_stock = te._id)" +
                 " join "+Constantes.TABLA_ARTICULO+" a on(s.id_articulo = a._id) " +
                 " where 1=1 " +
                 q+
                 " ORDER BY id_articulo";
+        //Log.d("programacion",""+this.sql);
 
         Cursor result = db.rawQuery(this.sql, null);
         return result;

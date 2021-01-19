@@ -50,6 +50,7 @@ public class ListaStock extends AppCompatActivity {
     private int idDefaultMunicipio;
     private int idDefaultProceso;
     private int idDefaultContrato;
+    private int idDefaultBodega;
 
 
     @Override
@@ -63,6 +64,7 @@ public class ListaStock extends AppCompatActivity {
         idDefaultProceso    = config.getInt("id_proceso", 0);
         idDefaultContrato   = config.getInt("id_contrato", 0);
         idDefaultMunicipio  = config.getInt("id_municipio", 0);
+        idDefaultBodega     = config.getInt("id_bodega", 0);
 
         conn = new BaseDatos(this);
         database = conn.getReadableDatabase();
@@ -155,10 +157,14 @@ public class ListaStock extends AppCompatActivity {
         Stock stock;
         float cantidad = 0;
         StockDB stockDB = new StockDB(sqLiteDatabase);
-        Cursor cursor = stockDB.consultarTodo();
+        Cursor cursor = stockDB.consultarTodo(idDefaultBodega,0,0,0);
         if (cursor.getCount() > 0) {
             while (cursor.moveToNext()) {
-                Bodega bodega = new Bodega();
+                Bodega bodega = new Bodega(
+                        cursor.getInt(cursor.getColumnIndex("id_bodega")),
+                        cursor.getString(cursor.getColumnIndex("bodega"))
+                );
+
                 CentroCosto centroCosto = new CentroCosto();
 
                 TipoStock tipoStock = new TipoStock();

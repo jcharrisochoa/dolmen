@@ -214,4 +214,5 @@
     <string name="titulo_tipo_base_fotocelda">Tipo Base Fotocelda</string>
     <string name="titulo_tipo_instalacion_Red">Tipo Inst. Red</string>
     <string name="titulo_control_encendido">Control Encendido</string>
+    <string name="titulo_bodega">Bodega</string>
 </resources>

@@ -57,7 +57,7 @@ public class ClaseViaDB extends ClaseVia implements DatabaseDDL,DatabaseDLM{
 
     @Override
     public void eliminarDatos() {
-
+        db.execSQL("DELETE FROM  "+Constantes.TABLA_CLASE_VIA);
     }
 
     @Override

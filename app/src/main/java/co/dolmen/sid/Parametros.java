@@ -41,6 +41,7 @@ import co.dolmen.sid.entidad.Tipologia;
 import co.dolmen.sid.modelo.ActaContratoDB;
 import co.dolmen.sid.modelo.ArticuloDB;
 import co.dolmen.sid.modelo.BarrioDB;
+import co.dolmen.sid.modelo.BodegaDB;
 import co.dolmen.sid.modelo.CalibreDB;
 import co.dolmen.sid.modelo.CensoAsignadoDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
@@ -705,6 +706,19 @@ public class Parametros extends AppCompatActivity {
                     progress = (int)Math.round((double)(i+1)/arrayControlEncendido.length()*100);
                     publishProgress(progress, R.string.titulo_control_encendido);
                     Log.d("parametros","->Control Encendido:"+progress+"%");
+                }
+
+                //--Bodega Usuario
+                BodegaDB bodegaDB = new BodegaDB(database);
+                JSONArray arrayBodega= parametros.getJSONArray("bodega_usuario");
+                for (int i = 0;i<arrayBodega.length();i++){
+                    JSONObject jObjectBodega = arrayBodega.getJSONObject(i);
+                    bodegaDB.setIdBodega(jObjectBodega.getInt("id"));
+                    bodegaDB.setDescripcion(jObjectBodega.getString("descripcion"));
+                    bodegaDB.agregarDatos(bodegaDB);
+                    progress = (int)Math.round((double)(i+1)/arrayBodega.length()*100);
+                    publishProgress(progress, R.string.titulo_bodega);
+                    Log.d("parametros","->Bodega:"+progress+"%");
                 }
 
                 //Proveedor

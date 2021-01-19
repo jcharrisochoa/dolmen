@@ -122,12 +122,14 @@ public class Login extends AppCompatActivity {
         }
         return this.salida;
     }
+
     private void setlockFrm(boolean state){
         txtUsuario.setEnabled(state);
         txtClave.setEnabled(state);
         btnIngresar.setEnabled(state);
         btnSalir.setEnabled(state);
     }
+
     public void servicioConsultarUsuario(View v){
         final AsyncHttpClient client = new AsyncHttpClient();
         RequestParams requestParams = new RequestParams();
@@ -147,7 +149,7 @@ public class Login extends AppCompatActivity {
                 progressBar.setVisibility(View.INVISIBLE);
                 String mensaje = "";
                 /*
-                Estados devuelto por recurson json
+                Estados devuelto por recurso json
                     0:Usuario y,o clave Incorrecta
                     1:OK
                     2:Debe llenar los campos de usuario y clave
@@ -157,11 +159,11 @@ public class Login extends AppCompatActivity {
                     try {
                         JSONObject json = new JSONObject(new String(responseBody));
                         String estado           = json.getString("estado");
-                        mensaje          = json.getString("mensaje");
+                        mensaje                 = json.getString("mensaje");
                         String nombre_usuario   = json.getString("nombre");
                         String usuario          = json.getString("usuario");
                         Integer id_usuario      = json.getInt("id_usuario");
-                        Integer id_bodega       = json.getInt("id_bodega");
+                        //Integer id_bodega       = json.getInt("id_bodega");
 
                         if(!estado.contentEquals("1")){
                             alert.setMessage(mensaje);
@@ -173,6 +175,7 @@ public class Login extends AppCompatActivity {
                                 }
                             });
                             alert.create().show();
+                            setlockFrm(true);
                         }
                         else{
                             SharedPreferences.Editor editar = config.edit();
@@ -180,7 +183,7 @@ public class Login extends AppCompatActivity {
                             editar.putString("nombre_usuario", nombre_usuario);
                             editar.putString("usuario", usuario);
                             editar.putInt("id_usuario",id_usuario);
-                            editar.putInt("id_bodega",id_bodega);
+                            editar.putInt("id_bodega",0);
                             editar.commit();
                             Intent i = new Intent(Login.this, Parametros.class);
                             startActivity(i);

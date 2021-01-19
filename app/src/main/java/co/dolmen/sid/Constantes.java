@@ -58,6 +58,7 @@ public final class Constantes {
     public static final String TABLA_CONTROL_ENCENDIDO          = "control_encendido";
     public static final String TABLA_TIPO_BASE_FOTOCELDA       = "tipo_base_fotocelda";
     public static final String TABLA_TIPO_INSTALACION_RED      = "tipo_instalacion_red";
+    public static final String TABLA_BODEGA                     = "bodega";
 
     public static final String TABLA_CENTRO_COSTO              = "centro_costo";
     public static final String TABLA_ARCHIVO_ACTIVIDAD_OPERATIVA   = "archivo_actividad_operativa";

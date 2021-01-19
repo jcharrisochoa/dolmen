@@ -37,7 +37,8 @@ public class Main extends AppCompatActivity {
                     int idDefaultProceso = config.getInt("id_proceso", 0);
                     int idDefaultContrato = config.getInt("id_contrato", 0);
                     int idDefaultMunicipio = config.getInt("id_municipio", 0);
-                    if(idDefaultProceso!= 0 && idDefaultContrato!=0 && idDefaultMunicipio!=0){
+                    //int idDefaultBodega = config.getInt("id_bodega", 0);
+                    if(idDefaultProceso!= 0 && idDefaultContrato!=0 && idDefaultMunicipio!=0 ){
                         i = new Intent(Main.this,Menu.class);
                     }
                     else{
