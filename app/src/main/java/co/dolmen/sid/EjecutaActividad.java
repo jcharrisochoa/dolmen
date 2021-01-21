@@ -1,7 +1,6 @@
 package co.dolmen.sid;
 
-import android.app.Fragment;
-import android.content.Context;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,7 +16,6 @@ import com.google.android.material.tabs.TabLayout;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestHandle;
-import com.loopj.android.http.RequestParams;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,18 +23,26 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.util.Log;
 import android.view.View;
-import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 import co.dolmen.sid.entidad.ActividadOperativa;
 import co.dolmen.sid.entidad.MovimientoArticulo;
 import co.dolmen.sid.utilidades.DataSpinner;
 import co.dolmen.sid.utilidades.ViewPagerAdapter;
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.entity.StringEntity;
+import cz.msebera.android.httpclient.message.BasicHeader;
+import cz.msebera.android.httpclient.protocol.HTTP;
 
 public class EjecutaActividad extends AppCompatActivity {
 
@@ -57,16 +63,6 @@ public class EjecutaActividad extends AppCompatActivity {
     private FragmentMateriales fragmentMateriales;
     private FragmentInformacion fragmentInformacion;
     private FragmentElemento fragmentElemento;
-
-    private TextView txtDireccion;
-    private TextView txtObservacion;
-    private Spinner sltBarrio;
-
-    private Spinner sltTipoActividad;
-    private Spinner sltEstadoActividad;
-
-    private Switch  swElementoNoEncontrado;
-    private Switch  swAfectadoVandalismo;
 
     private FloatingActionButton fabGuardar;
     private FloatingActionButton fabCancelar;
@@ -112,9 +108,9 @@ public class EjecutaActividad extends AppCompatActivity {
         Bundle bundle = new Bundle();
         bundle.putSerializable("actividadOperativa",actividadOperativa);
 
-        fragmentFotoAntes = new FragmentFotoAntes();
+        fragmentFotoAntes   = new FragmentFotoAntes();
         fragmentFotoDespues = new FragmentFotoDespues();
-        fragmentMateriales = new FragmentMateriales();
+        fragmentMateriales  = new FragmentMateriales();
         fragmentInformacion = new FragmentInformacion();
         fragmentElemento    = new FragmentElemento();
         fragmentFotoAntes.setArguments(bundle);
@@ -182,22 +178,13 @@ public class EjecutaActividad extends AppCompatActivity {
     }
 
     private void guardar(final View view){
-        Log.d(TAG,"id elemento="+actividadOperativa.getElemento().getId());
         //--
-        txtDireccion       = fragmentInformacion.getView().findViewById(R.id.txt_direccion);
-        txtObservacion     = fragmentInformacion.getView().findViewById(R.id.txt_observacion);
-
-        sltBarrio           = fragmentInformacion.getView().findViewById(R.id.slt_barrio);
-        sltTipoActividad    = fragmentInformacion.getView().findViewById(R.id.slt_tipo_actividad);
-        sltEstadoActividad  = fragmentInformacion.getView().findViewById(R.id.slt_estado_actividad);
-
-        swElementoNoEncontrado  = fragmentInformacion.getView().findViewById(R.id.sw_elemento_no_encontrado);
-        swAfectadoVandalismo    = fragmentInformacion.getView().findViewById(R.id.sw_afectado_vandalismo);
-
         barrioActividad     = fragmentInformacion.barrioList;
         tipoActividad       = fragmentInformacion.tipoActividadList;
         estadoActividad     = fragmentInformacion.estadoActividadList;
         movimientoArticulos = fragmentMateriales.movimientoArticuloArrayList;
+
+        actividadOperativa.setFechaEjecucion(new Date());
 
 
         if(validarFotoAntes()){
@@ -260,22 +247,22 @@ public class EjecutaActividad extends AppCompatActivity {
             return false;
         }
         else{
-            if(barrioActividad.get(sltBarrio.getSelectedItemPosition()).getId()==0){
+            if(barrioActividad.get(fragmentInformacion.sltBarrio.getSelectedItemPosition()).getId()==0){
                 Snackbar.make(view, "Barrio es Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 return false;
             }
             else{
-                if(txtDireccion.getText().toString().trim()==""){
+                if(fragmentInformacion.editDireccion.getText().toString().trim()==""){
                     Snackbar.make(view, "Direccion es Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                     return false;
                 }
                 else{
-                    if(tipoActividad.get(sltTipoActividad.getSelectedItemPosition()).getId()==0){
+                    if(tipoActividad.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId()==0){
                         Snackbar.make(view, "Tipo Operacion es Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                         return false;
                     }
                     else{
-                        if(estadoActividad.get(sltEstadoActividad.getSelectedItemPosition()).getId()==0){
+                        if(estadoActividad.get(fragmentInformacion.sltEstadoActividad.getSelectedItemPosition()).getId()==0){
                             Snackbar.make(view, "Estado Actividad es Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                             return false;
                         }
@@ -289,6 +276,7 @@ public class EjecutaActividad extends AppCompatActivity {
     }
 
     private void guardarFormulario(char tipoAlmacenamiento, SQLiteDatabase sqLiteDatabase){
+        enableButton(false);
         switch (tipoAlmacenamiento) {
             case 'L':
                 almacenarDatosLocal(sqLiteDatabase);
@@ -304,39 +292,132 @@ public class EjecutaActividad extends AppCompatActivity {
     }
 
     private void almacenarDatosEnRemoto() {
-        final AsyncHttpClient client = new AsyncHttpClient();
-        RequestParams requestParams = new RequestParams();
+        AsyncHttpClient client = new AsyncHttpClient();
 
-        requestParams.put("id_usuario", idUsuario);
-        requestParams.put("foto_antes_1", fragmentFotoAntes.encodeStringFoto_1);
-        requestParams.put("foto_antes_2", fragmentFotoAntes.encodeStringFoto_2);
-        requestParams.put("foto_antes_3", fragmentFotoAntes.encodeStringFoto_3);
-        requestParams.put("foto_antes_4", fragmentFotoAntes.encodeStringFoto_4);
-        RequestHandle post = client.post(ServicioWeb.urlGuardarActividad, requestParams, new AsyncHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                super.onStart();
-                fabGuardar.setEnabled(false);
-                fabCancelar.setEnabled(false);
-                //progressBarGuardarCenso.setVisibility(View.VISIBLE);
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("id_usuario", idUsuario);
+            jsonObject.put("id_actividad",actividadOperativa.getIdActividad());
+            jsonObject.put("fch_ejecucion",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(actividadOperativa.getFechaEjecucion()));
+            jsonObject.put("fecha_hora_llegada",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(actividadOperativa.getFechaEnSitio()));
+            jsonObject.put("id_elemento",actividadOperativa.getElemento().getId());
+
+            //--Fotos Antes
+            JSONArray jsonArrayFotoAntes = new JSONArray();
+            jsonArrayFotoAntes.put(fragmentFotoAntes.encodeStringFoto_1);
+            jsonArrayFotoAntes.put(fragmentFotoAntes.encodeStringFoto_2);
+            jsonArrayFotoAntes.put(fragmentFotoAntes.encodeStringFoto_3);
+            jsonArrayFotoAntes.put(fragmentFotoAntes.encodeStringFoto_4);
+            jsonObject.put("foto_antes", jsonArrayFotoAntes);
+
+
+            //--Fotos Antes
+            JSONArray jsonArrayFotoDespues = new JSONArray();
+            jsonArrayFotoDespues.put(fragmentFotoDespues.encodeStringFoto_1);
+            jsonArrayFotoDespues.put(fragmentFotoDespues.encodeStringFoto_2);
+            jsonArrayFotoDespues.put(fragmentFotoDespues.encodeStringFoto_3);
+            jsonArrayFotoDespues.put(fragmentFotoDespues.encodeStringFoto_4);
+            jsonObject.put("foto_despues", jsonArrayFotoDespues);
+
+            //--Materiales
+            JSONArray jsonArrayMateriales = new JSONArray();
+            int index = 0;
+            while(index < fragmentMateriales.movimientoArticuloArrayList.size()){
+                JSONObject jsonMaterial = new JSONObject();
+                jsonMaterial.put("id_tipo_stock",fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
+                jsonMaterial.put("id_articulo",fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
+                jsonMaterial.put("cantidad",fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
+                jsonArrayMateriales.put(jsonMaterial);
+                index++;
             }
+            jsonObject.put("materiales", jsonArrayMateriales);
 
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+            //--Informacion
+            jsonObject.put("elemento_no_encontrado", fragmentInformacion.swElementoNoEncontrado.isChecked());
+            jsonObject.put("afectado_por_vandalismo", fragmentInformacion.swVandalismo.isChecked());
+            jsonObject.put("id_barrio", fragmentInformacion.barrioList.get(fragmentInformacion.sltBarrio.getSelectedItemPosition()).getId());
+            jsonObject.put("barrio", fragmentInformacion.barrioList.get(fragmentInformacion.sltBarrio.getSelectedItemPosition()).getDescripcion());
+            jsonObject.put("direccion", fragmentInformacion.editDireccion.getText());
+            jsonObject.put("id_tipo_actividad", fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId());
+            jsonObject.put("id_estado_actividad", fragmentInformacion.estadoActividadList.get(fragmentInformacion.sltEstadoActividad.getSelectedItemPosition()).getId());
+            jsonObject.put("observacion", fragmentInformacion.editObservacion.getText());
 
-            }
+            //--Elemento
+            jsonObject.put("id_tipo_balasto", fragmentElemento.tipoBalastoList.get(fragmentElemento.sltTipoBalasto.getSelectedItemPosition()).getId());
+            jsonObject.put("id_tipo_base_fotocelda", fragmentElemento.tipoBaseFotoceldaList.get(fragmentElemento.sltTipoBaseFotocelda.getSelectedItemPosition()).getId());
+            jsonObject.put("id_tipo_brazo", fragmentElemento.tipoBrazoList.get(fragmentElemento.sltTipoBrazo.getSelectedItemPosition()).getId());
+            jsonObject.put("id_control_encendido", fragmentElemento.controlEncendidoList.get(fragmentElemento.sltControlEncendido.getSelectedItemPosition()).getId());
+            jsonObject.put("id_estado_mobiliario", fragmentElemento.estadoMobiliarioList.get(fragmentElemento.sltEstadoMobiliario.getSelectedItemPosition()).getId());
+            jsonObject.put("id_tipo_escenario", fragmentElemento.tipoEscenarioList.get(fragmentElemento.sltTipoEscenario.getSelectedItemPosition()).getId());
+            jsonObject.put("id_clase_via", fragmentElemento.claseViaList.get(fragmentElemento.sltClaseVia.getSelectedItemPosition()).getId());
+            jsonObject.put("id_tipo_poste", fragmentElemento.tipoPosteList.get(fragmentElemento.sltTipoPoste.getSelectedItemPosition()).getId());
+            jsonObject.put("id_norma_construccion_poste", fragmentElemento.normaConstruccionPosteList.get(fragmentElemento.sltNormaConstruccionPoste.getSelectedItemPosition()).getId());
+            jsonObject.put("id_tipo_balasto", fragmentElemento.tipoBalastoList.get(fragmentElemento.sltTipoBalasto.getSelectedItemPosition()).getId());
+            jsonObject.put("id_calibre", fragmentElemento.calibreList.get( fragmentElemento.sltCalibreConexionElemento.getSelectedItemPosition()).getId());
+            jsonObject.put("id_tipo_instalacion_red", fragmentElemento.tipoInstalacionRedList.get(fragmentElemento.sltTipoInstalacionRed.getSelectedItemPosition()).getId());
+            jsonObject.put("id_tipo_red", fragmentElemento.tipoRedList.get(fragmentElemento.sltTipoRed.getSelectedItemPosition()).getId());
+            jsonObject.put("zona", fragmentElemento.zona);
+            jsonObject.put("sector", fragmentElemento.sector);
+            jsonObject.put("latitud", fragmentElemento.txtLatitud.getText());
+            jsonObject.put("longitud", fragmentElemento.txtLongitud.getText());
+            jsonObject.put("ancho_via", fragmentElemento.txtAnchoVia.getText());
+            jsonObject.put("poste_no", fragmentElemento.txtPosteNo.getText());
+            jsonObject.put("interdistancia", fragmentElemento.txtInterdistancia.getText());
+            jsonObject.put("poste_exclusivo_ap", fragmentElemento.swPosteExclusivoAp.isChecked());
+            jsonObject.put("potencia_transformador", fragmentElemento.txtPotenciaTransformador.getText());
+            jsonObject.put("placa_mt_transformador", fragmentElemento.txtMtTransformador.getText());
+            jsonObject.put("placa_ct_transformador", fragmentElemento.txtCtTransformador.getText());
+            jsonObject.put("transformador_exclusivo_ap", fragmentElemento.swTranformadorExclusivoAP.isChecked());
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                String respuesta = new String(responseBody);
-                Log.d("resultado","error "+respuesta);
-                Toast.makeText(getApplicationContext(), getText(R.string.alert_error_ejecucion) + " Código: " + statusCode, Toast.LENGTH_SHORT).show();
-                fabGuardar.setEnabled(true);
-                fabCancelar.setEnabled(true);
-                //progressBarGuardarCenso.setVisibility(View.INVISIBLE);
-            }
-        });
+            JSONArray principal = new JSONArray();
+            principal.put(jsonObject);
 
+            client = new AsyncHttpClient();
+            StringEntity jsonParams = new StringEntity(principal.toString(), "UTF-8");
+            jsonParams.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+            client.setTimeout(Constantes.TIMEOUT);
+            RequestHandle post = client.post(getApplicationContext(), ServicioWeb.urlGuardarActividad, jsonParams, "application/json", new AsyncHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                    String respuesta = new String(responseBody);
+                    Log.d("JSON-RESPONSE:", respuesta);
+                    try {
+                        JSONObject jsonResponse = new JSONObject(new String(responseBody));
+                        /*
+                        actualiza stock
+                        cambia estado actividad en bd movil
+                        retorna a listado de acti
+                        listado de actividades no debe permitirce dar click a actividades ejecutadas
+                         */
+                        Toast.makeText(getApplicationContext(),respuesta, Toast.LENGTH_LONG).show();
+                        enableButton(true);  //--Quitar al terminar de probar
+                    } catch (JSONException e) {
+                        Toast.makeText(getApplicationContext(),"ERROR, JSON RESPONSE:"+e.getMessage(), Toast.LENGTH_LONG).show();
+                        Log.d("Error", e.getMessage());
+                        enableButton(true);
+                    }
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                    String respuesta = new String(responseBody);
+                    Log.d("ONFAILURE:",respuesta);
+                    Toast.makeText(getApplicationContext(),"ONFAILURE: "+getText(R.string.alert_error_ejecucion)+ " Código: "+statusCode+" "+error.getMessage(), Toast.LENGTH_LONG).show();
+                    enableButton(true);
+                }
+
+            });
+
+        }catch (JSONException e){
+            Toast.makeText(getApplicationContext(),"JSONException:"+e.getMessage(), Toast.LENGTH_LONG).show();
+            Log.d("Error",e.getMessage());
+            enableButton(true);
+        }
+
+    }
+
+    private void enableButton(boolean estado){
+        fabGuardar.setEnabled(estado);
+        fabCancelar.setEnabled(estado);
     }
 
 }

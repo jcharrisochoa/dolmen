@@ -207,63 +207,8 @@ public class FragmentMateriales extends Fragment{
         float cantEnLista = 0;
         float totalMovimiento = 0;
         MovimientoArticulo movimientoArticulo = null;
-        if(validarAgregarMaterial()){
-            if(tipoMovimientoList.get(sltTipoMovimiento.getSelectedItemPosition()).getId()==1){ //Movimientos de salida
-                movimientoArticulo = new MovimientoArticulo(
-                        articuloList.get(sltArticulo.getSelectedItemPosition()).getId(),
-                        tipoStockList.get(sltTipoStock.getSelectedItemPosition()).getId(),
-                        Float.parseFloat(txtCantidad.getText().toString()),
-                        articuloList.get(sltArticulo.getSelectedItemPosition()).getDescripcion(),
-                        tipoStockList.get(sltTipoStock.getSelectedItemPosition()).getDescripcion(),
-                        tipoMovimientoList.get(sltTipoMovimiento.getSelectedItemPosition()).getDescripcion()
-                );
-                pos = adapterMovimientoArticulo.getPositionItem(movimientoArticulo);
-                if(pos>0)
-                    cantEnLista = movimientoArticuloArrayList.get(pos).getCantidad();
-
-                stock = consultarStock();
-
-                totalMovimiento = cantEnLista + Float.parseFloat(txtCantidad.getText().toString());
-                Log.d("programacion","Stock:"+stock+",Lista:"+cantEnLista+",Digitado:"+Float.parseFloat(txtCantidad.getText().toString())+",Total:"+totalMovimiento);
-
-                if(totalMovimiento >  stock) {
-                    alert.setMessage(getString(R.string.cantidad_insuficiente)+(stock - cantEnLista));
-                    alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener(){
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            resetFrmArticulo();
-                            dialogInterface.cancel();
-                        }
-                    });
-                    alert.create().show();
-                }else {
-                    if(pos>=0){
-                        adapterMovimientoArticulo.updateItem(movimientoArticulo,pos);
-                    }else{
-                        adapterMovimientoArticulo.addItem(movimientoArticulo);
-                    }
-                    resetFrmArticulo();
-                }
-            }
-            else{ //Movimientos de Entrada
-                movimientoArticulo = new MovimientoArticulo(
-                        articuloList.get(sltArticulo.getSelectedItemPosition()).getId(),
-                        tipoStockList.get(sltTipoStock.getSelectedItemPosition()).getId(),
-                        Float.parseFloat(txtCantidad.getText().toString()),
-                        articuloList.get(sltArticulo.getSelectedItemPosition()).getDescripcion(),
-                        tipoStockList.get(sltTipoStock.getSelectedItemPosition()).getDescripcion(),
-                        tipoMovimientoList.get(sltTipoMovimiento.getSelectedItemPosition()).getDescripcion()
-                );
-                pos = adapterMovimientoArticulo.getPositionItem(movimientoArticulo);
-                if(pos>=0){
-                    adapterMovimientoArticulo.updateItem(movimientoArticulo,pos);
-                }else{
-                    adapterMovimientoArticulo.addItem(movimientoArticulo);
-                }
-                resetFrmArticulo();
-            }
-        }
-        else{
+        if(idDefaultBodega == 0){
+            alert.setMessage(R.string.alert_perfil_bodega);
             alert.setTitle(R.string.titulo_alerta);
             alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
                 @Override
@@ -273,9 +218,75 @@ public class FragmentMateriales extends Fragment{
             });
             alert.create().show();
         }
+        else {
+            if (validarAgregarMaterial()) {
+                if (tipoMovimientoList.get(sltTipoMovimiento.getSelectedItemPosition()).getId() == 1) { //Movimientos de salida
+                    movimientoArticulo = new MovimientoArticulo(
+                            articuloList.get(sltArticulo.getSelectedItemPosition()).getId(),
+                            tipoStockList.get(sltTipoStock.getSelectedItemPosition()).getId(),
+                            Float.parseFloat(txtCantidad.getText().toString()),
+                            articuloList.get(sltArticulo.getSelectedItemPosition()).getDescripcion(),
+                            tipoStockList.get(sltTipoStock.getSelectedItemPosition()).getDescripcion(),
+                            tipoMovimientoList.get(sltTipoMovimiento.getSelectedItemPosition()).getDescripcion()
+                    );
+                    pos = adapterMovimientoArticulo.getPositionItem(movimientoArticulo);
+                    if (pos >= 0)
+                        cantEnLista = movimientoArticuloArrayList.get(pos).getCantidad();
+
+                    stock = consultarStock();
+
+                    totalMovimiento = cantEnLista + Float.parseFloat(txtCantidad.getText().toString());
+                    //Log.d("programacion","pos:"+pos+",Stock:"+stock+",Lista:"+cantEnLista+",Digitado:"+Float.parseFloat(txtCantidad.getText().toString())+",Total:"+totalMovimiento);
+
+                    if (totalMovimiento > stock) {
+                        alert.setMessage(getString(R.string.cantidad_insuficiente) + (stock - cantEnLista));
+                        alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                resetFrmArticulo();
+                                dialogInterface.cancel();
+                            }
+                        });
+                        alert.create().show();
+                    } else {
+                        if (pos >= 0) {
+                            adapterMovimientoArticulo.updateItem(movimientoArticulo, pos);
+                        } else {
+                            adapterMovimientoArticulo.addItem(movimientoArticulo);
+                        }
+                        resetFrmArticulo();
+                    }
+                } else { //Movimientos de Entrada
+                    movimientoArticulo = new MovimientoArticulo(
+                            articuloList.get(sltArticulo.getSelectedItemPosition()).getId(),
+                            tipoStockList.get(sltTipoStock.getSelectedItemPosition()).getId(),
+                            Float.parseFloat(txtCantidad.getText().toString()),
+                            articuloList.get(sltArticulo.getSelectedItemPosition()).getDescripcion(),
+                            tipoStockList.get(sltTipoStock.getSelectedItemPosition()).getDescripcion(),
+                            tipoMovimientoList.get(sltTipoMovimiento.getSelectedItemPosition()).getDescripcion()
+                    );
+                    pos = adapterMovimientoArticulo.getPositionItem(movimientoArticulo);
+                    if (pos >= 0) {
+                        adapterMovimientoArticulo.updateItem(movimientoArticulo, pos);
+                    } else {
+                        adapterMovimientoArticulo.addItem(movimientoArticulo);
+                    }
+                    resetFrmArticulo();
+                }
+            } else {
+                alert.setTitle(R.string.titulo_alerta);
+                alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+                alert.create().show();
+            }
+        }
     }
 
-    private float consultarStock() {  /// de donde saco el parametro de bodega?
+    private float consultarStock() {
         float cantidad = 0;
         StockDB stockDB = new StockDB(database);
         Cursor cursor = stockDB.consultarTodo(idDefaultBodega,

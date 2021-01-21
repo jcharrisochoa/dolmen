@@ -100,7 +100,11 @@ public class AdapterMovimientoArticulo extends RecyclerView.Adapter<AdapterMovim
         int pos = -1;
         int i=0;
         if (getItemCount() > 0){
+
             for (MovimientoArticulo m : movimientoArticuloArrayList) {
+                //Log.d("programacion","m.articulo:"+String.valueOf(m.getId_articulo())+"="+String.valueOf(movimientoArticulo.getId_articulo()));
+                //Log.d("programacion","m.articulo:"+String.valueOf(m.getId_tipo_stock())+"="+String.valueOf(movimientoArticulo.getId_tipo_stock()));
+                //Log.d("programacion","m.articulo:"+String.valueOf(m.getMovimiento())+"="+String.valueOf(movimientoArticulo.getMovimiento()));
                 if (String.valueOf(m.getId_articulo()).contentEquals(String.valueOf(movimientoArticulo.getId_articulo())) &&
                         String.valueOf(m.getId_tipo_stock()).contentEquals(String.valueOf(movimientoArticulo.getId_tipo_stock())) &&
                         m.getMovimiento().contentEquals(movimientoArticulo.getMovimiento())) {

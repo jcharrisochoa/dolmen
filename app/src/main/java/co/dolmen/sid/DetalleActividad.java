@@ -12,6 +12,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import co.dolmen.sid.entidad.ActividadOperativa;
 
@@ -76,6 +77,7 @@ public class DetalleActividad extends AppCompatActivity {
         btnEnSitio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                actividadOperativa.setFechaEnSitio(new Date());
                 Intent i = new Intent(DetalleActividad.this,EjecutaActividad.class);
                 i.putExtra("actividadOperativa",actividadOperativa);
                 startActivity(i);

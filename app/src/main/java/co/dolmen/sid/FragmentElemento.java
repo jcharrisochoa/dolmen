@@ -18,7 +18,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RadioButton;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,6 +60,22 @@ public class FragmentElemento extends Fragment {
     TextView txtMobiliarioNo;
 
     EditText editMobiliarioNo;
+    EditText txtLatitud;
+    EditText txtLongitud;
+    EditText txtInterdistancia;
+    EditText txtPotenciaTransformador;
+    EditText txtMtTransformador;
+    EditText txtCtTransformador;
+    EditText txtPosteNo;
+    EditText txtAnchoVia;
+
+    RadioButton rdZonaUrbano;
+    RadioButton rdZonaRural;
+    RadioButton rdSectorNormal;
+    RadioButton rdSectorSubNormal;
+
+    Switch swPosteExclusivoAp;
+    Switch swTranformadorExclusivoAP;
 
     Spinner sltEstadoMobiliario;
     Spinner sltClaseVia;
@@ -99,6 +117,9 @@ public class FragmentElemento extends Fragment {
     private int idDefaultProceso;
     private int idDefaultContrato;
 
+    String zona ="U";
+    String sector = "N";
+
 
     public FragmentElemento() {
         // Required empty public constructor
@@ -137,6 +158,15 @@ public class FragmentElemento extends Fragment {
         txtMobiliario       = view.findViewById(R.id.txt_mobiliario);
         txtReferencia       = view.findViewById(R.id.txt_referencia);
         txtMobiliarioNo     = view.findViewById(R.id.txt_mobiliario_numero);
+        txtLatitud          = view.findViewById(R.id.txt_latitud);
+        txtLongitud         = view.findViewById(R.id.txt_longitud);
+        txtInterdistancia           = view.findViewById(R.id.txt_interdistancia);
+        txtPotenciaTransformador    = view.findViewById(R.id.txt_potencia_transformador);
+        txtMtTransformador          = view.findViewById(R.id.txt_mt_transformador);
+        txtCtTransformador          = view.findViewById(R.id.txt_ct_transformador);
+        txtPosteNo                  = view.findViewById(R.id.txt_poste_no);
+        txtAnchoVia                 = view.findViewById(R.id.txt_ancho_via);
+
 
         editMobiliarioNo    = view.findViewById(R.id.txt_mobiliario_no);
 
@@ -145,6 +175,7 @@ public class FragmentElemento extends Fragment {
         txtReferencia.setText(actividadOperativa.getElemento().getReferenciaMobiliario().getDescripcionReferenciaMobiliario());
 
         editMobiliarioNo.setText(String.valueOf(actividadOperativa.getElemento().getElemento_no()));
+
 
 
         sltEstadoMobiliario         = view.findViewById(R.id.slt_estado_mobiliario);
@@ -159,7 +190,43 @@ public class FragmentElemento extends Fragment {
         sltTipoBaseFotocelda        = view.findViewById(R.id.slt_tipo_base_fotocelda);
         sltTipoInstalacionRed       = view.findViewById(R.id.slt_tipo_instalacion_red);
         sltControlEncendido         = view.findViewById(R.id.slt_control_encendido);
+        rdZonaUrbano                = view.findViewById(R.id.rd_urbano);
+        rdZonaRural                 = view.findViewById(R.id.rd_rural);
+        rdSectorNormal              = view.findViewById(R.id.rd_normal);
+        rdSectorSubNormal           = view.findViewById(R.id.rd_subnormal);
 
+        swPosteExclusivoAp          = view.findViewById(R.id.sw_poste_exclulsivo_alumbrado_publico);
+        swTranformadorExclusivoAP   = view.findViewById(R.id.sw_transformador_exclusivo_ap);
+
+        txtLatitud.setEnabled(false);
+        txtLongitud.setEnabled(false);
+
+        rdZonaUrbano.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                zona = "U";
+            }
+        });
+
+        rdZonaRural.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                zona = "R";
+            }
+        });
+
+        rdSectorNormal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sector = "N";
+            }
+        });
+        rdSectorSubNormal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sector = "S";
+            }
+        });
 
         sltTipoPoste.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

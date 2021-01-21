@@ -215,4 +215,5 @@
     <string name="titulo_tipo_instalacion_Red">Tipo Inst. Red</string>
     <string name="titulo_control_encendido">Control Encendido</string>
     <string name="titulo_bodega">Bodega</string>
+    <string name="alert_perfil_bodega">No ha seleccionado en su perfil la bodega</string>
 </resources>

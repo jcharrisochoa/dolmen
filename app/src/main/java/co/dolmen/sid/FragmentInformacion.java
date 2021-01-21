@@ -54,6 +54,7 @@ public class FragmentInformacion extends Fragment {
 
 
     EditText editDireccion;
+    EditText editObservacion;
     TextView txtMensajeDireccion;
     EditText txtNumeroInterseccion;
     EditText txtNumeracionA;
@@ -122,10 +123,12 @@ public class FragmentInformacion extends Fragment {
         sltTipoActividad    = view.findViewById(R.id.slt_tipo_actividad);
         sltEstadoActividad  = view.findViewById(R.id.slt_estado_actividad);
         editDireccion       = view.findViewById(R.id.txt_direccion);
+        editObservacion     = view.findViewById(R.id.txt_observacion);
         btnEditarDireccion  = view.findViewById(R.id.btn_editar_direccion);
 
         //--
         editDireccion.setText(actividadOperativa.getDireccion());
+        editDireccion.setEnabled(false);
 
 
         swVandalismo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
