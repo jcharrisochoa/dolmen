@@ -304,35 +304,92 @@ public class EjecutaActividad extends AppCompatActivity {
 
             //--Fotos Antes
             JSONArray jsonArrayFotoAntes = new JSONArray();
-            jsonArrayFotoAntes.put(fragmentFotoAntes.encodeStringFoto_1);
+            //jsonArrayFotoAntes.put(fragmentFotoAntes.encodeStringFoto_1);
             jsonArrayFotoAntes.put(fragmentFotoAntes.encodeStringFoto_2);
             jsonArrayFotoAntes.put(fragmentFotoAntes.encodeStringFoto_3);
             jsonArrayFotoAntes.put(fragmentFotoAntes.encodeStringFoto_4);
             jsonObject.put("foto_antes", jsonArrayFotoAntes);
 
 
-            //--Fotos Antes
+            //--Fotos Despues
             JSONArray jsonArrayFotoDespues = new JSONArray();
-            jsonArrayFotoDespues.put(fragmentFotoDespues.encodeStringFoto_1);
+            //jsonArrayFotoDespues.put(fragmentFotoDespues.encodeStringFoto_1);
             jsonArrayFotoDespues.put(fragmentFotoDespues.encodeStringFoto_2);
             jsonArrayFotoDespues.put(fragmentFotoDespues.encodeStringFoto_3);
             jsonArrayFotoDespues.put(fragmentFotoDespues.encodeStringFoto_4);
             jsonObject.put("foto_despues", jsonArrayFotoDespues);
 
             //--Materiales
-            JSONArray jsonArrayMateriales = new JSONArray();
+            JSONArray jsonArrayInst     = new JSONArray();
+            JSONArray jsonArrayDesUtil  = new JSONArray();
+            JSONArray jsonArrayDesUtilInst = new JSONArray();
+            JSONArray jsonArrayDesNoUtil = new JSONArray();
+            JSONArray jsonArrayPNC      = new JSONArray();
+            JSONArray jsonArrayAsig     = new JSONArray();
             int index = 0;
             while(index < fragmentMateriales.movimientoArticuloArrayList.size()){
-                JSONObject jsonMaterial = new JSONObject();
-                jsonMaterial.put("id_tipo_stock",fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
-                jsonMaterial.put("id_articulo",fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
-                jsonMaterial.put("cantidad",fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
-                jsonArrayMateriales.put(jsonMaterial);
+                switch (fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock()){
+                    case 1://stock
+                        JSONObject jsonInst = new JSONObject();
+                        jsonInst.put("id_tipo_stock", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
+                        jsonInst.put("id_articulo", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
+                        jsonInst.put("cantidad", fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
+                        jsonInst.put("movimiento", fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento());
+                        jsonArrayInst.put(jsonInst);
+                        break;
+                    case 2:
+                        JSONObject jsonPNC = new JSONObject();
+                        jsonPNC.put("id_tipo_stock", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
+                        jsonPNC.put("id_articulo", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
+                        jsonPNC.put("cantidad", fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
+                        jsonPNC.put("movimiento", fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento());
+                        jsonArrayPNC.put(jsonPNC);
+                        break;
+                    case 3:
+                        if(fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento().toString().contentEquals(getString(R.string.movimiento_salida))){ //Movimiento Negativo
+                            JSONObject jsonDesUtilInst = new JSONObject();
+                            jsonDesUtilInst.put("id_tipo_stock", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
+                            jsonDesUtilInst.put("id_articulo", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
+                            jsonDesUtilInst.put("cantidad", fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
+                            jsonDesUtilInst.put("movimiento", fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento());
+                            jsonArrayDesUtilInst.put(jsonDesUtilInst);
+                        }
+                        else {
+                            JSONObject jsonDesUtil = new JSONObject();
+                            jsonDesUtil.put("id_tipo_stock", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
+                            jsonDesUtil.put("id_articulo", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
+                            jsonDesUtil.put("cantidad", fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
+                            jsonDesUtil.put("movimiento", fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento());
+                            jsonArrayDesUtil.put(jsonDesUtil);
+                        }
+                        break;
+                    case 4:
+                        JSONObject jsonDesNoUtil = new JSONObject();
+                        jsonDesNoUtil.put("id_tipo_stock", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
+                        jsonDesNoUtil.put("id_articulo", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
+                        jsonDesNoUtil.put("cantidad", fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
+                        jsonDesNoUtil.put("movimiento", fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento());
+                        jsonArrayDesNoUtil.put(jsonDesNoUtil);
+                        break;
+                    case 5:
+                        JSONObject jsonAsig = new JSONObject();
+                        jsonAsig.put("id_tipo_stock", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
+                        jsonAsig.put("id_articulo", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
+                        jsonAsig.put("cantidad", fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
+                        jsonAsig.put("movimiento", fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento());
+                        jsonArrayAsig.put(jsonAsig);
+                        break;
+                }
                 index++;
             }
-            jsonObject.put("materiales", jsonArrayMateriales);
+            jsonObject.put("inst", jsonArrayInst);
+            jsonObject.put("desmutil", jsonArrayDesUtil);
+            jsonObject.put("desmutinst", jsonArrayDesUtilInst);
+            jsonObject.put("desmnoutil", jsonArrayDesNoUtil);
+            jsonObject.put("pnc", jsonArrayPNC);
+            jsonObject.put("asig", jsonArrayAsig);
 
-            //--Informacion
+            //--Informacion actividad
             jsonObject.put("elemento_no_encontrado", fragmentInformacion.swElementoNoEncontrado.isChecked());
             jsonObject.put("afectado_por_vandalismo", fragmentInformacion.swVandalismo.isChecked());
             jsonObject.put("id_barrio", fragmentInformacion.barrioList.get(fragmentInformacion.sltBarrio.getSelectedItemPosition()).getId());
@@ -343,34 +400,45 @@ public class EjecutaActividad extends AppCompatActivity {
             jsonObject.put("observacion", fragmentInformacion.editObservacion.getText());
 
             //--Elemento
-            jsonObject.put("id_tipo_balasto", fragmentElemento.tipoBalastoList.get(fragmentElemento.sltTipoBalasto.getSelectedItemPosition()).getId());
-            jsonObject.put("id_tipo_base_fotocelda", fragmentElemento.tipoBaseFotoceldaList.get(fragmentElemento.sltTipoBaseFotocelda.getSelectedItemPosition()).getId());
-            jsonObject.put("id_tipo_brazo", fragmentElemento.tipoBrazoList.get(fragmentElemento.sltTipoBrazo.getSelectedItemPosition()).getId());
-            jsonObject.put("id_control_encendido", fragmentElemento.controlEncendidoList.get(fragmentElemento.sltControlEncendido.getSelectedItemPosition()).getId());
-            jsonObject.put("id_estado_mobiliario", fragmentElemento.estadoMobiliarioList.get(fragmentElemento.sltEstadoMobiliario.getSelectedItemPosition()).getId());
-            jsonObject.put("id_tipo_escenario", fragmentElemento.tipoEscenarioList.get(fragmentElemento.sltTipoEscenario.getSelectedItemPosition()).getId());
-            jsonObject.put("id_clase_via", fragmentElemento.claseViaList.get(fragmentElemento.sltClaseVia.getSelectedItemPosition()).getId());
-            jsonObject.put("id_tipo_poste", fragmentElemento.tipoPosteList.get(fragmentElemento.sltTipoPoste.getSelectedItemPosition()).getId());
-            jsonObject.put("id_norma_construccion_poste", fragmentElemento.normaConstruccionPosteList.get(fragmentElemento.sltNormaConstruccionPoste.getSelectedItemPosition()).getId());
-            jsonObject.put("id_tipo_balasto", fragmentElemento.tipoBalastoList.get(fragmentElemento.sltTipoBalasto.getSelectedItemPosition()).getId());
-            jsonObject.put("id_calibre", fragmentElemento.calibreList.get( fragmentElemento.sltCalibreConexionElemento.getSelectedItemPosition()).getId());
-            jsonObject.put("id_tipo_instalacion_red", fragmentElemento.tipoInstalacionRedList.get(fragmentElemento.sltTipoInstalacionRed.getSelectedItemPosition()).getId());
-            jsonObject.put("id_tipo_red", fragmentElemento.tipoRedList.get(fragmentElemento.sltTipoRed.getSelectedItemPosition()).getId());
-            jsonObject.put("zona", fragmentElemento.zona);
-            jsonObject.put("sector", fragmentElemento.sector);
-            jsonObject.put("latitud", fragmentElemento.txtLatitud.getText());
-            jsonObject.put("longitud", fragmentElemento.txtLongitud.getText());
-            jsonObject.put("ancho_via", fragmentElemento.txtAnchoVia.getText());
-            jsonObject.put("poste_no", fragmentElemento.txtPosteNo.getText());
-            jsonObject.put("interdistancia", fragmentElemento.txtInterdistancia.getText());
-            jsonObject.put("poste_exclusivo_ap", fragmentElemento.swPosteExclusivoAp.isChecked());
-            jsonObject.put("potencia_transformador", fragmentElemento.txtPotenciaTransformador.getText());
-            jsonObject.put("placa_mt_transformador", fragmentElemento.txtMtTransformador.getText());
-            jsonObject.put("placa_ct_transformador", fragmentElemento.txtCtTransformador.getText());
-            jsonObject.put("transformador_exclusivo_ap", fragmentElemento.swTranformadorExclusivoAP.isChecked());
+            JSONObject jsonElemento = new JSONObject();
+            jsonElemento.put("id_usuario", idUsuario);
+            jsonElemento.put("fch_actualizacion",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(actividadOperativa.getFechaEjecucion()));
+            jsonElemento.put("id_elemento",actividadOperativa.getElemento().getId());
+            jsonElemento.put("elemento_no",actividadOperativa.getElemento().getElemento_no());
+            jsonElemento.put("id_barrio", fragmentInformacion.barrioList.get(fragmentInformacion.sltBarrio.getSelectedItemPosition()).getId());
+            jsonElemento.put("direccion", fragmentInformacion.editDireccion.getText());
+            jsonElemento.put("id_tipo_balasto", fragmentElemento.tipoBalastoList.get(fragmentElemento.sltTipoBalasto.getSelectedItemPosition()).getId());
+            jsonElemento.put("id_tipo_base_fotocelda", fragmentElemento.tipoBaseFotoceldaList.get(fragmentElemento.sltTipoBaseFotocelda.getSelectedItemPosition()).getId());
+            jsonElemento.put("id_tipo_brazo", fragmentElemento.tipoBrazoList.get(fragmentElemento.sltTipoBrazo.getSelectedItemPosition()).getId());
+            jsonElemento.put("id_control_encendido", fragmentElemento.controlEncendidoList.get(fragmentElemento.sltControlEncendido.getSelectedItemPosition()).getId());
+            jsonElemento.put("id_estado_mobiliario", fragmentElemento.estadoMobiliarioList.get(fragmentElemento.sltEstadoMobiliario.getSelectedItemPosition()).getId());
+            jsonElemento.put("id_tipo_escenario", fragmentElemento.tipoEscenarioList.get(fragmentElemento.sltTipoEscenario.getSelectedItemPosition()).getId());
+            jsonElemento.put("id_clase_via", fragmentElemento.claseViaList.get(fragmentElemento.sltClaseVia.getSelectedItemPosition()).getId());
+            jsonElemento.put("id_tipo_poste", fragmentElemento.tipoPosteList.get(fragmentElemento.sltTipoPoste.getSelectedItemPosition()).getId());
+            jsonElemento.put("id_norma_construccion_poste", fragmentElemento.normaConstruccionPosteList.get(fragmentElemento.sltNormaConstruccionPoste.getSelectedItemPosition()).getId());
+            jsonElemento.put("id_tipo_balasto", fragmentElemento.tipoBalastoList.get(fragmentElemento.sltTipoBalasto.getSelectedItemPosition()).getId());
+            jsonElemento.put("id_calibre", fragmentElemento.calibreList.get( fragmentElemento.sltCalibreConexionElemento.getSelectedItemPosition()).getId());
+            jsonElemento.put("id_tipo_instalacion_red", fragmentElemento.tipoInstalacionRedList.get(fragmentElemento.sltTipoInstalacionRed.getSelectedItemPosition()).getId());
+            jsonElemento.put("id_tipo_red", fragmentElemento.tipoRedList.get(fragmentElemento.sltTipoRed.getSelectedItemPosition()).getId());
+            jsonElemento.put("zona", fragmentElemento.zona);
+            jsonElemento.put("sector", fragmentElemento.sector);
+            jsonElemento.put("latitud", fragmentElemento.txtLatitud.getText());
+            jsonElemento.put("longitud", fragmentElemento.txtLongitud.getText());
+            jsonElemento.put("ancho_via", fragmentElemento.txtAnchoVia.getText());
+            jsonElemento.put("poste_no", fragmentElemento.txtPosteNo.getText());
+            jsonElemento.put("interdistancia", fragmentElemento.txtInterdistancia.getText());
+            jsonElemento.put("poste_exclusivo_ap", fragmentElemento.swPosteExclusivoAp.isChecked());
+            jsonElemento.put("potencia_transformador", fragmentElemento.txtPotenciaTransformador.getText());
+            jsonElemento.put("placa_mt_transformador", fragmentElemento.txtMtTransformador.getText());
+            jsonElemento.put("placa_ct_transformador", fragmentElemento.txtCtTransformador.getText());
+            jsonElemento.put("transformador_exclusivo_ap", fragmentElemento.swTranformadorExclusivoAP.isChecked());
+            //jsonElemento.put("foto",fragmentFotoDespues.encodeStringFoto_1);
+
+            jsonObject.put("info_elemento",jsonElemento);
 
             JSONArray principal = new JSONArray();
             principal.put(jsonObject);
+            Log.d("JSON","->"+principal.toString());
 
             client = new AsyncHttpClient();
             StringEntity jsonParams = new StringEntity(principal.toString(), "UTF-8");
