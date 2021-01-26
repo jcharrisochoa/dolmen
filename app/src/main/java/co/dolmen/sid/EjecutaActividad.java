@@ -23,6 +23,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,8 +37,12 @@ import java.util.Date;
 import java.util.Locale;
 
 import co.dolmen.sid.entidad.ActividadOperativa;
+import co.dolmen.sid.entidad.Barrio;
+import co.dolmen.sid.entidad.Elemento;
+import co.dolmen.sid.entidad.EstadoActividad;
 import co.dolmen.sid.entidad.MovimientoArticulo;
-import co.dolmen.sid.utilidades.DataSpinner;
+import co.dolmen.sid.entidad.TipoActividad;
+import co.dolmen.sid.modelo.ActividadOperativaDB;
 import co.dolmen.sid.utilidades.ViewPagerAdapter;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.entity.StringEntity;
@@ -64,13 +69,11 @@ public class EjecutaActividad extends AppCompatActivity {
     private FragmentInformacion fragmentInformacion;
     private FragmentElemento fragmentElemento;
 
+    private ProgressBar progressGuardarActividad;
     private FloatingActionButton fabGuardar;
     private FloatingActionButton fabCancelar;
 
-    private ArrayList<DataSpinner> barrioActividad;
     private ArrayList<MovimientoArticulo> movimientoArticulos;
-    private ArrayList<DataSpinner> tipoActividad;
-    private ArrayList<DataSpinner> estadoActividad;
 
     private int idUsuario;
     private int idDefaultMunicipio;
@@ -89,6 +92,9 @@ public class EjecutaActividad extends AppCompatActivity {
 
         conn = new BaseDatos(EjecutaActividad.this);
         database = conn.getReadableDatabase();
+
+        progressGuardarActividad = findViewById(R.id.progress_guardar_actividad);
+        progressGuardarActividad.setVisibility(View.INVISIBLE);
 
         config = getSharedPreferences("config", MODE_PRIVATE);
         idUsuario = config.getInt("id_usuario", 0);
@@ -178,14 +184,36 @@ public class EjecutaActividad extends AppCompatActivity {
     }
 
     private void guardar(final View view){
-        //--
-        barrioActividad     = fragmentInformacion.barrioList;
-        tipoActividad       = fragmentInformacion.tipoActividadList;
-        estadoActividad     = fragmentInformacion.estadoActividadList;
-        movimientoArticulos = fragmentMateriales.movimientoArticuloArrayList;
-
+        //--Actualizar Pojo--
         actividadOperativa.setFechaEjecucion(new Date());
 
+        EstadoActividad estadoActividad = actividadOperativa.getEstadoActividad();
+        estadoActividad.setId(fragmentInformacion.estadoActividadList.get(fragmentInformacion.sltEstadoActividad.getSelectedItemPosition()).getId());
+        estadoActividad.setDescripcion(fragmentInformacion.estadoActividadList.get(fragmentInformacion.sltEstadoActividad.getSelectedItemPosition()).getDescripcion());
+
+        TipoActividad tipoActividad = actividadOperativa.getTipoActividad();
+        tipoActividad.setId(fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId());
+        tipoActividad.setDescripcion(fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getDescripcion());
+
+        Barrio barrio = actividadOperativa.getBarrio();
+        barrio.setIdBarrio(fragmentInformacion.barrioList.get(fragmentInformacion.sltBarrio.getSelectedItemPosition()).getId());
+        barrio.setNombreBarrio(fragmentInformacion.barrioList.get(fragmentInformacion.sltBarrio.getSelectedItemPosition()).getDescripcion());
+
+        Elemento elemento = actividadOperativa.getElemento();
+        elemento.setDireccion(fragmentInformacion.editDireccion.getText().toString());
+        elemento.setBarrio(barrio);
+
+        if(!fragmentElemento.txtLatitud.getText().toString().isEmpty())
+            actividadOperativa.setLatitud(Float.parseFloat(fragmentElemento.txtLatitud.getText().toString()));
+
+        if(!fragmentElemento.txtLongitud.getText().toString().isEmpty())
+            actividadOperativa.setLongitud(Float.parseFloat(fragmentElemento.txtLongitud.getText().toString()));
+
+        actividadOperativa.setDireccion(fragmentInformacion.editDireccion.getText().toString());
+        actividadOperativa.setObservacion(fragmentInformacion.editObservacion.getText().toString());
+        actividadOperativa.setAfectadoPorVandalismo((fragmentInformacion.swVandalismo.isChecked())?"S":"N");
+        actividadOperativa.setElementoNoEncontrado((fragmentInformacion.swElementoNoEncontrado.isChecked())?"S":"N");
+        actividadOperativa.setPendienteSincronizar("N");
 
         if(validarFotoAntes()){
             if(validarFotoDespues()){
@@ -194,7 +222,7 @@ public class EjecutaActividad extends AppCompatActivity {
                     NetworkInfo networkInfo = conn.getActiveNetworkInfo();
 
                     if (networkInfo != null && networkInfo.isConnected()) {
-                        guardarFormulario('R', database);
+                        guardarFormulario('R');
                         //Snackbar.make(view, "Guardar Remoto", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                     } else {
                         //
@@ -205,7 +233,7 @@ public class EjecutaActividad extends AppCompatActivity {
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 dialogInterface.cancel();
                                 //Snackbar.make(view, "Guardar local", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-                                guardarFormulario('L', database);
+                                guardarFormulario('L');
                             }
                         });
                         alert.create().show();
@@ -247,7 +275,7 @@ public class EjecutaActividad extends AppCompatActivity {
             return false;
         }
         else{
-            if(barrioActividad.get(fragmentInformacion.sltBarrio.getSelectedItemPosition()).getId()==0){
+            if(fragmentInformacion.barrioList.get(fragmentInformacion.sltBarrio.getSelectedItemPosition()).getId()==0){
                 Snackbar.make(view, "Barrio es Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 return false;
             }
@@ -257,12 +285,12 @@ public class EjecutaActividad extends AppCompatActivity {
                     return false;
                 }
                 else{
-                    if(tipoActividad.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId()==0){
+                    if(fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId()==0){
                         Snackbar.make(view, "Tipo Operacion es Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                         return false;
                     }
                     else{
-                        if(estadoActividad.get(fragmentInformacion.sltEstadoActividad.getSelectedItemPosition()).getId()==0){
+                        if(fragmentInformacion.estadoActividadList.get(fragmentInformacion.sltEstadoActividad.getSelectedItemPosition()).getId()==0){
                             Snackbar.make(view, "Estado Actividad es Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                             return false;
                         }
@@ -275,11 +303,11 @@ public class EjecutaActividad extends AppCompatActivity {
         }
     }
 
-    private void guardarFormulario(char tipoAlmacenamiento, SQLiteDatabase sqLiteDatabase){
+    private void guardarFormulario(char tipoAlmacenamiento){
         enableButton(false);
         switch (tipoAlmacenamiento) {
             case 'L':
-                almacenarDatosLocal(sqLiteDatabase);
+                almacenarDatosLocal();
                 break;
             case 'R':
                 almacenarDatosEnRemoto();
@@ -287,7 +315,7 @@ public class EjecutaActividad extends AppCompatActivity {
         }
     }
 
-    private void almacenarDatosLocal(SQLiteDatabase sqLiteDatabase) {
+    private void almacenarDatosLocal() {
 
     }
 
@@ -304,16 +332,15 @@ public class EjecutaActividad extends AppCompatActivity {
 
             //--Fotos Antes
             JSONArray jsonArrayFotoAntes = new JSONArray();
-            //jsonArrayFotoAntes.put(fragmentFotoAntes.encodeStringFoto_1);
+            jsonArrayFotoAntes.put(fragmentFotoAntes.encodeStringFoto_1);
             jsonArrayFotoAntes.put(fragmentFotoAntes.encodeStringFoto_2);
             jsonArrayFotoAntes.put(fragmentFotoAntes.encodeStringFoto_3);
             jsonArrayFotoAntes.put(fragmentFotoAntes.encodeStringFoto_4);
             jsonObject.put("foto_antes", jsonArrayFotoAntes);
 
-
             //--Fotos Despues
             JSONArray jsonArrayFotoDespues = new JSONArray();
-            //jsonArrayFotoDespues.put(fragmentFotoDespues.encodeStringFoto_1);
+            jsonArrayFotoDespues.put(fragmentFotoDespues.encodeStringFoto_1);
             jsonArrayFotoDespues.put(fragmentFotoDespues.encodeStringFoto_2);
             jsonArrayFotoDespues.put(fragmentFotoDespues.encodeStringFoto_3);
             jsonArrayFotoDespues.put(fragmentFotoDespues.encodeStringFoto_4);
@@ -326,6 +353,7 @@ public class EjecutaActividad extends AppCompatActivity {
             JSONArray jsonArrayDesNoUtil = new JSONArray();
             JSONArray jsonArrayPNC      = new JSONArray();
             JSONArray jsonArrayAsig     = new JSONArray();
+
             int index = 0;
             while(index < fragmentMateriales.movimientoArticuloArrayList.size()){
                 switch (fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock()){
@@ -432,13 +460,13 @@ public class EjecutaActividad extends AppCompatActivity {
             jsonElemento.put("placa_mt_transformador", fragmentElemento.txtMtTransformador.getText());
             jsonElemento.put("placa_ct_transformador", fragmentElemento.txtCtTransformador.getText());
             jsonElemento.put("transformador_exclusivo_ap", fragmentElemento.swTranformadorExclusivoAP.isChecked());
-            //jsonElemento.put("foto",fragmentFotoDespues.encodeStringFoto_1);
+            jsonElemento.put("foto",fragmentFotoDespues.encodeStringFoto_1);
 
             jsonObject.put("info_elemento",jsonElemento);
 
             JSONArray principal = new JSONArray();
             principal.put(jsonObject);
-            Log.d("JSON","->"+principal.toString());
+            //Log.d("JSON","->"+principal.toString());
 
             client = new AsyncHttpClient();
             StringEntity jsonParams = new StringEntity(principal.toString(), "UTF-8");
@@ -446,19 +474,43 @@ public class EjecutaActividad extends AppCompatActivity {
             client.setTimeout(Constantes.TIMEOUT);
             RequestHandle post = client.post(getApplicationContext(), ServicioWeb.urlGuardarActividad, jsonParams, "application/json", new AsyncHttpResponseHandler() {
                 @Override
+                public void onStart() {
+                    super.onStart();
+                    progressGuardarActividad.setVisibility(View.VISIBLE);
+                }
+
+                @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                     String respuesta = new String(responseBody);
+                    progressGuardarActividad.setVisibility(View.INVISIBLE);
                     Log.d("JSON-RESPONSE:", respuesta);
                     try {
                         JSONObject jsonResponse = new JSONObject(new String(responseBody));
-                        /*
-                        actualiza stock
-                        cambia estado actividad en bd movil
-                        retorna a listado de acti
-                        listado de actividades no debe permitirce dar click a actividades ejecutadas
-                         */
-                        Toast.makeText(getApplicationContext(),respuesta, Toast.LENGTH_LONG).show();
-                        enableButton(true);  //--Quitar al terminar de probar
+                        Log.d("JSON-RESPONSE:", String.valueOf(jsonResponse.getBoolean("sw")));
+                        if(jsonResponse.getBoolean("sw")) {
+                            /*
+                            actualiza stock
+                             */
+                            ActividadOperativaDB actividadOperativaDB = new ActividadOperativaDB(database);
+                            actividadOperativaDB.actualizarDatos(actividadOperativa);
+
+                            alert.setMessage(jsonResponse.getString("Mensaje"));
+                            alert.setNeutralButton("Aceptar",new DialogInterface.OnClickListener(){
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    Intent i = new Intent(EjecutaActividad.this,ListaActividad.class);
+                                    startActivity(i);
+                                    EjecutaActividad.this.finish();
+                                }
+                            });
+                            alert.create().show();
+                        }
+                        else {
+                            Toast.makeText(getApplicationContext(), respuesta, Toast.LENGTH_LONG).show();
+                            enableButton(true);
+                        }
+                        enableButton(true);
                     } catch (JSONException e) {
                         Toast.makeText(getApplicationContext(),"ERROR, JSON RESPONSE:"+e.getMessage(), Toast.LENGTH_LONG).show();
                         Log.d("Error", e.getMessage());
@@ -470,6 +522,7 @@ public class EjecutaActividad extends AppCompatActivity {
                     String respuesta = new String(responseBody);
                     Log.d("ONFAILURE:",respuesta);
                     Toast.makeText(getApplicationContext(),"ONFAILURE: "+getText(R.string.alert_error_ejecucion)+ " Código: "+statusCode+" "+error.getMessage(), Toast.LENGTH_LONG).show();
+                    progressGuardarActividad.setVisibility(View.INVISIBLE);
                     enableButton(true);
                 }
 
@@ -486,6 +539,7 @@ public class EjecutaActividad extends AppCompatActivity {
     private void enableButton(boolean estado){
         fabGuardar.setEnabled(estado);
         fabCancelar.setEnabled(estado);
+        viewPager.setEnabled(estado);
     }
 
 }

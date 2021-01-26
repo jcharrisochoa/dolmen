@@ -30,9 +30,19 @@ public class ActividadOperativa implements Serializable {
     private String usuarioGeneraActividad;
     private String observacion;
     private String pendienteSincronizar;
+    private String afectadoPorVandalismo;
+    private String elementoNoEncontrado;
 
     public ActividadOperativa(){
 
+    }
+
+    public void setAfectadoPorVandalismo(String afectadoPorVandalismo) {
+        this.afectadoPorVandalismo = afectadoPorVandalismo;
+    }
+
+    public void setElementoNoEncontrado(String elementoNoEncontrado) {
+        this.elementoNoEncontrado = elementoNoEncontrado;
     }
 
     public ActividadOperativa(int idActividad, int idEspacioPublicitario, Programa programa, ProcesoSgc procesoSgc, Elemento elemento, CentroCosto centroCosto, Barrio barrio, EstadoActividad estadoActividad,
@@ -55,6 +65,14 @@ public class ActividadOperativa implements Serializable {
         this.et = et;
         this.usuarioProgramaActividad = usuarioProgramaActividad;
         this.usuarioGeneraActividad = usuarioGeneraActividad;
+    }
+
+    public String isAfectadoPorVandalismo() {
+        return afectadoPorVandalismo;
+    }
+
+    public String isElementoNoEncontrado() {
+         return elementoNoEncontrado;
     }
 
     public Elemento getElemento() {

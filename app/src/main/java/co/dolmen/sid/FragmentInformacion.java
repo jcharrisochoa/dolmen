@@ -239,7 +239,7 @@ public class FragmentInformacion extends Fragment {
                     dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(2).toUpperCase());
                     barrioList.add(dataSpinner);
                     labels.add(cursor.getString(2).toUpperCase());
-                    if(actividadOperativa.getBarrio().getNombreBarrio().toUpperCase() == cursor.getString(2).toUpperCase()){
+                    if(actividadOperativa.getBarrio().getNombreBarrio().toUpperCase().contentEquals(cursor.getString(2).toUpperCase())){
                         pos = i;
                     }
                 } while (cursor.moveToNext());

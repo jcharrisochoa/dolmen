@@ -316,6 +316,12 @@ public class ListaActividad extends AppCompatActivity  {
                             cursor.getString(cursor.getColumnIndex("et")),
                             cursor.getString(cursor.getColumnIndex("usuario_programa_actividad"))
                     );
+
+                    if(cursor.getString(cursor.getColumnIndex("fch_ejecucion"))!=null) {
+                        //Log.d("programacion",""+cursor.getString(cursor.getColumnIndex("fch_ejecucion")));
+                        actividadOperativa.setFechaEjecucion(new SimpleDateFormat("yyyy-MM-dd H:mm:ss").parse(cursor.getString(cursor.getColumnIndex("fch_ejecucion"))));
+                    }
+
                     actividadOperativaArrayList.add(actividadOperativa);
                 }
             }

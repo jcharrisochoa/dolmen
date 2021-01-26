@@ -96,11 +96,13 @@ public class AdapterData extends RecyclerView.Adapter<AdapterData.ViewHolderData
             itemFecha.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(actividadOperativa.getFechaActividad()));
             //itemProceso.setText(actividadOperativa.getProcesoSgc().getDescripcion());
             itemTipoOperacion.setText(actividadOperativa.getTipoActividad().getDescripcion());
-            if(actividadOperativa.getElemento().getElemento_no()=="-"){
+            if(actividadOperativa.getEstadoActividad().getId()!=2){
                 itemImgElemento.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.colorLightPrimary), android.graphics.PorterDuff.Mode.SRC_IN);
+                itemEstado.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorAccent));
             }
             else{
                 itemImgElemento.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.colorVerifed), android.graphics.PorterDuff.Mode.SRC_IN);
+                itemEstado.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorVerifed));
             }
         }
 

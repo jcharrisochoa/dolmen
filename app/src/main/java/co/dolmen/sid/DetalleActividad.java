@@ -1,6 +1,7 @@
 package co.dolmen.sid;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -34,6 +35,8 @@ public class DetalleActividad extends AppCompatActivity {
     private TextView txtReferencia;
     private TextView txtBarrio;
     private TextView txtDireccion;
+    private TextView txtEjecucion;
+    private TextView txtEstado;
 
     private ActividadOperativa actividadOperativa;
 
@@ -62,8 +65,14 @@ public class DetalleActividad extends AppCompatActivity {
         txtReferencia   = findViewById(R.id.txt_referencia);
         txtBarrio       = findViewById(R.id.txt_barrio);
         txtDireccion    = findViewById(R.id.txt_direccion);
+        txtEjecucion    = findViewById(R.id.txt_fch_ejecucion);
+        txtEstado       = findViewById(R.id.txt_estado);
 
         setDetalle(actividadOperativa);
+
+        if(actividadOperativa.getEstadoActividad().getId()==2){
+            //btnEnSitio.hide();
+        }
 
         btnCancelar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,6 +111,16 @@ public class DetalleActividad extends AppCompatActivity {
         txtReferencia.setText(ao.getElemento().getReferenciaMobiliario().getDescripcionReferenciaMobiliario());
         txtBarrio.setText(ao.getBarrio().getNombreBarrio());
         txtDireccion.setText(ao.getDireccion());
+        if(ao.getFechaEjecucion() != null)
+            txtEjecucion.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(ao.getFechaEjecucion()));
+        txtEstado.setText(ao.getEstadoActividad().getDescripcion());
+        if(ao.getEstadoActividad().getId()!=2){
+            txtEstado.setTextColor(ContextCompat.getColor(txtEstado.getContext(), R.color.colorAccent));
+        }
+        else{
+            txtEstado.setTextColor(ContextCompat.getColor(txtEstado.getContext(), R.color.colorVerifed));
+        }
+
     }
 
 }

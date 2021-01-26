@@ -7,6 +7,13 @@ public class TipoActividad implements Serializable {
     String descripcion;
     ProcesoSgc procesoSgc;
 
+    public TipoActividad(int id, String descripcion) {
+        this.id = id;
+        this.descripcion = descripcion;
+    }
+
+    public TipoActividad(){}
+
     public int getId() {
         return id;
     }

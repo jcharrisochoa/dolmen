@@ -64,6 +64,8 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
                 "et VARCHAR (12),"+
                 "usuario_programa_actividad VARCHAR(60),"+
                 "nro_elemento_desmontado VARCHAR(12),"+
+                "elemento_no_encontrado VARCHAR(1) NOT NULL DEFAULT 'N',"+
+                "afectado_por_vandalismo VARCHAR(1) NOT NULL DEFAULT 'N',"+
                 "observacion TEXT,"+
                 "pendiente_sincronizar VARCHAR(1) NOT NULL DEFAULT 'N'"+
                 ");";
@@ -111,16 +113,21 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
         if(o instanceof ActividadOperativa) {
             actividad = (ActividadOperativa) o;
             ContentValues contentValues = new ContentValues();
-            contentValues.put("pendiente_sincronizar", "S");
             contentValues.put("id_tipo_operacion", actividad.getTipoActividad().getId());
             contentValues.put("id_elemento", actividad.getElemento().getId());
             contentValues.put("id_barrio", actividad.getBarrio().getIdBarrio());
+            contentValues.put("barrio", actividad.getBarrio().getNombreBarrio());
             contentValues.put("direccion", actividad.getDireccion());
             contentValues.put("latitud", actividad.getLatitud());
             contentValues.put("longitud", actividad.getLongitud());
             contentValues.put("fch_en_sitio", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format( actividad.getFechaEnSitio()));
             contentValues.put("fch_ejecucion", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format( actividad.getFechaEjecucion()));
-            db.update(Constantes.TABLA_ACTIVIDAD_OPERATIVA,contentValues,"where id_actividad="+actividad.getIdActividad(),null);
+            contentValues.put("id_estado_actividad",actividad.getEstadoActividad().getId());
+            contentValues.put("elemento_no_encontrado",actividad.isElementoNoEncontrado());
+            contentValues.put("afectado_por_vandalismo",actividad.isAfectadoPorVandalismo());
+            contentValues.put("observacion",actividad.getObservacion());
+            contentValues.put("pendiente_sincronizar",actividad.getPendienteSincronizar());
+            db.update(Constantes.TABLA_ACTIVIDAD_OPERATIVA,contentValues,"id_actividad="+actividad.getIdActividad(),null);
         }
     }
 
@@ -142,20 +149,21 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
                 "ao.barrio,ao.id_tipo_reporte_dano,tr.descripcion as tipo_reporte_dano,ao.id_tipo_operacion,ao.id_equipo,ao.serial_equipo,ao.id_estado_actividad," +
                 "ao.fch_programa,ao.fch_actividad,ao.direccion,ao.et,ao.usuario_programa_actividad," +
                 "ao.pendiente_sincronizar,pg.descripcion as programa,ao.id_espacio_publicitario," +
-                "e.id_tipologia,e.id_mobiliario,e.id_referencia "+
-                "from "+Constantes.TABLA_ACTIVIDAD_OPERATIVA+" ao " +
-                "join "+Constantes.TABLA_PROGRAMA+" pg on(ao.id_programa = pg._id) " +
-                "join "+Constantes.TABLA_MUNICIPIO+" m on(ao.id_municipio = m._id) " +
-                "join "+Constantes.TABLA_PROCESO+" p on(ao.id_proceso_sgc = p._id) " +
-                "join "+Constantes.TABLA_ESTADO_ACTIVIDAD+" ea on(ao.id_estado_actividad = ea._id) " +
-                "join "+Constantes.TABLA_TIPO_ACTIVIDAD+" ta on(ao.id_tipo_operacion = ta._id) " +
-                "left JOIN "+Constantes.TABLA_TIPO_REPORTE_DANO+" tr on(ao.id_tipo_reporte_dano = tr._id) " +
-                "left join "+Constantes.TABLA_ELEMENTO+" e on(ao.id_elemento = e._id) " +
-                "left join "+Constantes.TABLA_TIPOLOGIA_MOBILIARIO+" tm on(e.id_tipologia = tm._id) " +
-                "left join "+Constantes.TABLA_MOBILIARIO+" mb on(e.id_mobiliario = mb._id) " +
-                "left join "+Constantes.TABLA_REFERNCIA_MOBILIARIO+" rm on(e.id_referencia = rm._id) " +
-                "left join "+Constantes.TABLA_BARRIO+" b on(e.id_barrio = b._id) " +
-                "order by ao.direccion";
+                "e.id_tipologia,e.id_mobiliario,e.id_referencia,ao.elemento_no_encontrado,ao.afectado_por_vandalismo,ao.pendiente_sincronizar,ao.observacion, "+
+                "ao.fch_ejecucion"+
+                " from "+Constantes.TABLA_ACTIVIDAD_OPERATIVA+" ao " +
+                " join "+Constantes.TABLA_PROGRAMA+" pg on(ao.id_programa = pg._id) " +
+                " join "+Constantes.TABLA_MUNICIPIO+" m on(ao.id_municipio = m._id) " +
+                " join "+Constantes.TABLA_PROCESO+" p on(ao.id_proceso_sgc = p._id) " +
+                " join "+Constantes.TABLA_ESTADO_ACTIVIDAD+" ea on(ao.id_estado_actividad = ea._id) " +
+                " join "+Constantes.TABLA_TIPO_ACTIVIDAD+" ta on(ao.id_tipo_operacion = ta._id) " +
+                " left JOIN "+Constantes.TABLA_TIPO_REPORTE_DANO+" tr on(ao.id_tipo_reporte_dano = tr._id) " +
+                " left join "+Constantes.TABLA_ELEMENTO+" e on(ao.id_elemento = e._id) " +
+                " left join "+Constantes.TABLA_TIPOLOGIA_MOBILIARIO+" tm on(e.id_tipologia = tm._id) " +
+                " left join "+Constantes.TABLA_MOBILIARIO+" mb on(e.id_mobiliario = mb._id) " +
+                " left join "+Constantes.TABLA_REFERNCIA_MOBILIARIO+" rm on(e.id_referencia = rm._id) " +
+                " left join "+Constantes.TABLA_BARRIO+" b on(e.id_barrio = b._id) " +
+                " order by ao.direccion";
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }
@@ -176,7 +184,8 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
                 "ao.barrio,ao.id_tipo_reporte_dano,tr.descripcion as tipo_reporte_dano,ao.id_tipo_operacion,ao.id_equipo,ao.serial_equipo,ao.id_estado_actividad," +
                 "ao.fch_programa,ao.fch_actividad,ao.direccion,ao.et,ao.usuario_programa_actividad," +
                 "ao.pendiente_sincronizar,pg.descripcion as programa,ao.id_espacio_publicitario," +
-                "e.id_tipologia,e.id_mobiliario,e.id_referencia "+
+                "e.id_tipologia,e.id_mobiliario,e.id_referencia,ao.elemento_no_encontrado,ao.afectado_por_vandalismo,ao.pendiente_sincronizar,ao.observacion, "+
+                "ao.fch_ejecucion "+
                 "from "+Constantes.TABLA_ACTIVIDAD_OPERATIVA+" ao " +
                 "join "+Constantes.TABLA_PROGRAMA+" pg on(ao.id_programa = pg._id) " +
                 "join "+Constantes.TABLA_MUNICIPIO+" m on(ao.id_municipio = m._id) " +

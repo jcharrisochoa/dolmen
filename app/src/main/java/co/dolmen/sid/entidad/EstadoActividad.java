@@ -6,6 +6,13 @@ public class EstadoActividad implements Serializable {
     int id;
     String descripcion;
 
+    public EstadoActividad(){}
+
+    public EstadoActividad(int id, String descripcion) {
+        this.id = id;
+        this.descripcion = descripcion;
+    }
+
     public int getId() {
         return id;
     }
