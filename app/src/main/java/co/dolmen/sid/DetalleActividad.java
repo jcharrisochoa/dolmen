@@ -28,6 +28,7 @@ public class DetalleActividad extends AppCompatActivity {
     private TextView txtPrograma;
     private TextView txtTipoOperacion;
     private TextView txtReporte;
+    private TextView txtET;
     private TextView txtProceso;
     private TextView txtVehiculo;
     private TextView txtElemento;
@@ -37,6 +38,7 @@ public class DetalleActividad extends AppCompatActivity {
     private TextView txtDireccion;
     private TextView txtEjecucion;
     private TextView txtEstado;
+    private TextView txtObservacion;
 
     private ActividadOperativa actividadOperativa;
 
@@ -58,6 +60,7 @@ public class DetalleActividad extends AppCompatActivity {
         txtPrograma     = findViewById(R.id.txt_programa);
         txtTipoOperacion= findViewById(R.id.txt_tipo_operacion);
         txtReporte      = findViewById(R.id.txt_reporte);
+        txtET           = findViewById(R.id.txt_et);
         txtProceso      = findViewById(R.id.txt_proceso);
         txtVehiculo     = findViewById(R.id.txt_vehiculo);
         txtElemento     = findViewById(R.id.txt_elemento);
@@ -67,11 +70,12 @@ public class DetalleActividad extends AppCompatActivity {
         txtDireccion    = findViewById(R.id.txt_direccion);
         txtEjecucion    = findViewById(R.id.txt_fch_ejecucion);
         txtEstado       = findViewById(R.id.txt_estado);
+        txtObservacion  = findViewById(R.id.txt_observacion);
 
         setDetalle(actividadOperativa);
 
         if(actividadOperativa.getEstadoActividad().getId()==2){
-            //btnEnSitio.hide();
+            btnEnSitio.hide();
         }
 
         btnCancelar.setOnClickListener(new View.OnClickListener() {
@@ -103,7 +107,8 @@ public class DetalleActividad extends AppCompatActivity {
         txtFchActividad.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(ao.getFechaActividad()));
         txtPrograma.setText(String.valueOf(ao.getPrograma().getId()));
         txtTipoOperacion.setText(ao.getTipoActividad().getDescripcion());
-        //txtReporte.setText(ao.getR);
+        txtET.setText(ao.getEt());
+        //txtReporte.setText();
         txtProceso.setText(ao.getProcesoSgc().getDescripcion());
         txtVehiculo.setText(ao.getEquipo().getSerial());
         txtElemento.setText(ao.getElemento().getElemento_no());
@@ -120,6 +125,7 @@ public class DetalleActividad extends AppCompatActivity {
         else{
             txtEstado.setTextColor(ContextCompat.getColor(txtEstado.getContext(), R.color.colorVerifed));
         }
+        txtObservacion.setText(ao.getObservacion());
 
     }
 

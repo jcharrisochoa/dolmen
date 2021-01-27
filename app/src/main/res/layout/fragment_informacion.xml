@@ -28,10 +28,11 @@
                 android:layout_margin="10dp"
                 android:gravity="center"
                 android:orientation="vertical">
+
                 <Switch
                     android:id="@+id/sw_elemento_no_encontrado"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="40dp"
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="2dp"
                     android:checked="false"
@@ -40,7 +41,7 @@
                 <Switch
                     android:id="@+id/sw_afectado_vandalismo"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="40dp"
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="2dp"
                     android:checked="false"
@@ -107,12 +108,24 @@
                     android:layout_height="wrap_content"
                     android:background="@android:drawable/btn_dropdown" />
 
+
+                <TextView
+                    android:id="@+id/textView51"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/titulo_vehiculo" />
+
+                <Spinner
+                    android:id="@+id/slt_vehiculo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/btn_dropdown" />
+
                 <TextView
                     android:id="@+id/textV_estado_actividad"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Estado Actividad *" />
-
 
                 <Spinner
                     android:id="@+id/slt_estado_actividad"

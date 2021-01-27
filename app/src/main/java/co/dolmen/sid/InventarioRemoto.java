@@ -164,7 +164,7 @@ public class InventarioRemoto {
                             centroCosto,
                             articulo,
                             tipoStock,
-                            jObjectStock.getDouble("cantidad")
+                            (float) jObjectStock.getDouble("cantidad")
                     ));
 
                     progress = (int)Math.round((double)(i+1)/arrayStock.length()*100);
@@ -205,7 +205,7 @@ public class InventarioRemoto {
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
-            Log.d("values", String.valueOf(values[0]));
+            //Log.d("values", String.valueOf(values[0]));
             int progreso = values[0].intValue();
             progressBar.setProgress(progreso);
             porcentaje.setText(context.getText(values[1])+" "+progreso+"%");

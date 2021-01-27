@@ -48,6 +48,7 @@ import co.dolmen.sid.modelo.ClaseViaDB;
 import co.dolmen.sid.modelo.ContratoDB;
 import co.dolmen.sid.modelo.ControlEncendidoDB;
 import co.dolmen.sid.modelo.ElementoDB;
+import co.dolmen.sid.modelo.EquipoDB;
 import co.dolmen.sid.modelo.EstadoActividadDB;
 import co.dolmen.sid.modelo.EstadoMobiliarioDB;
 import co.dolmen.sid.modelo.MobiliarioDB;
@@ -719,6 +720,20 @@ public class Parametros extends AppCompatActivity {
                     progress = (int)Math.round((double)(i+1)/arrayBodega.length()*100);
                     publishProgress(progress, R.string.titulo_bodega);
                     Log.d("parametros","->Bodega:"+progress+"%");
+                }
+
+                //--Equivo / Vehiculo
+                EquipoDB equipoDB = new EquipoDB(database);
+                JSONArray arrayEquipo= parametros.getJSONArray("vehiculo");
+                for (int i = 0;i<arrayEquipo.length();i++){
+                    JSONObject jObjectEquipo = arrayEquipo.getJSONObject(i);
+                    equipoDB.setIdEquipo(jObjectEquipo.getInt("id"));
+                    equipoDB.setCodigo(jObjectEquipo.getString("codigo"));
+                    equipoDB.setSerial(jObjectEquipo.getString("placa"));
+                    equipoDB.agregarDatos(equipoDB);
+                    progress = (int)Math.round((double)(i+1)/arrayEquipo.length()*100);
+                    publishProgress(progress, R.string.titulo_vehiculo);
+                    Log.d("parametros","->Vehiculo:"+progress+"%");
                 }
 
                 //Proveedor

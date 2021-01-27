@@ -126,7 +126,7 @@ public class StockDB extends Stock implements DatabaseDDL,DatabaseDLM {
                 " join "+Constantes.TABLA_ARTICULO+" a on(s.id_articulo = a._id) " +
                 " where 1=1 " +
                 q+
-                " ORDER BY id_articulo";
+                " ORDER BY s.id_tipo_stock,s.id_articulo";
         //Log.d("programacion",""+this.sql);
 
         Cursor result = db.rawQuery(this.sql, null);

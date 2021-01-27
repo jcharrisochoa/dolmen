@@ -103,11 +103,11 @@ public class AdapterMovimientoArticulo extends RecyclerView.Adapter<AdapterMovim
 
             for (MovimientoArticulo m : movimientoArticuloArrayList) {
                 //Log.d("programacion","m.articulo:"+String.valueOf(m.getId_articulo())+"="+String.valueOf(movimientoArticulo.getId_articulo()));
-                //Log.d("programacion","m.articulo:"+String.valueOf(m.getId_tipo_stock())+"="+String.valueOf(movimientoArticulo.getId_tipo_stock()));
-                //Log.d("programacion","m.articulo:"+String.valueOf(m.getMovimiento())+"="+String.valueOf(movimientoArticulo.getMovimiento()));
-                if (String.valueOf(m.getId_articulo()).contentEquals(String.valueOf(movimientoArticulo.getId_articulo())) &&
-                        String.valueOf(m.getId_tipo_stock()).contentEquals(String.valueOf(movimientoArticulo.getId_tipo_stock())) &&
-                        m.getMovimiento().contentEquals(movimientoArticulo.getMovimiento())) {
+                //Log.d("programacion","m.Tipo stock:"+String.valueOf(m.getId_tipo_stock())+"="+String.valueOf(movimientoArticulo.getId_tipo_stock()));
+                //Log.d("programacion","m.Movimiento:"+String.valueOf(m.getMovimiento())+"="+String.valueOf(movimientoArticulo.getMovimiento()));
+                if (String.valueOf(m.getId_articulo()).contentEquals(String.valueOf(movimientoArticulo.getId_articulo()))
+                        && String.valueOf(m.getId_tipo_stock()).contentEquals(String.valueOf(movimientoArticulo.getId_tipo_stock()))
+                        && m.getMovimiento().contentEquals(movimientoArticulo.getMovimiento())) {
                     pos = i;
                     return pos;
                 }

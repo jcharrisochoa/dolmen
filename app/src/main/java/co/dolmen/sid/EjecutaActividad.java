@@ -39,6 +39,7 @@ import java.util.Locale;
 import co.dolmen.sid.entidad.ActividadOperativa;
 import co.dolmen.sid.entidad.Barrio;
 import co.dolmen.sid.entidad.Elemento;
+import co.dolmen.sid.entidad.Equipo;
 import co.dolmen.sid.entidad.EstadoActividad;
 import co.dolmen.sid.entidad.MovimientoArticulo;
 import co.dolmen.sid.entidad.TipoActividad;
@@ -186,6 +187,10 @@ public class EjecutaActividad extends AppCompatActivity {
     private void guardar(final View view){
         //--Actualizar Pojo--
         actividadOperativa.setFechaEjecucion(new Date());
+
+        Equipo equipo = actividadOperativa.getEquipo();
+        equipo.setIdEquipo(fragmentInformacion.vehiculoList.get(fragmentInformacion.sltVehiculo.getSelectedItemPosition()).getId());
+        equipo.setSerial(fragmentInformacion.vehiculoList.get(fragmentInformacion.sltVehiculo.getSelectedItemPosition()).getDescripcion());
 
         EstadoActividad estadoActividad = actividadOperativa.getEstadoActividad();
         estadoActividad.setId(fragmentInformacion.estadoActividadList.get(fragmentInformacion.sltEstadoActividad.getSelectedItemPosition()).getId());
@@ -425,6 +430,8 @@ public class EjecutaActividad extends AppCompatActivity {
             jsonObject.put("direccion", fragmentInformacion.editDireccion.getText());
             jsonObject.put("id_tipo_actividad", fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId());
             jsonObject.put("id_estado_actividad", fragmentInformacion.estadoActividadList.get(fragmentInformacion.sltEstadoActividad.getSelectedItemPosition()).getId());
+            jsonObject.put("id_estado_actividad", fragmentInformacion.estadoActividadList.get(fragmentInformacion.sltEstadoActividad.getSelectedItemPosition()).getId());
+            jsonObject.put("id_equipo", fragmentInformacion.vehiculoList.get(fragmentInformacion.sltVehiculo.getSelectedItemPosition()).getId());
             jsonObject.put("observacion", fragmentInformacion.editObservacion.getText());
 
             //--Elemento
@@ -490,6 +497,8 @@ public class EjecutaActividad extends AppCompatActivity {
                         if(jsonResponse.getBoolean("sw")) {
                             /*
                             actualiza stock
+                            1. actualizar stock con valores +
+                            2. actualizar stock con valores -
                              */
                             ActividadOperativaDB actividadOperativaDB = new ActividadOperativaDB(database);
                             actividadOperativaDB.actualizarDatos(actividadOperativa);

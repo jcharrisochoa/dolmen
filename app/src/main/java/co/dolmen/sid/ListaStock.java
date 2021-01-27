@@ -27,6 +27,7 @@ import co.dolmen.sid.entidad.Bodega;
 import co.dolmen.sid.entidad.CentroCosto;
 import co.dolmen.sid.entidad.Stock;
 import co.dolmen.sid.entidad.TipoStock;
+import co.dolmen.sid.modelo.BodegaDB;
 import co.dolmen.sid.modelo.StockDB;
 import co.dolmen.sid.utilidades.AdapterStock;
 
@@ -57,7 +58,6 @@ public class ListaStock extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_stock);
-        setTitle(R.string.titulo_mi_inventario);
 
         config = getSharedPreferences("config", MODE_PRIVATE);
         idUsuario           = config.getInt("id_usuario", 0);
@@ -68,6 +68,12 @@ public class ListaStock extends AppCompatActivity {
 
         conn = new BaseDatos(this);
         database = conn.getReadableDatabase();
+
+        BodegaDB bodegaDB = new BodegaDB(database);
+        Cursor cursor = bodegaDB.consultarId(idDefaultBodega);
+        cursor.moveToFirst();
+        setTitle(cursor.getString(cursor.getColumnIndex("descripcion")).toLowerCase());
+        cursor.close();
 
         stocksList = new ArrayList<Stock>();
 
@@ -166,6 +172,7 @@ public class ListaStock extends AppCompatActivity {
                 );
 
                 CentroCosto centroCosto = new CentroCosto();
+                centroCosto.setIdCentroCosto(cursor.getInt(cursor.getColumnIndex("id_centro_costo")));
 
                 TipoStock tipoStock = new TipoStock();
                 tipoStock.setId(cursor.getInt(cursor.getColumnIndex("id_tipo_stock")));

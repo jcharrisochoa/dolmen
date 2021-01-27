@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -48,20 +49,34 @@ public class AdapterStock  extends RecyclerView.Adapter<AdapterStock.ViewHolderD
         private TextView itemArticulo;
         private TextView itemCantidad;
         private TextView itemCodigo;
+        private TextView itemCentroCosto;
 
         public ViewHolderData(View itemView) {
             super(itemView);
             itemTipoStock   = itemView.findViewById(R.id.txt_tipo_stock);
             itemArticulo    = itemView.findViewById(R.id.txt_descripcion_articulo);
-            itemCodigo  = itemView.findViewById(R.id.txt_codigo_articulo);
-            itemCantidad = itemView.findViewById(R.id.txt_cantidad);
+            itemCodigo      = itemView.findViewById(R.id.txt_codigo_articulo);
+            itemCantidad    = itemView.findViewById(R.id.txt_cantidad);
+            itemCentroCosto = itemView.findViewById(R.id.txt_centro_costo);
         }
 
         public void asignarDatos(Stock stock){
             itemTipoStock.setText(stock.getTipoStock().getDescripcion());
+            itemCentroCosto.setText(String.valueOf(stock.getCentroCosto().getIdCentroCosto())+"-Centro Costo");
             itemArticulo.setText(stock.getArticulo().getDescripcion());
             itemCodigo.setText(String.valueOf(stock.getArticulo().getId()));
             itemCantidad.setText(String.valueOf(stock.getCantidad()));
+
+            if(stock.getCantidad()<0){
+                itemCantidad.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorAccentCancel));
+            }
+            else{
+                if(stock.getCantidad()>0 && stock.getCantidad()<=1){
+                    itemCantidad.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorAccent));
+                }
+                else
+                    itemCantidad.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorPrimary));
+            }
         }
     }
 }

@@ -7,11 +7,11 @@ public class Stock implements Serializable {
     CentroCosto centroCosto;
     Articulo articulo;
     TipoStock tipoStock;
-    double cantidad;
+    float cantidad;
 
     public Stock(){}
 
-    public Stock(Bodega bodega, CentroCosto centroCosto, Articulo articulo, TipoStock tipoStock, double cantidad) {
+    public Stock(Bodega bodega, CentroCosto centroCosto, Articulo articulo, TipoStock tipoStock, float cantidad) {
         this.bodega = bodega;
         this.centroCosto = centroCosto;
         this.articulo = articulo;
@@ -35,11 +35,11 @@ public class Stock implements Serializable {
         return tipoStock;
     }
 
-    public double getCantidad() {
+    public float getCantidad() {
         return cantidad;
     }
 
-    public void setCantidad(double cantidad){
+    public void setCantidad(float cantidad){
         this.cantidad = cantidad;
     }
 

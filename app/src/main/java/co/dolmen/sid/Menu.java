@@ -18,6 +18,7 @@ import co.dolmen.sid.modelo.ClaseViaDB;
 import co.dolmen.sid.modelo.ContratoDB;
 import co.dolmen.sid.modelo.ControlEncendidoDB;
 import co.dolmen.sid.modelo.ElementoDB;
+import co.dolmen.sid.modelo.EquipoDB;
 import co.dolmen.sid.modelo.EstadoActividadDB;
 import co.dolmen.sid.modelo.EstadoMobiliarioDB;
 import co.dolmen.sid.modelo.MobiliarioDB;
@@ -115,6 +116,7 @@ public class Menu extends AppCompatActivity {
     private TipoTensionDB tipoTensionDB;
     private TipoEstructuraDB tipoEstructuraDB;
     private NormaConstruccionRedDB normaConstruccionRedDB;
+    private EquipoDB equipoDB;
 
 
     SQLiteDatabase database;
@@ -166,6 +168,7 @@ public class Menu extends AppCompatActivity {
         tipoTensionDB           = new TipoTensionDB(database);
         tipoEstructuraDB        = new TipoEstructuraDB(database);
         normaConstruccionRedDB  = new NormaConstruccionRedDB(database);
+        equipoDB                = new EquipoDB(database);
 
         alert = new AlertDialog.Builder(this);
 
@@ -249,6 +252,7 @@ public class Menu extends AppCompatActivity {
                             tipoTensionDB.eliminarDatos();
                             tipoEstructuraDB.eliminarDatos();
                             normaConstruccionRedDB.eliminarDatos();
+                            equipoDB.eliminarDatos();
 
                             config.edit().clear().commit();
                             Intent intent = new Intent(Menu.this,Login.class);

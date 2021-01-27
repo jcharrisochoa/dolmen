@@ -280,7 +280,8 @@ public class ListaActividad extends AppCompatActivity  {
 
                     Equipo equipo = new Equipo(
                             cursor.getInt(cursor.getColumnIndex("id_equipo")),
-                            cursor.getString(cursor.getColumnIndex("serial_equipo"))
+                            cursor.getString(cursor.getColumnIndex("codigo")),
+                            cursor.getString(cursor.getColumnIndex("serial"))
                     );
 
                     CentroCosto centroCosto = new CentroCosto();
@@ -321,7 +322,7 @@ public class ListaActividad extends AppCompatActivity  {
                         //Log.d("programacion",""+cursor.getString(cursor.getColumnIndex("fch_ejecucion")));
                         actividadOperativa.setFechaEjecucion(new SimpleDateFormat("yyyy-MM-dd H:mm:ss").parse(cursor.getString(cursor.getColumnIndex("fch_ejecucion"))));
                     }
-
+                    actividadOperativa.setObservacion(cursor.getString(cursor.getColumnIndex("observacion")));
                     actividadOperativaArrayList.add(actividadOperativa);
                 }
             }

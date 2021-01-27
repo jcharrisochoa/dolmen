@@ -116,6 +116,7 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
             contentValues.put("id_tipo_operacion", actividad.getTipoActividad().getId());
             contentValues.put("id_elemento", actividad.getElemento().getId());
             contentValues.put("id_barrio", actividad.getBarrio().getIdBarrio());
+            contentValues.put("id_equipo", actividad.getEquipo().getIdEquipo());
             contentValues.put("barrio", actividad.getBarrio().getNombreBarrio());
             contentValues.put("direccion", actividad.getDireccion());
             contentValues.put("latitud", actividad.getLatitud());
@@ -150,7 +151,7 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
                 "ao.fch_programa,ao.fch_actividad,ao.direccion,ao.et,ao.usuario_programa_actividad," +
                 "ao.pendiente_sincronizar,pg.descripcion as programa,ao.id_espacio_publicitario," +
                 "e.id_tipologia,e.id_mobiliario,e.id_referencia,ao.elemento_no_encontrado,ao.afectado_por_vandalismo,ao.pendiente_sincronizar,ao.observacion, "+
-                "ao.fch_ejecucion"+
+                "ao.fch_ejecucion,ao.id_equipo,eq.serial,eq.codigo "+
                 " from "+Constantes.TABLA_ACTIVIDAD_OPERATIVA+" ao " +
                 " join "+Constantes.TABLA_PROGRAMA+" pg on(ao.id_programa = pg._id) " +
                 " join "+Constantes.TABLA_MUNICIPIO+" m on(ao.id_municipio = m._id) " +
@@ -163,6 +164,7 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
                 " left join "+Constantes.TABLA_MOBILIARIO+" mb on(e.id_mobiliario = mb._id) " +
                 " left join "+Constantes.TABLA_REFERNCIA_MOBILIARIO+" rm on(e.id_referencia = rm._id) " +
                 " left join "+Constantes.TABLA_BARRIO+" b on(e.id_barrio = b._id) " +
+                " left join "+Constantes.TABLA_EQUIPO+" eq on(ao.id_equipo = eq._id) " +
                 " order by ao.direccion";
         Cursor result = db.rawQuery(this.sql, null);
         return result;
@@ -185,7 +187,7 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
                 "ao.fch_programa,ao.fch_actividad,ao.direccion,ao.et,ao.usuario_programa_actividad," +
                 "ao.pendiente_sincronizar,pg.descripcion as programa,ao.id_espacio_publicitario," +
                 "e.id_tipologia,e.id_mobiliario,e.id_referencia,ao.elemento_no_encontrado,ao.afectado_por_vandalismo,ao.pendiente_sincronizar,ao.observacion, "+
-                "ao.fch_ejecucion "+
+                "ao.fch_ejecucion,ao.id_equipo,eq.serial,eq.codigo "+
                 "from "+Constantes.TABLA_ACTIVIDAD_OPERATIVA+" ao " +
                 "join "+Constantes.TABLA_PROGRAMA+" pg on(ao.id_programa = pg._id) " +
                 "join "+Constantes.TABLA_MUNICIPIO+" m on(ao.id_municipio = m._id) " +
@@ -198,6 +200,7 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
                 "left join "+Constantes.TABLA_MOBILIARIO+" mb on(e.id_mobiliario = mb._id) " +
                 "left join "+Constantes.TABLA_REFERNCIA_MOBILIARIO+" rm on(e.id_referencia = rm._id) " +
                 "left join "+Constantes.TABLA_BARRIO+" b on(e.id_barrio = b._id) " +
+                "left join "+Constantes.TABLA_EQUIPO+" eq on(ao.id_equipo = eq._id) " +
                 "WHERE 1=1 "+q+
                 " order by ao.direccion";
         //Log.d("programacion",""+this.sql);

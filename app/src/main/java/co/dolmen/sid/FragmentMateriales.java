@@ -236,10 +236,14 @@ public class FragmentMateriales extends Fragment{
                     stock = consultarStock();
 
                     totalMovimiento = cantEnLista + Float.parseFloat(txtCantidad.getText().toString());
-                    //Log.d("programacion","pos:"+pos+",Stock:"+stock+",Lista:"+cantEnLista+",Digitado:"+Float.parseFloat(txtCantidad.getText().toString())+",Total:"+totalMovimiento);
+                    Log.d("programacion","pos:"+pos+",Stock:"+stock+",Lista:"+cantEnLista+",Digitado:"+Float.parseFloat(txtCantidad.getText().toString())+",Total:"+totalMovimiento);
 
                     if (totalMovimiento > stock) {
-                        alert.setMessage(getString(R.string.cantidad_insuficiente) + (stock - cantEnLista));
+
+                        float tmp = cantEnLista - stock;
+                        stock = (cantEnLista>=stock)?tmp:tmp*(-1);
+
+                        alert.setMessage(getString(R.string.cantidad_insuficiente) + stock);
                         alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -340,9 +344,9 @@ public class FragmentMateriales extends Fragment{
         List<String> labels = new ArrayList<>();
         ArticuloDB articuloDB = new ArticuloDB(sqLiteDatabase);
         Cursor cursor = articuloDB.consultarTodo();
-        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.articulo).toString());
         articuloList.add(dataSpinner);
-        labels.add(getText(R.string.seleccione).toString());
+        labels.add(getText(R.string.articulo).toString());
         if (cursor.getCount() > 0) {
             if (cursor.moveToFirst()) {
                 do {
@@ -366,9 +370,9 @@ public class FragmentMateriales extends Fragment{
         List<String> labels = new ArrayList<>();
         TipoStockDB tipoStockDB = new TipoStockDB(sqLiteDatabase);
         Cursor cursor = tipoStockDB.consultarTodo();
-        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.titulo_tipo_stock).toString());
         tipoStockList.add(dataSpinner);
-        labels.add(getText(R.string.seleccione).toString());
+        labels.add(getText(R.string.titulo_tipo_stock).toString());
         if (cursor.getCount() > 0) {
             if (cursor.moveToFirst()) {
                 do {
@@ -390,9 +394,9 @@ public class FragmentMateriales extends Fragment{
         tipoMovimientoList = new ArrayList<DataSpinner>();
         DataSpinner dataSpinner;
         List<String> labels = new ArrayList<>();
-        dataSpinner = new DataSpinner(0, getText(R.string.seleccione).toString());
+        dataSpinner = new DataSpinner(0, getText(R.string.titulo_movimiento).toString());
         tipoMovimientoList.add(dataSpinner);
-        labels.add(getText(R.string.seleccione).toString());
+        labels.add(getText(R.string.titulo_movimiento).toString());
 
         dataSpinner = new DataSpinner(1, getString(R.string.movimiento_salida));
         tipoMovimientoList.add(dataSpinner);

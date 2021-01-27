@@ -6,15 +6,13 @@ public class Equipo implements Serializable {
     private int idEquipo;
     private String codigo;
     private String serial;
-    private String descripcion;
 
     public Equipo(){};
 
-    public Equipo (int idEquipo,String codigo,String serial,String descripcion){
+    public Equipo (int idEquipo,String codigo,String serial){
         this.idEquipo = idEquipo;
         this.codigo = codigo;
         this.serial = serial;
-        this.descripcion = descripcion;
     }
 
     public Equipo (int idEquipo,String serial){
@@ -46,11 +44,4 @@ public class Equipo implements Serializable {
         this.serial = serial;
     }
 
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
 }

@@ -36,6 +36,7 @@ import co.dolmen.sid.entidad.Mobiliario;
 import co.dolmen.sid.entidad.Tipologia;
 import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.ElementoDB;
+import co.dolmen.sid.modelo.EquipoDB;
 import co.dolmen.sid.modelo.EstadoActividadDB;
 import co.dolmen.sid.modelo.TipoActividadDB;
 import co.dolmen.sid.modelo.TipoInterseccionDB;
@@ -51,6 +52,7 @@ public class FragmentInformacion extends Fragment {
     Spinner sltEstadoActividad;
     Spinner sltTipoInterseccionA;
     Spinner sltTipoInterseccionB;
+    Spinner sltVehiculo;
 
 
     EditText editDireccion;
@@ -77,6 +79,7 @@ public class FragmentInformacion extends Fragment {
     ArrayList<DataSpinner> estadoActividadList;
     ArrayList<DataSpinner> tipoInterseccionA;
     ArrayList<DataSpinner> tipoInterseccionB;
+    ArrayList<DataSpinner> vehiculoList;
     //--
     Switch swVandalismo;
     Switch swElementoNoEncontrado;
@@ -122,12 +125,15 @@ public class FragmentInformacion extends Fragment {
         sltBarrio           = view.findViewById(R.id.slt_barrio);
         sltTipoActividad    = view.findViewById(R.id.slt_tipo_actividad);
         sltEstadoActividad  = view.findViewById(R.id.slt_estado_actividad);
+        sltVehiculo         = view.findViewById(R.id.slt_vehiculo);
+
         editDireccion       = view.findViewById(R.id.txt_direccion);
         editObservacion     = view.findViewById(R.id.txt_observacion);
         btnEditarDireccion  = view.findViewById(R.id.btn_editar_direccion);
 
         //--
         editDireccion.setText(actividadOperativa.getDireccion());
+        editObservacion.setText(actividadOperativa.getObservacion());
         editDireccion.setEnabled(false);
 
 
@@ -156,8 +162,40 @@ public class FragmentInformacion extends Fragment {
         cargarBarrio(database);
         cargarTipoActividad(database);
         cargarEstadoActividad(database);
+        cargarVehiculo(database);
 
         return view;
+    }
+
+    private void cargarVehiculo(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        int pos = 0;
+        vehiculoList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        EquipoDB equipoDB = new EquipoDB(sqLiteDatabase);
+        Cursor cursor = equipoDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        vehiculoList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(2).toUpperCase());
+                    vehiculoList.add(dataSpinner);
+                    labels.add(cursor.getString(2).toUpperCase());
+                    if(actividadOperativa.getEquipo().getIdEquipo() == cursor.getInt(0)){
+                        pos = i;
+                    }
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltVehiculo.setAdapter(dataAdapter);
+        sltVehiculo.setSelection(pos);
     }
 
     private void cargarEstadoActividad(SQLiteDatabase sqLiteDatabase) {
