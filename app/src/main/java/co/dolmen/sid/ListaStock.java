@@ -72,7 +72,11 @@ public class ListaStock extends AppCompatActivity {
         BodegaDB bodegaDB = new BodegaDB(database);
         Cursor cursor = bodegaDB.consultarId(idDefaultBodega);
         cursor.moveToFirst();
-        setTitle(cursor.getString(cursor.getColumnIndex("descripcion")).toLowerCase());
+        if(cursor.getCount()>0)
+            setTitle(cursor.getString(cursor.getColumnIndex("descripcion")).toLowerCase());
+        else
+            setTitle(R.string.titulo_mi_inventario);
+
         cursor.close();
 
         stocksList = new ArrayList<Stock>();

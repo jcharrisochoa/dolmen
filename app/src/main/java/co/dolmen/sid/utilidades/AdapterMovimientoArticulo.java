@@ -2,6 +2,8 @@ package co.dolmen.sid.utilidades;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,15 +19,23 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 import co.dolmen.sid.R;
+import co.dolmen.sid.entidad.ActividadOperativa;
 import co.dolmen.sid.entidad.MovimientoArticulo;
+import co.dolmen.sid.modelo.StockDB;
 import cz.msebera.android.httpclient.client.UserTokenHandler;
 
 public class AdapterMovimientoArticulo extends RecyclerView.Adapter<AdapterMovimientoArticulo.ViewHolderData>{
 
     private ArrayList<MovimientoArticulo> movimientoArticuloArrayList;
+    private SQLiteDatabase database;
+    private int idBodega;
+    private int idCentroCosto;
 
-    public AdapterMovimientoArticulo(ArrayList<MovimientoArticulo> movimientoArticuloArrayList) {
+    public AdapterMovimientoArticulo(ArrayList<MovimientoArticulo> movimientoArticuloArrayList, SQLiteDatabase sqLiteDatabase,int idBodega,int idCentroCosto) {
         this.movimientoArticuloArrayList = movimientoArticuloArrayList;
+        this.database = sqLiteDatabase;
+        this.idBodega = idBodega;
+        this.idCentroCosto = idCentroCosto;
     }
 
     @NonNull
@@ -53,7 +63,7 @@ public class AdapterMovimientoArticulo extends RecyclerView.Adapter<AdapterMovim
                 alert.setPositiveButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        removeItem(position);
+                        removeItem(position,holder.itemView);
                         dialogInterface.cancel();
                     }
                 });
@@ -78,10 +88,63 @@ public class AdapterMovimientoArticulo extends RecyclerView.Adapter<AdapterMovim
         notifyDataSetChanged();
     }
 
-    public void removeItem(int position){
+    public void removeItem(int position,View v){
+        /*
+        Caso desmontado util
+        Se debe nivelar el stock ,stock en lista
+         */
+        int pos;
+        float stockBase =  0;
+        MovimientoArticulo movimientoArticuloTmp;
+        if(movimientoArticuloArrayList.get(position).getMovimiento().equals(v.getContext().getText(R.string.movimiento_entrada))){
+            //Buscar movimiento de salida
+            movimientoArticuloTmp = new MovimientoArticulo(
+                    movimientoArticuloArrayList.get(position).getId_articulo(),
+                    movimientoArticuloArrayList.get(position).getId_tipo_stock(),
+                    movimientoArticuloArrayList.get(position).getCantidad(),
+                    movimientoArticuloArrayList.get(position).getArticulo(),
+                    movimientoArticuloArrayList.get(position).getTipo_stock(),
+                    v.getContext().getText(R.string.movimiento_salida).toString()
+            );
+            pos = getPositionItem(movimientoArticuloTmp);
+            if(pos>=0){
+
+                StockDB stockDB = new StockDB(database);
+                Cursor cursor = stockDB.consultarTodo(idBodega,
+                        movimientoArticuloArrayList.get(position).getId_articulo(),
+                        movimientoArticuloArrayList.get(position).getId_tipo_stock(),
+                        idCentroCosto
+                );
+                if (cursor.getCount() > 0) {
+                    cursor.moveToFirst();
+                    stockBase = cursor.getFloat(cursor.getColumnIndex("cantidad"));
+                }
+
+                float cantListNegativo = movimientoArticuloArrayList.get(pos).getCantidad();
+                float cantListPositivo = movimientoArticuloArrayList.get(position).getCantidad();
+
+                Log.d("programacion","Base:"+stockBase+",cantListNegativo:"+cantListNegativo+",cantListPositivo:"+cantListPositivo);
+                if(stockBase>0) {
+                    if (stockBase - cantListNegativo < 0) {
+                        cantListNegativo = cantListNegativo - cantListPositivo;
+                        movimientoArticuloTmp.setCantidad(cantListNegativo);
+                        updateItem(movimientoArticuloTmp, pos);
+                    }
+                }
+                else{
+                    if(cantListPositivo>=cantListNegativo){
+                        movimientoArticuloArrayList.remove(pos);
+                        notifyItemRemoved(pos);
+                        notifyItemRangeChanged(pos, movimientoArticuloArrayList.size());
+                        position--;
+                    }
+                }
+            }
+        }
         movimientoArticuloArrayList.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, movimientoArticuloArrayList.size());
+
     }
 
     public void updateItem(MovimientoArticulo movimientoArticulo,int position){

@@ -107,7 +107,7 @@ public class FragmentMateriales extends Fragment{
         recyclerView.setLayoutManager(
                 new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false)
         );
-        adapterMovimientoArticulo = new AdapterMovimientoArticulo(movimientoArticuloArrayList);
+        adapterMovimientoArticulo = new AdapterMovimientoArticulo(movimientoArticuloArrayList,database,idDefaultBodega,actividadOperativa.getCentroCosto().getIdCentroCosto());
         recyclerView.setAdapter(adapterMovimientoArticulo);
 
         sltTipoStock.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -203,10 +203,13 @@ public class FragmentMateriales extends Fragment{
 
     private void agregarArticulo() {
         int pos;
+        int posTmp;
+        float cantEnListaTmp = 0;
         float stock = 0;
         float cantEnLista = 0;
         float totalMovimiento = 0;
         MovimientoArticulo movimientoArticulo = null;
+        MovimientoArticulo movimientoTmp = null;
         if(idDefaultBodega == 0){
             alert.setMessage(R.string.alert_perfil_bodega);
             alert.setTitle(R.string.titulo_alerta);
@@ -229,14 +232,29 @@ public class FragmentMateriales extends Fragment{
                             tipoStockList.get(sltTipoStock.getSelectedItemPosition()).getDescripcion(),
                             tipoMovimientoList.get(sltTipoMovimiento.getSelectedItemPosition()).getDescripcion()
                     );
+                    //-----------bloque caso Stock Desmontado Util-----------------------------
+                    //--Consulta si existe un stock en lista
+                    movimientoTmp = new MovimientoArticulo(
+                            articuloList.get(sltArticulo.getSelectedItemPosition()).getId(),
+                            tipoStockList.get(sltTipoStock.getSelectedItemPosition()).getId(),
+                            Float.parseFloat(txtCantidad.getText().toString()),
+                            articuloList.get(sltArticulo.getSelectedItemPosition()).getDescripcion(),
+                            tipoStockList.get(sltTipoStock.getSelectedItemPosition()).getDescripcion(),
+                            getString(R.string.movimiento_entrada)
+                    );
+                    posTmp = adapterMovimientoArticulo.getPositionItem(movimientoTmp);
+                    if (posTmp >= 0)
+                        cantEnListaTmp = movimientoArticuloArrayList.get(posTmp).getCantidad();
+                    //------------------------------------------------------------------------------
+
                     pos = adapterMovimientoArticulo.getPositionItem(movimientoArticulo);
                     if (pos >= 0)
                         cantEnLista = movimientoArticuloArrayList.get(pos).getCantidad();
 
-                    stock = consultarStock();
+                    stock = consultarStock() + cantEnListaTmp;
 
                     totalMovimiento = cantEnLista + Float.parseFloat(txtCantidad.getText().toString());
-                    Log.d("programacion","pos:"+pos+",Stock:"+stock+",Lista:"+cantEnLista+",Digitado:"+Float.parseFloat(txtCantidad.getText().toString())+",Total:"+totalMovimiento);
+                    //Log.d("programacion","pos:"+pos+",posTmp:"+posTmp+",Stock:"+stock+",Lista:"+cantEnLista+",ListaTmp:"+cantEnListaTmp+",Digitado:"+Float.parseFloat(txtCantidad.getText().toString())+",Total:"+totalMovimiento);
 
                     if (totalMovimiento > stock) {
 
@@ -412,8 +430,8 @@ public class FragmentMateriales extends Fragment{
     }
 
     private void resetFrmArticulo(){
-        sltTipoStock.setSelection(0);
-        sltTipoMovimiento.setSelection(0);
+        //sltTipoStock.setSelection(0);
+        //sltTipoMovimiento.setSelection(0);
         sltArticulo.setSelection(0);
         txtCantidad.setText("");
         txtCodigoArticulo.setText("");
