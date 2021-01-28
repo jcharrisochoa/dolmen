@@ -4,6 +4,13 @@ public class Articulo {
     int id;
     String descripcion;
 
+    public Articulo(){}
+
+    public Articulo(int id, String descripcion) {
+        this.id = id;
+        this.descripcion = descripcion;
+    }
+
     public int getId() {
         return id;
     }

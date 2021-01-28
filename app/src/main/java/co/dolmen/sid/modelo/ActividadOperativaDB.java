@@ -151,7 +151,7 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
                 "ao.fch_programa,ao.fch_actividad,ao.direccion,ao.et,ao.usuario_programa_actividad," +
                 "ao.pendiente_sincronizar,pg.descripcion as programa,ao.id_espacio_publicitario," +
                 "e.id_tipologia,e.id_mobiliario,e.id_referencia,ao.elemento_no_encontrado,ao.afectado_por_vandalismo,ao.pendiente_sincronizar,ao.observacion, "+
-                "ao.fch_ejecucion,ao.id_equipo,eq.serial,eq.codigo "+
+                "ao.fch_ejecucion,ao.id_equipo,eq.serial,eq.codigo,ao.latitud,ao.longitud"+
                 " from "+Constantes.TABLA_ACTIVIDAD_OPERATIVA+" ao " +
                 " join "+Constantes.TABLA_PROGRAMA+" pg on(ao.id_programa = pg._id) " +
                 " join "+Constantes.TABLA_MUNICIPIO+" m on(ao.id_municipio = m._id) " +
@@ -187,7 +187,7 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
                 "ao.fch_programa,ao.fch_actividad,ao.direccion,ao.et,ao.usuario_programa_actividad," +
                 "ao.pendiente_sincronizar,pg.descripcion as programa,ao.id_espacio_publicitario," +
                 "e.id_tipologia,e.id_mobiliario,e.id_referencia,ao.elemento_no_encontrado,ao.afectado_por_vandalismo,ao.pendiente_sincronizar,ao.observacion, "+
-                "ao.fch_ejecucion,ao.id_equipo,eq.serial,eq.codigo "+
+                "ao.fch_ejecucion,ao.id_equipo,eq.serial,eq.codigo,ao.latitud,ao.longitud "+
                 "from "+Constantes.TABLA_ACTIVIDAD_OPERATIVA+" ao " +
                 "join "+Constantes.TABLA_PROGRAMA+" pg on(ao.id_programa = pg._id) " +
                 "join "+Constantes.TABLA_MUNICIPIO+" m on(ao.id_municipio = m._id) " +

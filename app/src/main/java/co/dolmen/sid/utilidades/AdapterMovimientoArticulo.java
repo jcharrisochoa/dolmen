@@ -93,10 +93,13 @@ public class AdapterMovimientoArticulo extends RecyclerView.Adapter<AdapterMovim
         Caso desmontado util
         Se debe nivelar el stock ,stock en lista
          */
-        int pos;
+        int pos= -1;
         float stockBase =  0;
+        float cantListNegativo = 0;
+        float cantListPositivo = 0;
         MovimientoArticulo movimientoArticuloTmp;
         if(movimientoArticuloArrayList.get(position).getMovimiento().equals(v.getContext().getText(R.string.movimiento_entrada))){
+
             //Buscar movimiento de salida
             movimientoArticuloTmp = new MovimientoArticulo(
                     movimientoArticuloArrayList.get(position).getId_articulo(),
@@ -107,6 +110,7 @@ public class AdapterMovimientoArticulo extends RecyclerView.Adapter<AdapterMovim
                     v.getContext().getText(R.string.movimiento_salida).toString()
             );
             pos = getPositionItem(movimientoArticuloTmp);
+
             if(pos>=0){
 
                 StockDB stockDB = new StockDB(database);
@@ -120,14 +124,13 @@ public class AdapterMovimientoArticulo extends RecyclerView.Adapter<AdapterMovim
                     stockBase = cursor.getFloat(cursor.getColumnIndex("cantidad"));
                 }
 
-                float cantListNegativo = movimientoArticuloArrayList.get(pos).getCantidad();
-                float cantListPositivo = movimientoArticuloArrayList.get(position).getCantidad();
+                cantListNegativo = movimientoArticuloArrayList.get(pos).getCantidad();
+                cantListPositivo = movimientoArticuloArrayList.get(position).getCantidad();
 
-                Log.d("programacion","Base:"+stockBase+",cantListNegativo:"+cantListNegativo+",cantListPositivo:"+cantListPositivo);
+                //Log.d("programacion","position:"+position+",pos:"+pos+",Base:"+stockBase+",cantListNegativo:"+cantListNegativo+",cantListPositivo:"+cantListPositivo);
                 if(stockBase>0) {
                     if (stockBase - cantListNegativo < 0) {
-                        cantListNegativo = cantListNegativo - cantListPositivo;
-                        movimientoArticuloTmp.setCantidad(cantListNegativo);
+                        movimientoArticuloTmp.setCantidad(cantListPositivo*(-1));
                         updateItem(movimientoArticuloTmp, pos);
                     }
                 }
@@ -136,11 +139,12 @@ public class AdapterMovimientoArticulo extends RecyclerView.Adapter<AdapterMovim
                         movimientoArticuloArrayList.remove(pos);
                         notifyItemRemoved(pos);
                         notifyItemRangeChanged(pos, movimientoArticuloArrayList.size());
-                        position--;
+                        //position--;
                     }
                 }
             }
         }
+        //Log.d("programacion","position:"+position+",pos:"+pos+",Base:"+stockBase+",cantListNegativo:"+cantListNegativo+",cantListPositivo:"+cantListPositivo);
         movimientoArticuloArrayList.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, movimientoArticuloArrayList.size());

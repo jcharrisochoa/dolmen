@@ -1,10 +1,17 @@
 package co.dolmen.sid;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -16,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import co.dolmen.sid.entidad.ActividadOperativa;
+import co.dolmen.sid.utilidades.MiLocalizacion;
 
 public class DetalleActividad extends AppCompatActivity {
 
@@ -39,13 +47,32 @@ public class DetalleActividad extends AppCompatActivity {
     private TextView txtEjecucion;
     private TextView txtEstado;
     private TextView txtObservacion;
+    private TextView txtLatitud;
+    private TextView txtLongitud;
 
     private ActividadOperativa actividadOperativa;
+    public LocationManager ubicacion;
+    private boolean gpsListener;
+    AlertDialog.Builder alert;
+    MiLocalizacion miLocalizacion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detalle_actividad);
+
+        alert = new AlertDialog.Builder(this);
+        alert.setCancelable(false);
+        alert.setTitle(R.string.titulo_alerta);
+        alert.setIcon(R.drawable.icon_problem);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
+            miLocalizacion = new MiLocalizacion(getApplicationContext());
+            ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, miLocalizacion);
+            gpsListener  = true;
+        }
+
         Intent i = getIntent();
 
         actividadOperativa = (ActividadOperativa)i.getSerializableExtra("actividadOperativa");
@@ -55,7 +82,7 @@ public class DetalleActividad extends AppCompatActivity {
         btnCancelar     = findViewById(R.id.fab_cancelar);
 
         txtMunicipio    = findViewById(R.id.txt_municipio);
-        txtActividad    = findViewById(R.id.txt_actividad);
+        //txtActividad    = findViewById(R.id.txt_actividad);
         txtFchActividad = findViewById(R.id.txt_fch_actividad);
         txtPrograma     = findViewById(R.id.txt_programa);
         txtTipoOperacion= findViewById(R.id.txt_tipo_operacion);
@@ -71,6 +98,8 @@ public class DetalleActividad extends AppCompatActivity {
         txtEjecucion    = findViewById(R.id.txt_fch_ejecucion);
         txtEstado       = findViewById(R.id.txt_estado);
         txtObservacion  = findViewById(R.id.txt_observacion);
+        txtLatitud      = findViewById(R.id.txt_latitud);
+        txtLongitud      = findViewById(R.id.txt_longitud);
 
         setDetalle(actividadOperativa);
 
@@ -90,12 +119,54 @@ public class DetalleActividad extends AppCompatActivity {
         btnEnSitio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                actividadOperativa.setFechaEnSitio(new Date());
-                Intent i = new Intent(DetalleActividad.this,EjecutaActividad.class);
-                i.putExtra("actividadOperativa",actividadOperativa);
-                startActivity(i);
-                DetalleActividad.this.finish();
+                if(!estadoGPS()){
+                    alert.setTitle(getString(R.string.titulo_alerta));
+                    alert.setMessage(getString(R.string.alert_gps_deshabilitado));
+                    alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    });
+                    alert.create().show();
+                }
+                else {
+                    activarCoordenadas();
+                    actividadOperativa.setFechaEnSitio(new Date());
+                    Log.d("programacion","Lat:"+miLocalizacion.getLatitud());
+                    actividadOperativa.setLatitud(miLocalizacion.getLatitud());
+                    actividadOperativa.setLongitud(miLocalizacion.getLongitud());
 
+                    if(miLocalizacion.getLatitud()==0 && miLocalizacion.getLongitud()==0){
+                        alert.setMessage("No fue posible capturar la geolocalización.\n ¿Quiere Continuar?");
+                        alert.setNegativeButton(getText(R.string.btn_cancelar), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        alert.setPositiveButton(getText(R.string.btn_aceptar),new DialogInterface.OnClickListener(){
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                Intent i = new Intent(DetalleActividad.this, EjecutaActividad.class);
+                                i.putExtra("actividadOperativa", actividadOperativa);
+                                startActivity(i);
+                                DetalleActividad.this.finish();
+                            }
+                        });
+                        alert.create().show();
+                    }
+                    else{
+                        Intent i = new Intent(DetalleActividad.this, EjecutaActividad.class);
+                        i.putExtra("actividadOperativa", actividadOperativa);
+                        startActivity(i);
+                        DetalleActividad.this.finish();
+                    }
+
+
+
+                }
             }
         });
 
@@ -103,7 +174,7 @@ public class DetalleActividad extends AppCompatActivity {
 
     private void setDetalle(ActividadOperativa  ao){
         txtMunicipio.setText(ao.getBarrio().getDescripcion());
-        txtActividad.setText(String.valueOf(ao.getIdActividad()));
+       //txtActividad.setText(String.valueOf(ao.getIdActividad()));
         txtFchActividad.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(ao.getFechaActividad()));
         txtPrograma.setText(String.valueOf(ao.getPrograma().getId()));
         txtTipoOperacion.setText(ao.getTipoActividad().getDescripcion());
@@ -126,7 +197,31 @@ public class DetalleActividad extends AppCompatActivity {
             txtEstado.setTextColor(ContextCompat.getColor(txtEstado.getContext(), R.color.colorVerifed));
         }
         txtObservacion.setText(ao.getObservacion());
+        txtLatitud.setText(String.valueOf(ao.getLatitud()));
+        txtLongitud.setText(String.valueOf(ao.getLongitud()));
 
     }
 
+    public boolean estadoGPS() {
+        ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
+        return (ubicacion.isProviderEnabled(LocationManager.GPS_PROVIDER));
+    }
+
+    private void activarCoordenadas() {
+        ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
+        int PERMISSIONS_REQUEST_LOCATION = 0;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_LOCATION);
+
+        }
+        else {
+            if(!gpsListener) {
+                Log.d("programacion","activo");
+                ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, miLocalizacion);
+            }
+        }
+    }
 }

@@ -22,8 +22,8 @@ public class ActividadOperativa implements Serializable {
     private Date fechaEnSitio;
     private Date fechaEjecucion;
     private String direccion;
-    private float longitud;
-    private float latitud;
+    private double longitud;
+    private double latitud;
     private String et;
     private String usuarioProgramaActividad;
     private String nroElementoDesmontado;
@@ -123,11 +123,11 @@ public class ActividadOperativa implements Serializable {
         return direccion;
     }
 
-    public float getLongitud() {
+    public double getLongitud() {
         return longitud;
     }
 
-    public float getLatitud() {
+    public double getLatitud() {
         return latitud;
     }
 
@@ -243,11 +243,11 @@ public class ActividadOperativa implements Serializable {
         this.fechaEjecucion = fechaEjecucion;
     }
 
-    public void setLongitud(float longitud) {
+    public void setLongitud(double longitud) {
         this.longitud = longitud;
     }
 
-    public void setLatitud(float latitud) {
+    public void setLatitud(double latitud) {
         this.latitud = latitud;
     }
 

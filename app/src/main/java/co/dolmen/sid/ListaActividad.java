@@ -323,6 +323,8 @@ public class ListaActividad extends AppCompatActivity  {
                         actividadOperativa.setFechaEjecucion(new SimpleDateFormat("yyyy-MM-dd H:mm:ss").parse(cursor.getString(cursor.getColumnIndex("fch_ejecucion"))));
                     }
                     actividadOperativa.setObservacion(cursor.getString(cursor.getColumnIndex("observacion")));
+                    actividadOperativa.setLatitud(cursor.getDouble(cursor.getColumnIndex("latitud")));
+                    actividadOperativa.setLongitud(cursor.getDouble(cursor.getColumnIndex("longitud")));
                     actividadOperativaArrayList.add(actividadOperativa);
                 }
             }

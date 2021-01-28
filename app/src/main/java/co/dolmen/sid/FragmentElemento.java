@@ -1,14 +1,18 @@
 package co.dolmen.sid;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.location.LocationManager;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -47,6 +51,7 @@ import co.dolmen.sid.modelo.TipoInstalacionRedDB;
 import co.dolmen.sid.modelo.TipoPosteDB;
 import co.dolmen.sid.modelo.TipoRedDB;
 import co.dolmen.sid.utilidades.DataSpinner;
+import co.dolmen.sid.utilidades.MiLocalizacion;
 
 import static java.lang.Integer.parseInt;
 
@@ -54,6 +59,7 @@ public class FragmentElemento extends Fragment {
 
     ImageButton btnBuscarElemento;
     ImageButton btnLimpiarBusquedaElemento;
+    ImageButton btnCapturarGPS;
 
     TextView txtMobiliario;
     TextView txtReferencia;
@@ -120,6 +126,9 @@ public class FragmentElemento extends Fragment {
     String zona ="U";
     String sector = "N";
 
+    MiLocalizacion miLocalizacion;
+    LocationManager ubicacion;
+    boolean gpsListener;
 
     public FragmentElemento() {
         // Required empty public constructor
@@ -147,6 +156,13 @@ public class FragmentElemento extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_elemento,container,false);
 
+        if (ActivityCompat.checkSelfPermission(view.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            ubicacion = (LocationManager) view.getContext().getSystemService(view.getContext().LOCATION_SERVICE);
+            miLocalizacion = new MiLocalizacion(view.getContext());
+            ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, miLocalizacion);
+            gpsListener  = true;
+        }
+
         alert = new AlertDialog.Builder(view.getContext());
         alert.setCancelable(false);
         alert.setTitle(R.string.titulo_alerta);
@@ -154,6 +170,7 @@ public class FragmentElemento extends Fragment {
 
         btnBuscarElemento   = view.findViewById(R.id.btn_buscar_elemento);
         btnLimpiarBusquedaElemento  = view.findViewById(R.id.btn_limpiar_busqueda_elemento);
+        btnCapturarGPS              = view.findViewById(R.id.btn_capturar_gps);
 
         txtMobiliario       = view.findViewById(R.id.txt_mobiliario);
         txtReferencia       = view.findViewById(R.id.txt_referencia);
@@ -175,8 +192,6 @@ public class FragmentElemento extends Fragment {
         txtReferencia.setText(actividadOperativa.getElemento().getReferenciaMobiliario().getDescripcionReferenciaMobiliario());
 
         editMobiliarioNo.setText(String.valueOf(actividadOperativa.getElemento().getElemento_no()));
-
-
 
         sltEstadoMobiliario         = view.findViewById(R.id.slt_estado_mobiliario);
         sltClaseVia                 = view.findViewById(R.id.slt_clase_via);

@@ -72,13 +72,14 @@ public class StockDB extends Stock implements DatabaseDDL,DatabaseDLM {
     public void actualizarDatos(Object o) {
         if(o instanceof Stock) {
             stock = (Stock) o;
-            db.execSQL("UPDATE "+Constantes.TABLA_STOCK +
+            String sql = "UPDATE "+Constantes.TABLA_STOCK +
                     " SET cantidad = cantidad + "+stock.getCantidad()+
                     " WHERE " +
                     " id_bodega="+stock.getBodega().getIdBodega()+
                     " and id_tipo_stock="+stock.getTipoStock().getId()+
                     " and id_centro_costo="+stock.getCentroCosto().getIdCentroCosto()+
-                    " and id_articulo="+stock.getArticulo().getId());
+                    " and id_articulo="+stock.getArticulo().getId();
+            db.execSQL(sql);
         }
     }
 

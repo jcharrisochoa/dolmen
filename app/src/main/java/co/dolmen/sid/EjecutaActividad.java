@@ -1,11 +1,15 @@
 package co.dolmen.sid;
 
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -19,6 +23,7 @@ import com.loopj.android.http.RequestHandle;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import android.util.Log;
@@ -37,13 +42,20 @@ import java.util.Date;
 import java.util.Locale;
 
 import co.dolmen.sid.entidad.ActividadOperativa;
+import co.dolmen.sid.entidad.Articulo;
 import co.dolmen.sid.entidad.Barrio;
+import co.dolmen.sid.entidad.Bodega;
+import co.dolmen.sid.entidad.CentroCosto;
 import co.dolmen.sid.entidad.Elemento;
 import co.dolmen.sid.entidad.Equipo;
 import co.dolmen.sid.entidad.EstadoActividad;
 import co.dolmen.sid.entidad.MovimientoArticulo;
+import co.dolmen.sid.entidad.Stock;
 import co.dolmen.sid.entidad.TipoActividad;
+import co.dolmen.sid.entidad.TipoStock;
 import co.dolmen.sid.modelo.ActividadOperativaDB;
+import co.dolmen.sid.modelo.StockDB;
+import co.dolmen.sid.utilidades.MiLocalizacion;
 import co.dolmen.sid.utilidades.ViewPagerAdapter;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.entity.StringEntity;
@@ -80,6 +92,10 @@ public class EjecutaActividad extends AppCompatActivity {
     private int idDefaultMunicipio;
     private int idDefaultProceso;
     private int idDefaultContrato;
+    private int idDefaultBodega;
+    LocationManager ubicacion;
+    MiLocalizacion miLocalizacion;
+    private boolean gpsListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,14 +110,17 @@ public class EjecutaActividad extends AppCompatActivity {
         conn = new BaseDatos(EjecutaActividad.this);
         database = conn.getReadableDatabase();
 
+
         progressGuardarActividad = findViewById(R.id.progress_guardar_actividad);
         progressGuardarActividad.setVisibility(View.INVISIBLE);
 
         config = getSharedPreferences("config", MODE_PRIVATE);
-        idUsuario = config.getInt("id_usuario", 0);
-        idDefaultProceso = config.getInt("id_proceso", 0);
-        idDefaultContrato = config.getInt("id_contrato", 0);
-        idDefaultMunicipio = config.getInt("id_municipio", 0);
+        idUsuario           = config.getInt("id_usuario", 0);
+        idDefaultProceso    = config.getInt("id_proceso", 0);
+        idDefaultContrato   = config.getInt("id_contrato", 0);
+        idDefaultMunicipio  = config.getInt("id_municipio", 0);
+        idDefaultMunicipio  = config.getInt("id_municipio", 0);
+        idDefaultBodega     = config.getInt("id_bodega", 0);
 
         Intent i = getIntent();
         actividadOperativa = (ActividadOperativa)i.getSerializableExtra("actividadOperativa");
@@ -182,6 +201,7 @@ public class EjecutaActividad extends AppCompatActivity {
                 alert.create().show();
             }
         });
+
     }
 
     private void guardar(final View view){
@@ -334,6 +354,10 @@ public class EjecutaActividad extends AppCompatActivity {
             jsonObject.put("fch_ejecucion",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(actividadOperativa.getFechaEjecucion()));
             jsonObject.put("fecha_hora_llegada",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(actividadOperativa.getFechaEnSitio()));
             jsonObject.put("id_elemento",actividadOperativa.getElemento().getId());
+            jsonObject.put("id_bodega",idDefaultBodega);
+            jsonObject.put("id_centro_costo",actividadOperativa.getCentroCosto().getIdCentroCosto());
+            jsonObject.put("latitud",actividadOperativa.getLatitud());
+            jsonObject.put("longitud",actividadOperativa.getLongitud());
 
             //--Fotos Antes
             JSONArray jsonArrayFotoAntes = new JSONArray();
@@ -364,6 +388,8 @@ public class EjecutaActividad extends AppCompatActivity {
                 switch (fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock()){
                     case 1://stock
                         JSONObject jsonInst = new JSONObject();
+                        jsonInst.put("id_bodega",idDefaultBodega);
+                        jsonInst.put("id_centro_costo",actividadOperativa.getCentroCosto().getIdCentroCosto());
                         jsonInst.put("id_tipo_stock", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
                         jsonInst.put("id_articulo", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
                         jsonInst.put("cantidad", fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
@@ -372,6 +398,8 @@ public class EjecutaActividad extends AppCompatActivity {
                         break;
                     case 2:
                         JSONObject jsonPNC = new JSONObject();
+                        jsonPNC.put("id_bodega",idDefaultBodega);
+                        jsonPNC.put("id_centro_costo",actividadOperativa.getCentroCosto().getIdCentroCosto());
                         jsonPNC.put("id_tipo_stock", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
                         jsonPNC.put("id_articulo", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
                         jsonPNC.put("cantidad", fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
@@ -381,6 +409,8 @@ public class EjecutaActividad extends AppCompatActivity {
                     case 3:
                         if(fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento().toString().contentEquals(getString(R.string.movimiento_salida))){ //Movimiento Negativo
                             JSONObject jsonDesUtilInst = new JSONObject();
+                            jsonDesUtilInst.put("id_bodega",idDefaultBodega);
+                            jsonDesUtilInst.put("id_centro_costo",actividadOperativa.getCentroCosto().getIdCentroCosto());
                             jsonDesUtilInst.put("id_tipo_stock", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
                             jsonDesUtilInst.put("id_articulo", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
                             jsonDesUtilInst.put("cantidad", fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
@@ -389,6 +419,8 @@ public class EjecutaActividad extends AppCompatActivity {
                         }
                         else {
                             JSONObject jsonDesUtil = new JSONObject();
+                            jsonDesUtil.put("id_bodega",idDefaultBodega);
+                            jsonDesUtil.put("id_centro_costo",actividadOperativa.getCentroCosto().getIdCentroCosto());
                             jsonDesUtil.put("id_tipo_stock", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
                             jsonDesUtil.put("id_articulo", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
                             jsonDesUtil.put("cantidad", fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
@@ -398,6 +430,8 @@ public class EjecutaActividad extends AppCompatActivity {
                         break;
                     case 4:
                         JSONObject jsonDesNoUtil = new JSONObject();
+                        jsonDesNoUtil.put("id_bodega",idDefaultBodega);
+                        jsonDesNoUtil.put("id_centro_costo",actividadOperativa.getCentroCosto().getIdCentroCosto());
                         jsonDesNoUtil.put("id_tipo_stock", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
                         jsonDesNoUtil.put("id_articulo", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
                         jsonDesNoUtil.put("cantidad", fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
@@ -406,6 +440,8 @@ public class EjecutaActividad extends AppCompatActivity {
                         break;
                     case 5:
                         JSONObject jsonAsig = new JSONObject();
+                        jsonAsig.put("id_bodega",idDefaultBodega);
+                        jsonAsig.put("id_centro_costo",actividadOperativa.getCentroCosto().getIdCentroCosto());
                         jsonAsig.put("id_tipo_stock", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
                         jsonAsig.put("id_articulo", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
                         jsonAsig.put("cantidad", fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
@@ -415,6 +451,7 @@ public class EjecutaActividad extends AppCompatActivity {
                 }
                 index++;
             }
+
             jsonObject.put("inst", jsonArrayInst);
             jsonObject.put("desmutil", jsonArrayDesUtil);
             jsonObject.put("desmutinst", jsonArrayDesUtilInst);
@@ -500,6 +537,25 @@ public class EjecutaActividad extends AppCompatActivity {
                             1. actualizar stock con valores +
                             2. actualizar stock con valores -
                              */
+                            int index = 0;
+                            StockDB stockDB = new StockDB(database);
+                            float cantidad = 0;
+                            Cursor cursor;
+                            while(index < fragmentMateriales.movimientoArticuloArrayList.size()){
+                                Bodega bodega = new Bodega();
+                                bodega.setIdBodega(idDefaultBodega);
+                                Articulo articulo = new Articulo(fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo(),fragmentMateriales.movimientoArticuloArrayList.get(index).getArticulo());
+                                TipoStock tipoStock = new TipoStock(fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock(),fragmentMateriales.movimientoArticuloArrayList.get(index).getTipo_stock());
+                                cantidad = (fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento().contentEquals(getText(R.string.movimiento_entrada)))?fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad():fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()*(-1);
+                                Stock stock = new Stock(bodega,actividadOperativa.getCentroCosto(),articulo,tipoStock,cantidad);
+                                cursor = stockDB.consultarTodo(idDefaultBodega,fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo(),fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock(),actividadOperativa.getCentroCosto().getIdCentroCosto());
+                                if(cursor.getCount()>0)
+                                    stockDB.actualizarDatos(stock);
+                                else
+                                    stockDB.agregarDatos(stock);
+                                index++;
+                            }
+
                             ActividadOperativaDB actividadOperativaDB = new ActividadOperativaDB(database);
                             actividadOperativaDB.actualizarDatos(actividadOperativa);
 
@@ -542,7 +598,6 @@ public class EjecutaActividad extends AppCompatActivity {
             Log.d("Error",e.getMessage());
             enableButton(true);
         }
-
     }
 
     private void enableButton(boolean estado){

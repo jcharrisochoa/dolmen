@@ -4,6 +4,13 @@ public class TipoStock{
     int id;
     String descripcion;
 
+    public TipoStock(){}
+
+    public TipoStock(int id, String descripcion) {
+        this.id = id;
+        this.descripcion = descripcion;
+    }
+
     public int getId() {
         return id;
     }
