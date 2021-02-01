@@ -33,6 +33,7 @@ import java.util.List;
 
 import co.dolmen.sid.entidad.ActividadOperativa;
 import co.dolmen.sid.entidad.Elemento;
+import co.dolmen.sid.entidad.EstadoMobiliario;
 import co.dolmen.sid.entidad.Mobiliario;
 import co.dolmen.sid.entidad.ReferenciaMobiliario;
 import co.dolmen.sid.entidad.TipoBrazo;
@@ -340,10 +341,10 @@ public class FragmentElemento extends Fragment {
                         mobiliario.setDescripcionMobiliario(cursorElemento.getString(cursorElemento.getColumnIndex("mobiliario")));
                         elemento.setMobiliario(mobiliario);
 
-                       /* EstadoMobiliario estadoMobiliario = new EstadoMobiliario();
+                        EstadoMobiliario estadoMobiliario = new EstadoMobiliario();
                         estadoMobiliario.setIdEstadoMobiliario(cursorElemento.getInt(cursorElemento.getColumnIndex("id_estado_mobiliario")));
                         estadoMobiliario.setDescripcionEstadoMobiliario(cursorElemento.getString(cursorElemento.getColumnIndex("estado_mobiliario")));
-                        elemento.setEstadoMobiliario(estadoMobiliario);*/
+                        elemento.setEstadoMobiliario(estadoMobiliario);
 
                         actividadOperativa.setElemento(elemento);
 
@@ -477,6 +478,7 @@ public class FragmentElemento extends Fragment {
     //--
     private void cargarEstadoMobiliario(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
+        int pos = 0;
         estadoMobiliarioList = new ArrayList<DataSpinner>();
         List<String> labels = new ArrayList<>();
         EstadoMobiliarioDB estadoMobiliarioDB = new EstadoMobiliarioDB(sqLiteDatabase);
@@ -492,6 +494,10 @@ public class FragmentElemento extends Fragment {
                             cursor.getInt(0) == 13 ||
                             cursor.getInt(0) == 15){
                         i++;
+                        if(actividadOperativa.getElemento().getEstadoMobiliario().getIdEstadoMobiliario() == cursor.getInt(0)){
+                            pos = i;
+                        }
+
                         dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(2).toUpperCase());
                         estadoMobiliarioList.add(dataSpinner);
                         labels.add(cursor.getString(2).toUpperCase());
@@ -504,6 +510,7 @@ public class FragmentElemento extends Fragment {
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, labels);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltEstadoMobiliario.setAdapter(dataAdapter);
+        sltEstadoMobiliario.setSelection(pos);
     }
     //--
     private void cargarClaseVia(SQLiteDatabase sqLiteDatabase) {

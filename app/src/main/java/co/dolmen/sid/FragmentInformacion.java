@@ -200,7 +200,7 @@ public class FragmentInformacion extends Fragment {
 
     private void cargarEstadoActividad(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
-        int pos = 0;
+        //int pos = 0;
         estadoActividadList = new ArrayList<DataSpinner>();
         List<String> labels = new ArrayList<>();
         EstadoActividadDB estadoActividadDB = new EstadoActividadDB(sqLiteDatabase);
@@ -215,9 +215,9 @@ public class FragmentInformacion extends Fragment {
                     dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
                     estadoActividadList.add(dataSpinner);
                     labels.add(cursor.getString(1).toUpperCase());
-                    if(actividadOperativa.getEstadoActividad().getId() == cursor.getInt(0)){
+                   /* if(actividadOperativa.getEstadoActividad().getId() == cursor.getInt(0)){
                         pos = i;
-                    }
+                    }*/
                 } while (cursor.moveToNext());
             }
         }
@@ -226,7 +226,7 @@ public class FragmentInformacion extends Fragment {
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_spinner_item, labels);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltEstadoActividad.setAdapter(dataAdapter);
-        sltEstadoActividad.setSelection(pos);
+        //sltEstadoActividad.setSelection(pos);
     }
     //--
     private void cargarTipoActividad(SQLiteDatabase sqLiteDatabase) {

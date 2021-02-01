@@ -39,6 +39,7 @@ import co.dolmen.sid.entidad.CentroCosto;
 import co.dolmen.sid.entidad.Elemento;
 import co.dolmen.sid.entidad.Equipo;
 import co.dolmen.sid.entidad.EstadoActividad;
+import co.dolmen.sid.entidad.EstadoMobiliario;
 import co.dolmen.sid.entidad.Mobiliario;
 import co.dolmen.sid.entidad.Municipio;
 import co.dolmen.sid.entidad.ProcesoSgc;
@@ -264,7 +265,12 @@ public class ListaActividad extends AppCompatActivity  {
                                         cursor.getString(cursor.getColumnIndex("referencia"))
                                 )
                         );
+                        elemento.setEstadoMobiliario(new EstadoMobiliario(
+                                cursor.getInt(cursor.getColumnIndex("id_estado_mobiliario")),
+                                cursor.getString(cursor.getColumnIndex("estado_mobiliario"))
+                        ));
                     }
+
 
                     ProcesoSgc procesoSgc = new ProcesoSgc();
                     procesoSgc.setId(cursor.getInt(cursor.getColumnIndex("id_proceso_sgc")));

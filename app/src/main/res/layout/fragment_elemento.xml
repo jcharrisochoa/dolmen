@@ -173,7 +173,7 @@
                     android:id="@+id/textView40"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Tipo Brazo" />
+                    android:text="Tipo Soporte" />
 
                 <Spinner
                     android:id="@+id/slt_tipo_brazo"
@@ -479,7 +479,7 @@
                     android:id="@+id/textView11"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Tipo Poste *" />
+                    android:text="Tipo Poste" />
 
                 <Spinner
                     android:id="@+id/slt_tipo_poste"
@@ -491,7 +491,7 @@
                     android:id="@+id/textView12"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Norma Construcción Tipo Poste *" />
+                    android:text="Norma Construcción Tipo Poste " />
 
                 <Spinner
                     android:id="@+id/slt_norma_construccion_poste"
@@ -539,7 +539,7 @@
                     android:id="@+id/textView15"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Interdistancia Poste en Mts *" />
+                    android:text="Interdistancia Poste en Mts " />
 
                 <EditText
                     android:id="@+id/txt_interdistancia"
@@ -628,7 +628,7 @@
                     android:id="@+id/textView16"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Tipo Red *" />
+                    android:text="Tipo Red" />
 
                 <Spinner
                     android:id="@+id/slt_tipo_red"

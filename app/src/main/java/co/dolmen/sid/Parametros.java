@@ -779,7 +779,26 @@ public class Parametros extends AppCompatActivity {
                         jObjectElemento.getInt("id_tipologia"),
                         jObjectElemento.getInt("id_mobiliario"),
                         jObjectElemento.getInt("id_referencia"),
-                        jObjectElemento.getInt("id_estado_mobiliario"));
+                        jObjectElemento.getInt("id_estado_mobiliario"),
+                        jObjectElemento.getInt("id_tipo_balasto"),
+                        jObjectElemento.getInt("id_tipo_base_fotocelda"),
+                        jObjectElemento.getInt("id_tipo_brazo"),
+                        jObjectElemento.getString("zona"),
+                        jObjectElemento.getString("sector"),
+                        Float.parseFloat(jObjectElemento.getString("latitud")),
+                        Float.parseFloat(jObjectElemento.getString("longitud")),
+                        jObjectElemento.getInt("id_clase_via"),
+                        jObjectElemento.getInt("ancho_via"),
+                        jObjectElemento.getInt("id_tipo_poste"),
+                        jObjectElemento.getInt("id_norma_construccion_poste"),
+                        jObjectElemento.getString("poste_no"),
+                        jObjectElemento.getInt("interdistancia"),
+                        jObjectElemento.getInt("id_calibre_conductores"),
+                        jObjectElemento.getInt("id_tipo_red"),
+                        jObjectElemento.getInt("id_tipo_instalacion_red_alimentacion")
+                        );
+
+
                         progress = (int) Math.round((double) (i + 1) / arrayElemento.length() * 100);
                         publishProgress(progress, R.string.titulo_elemento);
                         Log.d("parametros", "->Elementos:" + progress + "%");

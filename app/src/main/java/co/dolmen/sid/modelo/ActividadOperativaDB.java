@@ -151,7 +151,7 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
                 "ao.fch_programa,ao.fch_actividad,ao.direccion,ao.et,ao.usuario_programa_actividad," +
                 "ao.pendiente_sincronizar,pg.descripcion as programa,ao.id_espacio_publicitario," +
                 "e.id_tipologia,e.id_mobiliario,e.id_referencia,ao.elemento_no_encontrado,ao.afectado_por_vandalismo,ao.pendiente_sincronizar,ao.observacion, "+
-                "ao.fch_ejecucion,ao.id_equipo,eq.serial,eq.codigo,ao.latitud,ao.longitud"+
+                "ao.fch_ejecucion,ao.id_equipo,eq.serial,eq.codigo,ao.latitud,ao.longitud, e.id_estado_mobiliario,em.descripcion as estado_mobiliario"+
                 " from "+Constantes.TABLA_ACTIVIDAD_OPERATIVA+" ao " +
                 " join "+Constantes.TABLA_PROGRAMA+" pg on(ao.id_programa = pg._id) " +
                 " join "+Constantes.TABLA_MUNICIPIO+" m on(ao.id_municipio = m._id) " +
@@ -160,6 +160,7 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
                 " join "+Constantes.TABLA_TIPO_ACTIVIDAD+" ta on(ao.id_tipo_operacion = ta._id) " +
                 " left JOIN "+Constantes.TABLA_TIPO_REPORTE_DANO+" tr on(ao.id_tipo_reporte_dano = tr._id) " +
                 " left join "+Constantes.TABLA_ELEMENTO+" e on(ao.id_elemento = e._id) " +
+                " left join "+Constantes.TABLA_ESTADO_MOBILIARIO+" em on(e.id_estado_mobiliario = em._id) "+
                 " left join "+Constantes.TABLA_TIPOLOGIA_MOBILIARIO+" tm on(e.id_tipologia = tm._id) " +
                 " left join "+Constantes.TABLA_MOBILIARIO+" mb on(e.id_mobiliario = mb._id) " +
                 " left join "+Constantes.TABLA_REFERNCIA_MOBILIARIO+" rm on(e.id_referencia = rm._id) " +
@@ -187,7 +188,7 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
                 "ao.fch_programa,ao.fch_actividad,ao.direccion,ao.et,ao.usuario_programa_actividad," +
                 "ao.pendiente_sincronizar,pg.descripcion as programa,ao.id_espacio_publicitario," +
                 "e.id_tipologia,e.id_mobiliario,e.id_referencia,ao.elemento_no_encontrado,ao.afectado_por_vandalismo,ao.pendiente_sincronizar,ao.observacion, "+
-                "ao.fch_ejecucion,ao.id_equipo,eq.serial,eq.codigo,ao.latitud,ao.longitud "+
+                "ao.fch_ejecucion,ao.id_equipo,eq.serial,eq.codigo,ao.latitud,ao.longitud, e.id_estado_mobiliario,em.descripcion as estado_mobiliario "+
                 "from "+Constantes.TABLA_ACTIVIDAD_OPERATIVA+" ao " +
                 "join "+Constantes.TABLA_PROGRAMA+" pg on(ao.id_programa = pg._id) " +
                 "join "+Constantes.TABLA_MUNICIPIO+" m on(ao.id_municipio = m._id) " +
@@ -196,6 +197,7 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
                 "join "+Constantes.TABLA_TIPO_ACTIVIDAD+" ta on(ao.id_tipo_operacion = ta._id) " +
                 "left JOIN "+Constantes.TABLA_TIPO_REPORTE_DANO+" tr on(ao.id_tipo_reporte_dano = tr._id) " +
                 "left join "+Constantes.TABLA_ELEMENTO+" e on(ao.id_elemento = e._id) " +
+                "left join "+Constantes.TABLA_ESTADO_MOBILIARIO+" em on(e.id_estado_mobiliario = em._id) "+
                 "left join "+Constantes.TABLA_TIPOLOGIA_MOBILIARIO+" tm on(e.id_tipologia = tm._id) " +
                 "left join "+Constantes.TABLA_MOBILIARIO+" mb on(e.id_mobiliario = mb._id) " +
                 "left join "+Constantes.TABLA_REFERNCIA_MOBILIARIO+" rm on(e.id_referencia = rm._id) " +

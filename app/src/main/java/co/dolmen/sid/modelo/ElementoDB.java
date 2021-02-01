@@ -33,7 +33,23 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
                 "id_tipologia INTEGER,"+
                 "id_mobiliario INTEGER,"+
                 "id_referencia INTEGER,"+
-                "id_estado_mobiliario INTEGER"+
+                "id_estado_mobiliario INTEGER,"+
+                "id_tipo_balasto INTEGER,"+
+                "id_tipo_base_fotocelda INTEGER,"+
+                "id_tipo_brazo INTEGER,"+
+                "id_clase_via INTEGER,"+
+                "id_tipo_poste INTEGER,"+
+                "id_norma_construccion_poste INTEGER,"+
+                "id_calibre_conductores INTEGER,"+
+                "id_tipo_red INTEGER,"+
+                "id_tipo_instalacion_red_alimentacion INTEGER,"+
+                "zona VARCHAR(1),"+
+                "sector VARCHAR(1),"+
+                "ancho_via INTEGER,"+
+                "interdistancia INTEGER,"+
+                "poste_no VARCHAR(12),"+
+                "latitud NUMERIC (15,13) NOT NULL DEFAULT 0,"+
+                "longitud NUMERIC (15,13) NOT NULL DEFAULT 0"+
                 ");"
         );
     }
@@ -81,7 +97,12 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
 
     public boolean agregarDatos(int id_elemento,String mobiliario_no,String direccion,
                                 int id_municipio,int id_barrio,int id_proceso_sgc,int id_tipologia,
-            int id_mobiliario,int id_referencia,int id_estado_mobiliario){
+                                int id_mobiliario,int id_referencia,int id_estado_mobiliario,int id_tipo_balasto,
+                                int id_tipo_base_fotocelda,int id_tipo_brazo,String zona,String sector,
+                                float latitud,float longitud,int id_clase_via,int ancho_via,int id_tipo_poste,
+                                int id_norma_construccion_poste,String poste_no,int interdistancia,
+                                int id_calibre_conductores,int id_tipo_red,int id_tipo_instalacion_red_alimentacion
+                                ){
         Cursor result = consultarId(id_elemento);
 
         if(result.getCount() == 0) {
@@ -96,6 +117,23 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
             contentValues.put("id_mobiliario", id_mobiliario);
             contentValues.put("id_referencia", id_referencia);
             contentValues.put("id_estado_mobiliario", id_estado_mobiliario);
+            contentValues.put("id_tipo_balasto", id_tipo_balasto);
+            contentValues.put("id_tipo_base_fotocelda", id_tipo_base_fotocelda);
+            contentValues.put("id_tipo_brazo", id_tipo_brazo);
+            contentValues.put("id_clase_via", id_clase_via);
+            contentValues.put("id_tipo_poste", id_tipo_poste);
+            contentValues.put("id_norma_construccion_poste", id_norma_construccion_poste);
+            contentValues.put("id_calibre_conductores", id_calibre_conductores);
+            contentValues.put("id_tipo_red", id_tipo_red);
+            contentValues.put("id_tipo_instalacion_red_alimentacion", id_tipo_instalacion_red_alimentacion);
+            contentValues.put("zona", zona);
+            contentValues.put("sector", sector);
+            contentValues.put("ancho_via", ancho_via);
+            contentValues.put("interdistancia", interdistancia);
+            contentValues.put("poste_no", poste_no);
+            contentValues.put("latitud", latitud);
+            contentValues.put("longitud", longitud);
+
             //Log.d("VALUE",contentValues.toString());
             db.insert(Constantes.TABLA_ELEMENTO, null, contentValues);
         }
