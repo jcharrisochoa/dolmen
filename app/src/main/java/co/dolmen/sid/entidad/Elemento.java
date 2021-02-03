@@ -6,6 +6,8 @@ public class Elemento implements Serializable {
     private int id;
     private String elemento_no;
     private String direccion;
+    private float latitud;
+    private float longitud;
 
     private Municipio municipio;
     private Barrio barrio;
@@ -35,6 +37,7 @@ public class Elemento implements Serializable {
     private Calibre calibre;
     private TipoInstalacionRed tipoInstalacionRed;
     private TipoRed tipoRed;
+    private String encodeStringFoto;
 
     public Elemento(){
 
@@ -299,5 +302,29 @@ public class Elemento implements Serializable {
 
     public void setTipoRed(TipoRed tipoRed) {
         this.tipoRed = tipoRed;
+    }
+
+    public float getLatitud() {
+        return latitud;
+    }
+
+    public void setLatitud(float latitud) {
+        this.latitud = latitud;
+    }
+
+    public float getLongitud() {
+        return longitud;
+    }
+
+    public void setLongitud(float longitud) {
+        this.longitud = longitud;
+    }
+
+    public String getEncodeStringFoto() {
+        return encodeStringFoto;
+    }
+
+    public void setEncodeStringFoto(String encodeStringFoto) {
+        this.encodeStringFoto = encodeStringFoto;
     }
 }

@@ -218,7 +218,7 @@ public class DetalleActividad extends AppCompatActivity {
         }
         else {
             if(!gpsListener) {
-                Log.d("programacion","activo");
+                //Log.d("programacion","activo");
                 //ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, miLocalizacion);
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                     ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);

@@ -21,40 +21,40 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
     @Override
     public void crearTabla() {
         db.execSQL(
-                "create table "+ Constantes.TABLA_ELEMENTO+
-                "("+
-                " _id INTEGER PRIMARY KEY,"+
-                "elemento_no VARCHAR(12)," +
-                "direccion VARCHAR(80)," +
-                "id_municipio INTEGER,"+
-                "id_barrio INTEGER,"+
-                "id_proceso_sgc INTEGER,"+
-                "id_contrato INTEGER,"+
-                "id_tipologia INTEGER,"+
-                "id_mobiliario INTEGER,"+
-                "id_referencia INTEGER,"+
-                "id_estado_mobiliario INTEGER,"+
-                "id_tipo_balasto INTEGER,"+
-                "id_tipo_base_fotocelda INTEGER,"+
-                "id_tipo_brazo INTEGER,"+
-                "id_control_encendido INTEGER,"+
-                "id_tipo_escenario INTEGER,"+
-                "id_clase_via INTEGER,"+
-                "id_tipo_poste INTEGER,"+
-                "id_norma_construccion_poste INTEGER,"+
-                "id_calibre_conductores INTEGER,"+
-                "id_tipo_red INTEGER,"+
-                "id_tipo_instalacion_red_alimentacion INTEGER,"+
-                "zona VARCHAR(1),"+
-                "sector VARCHAR(1),"+
-                "ancho_via INTEGER,"+
-                "interdistancia INTEGER,"+
-                "poste_no VARCHAR(12),"+
-                "latitud NUMERIC (15,13) NOT NULL DEFAULT 0,"+
-                "longitud NUMERIC (15,13) NOT NULL DEFAULT 0,"+
-                "transformador_compartido VARCHAR(1),"+
-                "estructura_soporte_compartida VARCHAR (1),"+
-                "potencia_transformador DECIMAL(5,2) NOT NULL DEFAULT 0"+
+                "create table "+ Constantes.TABLA_ELEMENTO+"("+
+                    " _id INTEGER PRIMARY KEY,"+
+                    "elemento_no VARCHAR(12)," +
+                    "direccion VARCHAR(80)," +
+                    "id_municipio INTEGER,"+
+                    "id_barrio INTEGER,"+
+                    "id_proceso_sgc INTEGER,"+
+                    "id_contrato INTEGER,"+
+                    "id_tipologia INTEGER,"+
+                    "id_mobiliario INTEGER,"+
+                    "id_referencia INTEGER,"+
+                    "id_estado_mobiliario INTEGER,"+
+                    "id_tipo_balasto INTEGER,"+
+                    "id_tipo_base_fotocelda INTEGER,"+
+                    "id_tipo_brazo INTEGER,"+
+                    "id_control_encendido INTEGER,"+
+                    "id_tipo_escenario INTEGER,"+
+                    "id_clase_via INTEGER,"+
+                    "id_tipo_poste INTEGER,"+
+                    "id_norma_construccion_poste INTEGER,"+
+                    "id_calibre_conductores INTEGER,"+
+                    "id_tipo_red INTEGER,"+
+                    "id_tipo_instalacion_red_alimentacion INTEGER,"+
+                    "zona VARCHAR(1),"+
+                    "sector VARCHAR(1),"+
+                    "ancho_via INTEGER,"+
+                    "interdistancia INTEGER,"+
+                    "poste_no VARCHAR(12),"+
+                    "latitud NUMERIC (15,13) NOT NULL DEFAULT 0,"+
+                    "longitud NUMERIC (15,13) NOT NULL DEFAULT 0,"+
+                    "transformador_compartido VARCHAR(1),"+
+                    "estructura_soporte_compartida VARCHAR (1),"+
+                    "potencia_transformador DECIMAL(5,2) NOT NULL DEFAULT 0,"+
+                    "foto TEXT"+
                 ");"
         );
     }
@@ -145,8 +145,6 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
             contentValues.put("transformador_compartido", transformador_compartido);
             contentValues.put("estructura_soporte_compartida", estructura_soporte_compartida);
             contentValues.put("potencia_transformador", potencia_transformador);
-
-
             //Log.d("VALUE",contentValues.toString());
             db.insert(Constantes.TABLA_ELEMENTO, null, contentValues);
         }
@@ -155,11 +153,14 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
     }
     @Override
     public void actualizarDatos(Object o) {
+        String estructura_soporte_compartida;
+        String transformador_compartido;
         if(o instanceof Elemento) {
             elemento = (Elemento) o;
+
+            estructura_soporte_compartida = (elemento.isPosteExclusivo())?"N":"S";
+            transformador_compartido = (elemento.isTransformadorExclusivo())?"N":"S";
             ContentValues contentValues = new ContentValues();
-            /*contentValues.put("_id", id_elemento);
-            contentValues.put("elemento_no", mobiliario_no);*/
             contentValues.put("direccion", elemento.getDireccion());
             contentValues.put("id_municipio", elemento.getMunicipio().getId());
             contentValues.put("id_barrio", elemento.getBarrio().getIdBarrio());
@@ -180,11 +181,12 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
             contentValues.put("ancho_via", elemento.getAnchoVia());
             contentValues.put("interdistancia", elemento.getInterdistancia());
             contentValues.put("poste_no", elemento.getPosteNo());
-            contentValues.put("latitud", 0);
-            contentValues.put("longitud", 0);
-            //contentValues.put("transformador_compartido", elemento.isTransformadorExclusivo());
-            //contentValues.put("estructura_soporte_compartida", elemento.isPosteExclusivo());
+            contentValues.put("latitud", elemento.getLatitud());
+            contentValues.put("longitud", elemento.getLongitud());
+            contentValues.put("transformador_compartido", transformador_compartido);
+            contentValues.put("estructura_soporte_compartida", estructura_soporte_compartida);
             contentValues.put("potencia_transformador", elemento.getPotenciaTransformador());
+            contentValues.put("foto", elemento.getEncodeStringFoto());
             db.update(Constantes.TABLA_ELEMENTO,contentValues,"_id="+elemento.getId(),null);
         }
     }
@@ -208,19 +210,34 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
     }
 
     public Cursor consultarElemento(int idMunicipio,int idProceso,int elementoNo){
-        this.sql = "SELECT e._id,e.elemento_no,e.direccion,e.id_municipio,e.id_barrio,e.id_proceso_sgc,e.id_tipologia,e.id_mobiliario,e.id_referencia,e.id_estado_mobiliario," +
-                    "tm.descripcion as tipologia,mb.descripcion as mobiliario,rm.descripcion as referencia,em.descripcion as estado_mobiliario,b.descripcion as barrio " +
-                    "FROM "+
-                        Constantes.TABLA_ELEMENTO+" e "+
-                        " LEFT JOIN "+Constantes.TABLA_BARRIO+" b ON (e.id_barrio = b._id ) " +
-                        " LEFT JOIN "+Constantes.TABLA_TIPOLOGIA_MOBILIARIO+" tm on(e.id_tipologia = tm._id) "+
-                        " LEFT JOIN "+Constantes.TABLA_MOBILIARIO+" mb on(e.id_mobiliario = mb._id) "+
-                        " LEFT JOIN "+Constantes.TABLA_REFERNCIA_MOBILIARIO+" rm on(e.id_referencia = rm._id) "+
-                        " LEFT JOIN "+Constantes.TABLA_ESTADO_MOBILIARIO+" em on(e.id_estado_mobiliario = em._id) "+
-                    " WHERE " +
-                    "e.id_municipio="+idMunicipio+" and " +
-                    "e.id_proceso_sgc="+idProceso+" and " +
-                    "e.elemento_no="+elementoNo;
+        this.sql = "select e._id,e.elemento_no,e.direccion,e.id_municipio,e.id_barrio,e.id_proceso_sgc,e.id_tipologia,e.id_mobiliario,e.id_referencia,e.id_estado_mobiliario,"+
+        "tm.descripcion as tipologia,mb.descripcion as mobiliario,rm.descripcion as referencia,em.descripcion as estado_mobiliario,b.descripcion as barrio,"+
+        "e.id_tipo_balasto,tb.descripcion as tipo_balasto, e.id_tipo_base_fotocelda,tbf.descripcion as tipo_base_fotocelda,e.id_tipo_brazo,tbz.descripcion as tipo_brazo,"+
+        "e.zona,e.sector,e.id_control_encendido,ce.descripcion as control_encendido, e.id_tipo_poste,tp.descripcion as tipo_poste,e.id_norma_construccion_poste,"+
+        "ncp.descripcion as norma_construccion_poste,e.id_tipo_red,trd.descripcion as tipo_red,e.id_tipo_escenario, tsc.descripcion as tipo_escenario,"+
+        "e.id_tipo_instalacion_red_alimentacion, tir.descripcion as tipo_instalacion_red,e.id_clase_via,cv.descripcion as clase_via, e.id_calibre_conductores,"+
+        "cb.descripcion as calibre_conductor,e.ancho_via,e.interdistancia,e.poste_no ,e.estructura_soporte_compartida,e.transformador_compartido,e.potencia_transformador "+
+        "from "+ Constantes.TABLA_ELEMENTO+" e "+
+        "left join "+Constantes.TABLA_BARRIO+" b ON (e.id_barrio = b._id ) " +
+        "left join "+Constantes.TABLA_TIPOLOGIA_MOBILIARIO+" tm on(e.id_tipologia = tm._id) "+
+        "left join "+Constantes.TABLA_MOBILIARIO+" mb on(e.id_mobiliario = mb._id) "+
+        "left join "+Constantes.TABLA_REFERNCIA_MOBILIARIO+" rm on(e.id_referencia = rm._id) "+
+        "left join "+Constantes.TABLA_ESTADO_MOBILIARIO+" em on(e.id_estado_mobiliario = em._id) "+
+        "left join "+Constantes.TABLA_TIPO_BALASTO+" tb on(e.id_tipo_balasto = tb._id) "+
+        "left join "+Constantes.TABLA_TIPO_BASE_FOTOCELDA+" tbf on(e.id_tipo_base_fotocelda = tbf._id) "+
+        "left join "+Constantes.TABLA_TIPO_BRAZO+" tbz on(e.id_tipo_brazo = tbz._id) "+
+        "left join "+Constantes.TABLA_CONTROL_ENCENDIDO+" ce on(e.id_control_encendido = ce._id) "+
+        "left join "+Constantes.TABLA_TIPO_POSTE+" tp on(e.id_tipo_poste = tp._id) "+
+        "left join "+Constantes.TABLA_NORMA_CONSTRUCCION_POSTE+" ncp on(e.id_norma_construccion_poste = ncp._id) "+
+        "left join "+Constantes.TABLA_TIPO_RED+" trd on(e.id_tipo_red = trd._id) "+
+        "left join "+Constantes.TABLA_TIPO_ESCENARIO+" tsc on(e.id_tipo_escenario = tsc._id) "+
+        "left join "+Constantes.TABLA_TIPO_INSTALACION_RED+" tir on(e.id_tipo_instalacion_red_alimentacion = tir._id) "+
+        "left join "+Constantes.TABLA_CLASE_VIA+" cv on(e.id_clase_via = cv._id) "+
+        "left join "+Constantes.TABLA_CALIBRE+" cb on(e.id_calibre_conductores = cb._id) "+
+        "where " +
+        "e.id_municipio="+idMunicipio+" and " +
+        "e.id_proceso_sgc="+idProceso+" and " +
+        "e.elemento_no="+elementoNo;
         //Log.d("respuesta",""+this.sql);
         Cursor result = db.rawQuery(this.sql, null);
         return result;

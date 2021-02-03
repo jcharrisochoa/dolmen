@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import co.dolmen.sid.modelo.ActaContratoDB;
 import co.dolmen.sid.modelo.ActividadOperativaDB;
+import co.dolmen.sid.modelo.ArchivoActividadDB;
 import co.dolmen.sid.modelo.ArticuloDB;
 import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.BodegaDB;
@@ -100,6 +101,7 @@ public class BaseDatos extends SQLiteOpenHelper {
     private TipoInstalacionRedDB tipoInstalacionRedDB;
     private BodegaDB bodegaDB;
     private EquipoDB equipoDB;
+    private ArchivoActividadDB archivoActividadDB;
 
 
     public BaseDatos(Context context){
@@ -247,6 +249,9 @@ public class BaseDatos extends SQLiteOpenHelper {
 
         equipoDB = new EquipoDB(sqLiteDatabase);
         equipoDB.crearTabla();
+
+        archivoActividadDB = new ArchivoActividadDB(sqLiteDatabase);
+        archivoActividadDB.crearTabla();
         //Log.d("DataBase","create");
     }
 
@@ -299,6 +304,7 @@ public class BaseDatos extends SQLiteOpenHelper {
             tipoInstalacionRedDB = new TipoInstalacionRedDB(sqLiteDatabase);
             bodegaDB    = new BodegaDB(sqLiteDatabase);
             equipoDB    = new EquipoDB(sqLiteDatabase);
+            archivoActividadDB = new ArchivoActividadDB(sqLiteDatabase);
 
             tipologiaDB.borrarTabla();
             mobiliarioDB.borrarTabla();
@@ -346,6 +352,7 @@ public class BaseDatos extends SQLiteOpenHelper {
             tipoInstalacionRedDB.borrarTabla();
             bodegaDB.borrarTabla();
             equipoDB.borrarTabla();
+            archivoActividadDB.borrarTabla();
 
             onCreate(sqLiteDatabase);
         }catch (SQLException e){

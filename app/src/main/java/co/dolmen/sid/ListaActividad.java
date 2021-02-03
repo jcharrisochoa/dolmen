@@ -358,12 +358,11 @@ public class ListaActividad extends AppCompatActivity  {
                         elemento.setAnchoVia(cursor.getInt(cursor.getColumnIndex("ancho_via")));
                         elemento.setInterdistancia(cursor.getInt(cursor.getColumnIndex("interdistancia")));
                         elemento.setPosteNo(cursor.getString(cursor.getColumnIndex("poste_no")));
-                        elemento.setTransformadorExclusivo((cursor.getString(cursor.getColumnIndex("transformador_compartido"))=="S")?false:true);
-                        elemento.setPosteExclusivo((cursor.getString(cursor.getColumnIndex("estructura_soporte_compartida"))=="S")?false:true);
+                        elemento.setTransformadorExclusivo((cursor.getString(cursor.getColumnIndex("transformador_compartido")).contentEquals("N"))?true:false);
+                        elemento.setPosteExclusivo((cursor.getString(cursor.getColumnIndex("estructura_soporte_compartida")).contentEquals("N"))?true:false);
                         elemento.setPotenciaTransformador(cursor.getDouble(cursor.getColumnIndex("potencia_transformador")));
 
                     }
-
                     ProcesoSgc procesoSgc = new ProcesoSgc();
                     procesoSgc.setId(cursor.getInt(cursor.getColumnIndex("id_proceso_sgc")));
                     procesoSgc.setDescripcion(cursor.getString(cursor.getColumnIndex("proceso")));

@@ -41,7 +41,7 @@ public class MiLocalizacion implements LocationListener {
         //coordenadaActiva = false;
         float mts =  Math.round(location.getAccuracy()*100)/100;
         float alt =  Math.round(location.getAltitude()*100)/100;
-        Log.d("programacion","Lat:"+location.getLatitude()+",Lon:"+location.getLongitude()+",Context="+context.getClass().getSimpleName());
+        //Log.d("programacion","Lat:"+location.getLatitude()+",Lon:"+location.getLongitude()+",Context="+context.getClass().getSimpleName());
         setLatitud(location.getLatitude());
         setLongitud(location.getLongitude());
         /*viewLatitud.setText(""+location.getLatitude());

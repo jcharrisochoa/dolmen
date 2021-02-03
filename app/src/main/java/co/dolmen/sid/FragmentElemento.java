@@ -301,8 +301,8 @@ public class FragmentElemento extends Fragment {
             rdSectorSubNormal.setChecked(true);
         }
 
-        swPosteExclusivoAp.setChecked(!actividadOperativa.getElemento().isPosteExclusivo());
-        swTranformadorExclusivoAP.setChecked(!actividadOperativa.getElemento().isTransformadorExclusivo());
+        swPosteExclusivoAp.setChecked(actividadOperativa.getElemento().isPosteExclusivo());
+        swTranformadorExclusivoAP.setChecked(actividadOperativa.getElemento().isTransformadorExclusivo());
 
         cargarTipoBalasto(database);
         cargarTipoBaseFotocelda(database);
@@ -337,7 +337,7 @@ public class FragmentElemento extends Fragment {
             alertBuscarElemento.setIcon(android.R.drawable.ic_dialog_alert);
             try {
                 ElementoDB elementoDB = new ElementoDB(sqLiteDatabase);
-                Cursor cursorElemento = elementoDB.consultarElemento(idDefaultMunicipio, idDefaultProceso, parseInt(editMobiliarioNo.getText().toString()));
+                Cursor cursorElemento = elementoDB.consultarElemento(idDefaultMunicipio, idDefaultProceso, Integer.parseInt(editMobiliarioNo.getText().toString()));
                 if (cursorElemento.getCount() == 0) {
                     alertBuscarElemento.setTitle(R.string.titulo_alerta);
                     alertBuscarElemento.setMessage(getText(R.string.alert_elemento_no_encontrado) + " sobre el Elemento: " + editMobiliarioNo.getText());
@@ -357,7 +357,7 @@ public class FragmentElemento extends Fragment {
                     } else {
                         cursorElemento.moveToFirst();
 
-                        Elemento elemento = new Elemento();
+                        Elemento elemento = actividadOperativa.getElemento();
                         elemento.setId(Integer.parseInt(cursorElemento.getString(cursorElemento.getColumnIndex("_id"))));
                         elemento.setElemento_no(cursorElemento.getString(cursorElemento.getColumnIndex("elemento_no")));
 
@@ -382,7 +382,19 @@ public class FragmentElemento extends Fragment {
                         //editDireccion.setText(cursorElemento.getString(cursorElemento.getColumnIndex("direccion")));
                         txtMobiliario.setText(cursorElemento.getString(cursorElemento.getColumnIndex("mobiliario")));
                         txtReferencia.setText(cursorElemento.getString(cursorElemento.getColumnIndex("referencia")));
-                        //txtEstadoMobiliario.setText(cursorElemento.getString(cursorElemento.getColumnIndex("estado_mobiliario")));
+
+                        cargarTipoBalasto(database);
+                        cargarTipoBaseFotocelda(database);
+                        cargarTipoBrazo(database);
+                        cargarControlEncendido(database);
+                        cargarEstadoMobiliario(database);
+                        cargarClaseVia(database);
+                        cargarTipoPoste(database);
+                        cargarTipoRed(database);
+                        cargarTipoEscenario(database);
+                        cargarCalibre(database);
+                        cargarNormaConstruccionPoste(database);
+                        cargarTipoInstalacionRed(database);
 
                     }
 

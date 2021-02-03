@@ -45,15 +45,29 @@ import co.dolmen.sid.entidad.ActividadOperativa;
 import co.dolmen.sid.entidad.Articulo;
 import co.dolmen.sid.entidad.Barrio;
 import co.dolmen.sid.entidad.Bodega;
+import co.dolmen.sid.entidad.Calibre;
 import co.dolmen.sid.entidad.CentroCosto;
+import co.dolmen.sid.entidad.ClaseVia;
+import co.dolmen.sid.entidad.ControlEncendido;
 import co.dolmen.sid.entidad.Elemento;
 import co.dolmen.sid.entidad.Equipo;
 import co.dolmen.sid.entidad.EstadoActividad;
+import co.dolmen.sid.entidad.EstadoMobiliario;
 import co.dolmen.sid.entidad.MovimientoArticulo;
+import co.dolmen.sid.entidad.Municipio;
+import co.dolmen.sid.entidad.NormaConstruccionPoste;
 import co.dolmen.sid.entidad.Stock;
 import co.dolmen.sid.entidad.TipoActividad;
+import co.dolmen.sid.entidad.TipoBalasto;
+import co.dolmen.sid.entidad.TipoBaseFotocelda;
+import co.dolmen.sid.entidad.TipoBrazo;
+import co.dolmen.sid.entidad.TipoEscenario;
+import co.dolmen.sid.entidad.TipoInstalacionRed;
+import co.dolmen.sid.entidad.TipoPoste;
+import co.dolmen.sid.entidad.TipoRed;
 import co.dolmen.sid.entidad.TipoStock;
 import co.dolmen.sid.modelo.ActividadOperativaDB;
+import co.dolmen.sid.modelo.ElementoDB;
 import co.dolmen.sid.modelo.StockDB;
 import co.dolmen.sid.utilidades.MiLocalizacion;
 import co.dolmen.sid.utilidades.ViewPagerAdapter;
@@ -204,9 +218,14 @@ public class EjecutaActividad extends AppCompatActivity {
 
     }
 
-    private void guardar(final View view){
-        //--Actualizar Pojo--
+    private void actualizarObjeto(){
+
+        //--Actualizar Pojo Actividad operativa--
         actividadOperativa.setFechaEjecucion(new Date());
+        actividadOperativa.setDireccion(fragmentInformacion.editDireccion.getText().toString());
+        actividadOperativa.setObservacion(fragmentInformacion.editObservacion.getText().toString());
+        actividadOperativa.setAfectadoPorVandalismo((fragmentInformacion.swVandalismo.isChecked())?"S":"N");
+        actividadOperativa.setElementoNoEncontrado((fragmentInformacion.swElementoNoEncontrado.isChecked())?"S":"N");
 
         Equipo equipo = actividadOperativa.getEquipo();
         equipo.setIdEquipo(fragmentInformacion.vehiculoList.get(fragmentInformacion.sltVehiculo.getSelectedItemPosition()).getId());
@@ -223,29 +242,124 @@ public class EjecutaActividad extends AppCompatActivity {
         Barrio barrio = actividadOperativa.getBarrio();
         barrio.setIdBarrio(fragmentInformacion.barrioList.get(fragmentInformacion.sltBarrio.getSelectedItemPosition()).getId());
         barrio.setNombreBarrio(fragmentInformacion.barrioList.get(fragmentInformacion.sltBarrio.getSelectedItemPosition()).getDescripcion());
+        barrio.setId(idDefaultMunicipio);
 
+        if(!fragmentElemento.txtLatitud.getText().toString().isEmpty() && actividadOperativa.getLatitud() == 0)
+            actividadOperativa.setLatitud(Float.parseFloat(fragmentElemento.txtLatitud.getText().toString()));
+
+        if(!fragmentElemento.txtLongitud.getText().toString().isEmpty() && actividadOperativa.getLongitud() == 0)
+            actividadOperativa.setLongitud(Float.parseFloat(fragmentElemento.txtLongitud.getText().toString()));
+
+        //--Actualiza Objeto Elemento
         Elemento elemento = actividadOperativa.getElemento();
         elemento.setDireccion(fragmentInformacion.editDireccion.getText().toString());
         elemento.setBarrio(barrio);
+        elemento.setMunicipio( (Municipio) barrio);
+        elemento.setTipoBalasto(
+                new TipoBalasto(
+                        fragmentElemento.tipoBalastoList.get(fragmentElemento.sltTipoBalasto.getSelectedItemPosition()).getId(),
+                        fragmentElemento.tipoBalastoList.get(fragmentElemento.sltTipoBalasto.getSelectedItemPosition()).getDescripcion()
+                )
+        );
+        elemento.setTipoBaseFotocelda(
+                new TipoBaseFotocelda(
+                        fragmentElemento.tipoBaseFotoceldaList.get(fragmentElemento.sltTipoBaseFotocelda.getSelectedItemPosition()).getId(),
+                        fragmentElemento.tipoBaseFotoceldaList.get(fragmentElemento.sltTipoBaseFotocelda.getSelectedItemPosition()).getDescripcion()
+                )
+        );
+        elemento.setTipoBrazo(
+                new TipoBrazo(
+                        fragmentElemento.tipoBrazoList.get(fragmentElemento.sltTipoBrazo.getSelectedItemPosition()).getId(),
+                        fragmentElemento.tipoBrazoList.get(fragmentElemento.sltTipoBrazo.getSelectedItemPosition()).getDescripcion()
+                )
+        );
+        elemento.setControlEncendido(
+                new ControlEncendido(
+                        fragmentElemento.controlEncendidoList.get(fragmentElemento.sltControlEncendido.getSelectedItemPosition()).getId(),
+                        fragmentElemento.controlEncendidoList.get(fragmentElemento.sltControlEncendido.getSelectedItemPosition()).getDescripcion()
+                )
+        );
+        elemento.setEstadoMobiliario(
+                new EstadoMobiliario(
+                        fragmentElemento.estadoMobiliarioList.get(fragmentElemento.sltEstadoMobiliario.getSelectedItemPosition()).getId(),
+                        fragmentElemento.estadoMobiliarioList.get(fragmentElemento.sltEstadoMobiliario.getSelectedItemPosition()).getDescripcion()
+                )
+        );
+        elemento.setZona(fragmentElemento.zona);
+        elemento.setSector(fragmentElemento.sector);
 
-        if(!fragmentElemento.txtLatitud.getText().toString().isEmpty())
-            actividadOperativa.setLatitud(Float.parseFloat(fragmentElemento.txtLatitud.getText().toString()));
+        elemento.setTipoEscenario(
+                new TipoEscenario(
+                        fragmentElemento.tipoEscenarioList.get(fragmentElemento.sltTipoEscenario.getSelectedItemPosition()).getId(),
+                        fragmentElemento.tipoEscenarioList.get(fragmentElemento.sltTipoEscenario.getSelectedItemPosition()).getDescripcion()
+                )
+        );
 
-        if(!fragmentElemento.txtLongitud.getText().toString().isEmpty())
-            actividadOperativa.setLongitud(Float.parseFloat(fragmentElemento.txtLongitud.getText().toString()));
+        Float latitud = (fragmentElemento.txtLatitud.getText().toString().isEmpty()) ? 0 : Float.parseFloat(fragmentElemento.txtLatitud.getText().toString());
+        Float longitud = (fragmentElemento.txtLongitud.getText().toString().isEmpty()) ? 0 : Float.parseFloat(fragmentElemento.txtLongitud.getText().toString());
+        elemento.setLatitud(latitud);
+        elemento.setLongitud(longitud);
 
-        actividadOperativa.setDireccion(fragmentInformacion.editDireccion.getText().toString());
-        actividadOperativa.setObservacion(fragmentInformacion.editObservacion.getText().toString());
-        actividadOperativa.setAfectadoPorVandalismo((fragmentInformacion.swVandalismo.isChecked())?"S":"N");
-        actividadOperativa.setElementoNoEncontrado((fragmentInformacion.swElementoNoEncontrado.isChecked())?"S":"N");
-        actividadOperativa.setPendienteSincronizar("N");
+        elemento.setClaseVia(
+                new ClaseVia(
+                        fragmentElemento.claseViaList.get(fragmentElemento.sltClaseVia.getSelectedItemPosition()).getId(),
+                        fragmentElemento.claseViaList.get(fragmentElemento.sltClaseVia.getSelectedItemPosition()).getDescripcion()
+                )
+        );
 
+        Integer anchoVia = (fragmentElemento.txtAnchoVia.getText().toString().isEmpty()) ? 0 : Integer.parseInt(fragmentElemento.txtAnchoVia.getText().toString());
+        elemento.setAnchoVia(anchoVia);
+
+        elemento.setNormaConstruccionPoste(
+                new NormaConstruccionPoste(
+                        fragmentElemento.normaConstruccionPosteList.get(fragmentElemento.sltNormaConstruccionPoste.getSelectedItemPosition()).getId(),
+                        fragmentElemento.normaConstruccionPosteList.get(fragmentElemento.sltNormaConstruccionPoste.getSelectedItemPosition()).getDescripcion(),
+                        new TipoPoste(
+                                fragmentElemento.tipoPosteList.get(fragmentElemento.sltTipoPoste.getSelectedItemPosition()).getId(),
+                                fragmentElemento.tipoPosteList.get(fragmentElemento.sltTipoPoste.getSelectedItemPosition()).getDescripcion()
+                        )
+                )
+        );
+        elemento.setPosteExclusivo(fragmentElemento.swPosteExclusivoAp.isChecked());
+
+        elemento.setPosteNo(fragmentElemento.txtPosteNo.getText().toString());
+
+        Integer interdistancia = (fragmentElemento.txtInterdistancia.getText().toString().isEmpty()) ? 0 : Integer.parseInt(fragmentElemento.txtInterdistancia.getText().toString());
+        elemento.setInterdistancia(interdistancia);
+
+        Double potencia = (fragmentElemento.txtPotenciaTransformador.getText().toString().isEmpty()) ? 0 : Double.parseDouble(fragmentElemento.txtPotenciaTransformador.getText().toString());
+        elemento.setPotenciaTransformador(potencia);
+
+        elemento.setPlacaCT(fragmentElemento.txtCtTransformador.getText().toString());
+        elemento.setPlacaMT(fragmentElemento.txtMtTransformador.getText().toString());
+        elemento.setTransformadorExclusivo(fragmentElemento.swTranformadorExclusivoAP.isChecked());
+        elemento.setCalibre(
+                new Calibre(
+                        fragmentElemento.calibreList.get(fragmentElemento.sltCalibreConexionElemento.getSelectedItemPosition()).getId(),
+                        fragmentElemento.calibreList.get(fragmentElemento.sltCalibreConexionElemento.getSelectedItemPosition()).getDescripcion()
+                )
+        );
+        elemento.setTipoInstalacionRed(
+                new TipoInstalacionRed(
+                        fragmentElemento.tipoInstalacionRedList.get(fragmentElemento.sltTipoInstalacionRed.getSelectedItemPosition()).getId(),
+                        fragmentElemento.tipoInstalacionRedList.get(fragmentElemento.sltTipoInstalacionRed.getSelectedItemPosition()).getDescripcion()
+                )
+        );
+        elemento.setTipoRed(
+                new TipoRed(
+                        fragmentElemento.tipoRedList.get(fragmentElemento.sltTipoRed.getSelectedItemPosition()).getId(),
+                        fragmentElemento.tipoRedList.get(fragmentElemento.sltTipoRed.getSelectedItemPosition()).getDescripcion()
+                )
+        );
+        elemento.setEncodeStringFoto(fragmentFotoDespues.encodeStringFoto_1);
+        actividadOperativa.setElemento(elemento);
+    }
+    private void guardar(final View view){
         if(validarFotoAntes()){
             if(validarFotoDespues()){
                 if(validarInfo(view)){
                     ConnectivityManager conn = (ConnectivityManager) getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
                     NetworkInfo networkInfo = conn.getActiveNetworkInfo();
-
                     if (networkInfo != null && networkInfo.isConnected()) {
                         guardarFormulario('R');
                         //Snackbar.make(view, "Guardar Remoto", Snackbar.LENGTH_LONG).setAction("Action", null).show();
@@ -340,15 +454,18 @@ public class EjecutaActividad extends AppCompatActivity {
         }
     }
 
-    private void almacenarDatosLocal() {
-
+    private void almacenarDatosLocal(){
+        actualizarObjeto();
+        actividadOperativa.setPendienteSincronizar("S");
     }
 
     private void almacenarDatosEnRemoto() {
+        actualizarObjeto();
         AsyncHttpClient client = new AsyncHttpClient();
 
         try {
             JSONObject jsonObject = new JSONObject();
+            //--Informacion actividad
             jsonObject.put("id_usuario", idUsuario);
             jsonObject.put("id_actividad",actividadOperativa.getIdActividad());
             jsonObject.put("fch_ejecucion",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(actividadOperativa.getFechaEjecucion()));
@@ -358,6 +475,15 @@ public class EjecutaActividad extends AppCompatActivity {
             jsonObject.put("id_centro_costo",actividadOperativa.getCentroCosto().getIdCentroCosto());
             jsonObject.put("latitud",actividadOperativa.getLatitud());
             jsonObject.put("longitud",actividadOperativa.getLongitud());
+            jsonObject.put("elemento_no_encontrado", actividadOperativa.isElementoNoEncontrado());
+            jsonObject.put("afectado_por_vandalismo", actividadOperativa.isAfectadoPorVandalismo());
+            jsonObject.put("id_barrio", actividadOperativa.getBarrio().getIdBarrio());
+            jsonObject.put("barrio", fragmentInformacion.barrioList.get(fragmentInformacion.sltBarrio.getSelectedItemPosition()).getDescripcion());
+            jsonObject.put("direccion", actividadOperativa.getDireccion());
+            jsonObject.put("id_tipo_actividad", actividadOperativa.getTipoActividad().getId());
+            jsonObject.put("id_estado_actividad", actividadOperativa.getEstadoActividad().getId());
+            jsonObject.put("id_equipo", actividadOperativa.getEquipo().getIdEquipo());
+            jsonObject.put("observacion", actividadOperativa.getObservacion());
 
             //--Fotos Antes
             JSONArray jsonArrayFotoAntes = new JSONArray();
@@ -459,17 +585,6 @@ public class EjecutaActividad extends AppCompatActivity {
             jsonObject.put("pnc", jsonArrayPNC);
             jsonObject.put("asig", jsonArrayAsig);
 
-            //--Informacion actividad
-            jsonObject.put("elemento_no_encontrado", fragmentInformacion.swElementoNoEncontrado.isChecked());
-            jsonObject.put("afectado_por_vandalismo", fragmentInformacion.swVandalismo.isChecked());
-            jsonObject.put("id_barrio", fragmentInformacion.barrioList.get(fragmentInformacion.sltBarrio.getSelectedItemPosition()).getId());
-            jsonObject.put("barrio", fragmentInformacion.barrioList.get(fragmentInformacion.sltBarrio.getSelectedItemPosition()).getDescripcion());
-            jsonObject.put("direccion", fragmentInformacion.editDireccion.getText());
-            jsonObject.put("id_tipo_actividad", fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId());
-            jsonObject.put("id_estado_actividad", fragmentInformacion.estadoActividadList.get(fragmentInformacion.sltEstadoActividad.getSelectedItemPosition()).getId());
-            jsonObject.put("id_estado_actividad", fragmentInformacion.estadoActividadList.get(fragmentInformacion.sltEstadoActividad.getSelectedItemPosition()).getId());
-            jsonObject.put("id_equipo", fragmentInformacion.vehiculoList.get(fragmentInformacion.sltVehiculo.getSelectedItemPosition()).getId());
-            jsonObject.put("observacion", fragmentInformacion.editObservacion.getText());
 
             //--Elemento
             JSONObject jsonElemento = new JSONObject();
@@ -477,40 +592,40 @@ public class EjecutaActividad extends AppCompatActivity {
             jsonElemento.put("fch_actualizacion",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(actividadOperativa.getFechaEjecucion()));
             jsonElemento.put("id_elemento",actividadOperativa.getElemento().getId());
             jsonElemento.put("elemento_no",actividadOperativa.getElemento().getElemento_no());
-            jsonElemento.put("id_barrio", fragmentInformacion.barrioList.get(fragmentInformacion.sltBarrio.getSelectedItemPosition()).getId());
-            jsonElemento.put("direccion", fragmentInformacion.editDireccion.getText());
-            jsonElemento.put("id_tipo_balasto", fragmentElemento.tipoBalastoList.get(fragmentElemento.sltTipoBalasto.getSelectedItemPosition()).getId());
-            jsonElemento.put("id_tipo_base_fotocelda", fragmentElemento.tipoBaseFotoceldaList.get(fragmentElemento.sltTipoBaseFotocelda.getSelectedItemPosition()).getId());
-            jsonElemento.put("id_tipo_brazo", fragmentElemento.tipoBrazoList.get(fragmentElemento.sltTipoBrazo.getSelectedItemPosition()).getId());
-            jsonElemento.put("id_control_encendido", fragmentElemento.controlEncendidoList.get(fragmentElemento.sltControlEncendido.getSelectedItemPosition()).getId());
-            jsonElemento.put("id_estado_mobiliario", fragmentElemento.estadoMobiliarioList.get(fragmentElemento.sltEstadoMobiliario.getSelectedItemPosition()).getId());
-            jsonElemento.put("id_tipo_escenario", fragmentElemento.tipoEscenarioList.get(fragmentElemento.sltTipoEscenario.getSelectedItemPosition()).getId());
-            jsonElemento.put("id_clase_via", fragmentElemento.claseViaList.get(fragmentElemento.sltClaseVia.getSelectedItemPosition()).getId());
-            jsonElemento.put("id_tipo_poste", fragmentElemento.tipoPosteList.get(fragmentElemento.sltTipoPoste.getSelectedItemPosition()).getId());
-            jsonElemento.put("id_norma_construccion_poste", fragmentElemento.normaConstruccionPosteList.get(fragmentElemento.sltNormaConstruccionPoste.getSelectedItemPosition()).getId());
-            jsonElemento.put("id_tipo_balasto", fragmentElemento.tipoBalastoList.get(fragmentElemento.sltTipoBalasto.getSelectedItemPosition()).getId());
-            jsonElemento.put("id_calibre", fragmentElemento.calibreList.get( fragmentElemento.sltCalibreConexionElemento.getSelectedItemPosition()).getId());
-            jsonElemento.put("id_tipo_instalacion_red", fragmentElemento.tipoInstalacionRedList.get(fragmentElemento.sltTipoInstalacionRed.getSelectedItemPosition()).getId());
-            jsonElemento.put("id_tipo_red", fragmentElemento.tipoRedList.get(fragmentElemento.sltTipoRed.getSelectedItemPosition()).getId());
-            jsonElemento.put("zona", fragmentElemento.zona);
-            jsonElemento.put("sector", fragmentElemento.sector);
-            jsonElemento.put("latitud", fragmentElemento.txtLatitud.getText());
-            jsonElemento.put("longitud", fragmentElemento.txtLongitud.getText());
-            jsonElemento.put("ancho_via", fragmentElemento.txtAnchoVia.getText());
-            jsonElemento.put("poste_no", fragmentElemento.txtPosteNo.getText());
-            jsonElemento.put("interdistancia", fragmentElemento.txtInterdistancia.getText());
+            jsonElemento.put("id_barrio", actividadOperativa.getElemento().getBarrio().getIdBarrio());
+            jsonElemento.put("direccion", actividadOperativa.getDireccion());
+            jsonElemento.put("id_tipo_balasto", actividadOperativa.getElemento().getTipoBalasto().getIdTipoBalasto());
+            jsonElemento.put("id_tipo_base_fotocelda", actividadOperativa.getElemento().getTipoBaseFotocelda().getidTipoBaseFotocelda());
+            jsonElemento.put("id_tipo_brazo", actividadOperativa.getElemento().getTipoBrazo().getidTipoBrazo());
+            jsonElemento.put("id_control_encendido", actividadOperativa.getElemento().getControlEncendido().getidControlEncendido());
+            jsonElemento.put("id_estado_mobiliario", actividadOperativa.getElemento().getEstadoMobiliario().getIdEstadoMobiliario());
+            jsonElemento.put("id_tipo_escenario", actividadOperativa.getElemento().getTipoEscenario().getId());
+            jsonElemento.put("id_clase_via", actividadOperativa.getElemento().getClaseVia().getId());
+            jsonElemento.put("id_tipo_poste", actividadOperativa.getElemento().getNormaConstruccionPoste().getTipoPoste().getId());
+            jsonElemento.put("id_norma_construccion_poste", actividadOperativa.getElemento().getNormaConstruccionPoste().getId());
+            jsonElemento.put("id_calibre", actividadOperativa.getElemento().getCalibre().getId_calibre());
+            jsonElemento.put("id_tipo_instalacion_red", actividadOperativa.getElemento().getTipoInstalacionRed().getidTipoInstalacionRed());
+            jsonElemento.put("id_tipo_red", actividadOperativa.getElemento().getTipoRed().getId());
+            jsonElemento.put("zona", actividadOperativa.getElemento().getZona());
+            jsonElemento.put("sector", actividadOperativa.getElemento().getSector());
+            jsonElemento.put("latitud", actividadOperativa.getElemento().getLatitud());
+            jsonElemento.put("longitud", actividadOperativa.getElemento().getLongitud());
+            jsonElemento.put("ancho_via", actividadOperativa.getElemento().getAnchoVia());
+            jsonElemento.put("poste_no", actividadOperativa.getElemento().getPosteNo());
+            jsonElemento.put("interdistancia", actividadOperativa.getElemento().getInterdistancia());
+
             jsonElemento.put("poste_exclusivo_ap", fragmentElemento.swPosteExclusivoAp.isChecked());
-            jsonElemento.put("potencia_transformador", fragmentElemento.txtPotenciaTransformador.getText());
+            jsonElemento.put("potencia_transformador", actividadOperativa.getElemento().getPotenciaTransformador());
             jsonElemento.put("placa_mt_transformador", fragmentElemento.txtMtTransformador.getText());
             jsonElemento.put("placa_ct_transformador", fragmentElemento.txtCtTransformador.getText());
             jsonElemento.put("transformador_exclusivo_ap", fragmentElemento.swTranformadorExclusivoAP.isChecked());
-            jsonElemento.put("foto",fragmentFotoDespues.encodeStringFoto_1);
+            jsonElemento.put("foto",actividadOperativa.getElemento().getEncodeStringFoto());
 
             jsonObject.put("info_elemento",jsonElemento);
 
             JSONArray principal = new JSONArray();
             principal.put(jsonObject);
-            //Log.d("JSON","->"+principal.toString());
+            Log.d("JSON","->"+jsonObject.toString());
 
             client = new AsyncHttpClient();
             StringEntity jsonParams = new StringEntity(principal.toString(), "UTF-8");
@@ -537,6 +652,7 @@ public class EjecutaActividad extends AppCompatActivity {
                             1. actualizar stock con valores +
                             2. actualizar stock con valores -
                              */
+                            //--Actualiza el stock
                             int index = 0;
                             StockDB stockDB = new StockDB(database);
                             float cantidad = 0;
@@ -556,8 +672,13 @@ public class EjecutaActividad extends AppCompatActivity {
                                 index++;
                             }
 
+                            actividadOperativa.setPendienteSincronizar("N");
                             ActividadOperativaDB actividadOperativaDB = new ActividadOperativaDB(database);
                             actividadOperativaDB.actualizarDatos(actividadOperativa);
+
+
+                            ElementoDB elementoDB = new ElementoDB(database);
+                            elementoDB.actualizarDatos(actividadOperativa.getElemento());
 
                             alert.setMessage(jsonResponse.getString("Mensaje"));
                             alert.setNeutralButton("Aceptar",new DialogInterface.OnClickListener(){
