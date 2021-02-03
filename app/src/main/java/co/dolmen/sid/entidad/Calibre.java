@@ -1,8 +1,17 @@
 package co.dolmen.sid.entidad;
 
-public class Calibre {
+import java.io.Serializable;
+
+public class Calibre implements Serializable {
     private int id_calibre;
     private  String descripcion;
+
+    public Calibre(){}
+
+    public Calibre(int id_calibre, String descripcion) {
+        this.id_calibre = id_calibre;
+        this.descripcion = descripcion;
+    }
 
     public int getId_calibre() {
         return id_calibre;

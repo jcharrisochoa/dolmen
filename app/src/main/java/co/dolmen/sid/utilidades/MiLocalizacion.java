@@ -79,4 +79,5 @@ public class MiLocalizacion implements LocationListener {
     public void onProviderDisabled(String s) {
         Toast.makeText(context,s+" Inactivo",Toast.LENGTH_LONG).show();
     }
+
 }

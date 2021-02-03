@@ -1,6 +1,8 @@
 package co.dolmen.sid.entidad;
 
-public class NormaConstruccionRed {
+import java.io.Serializable;
+
+public class NormaConstruccionRed  implements Serializable {
     int id;
     String descripcion;
     String norma;

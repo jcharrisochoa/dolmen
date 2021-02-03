@@ -1,6 +1,8 @@
 package co.dolmen.sid.entidad;
 
-public class ComponenteNormaConstruccionRed {
+import java.io.Serializable;
+
+public class ComponenteNormaConstruccionRed implements Serializable {
 
     NormaConstruccionRed normaConstruccionRed;
     TipoRed tipoRed;

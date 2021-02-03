@@ -37,6 +37,8 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
                 "id_tipo_balasto INTEGER,"+
                 "id_tipo_base_fotocelda INTEGER,"+
                 "id_tipo_brazo INTEGER,"+
+                "id_control_encendido INTEGER,"+
+                "id_tipo_escenario INTEGER,"+
                 "id_clase_via INTEGER,"+
                 "id_tipo_poste INTEGER,"+
                 "id_norma_construccion_poste INTEGER,"+
@@ -49,7 +51,10 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
                 "interdistancia INTEGER,"+
                 "poste_no VARCHAR(12),"+
                 "latitud NUMERIC (15,13) NOT NULL DEFAULT 0,"+
-                "longitud NUMERIC (15,13) NOT NULL DEFAULT 0"+
+                "longitud NUMERIC (15,13) NOT NULL DEFAULT 0,"+
+                "transformador_compartido VARCHAR(1),"+
+                "estructura_soporte_compartida VARCHAR (1),"+
+                "potencia_transformador DECIMAL(5,2) NOT NULL DEFAULT 0"+
                 ");"
         );
     }
@@ -101,7 +106,9 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
                                 int id_tipo_base_fotocelda,int id_tipo_brazo,String zona,String sector,
                                 float latitud,float longitud,int id_clase_via,int ancho_via,int id_tipo_poste,
                                 int id_norma_construccion_poste,String poste_no,int interdistancia,
-                                int id_calibre_conductores,int id_tipo_red,int id_tipo_instalacion_red_alimentacion
+                                int id_calibre_conductores,int id_tipo_red,int id_tipo_instalacion_red_alimentacion,
+                                int id_control_encendido,int id_tipo_escenario,String transformador_compartido, String estructura_soporte_compartida,
+                                double potencia_transformador
                                 ){
         Cursor result = consultarId(id_elemento);
 
@@ -120,6 +127,8 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
             contentValues.put("id_tipo_balasto", id_tipo_balasto);
             contentValues.put("id_tipo_base_fotocelda", id_tipo_base_fotocelda);
             contentValues.put("id_tipo_brazo", id_tipo_brazo);
+            contentValues.put("id_control_encendido", id_control_encendido);
+            contentValues.put("id_tipo_escenario", id_tipo_escenario);
             contentValues.put("id_clase_via", id_clase_via);
             contentValues.put("id_tipo_poste", id_tipo_poste);
             contentValues.put("id_norma_construccion_poste", id_norma_construccion_poste);
@@ -133,6 +142,10 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
             contentValues.put("poste_no", poste_no);
             contentValues.put("latitud", latitud);
             contentValues.put("longitud", longitud);
+            contentValues.put("transformador_compartido", transformador_compartido);
+            contentValues.put("estructura_soporte_compartida", estructura_soporte_compartida);
+            contentValues.put("potencia_transformador", potencia_transformador);
+
 
             //Log.d("VALUE",contentValues.toString());
             db.insert(Constantes.TABLA_ELEMENTO, null, contentValues);
@@ -141,8 +154,39 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
         return true;
     }
     @Override
-    public void actualizarDatos(Object E) {
-
+    public void actualizarDatos(Object o) {
+        if(o instanceof Elemento) {
+            elemento = (Elemento) o;
+            ContentValues contentValues = new ContentValues();
+            /*contentValues.put("_id", id_elemento);
+            contentValues.put("elemento_no", mobiliario_no);*/
+            contentValues.put("direccion", elemento.getDireccion());
+            contentValues.put("id_municipio", elemento.getMunicipio().getId());
+            contentValues.put("id_barrio", elemento.getBarrio().getIdBarrio());
+            contentValues.put("id_estado_mobiliario", elemento.getEstadoMobiliario().getIdEstadoMobiliario());
+            contentValues.put("id_tipo_balasto", elemento.getTipoBalasto().getIdTipoBalasto());
+            contentValues.put("id_tipo_base_fotocelda", elemento.getTipoBaseFotocelda().getidTipoBaseFotocelda());
+            contentValues.put("id_tipo_brazo", elemento.getTipoBrazo().getidTipoBrazo());
+            contentValues.put("id_control_encendido", elemento.getControlEncendido().getidControlEncendido());
+            contentValues.put("id_tipo_escenario", elemento.getTipoEscenario().getId());
+            contentValues.put("id_clase_via", elemento.getClaseVia().getId());
+            contentValues.put("id_tipo_poste", elemento.getNormaConstruccionPoste().getTipoPoste().getId());
+            contentValues.put("id_norma_construccion_poste", elemento.getNormaConstruccionPoste().getId());
+            contentValues.put("id_calibre_conductores", elemento.getCalibre().getId_calibre());
+            contentValues.put("id_tipo_red", elemento.getTipoRed().getId());
+            contentValues.put("id_tipo_instalacion_red_alimentacion", elemento.getTipoInstalacionRed().getidTipoInstalacionRed());
+            contentValues.put("zona", elemento.getZona());
+            contentValues.put("sector", elemento.getSector());
+            contentValues.put("ancho_via", elemento.getAnchoVia());
+            contentValues.put("interdistancia", elemento.getInterdistancia());
+            contentValues.put("poste_no", elemento.getPosteNo());
+            contentValues.put("latitud", 0);
+            contentValues.put("longitud", 0);
+            //contentValues.put("transformador_compartido", elemento.isTransformadorExclusivo());
+            //contentValues.put("estructura_soporte_compartida", elemento.isPosteExclusivo());
+            contentValues.put("potencia_transformador", elemento.getPotenciaTransformador());
+            db.update(Constantes.TABLA_ELEMENTO,contentValues,"_id="+elemento.getId(),null);
+        }
     }
 
     @Override

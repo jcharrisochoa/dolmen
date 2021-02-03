@@ -1,8 +1,18 @@
 package co.dolmen.sid.entidad;
 
-public class TipoPoste {
+import java.io.Serializable;
+
+public class TipoPoste implements Serializable {
     int id;
     String descripcion;
+
+    public TipoPoste(){}
+
+
+    public TipoPoste(int id, String descripcion) {
+        this.id = id;
+        this.descripcion = descripcion;
+    }
 
     public int getId() {
         return id;

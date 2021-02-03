@@ -66,17 +66,10 @@ public class DetalleActividad extends AppCompatActivity {
         alert.setTitle(R.string.titulo_alerta);
         alert.setIcon(R.drawable.icon_problem);
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
-            miLocalizacion = new MiLocalizacion(getApplicationContext());
-            ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, miLocalizacion);
-            gpsListener  = true;
-        }
-
         Intent i = getIntent();
-
         actividadOperativa = (ActividadOperativa)i.getSerializableExtra("actividadOperativa");
         setTitle(getString(R.string.titulo_actividad)+" No "+actividadOperativa.getIdActividad());
+
 
         btnEnSitio     = findViewById(R.id.fab_en_sitio);
         btnCancelar     = findViewById(R.id.fab_cancelar);
@@ -102,6 +95,13 @@ public class DetalleActividad extends AppCompatActivity {
         txtLongitud      = findViewById(R.id.txt_longitud);
 
         setDetalle(actividadOperativa);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
+            miLocalizacion = new MiLocalizacion(getApplicationContext());
+            ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, miLocalizacion);
+            gpsListener  = true;
+        }
 
         if(actividadOperativa.getEstadoActividad().getId()==2){
             btnEnSitio.hide();
@@ -131,41 +131,38 @@ public class DetalleActividad extends AppCompatActivity {
                     alert.create().show();
                 }
                 else {
-                    activarCoordenadas();
                     actividadOperativa.setFechaEnSitio(new Date());
-                    Log.d("programacion","Lat:"+miLocalizacion.getLatitud());
-                    actividadOperativa.setLatitud(miLocalizacion.getLatitud());
-                    actividadOperativa.setLongitud(miLocalizacion.getLongitud());
+                    if(activarCoordenadas()) {
+                        Log.d("programacion","Lat:"+miLocalizacion.getLatitud());
 
-                    if(miLocalizacion.getLatitud()==0 && miLocalizacion.getLongitud()==0){
-                        alert.setMessage("No fue posible capturar la geolocalización.\n ¿Quiere Continuar?");
-                        alert.setNegativeButton(getText(R.string.btn_cancelar), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                        alert.setPositiveButton(getText(R.string.btn_aceptar),new DialogInterface.OnClickListener(){
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                Intent i = new Intent(DetalleActividad.this, EjecutaActividad.class);
-                                i.putExtra("actividadOperativa", actividadOperativa);
-                                startActivity(i);
-                                DetalleActividad.this.finish();
-                            }
-                        });
-                        alert.create().show();
+                        actividadOperativa.setLatitud(miLocalizacion.getLatitud());
+                        actividadOperativa.setLongitud(miLocalizacion.getLongitud());
+                        if (miLocalizacion.getLatitud() == 0 && miLocalizacion.getLongitud() == 0) {
+                            alert.setMessage("No fue posible capturar la geolocalización.\n ¿Quiere Continuar?");
+                            alert.setNegativeButton(getText(R.string.btn_cancelar), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                            alert.setPositiveButton(getText(R.string.btn_aceptar), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    Intent i = new Intent(DetalleActividad.this, EjecutaActividad.class);
+                                    i.putExtra("actividadOperativa", actividadOperativa);
+                                    startActivity(i);
+                                    DetalleActividad.this.finish();
+                                }
+                            });
+                            alert.create().show();
+                        } else {
+                            Intent i = new Intent(DetalleActividad.this, EjecutaActividad.class);
+                            i.putExtra("actividadOperativa", actividadOperativa);
+                            startActivity(i);
+                            DetalleActividad.this.finish();
+                        }
                     }
-                    else{
-                        Intent i = new Intent(DetalleActividad.this, EjecutaActividad.class);
-                        i.putExtra("actividadOperativa", actividadOperativa);
-                        startActivity(i);
-                        DetalleActividad.this.finish();
-                    }
-
-
-
                 }
             }
         });
@@ -207,7 +204,8 @@ public class DetalleActividad extends AppCompatActivity {
         return (ubicacion.isProviderEnabled(LocationManager.GPS_PROVIDER));
     }
 
-    private void activarCoordenadas() {
+    private boolean activarCoordenadas() {
+        boolean sw = true;
         ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
         int PERMISSIONS_REQUEST_LOCATION = 0;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -215,13 +213,25 @@ public class DetalleActividad extends AppCompatActivity {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     PERMISSIONS_REQUEST_LOCATION);
+            sw = false;
 
         }
         else {
             if(!gpsListener) {
                 Log.d("programacion","activo");
+                //ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, miLocalizacion);
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
+                    miLocalizacion = new MiLocalizacion(getApplicationContext());
+                    ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, miLocalizacion);
+                    gpsListener  = true;
+                }
+
+            }
+            else{
                 ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, miLocalizacion);
             }
         }
+        return sw;
     }
 }

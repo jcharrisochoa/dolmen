@@ -35,17 +35,28 @@ import java.util.Date;
 import co.dolmen.sid.entidad.ActividadOperativa;
 import co.dolmen.sid.entidad.Barrio;
 import co.dolmen.sid.entidad.Bodega;
+import co.dolmen.sid.entidad.Calibre;
 import co.dolmen.sid.entidad.CentroCosto;
+import co.dolmen.sid.entidad.ClaseVia;
+import co.dolmen.sid.entidad.ControlEncendido;
 import co.dolmen.sid.entidad.Elemento;
 import co.dolmen.sid.entidad.Equipo;
 import co.dolmen.sid.entidad.EstadoActividad;
 import co.dolmen.sid.entidad.EstadoMobiliario;
 import co.dolmen.sid.entidad.Mobiliario;
 import co.dolmen.sid.entidad.Municipio;
+import co.dolmen.sid.entidad.NormaConstruccionPoste;
 import co.dolmen.sid.entidad.ProcesoSgc;
 import co.dolmen.sid.entidad.Programa;
 import co.dolmen.sid.entidad.ReferenciaMobiliario;
 import co.dolmen.sid.entidad.TipoActividad;
+import co.dolmen.sid.entidad.TipoBalasto;
+import co.dolmen.sid.entidad.TipoBaseFotocelda;
+import co.dolmen.sid.entidad.TipoBrazo;
+import co.dolmen.sid.entidad.TipoEscenario;
+import co.dolmen.sid.entidad.TipoInstalacionRed;
+import co.dolmen.sid.entidad.TipoPoste;
+import co.dolmen.sid.entidad.TipoRed;
 import co.dolmen.sid.entidad.TipoReporteDano;
 import co.dolmen.sid.entidad.Tipologia;
 import co.dolmen.sid.modelo.ActividadOperativaDB;
@@ -242,10 +253,29 @@ public class ListaActividad extends AppCompatActivity  {
                     Elemento elemento = new Elemento();
                     elemento.setId(cursor.getInt(cursor.getColumnIndex("id_elemento")));
                     if (cursor.getString(cursor.getColumnIndex("elemento_no")) == null) {
-                        elemento.setElemento_no("-");
+                        elemento.setElemento_no("");
                         elemento.setTipologia(new Tipologia());
                         elemento.setMobiliario(new Mobiliario());
                         elemento.setReferenciaMobiliario(new ReferenciaMobiliario());
+                        elemento.setEstadoMobiliario(new EstadoMobiliario());
+                        elemento.setTipoBalasto(new TipoBalasto());
+                        elemento.setNormaConstruccionPoste(new NormaConstruccionPoste());
+                        elemento.setTipoBaseFotocelda(new TipoBaseFotocelda());
+                        elemento.setTipoBrazo(new TipoBrazo());
+                        elemento.setControlEncendido(new ControlEncendido());
+                        elemento.setTipoRed(new TipoRed());
+                        elemento.setTipoInstalacionRed(new TipoInstalacionRed());
+                        elemento.setTipoEscenario(new TipoEscenario());
+                        elemento.setClaseVia(new ClaseVia());
+                        elemento.setCalibre(new Calibre());
+                        elemento.setZona("U");
+                        elemento.setSector("N");
+                        elemento.setAnchoVia(0);
+                        elemento.setInterdistancia(0);
+                        elemento.setPosteNo("");
+                        elemento.setTransformadorExclusivo(true);
+                        elemento.setPosteExclusivo(true);
+                        elemento.setPotenciaTransformador(0);
                     } else {
                         elemento.setElemento_no(cursor.getString(cursor.getColumnIndex("elemento_no")));
                         elemento.setTipologia(
@@ -269,8 +299,70 @@ public class ListaActividad extends AppCompatActivity  {
                                 cursor.getInt(cursor.getColumnIndex("id_estado_mobiliario")),
                                 cursor.getString(cursor.getColumnIndex("estado_mobiliario"))
                         ));
-                    }
 
+                        elemento.setTipoBalasto(new TipoBalasto(
+                                cursor.getInt(cursor.getColumnIndex("id_tipo_balasto")),
+                                cursor.getString(cursor.getColumnIndex("tipo_balasto"))
+                        ));
+
+                        elemento.setNormaConstruccionPoste(new NormaConstruccionPoste(
+                                cursor.getInt(cursor.getColumnIndex("id_norma_construccion_poste")),
+                                cursor.getString(cursor.getColumnIndex("norma_construccion_poste")),
+                                new TipoPoste(
+                                        cursor.getInt(cursor.getColumnIndex("id_tipo_poste")),
+                                        cursor.getString(cursor.getColumnIndex("tipo_poste"))
+                                )
+                        ));
+
+                        elemento.setTipoBaseFotocelda(new TipoBaseFotocelda(
+                                cursor.getInt(cursor.getColumnIndex("id_tipo_base_fotocelda")),
+                                cursor.getString(cursor.getColumnIndex("tipo_base_fotocelda"))
+                        ));
+
+                        elemento.setTipoBrazo(new TipoBrazo(
+                                cursor.getInt(cursor.getColumnIndex("id_tipo_brazo")),
+                                cursor.getString(cursor.getColumnIndex("tipo_brazo"))
+                        ));
+
+                         elemento.setControlEncendido(new ControlEncendido(
+                                 cursor.getInt(cursor.getColumnIndex("id_control_encendido")),
+                                 cursor.getString(cursor.getColumnIndex("control_encendido"))
+                         ));
+                        elemento.setTipoRed(new TipoRed(
+                                cursor.getInt(cursor.getColumnIndex("id_tipo_red")),
+                                cursor.getString(cursor.getColumnIndex("tipo_red"))
+                        ));
+
+                        elemento.setTipoInstalacionRed(new TipoInstalacionRed(
+                                cursor.getInt(cursor.getColumnIndex("id_tipo_instalacion_red_alimentacion")),
+                                cursor.getString(cursor.getColumnIndex("tipo_instalacion_red"))
+                        ));
+
+                        elemento.setTipoEscenario(new TipoEscenario(
+                                cursor.getInt(cursor.getColumnIndex("id_tipo_escenario")),
+                                cursor.getString(cursor.getColumnIndex("tipo_escenario"))
+                        ));
+
+                        elemento.setClaseVia(new ClaseVia(
+                                cursor.getInt(cursor.getColumnIndex("id_clase_via")),
+                                cursor.getString(cursor.getColumnIndex("clase_via"))
+                        ));
+
+                        elemento.setCalibre(new Calibre(
+                                cursor.getInt(cursor.getColumnIndex("id_calibre_conductores")),
+                                cursor.getString(cursor.getColumnIndex("calibre_conductor"))
+                        ));
+
+                        elemento.setZona(cursor.getString(cursor.getColumnIndex("zona")));
+                        elemento.setSector(cursor.getString(cursor.getColumnIndex("sector")));
+                        elemento.setAnchoVia(cursor.getInt(cursor.getColumnIndex("ancho_via")));
+                        elemento.setInterdistancia(cursor.getInt(cursor.getColumnIndex("interdistancia")));
+                        elemento.setPosteNo(cursor.getString(cursor.getColumnIndex("poste_no")));
+                        elemento.setTransformadorExclusivo((cursor.getString(cursor.getColumnIndex("transformador_compartido"))=="S")?false:true);
+                        elemento.setPosteExclusivo((cursor.getString(cursor.getColumnIndex("estructura_soporte_compartida"))=="S")?false:true);
+                        elemento.setPotenciaTransformador(cursor.getDouble(cursor.getColumnIndex("potencia_transformador")));
+
+                    }
 
                     ProcesoSgc procesoSgc = new ProcesoSgc();
                     procesoSgc.setId(cursor.getInt(cursor.getColumnIndex("id_proceso_sgc")));
