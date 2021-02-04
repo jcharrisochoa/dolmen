@@ -2,7 +2,10 @@ package co.dolmen.sid.modelo;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+import android.util.Log;
 
 import co.dolmen.sid.Constantes;
 import co.dolmen.sid.entidad.ArchivoActividad;
@@ -20,7 +23,12 @@ public class ArchivoActividadDB extends ArchivoActividad implements DatabaseDDL,
 
     @Override
     public void crearTabla() {
-        this.sql = "create table "+ Constantes.TABLA_ARCHIVO_ACTIVIDAD_OPERATIVA +"(_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,id_actividad INTEGER NOT NULL,tipo VARCHAR(1) NOT NULL DEFAULT 'A',archivo TEXT NOT NULL);";
+        this.sql = "create table "+ Constantes.TABLA_ARCHIVO_ACTIVIDAD_OPERATIVA +"("+
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
+                "id_actividad INTEGER NOT NULL," +
+                "tipo VARCHAR(1) NOT NULL DEFAULT 'A'," +
+                "archivo TEXT NOT NULL" +
+                ");";
         db.execSQL(this.sql);
     }
 
@@ -31,17 +39,29 @@ public class ArchivoActividadDB extends ArchivoActividad implements DatabaseDDL,
 
     @Override
     public boolean agregarDatos(Object o) {
+        long lastId;
         if(o instanceof ArchivoActividad) {
             archivoActividad = (ArchivoActividad) o;
             ContentValues contentValues = new ContentValues();
             contentValues.put("id_actividad", archivoActividad.getId_actividad());
             contentValues.put("tipo", archivoActividad.getTipo());
-            contentValues.put("archivo", getArchivo());
-            db.insert(Constantes.TABLA_CLASE_VIA, null, contentValues);
-            return true;
+            contentValues.put("archivo", archivoActividad.getArchivo());
+            try {
+                lastId = db.insert(Constantes.TABLA_ARCHIVO_ACTIVIDAD_OPERATIVA, null, contentValues);
+                Log.d(Constantes.TAG,"lastid="+lastId);
+                return true;
+            }
+            catch (SQLiteException  e){
+                Log.d(Constantes.TAG,"Error"+e.getMessage());
+                e.printStackTrace();
+                return false;
+            }
+
         }
-        else
+        else {
+            Log.d(Constantes.TAG,"no es del tipo");
             return false;
+        }
     }
 
     @Override

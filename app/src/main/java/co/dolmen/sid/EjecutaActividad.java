@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -476,6 +477,7 @@ public class EjecutaActividad extends AppCompatActivity {
         actualizarObjeto();
         actividadOperativa.setPendienteSincronizar("S");
         try {
+            progressGuardarActividad.setVisibility(View.VISIBLE);
             ActividadOperativaDB actividadOperativaDB = new ActividadOperativaDB(database);
             ArchivoActividadDB archivoActividadDB = new ArchivoActividadDB(database);
             ElementoDB elementoDB = new ElementoDB(database);
@@ -485,17 +487,27 @@ public class EjecutaActividad extends AppCompatActivity {
             actividadOperativaDB.actualizarDatos(actividadOperativa);
 
             //--Guardar Fotos
-            Iterator<ArchivoActividad> it = actividadOperativa.getArchivoActividad().iterator();
-            while (it.hasNext()) {
-                archivoActividadDB.agregarDatos(it.next());
+            Iterator<ArchivoActividad> archivoActividadIterator = actividadOperativa.getArchivoActividad().iterator();
+            ArchivoActividad tmpArchivoActividad;
+            while (archivoActividadIterator.hasNext()) {
+                tmpArchivoActividad = archivoActividadIterator.next();
+                if(!tmpArchivoActividad.getArchivo().isEmpty()) {
+                    if (!archivoActividadDB.agregarDatos(tmpArchivoActividad)) {
+                        Toast.makeText(getApplicationContext(),"Error guardado las imagenes",Toast.LENGTH_LONG).show();
+                    }
+                }
             }
+
             //--Guardar Movimientos de Inventario
             Iterator<MovimientoArticulo> movimientoArticuloIterator = fragmentMateriales.movimientoArticuloArrayList.iterator();
             while (movimientoArticuloIterator.hasNext()) {
-                movimientoArticuloDB.agregarDatos(movimientoArticuloIterator.next());
+                if(movimientoArticuloDB.agregarDatos(movimientoArticuloIterator.next()))
+                    Toast.makeText(getApplicationContext(),"Error guardado los movimientos de inventario",Toast.LENGTH_LONG).show();
             }
+
             //--Actualiza el stock
             actulizarStock();
+
             //--Actualizar elemento
             elementoDB.actualizarDatos(actividadOperativa.getElemento());
             alert.setMessage(R.string.alert_almacenamiento_local);
@@ -511,6 +523,8 @@ public class EjecutaActividad extends AppCompatActivity {
             alert.create().show();
 
         }catch (SQLException e){
+            progressGuardarActividad.setVisibility(View.INVISIBLE);
+            enableButton(true);
             Toast.makeText(getApplicationContext(),"Error:"+e.getMessage(),Toast.LENGTH_LONG).show();
         }
     }

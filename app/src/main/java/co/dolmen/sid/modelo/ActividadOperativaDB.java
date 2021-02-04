@@ -3,7 +3,9 @@ package co.dolmen.sid.modelo;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -129,7 +131,11 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
             contentValues.put("afectado_por_vandalismo",actividad.isAfectadoPorVandalismo());
             contentValues.put("observacion",actividad.getObservacion());
             contentValues.put("pendiente_sincronizar",actividad.getPendienteSincronizar());
-            db.update(Constantes.TABLA_ACTIVIDAD_OPERATIVA,contentValues,"id_actividad="+actividad.getIdActividad(),null);
+            try {
+                db.update(Constantes.TABLA_ACTIVIDAD_OPERATIVA, contentValues, "id_actividad=" + actividad.getIdActividad(), null);
+            }catch (SQLiteException e){
+                e.printStackTrace();
+            }
         }
     }
 

@@ -8,7 +8,7 @@ public final class Constantes {
     public static final int CONS_TOMAR_FOTO = 100;
     public static final int CONS_SELECCIONAR_IMAGEN = 200;
     public static final int MEDIA_TYPE_IMAGE = 1;
-
+    public static final String TAG = "DOLMEN-DEBUGER";
     //--Base Datos
     public static final int VERSION_BASEDATOS = 9;
     public static int OLD_VERSION_BASEDATOS;
