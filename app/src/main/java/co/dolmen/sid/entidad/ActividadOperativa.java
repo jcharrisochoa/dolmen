@@ -1,6 +1,7 @@
 package co.dolmen.sid.entidad;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class ActividadOperativa implements Serializable {
@@ -32,9 +33,10 @@ public class ActividadOperativa implements Serializable {
     private String pendienteSincronizar;
     private String afectadoPorVandalismo;
     private String elementoNoEncontrado;
+    private ArrayList<ArchivoActividad> archivoActividadList;
 
     public ActividadOperativa(){
-
+        archivoActividadList = new ArrayList<ArchivoActividad>();
     }
 
     public void setAfectadoPorVandalismo(String afectadoPorVandalismo) {
@@ -43,6 +45,22 @@ public class ActividadOperativa implements Serializable {
 
     public void setElementoNoEncontrado(String elementoNoEncontrado) {
         this.elementoNoEncontrado = elementoNoEncontrado;
+    }
+
+    public ArrayList<ArchivoActividad> getArchivoActividad() {
+        return archivoActividadList;
+    }
+
+    public void setArchivoActividads(ArrayList<ArchivoActividad> archivoActividad) {
+        this.archivoActividadList = archivoActividad;
+    }
+
+    public void agregarArchivoActividad(ArchivoActividad archivoActividad){
+        archivoActividadList.add(archivoActividad);
+    }
+
+    public int getCantidadArchivoActividad(){
+        return archivoActividadList.size();
     }
 
     public ActividadOperativa(int idActividad, int idEspacioPublicitario, Programa programa, ProcesoSgc procesoSgc, Elemento elemento, CentroCosto centroCosto, Barrio barrio, EstadoActividad estadoActividad,
@@ -65,6 +83,7 @@ public class ActividadOperativa implements Serializable {
         this.et = et;
         this.usuarioProgramaActividad = usuarioProgramaActividad;
         this.usuarioGeneraActividad = usuarioGeneraActividad;
+        archivoActividadList = new ArrayList<ArchivoActividad>();
     }
 
     public String isAfectadoPorVandalismo() {

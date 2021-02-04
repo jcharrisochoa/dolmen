@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import co.dolmen.sid.Constantes;
 import co.dolmen.sid.entidad.ArchivoActividad;
-import co.dolmen.sid.entidad.ClaseVia;
 
 public class ArchivoActividadDB extends ArchivoActividad implements DatabaseDDL,DatabaseDLM {
 
@@ -61,8 +60,9 @@ public class ArchivoActividadDB extends ArchivoActividad implements DatabaseDDL,
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }
+
     public Cursor consultarTodo(int id_actividad) {
-        this.sql = "SELECT * FROM "+Constantes.TABLA_ARCHIVO_ACTIVIDAD_OPERATIVA+" WHERE ="+id_actividad;
+        this.sql = "SELECT * FROM "+Constantes.TABLA_ARCHIVO_ACTIVIDAD_OPERATIVA+" WHERE id_actividad="+id_actividad;
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }

@@ -361,6 +361,7 @@ public class ListaActividad extends AppCompatActivity  {
                         elemento.setTransformadorExclusivo((cursor.getString(cursor.getColumnIndex("transformador_compartido")).contentEquals("N"))?true:false);
                         elemento.setPosteExclusivo((cursor.getString(cursor.getColumnIndex("estructura_soporte_compartida")).contentEquals("N"))?true:false);
                         elemento.setPotenciaTransformador(cursor.getDouble(cursor.getColumnIndex("potencia_transformador")));
+                        elemento.setDireccion(cursor.getString(cursor.getColumnIndex("direccion_elemento")));
 
                     }
                     ProcesoSgc procesoSgc = new ProcesoSgc();
@@ -416,12 +417,13 @@ public class ListaActividad extends AppCompatActivity  {
                     );
 
                     if(cursor.getString(cursor.getColumnIndex("fch_ejecucion"))!=null) {
-                        //Log.d("programacion",""+cursor.getString(cursor.getColumnIndex("fch_ejecucion")));
+
                         actividadOperativa.setFechaEjecucion(new SimpleDateFormat("yyyy-MM-dd H:mm:ss").parse(cursor.getString(cursor.getColumnIndex("fch_ejecucion"))));
                     }
                     actividadOperativa.setObservacion(cursor.getString(cursor.getColumnIndex("observacion")));
                     actividadOperativa.setLatitud(cursor.getDouble(cursor.getColumnIndex("latitud")));
                     actividadOperativa.setLongitud(cursor.getDouble(cursor.getColumnIndex("longitud")));
+                    actividadOperativa.setPendienteSincronizar(cursor.getString(cursor.getColumnIndex("pendiente_sincronizar")));
                     actividadOperativaArrayList.add(actividadOperativa);
                 }
             }

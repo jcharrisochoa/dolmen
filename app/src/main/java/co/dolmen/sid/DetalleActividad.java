@@ -49,6 +49,7 @@ public class DetalleActividad extends AppCompatActivity {
     private TextView txtObservacion;
     private TextView txtLatitud;
     private TextView txtLongitud;
+    private TextView txtSincronizada;
 
     private ActividadOperativa actividadOperativa;
     public LocationManager ubicacion;
@@ -93,6 +94,7 @@ public class DetalleActividad extends AppCompatActivity {
         txtObservacion  = findViewById(R.id.txt_observacion);
         txtLatitud      = findViewById(R.id.txt_latitud);
         txtLongitud      = findViewById(R.id.txt_longitud);
+        txtSincronizada = findViewById(R.id.txt_sincronizada);
 
         setDetalle(actividadOperativa);
 
@@ -196,6 +198,7 @@ public class DetalleActividad extends AppCompatActivity {
         txtObservacion.setText(ao.getObservacion());
         txtLatitud.setText(String.valueOf(ao.getLatitud()));
         txtLongitud.setText(String.valueOf(ao.getLongitud()));
+        txtSincronizada.setText((ao.getPendienteSincronizar().contentEquals("S"))?getString(R.string.NO):getString(R.string.SI));
 
     }
 

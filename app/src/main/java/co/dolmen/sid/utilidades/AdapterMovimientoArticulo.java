@@ -28,14 +28,10 @@ public class AdapterMovimientoArticulo extends RecyclerView.Adapter<AdapterMovim
 
     private ArrayList<MovimientoArticulo> movimientoArticuloArrayList;
     private SQLiteDatabase database;
-    private int idBodega;
-    private int idCentroCosto;
 
-    public AdapterMovimientoArticulo(ArrayList<MovimientoArticulo> movimientoArticuloArrayList, SQLiteDatabase sqLiteDatabase,int idBodega,int idCentroCosto) {
+    public AdapterMovimientoArticulo(ArrayList<MovimientoArticulo> movimientoArticuloArrayList, SQLiteDatabase sqLiteDatabase) {
         this.movimientoArticuloArrayList = movimientoArticuloArrayList;
         this.database = sqLiteDatabase;
-        this.idBodega = idBodega;
-        this.idCentroCosto = idCentroCosto;
     }
 
     @NonNull
@@ -102,22 +98,25 @@ public class AdapterMovimientoArticulo extends RecyclerView.Adapter<AdapterMovim
 
             //Buscar movimiento de salida
             movimientoArticuloTmp = new MovimientoArticulo(
+                    movimientoArticuloArrayList.get(position).getId_actividad(),
                     movimientoArticuloArrayList.get(position).getId_articulo(),
                     movimientoArticuloArrayList.get(position).getId_tipo_stock(),
                     movimientoArticuloArrayList.get(position).getCantidad(),
                     movimientoArticuloArrayList.get(position).getArticulo(),
                     movimientoArticuloArrayList.get(position).getTipo_stock(),
-                    v.getContext().getText(R.string.movimiento_salida).toString()
+                    v.getContext().getText(R.string.movimiento_salida).toString(),
+                    movimientoArticuloArrayList.get(position).getId_bodega(),
+                    movimientoArticuloArrayList.get(position).getId_centro_costo()
             );
             pos = getPositionItem(movimientoArticuloTmp);
 
             if(pos>=0){
 
                 StockDB stockDB = new StockDB(database);
-                Cursor cursor = stockDB.consultarTodo(idBodega,
+                Cursor cursor = stockDB.consultarTodo(movimientoArticuloArrayList.get(position).getId_bodega(),
                         movimientoArticuloArrayList.get(position).getId_articulo(),
                         movimientoArticuloArrayList.get(position).getId_tipo_stock(),
-                        idCentroCosto
+                        movimientoArticuloArrayList.get(position).getId_centro_costo()
                 );
                 if (cursor.getCount() > 0) {
                     cursor.moveToFirst();

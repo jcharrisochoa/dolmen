@@ -219,4 +219,6 @@
     <string name="titulo_vehiculo">Vehículo</string>
     <string name="titulo_movimiento">Movimiento</string>
     <string name="articulo">Artículos</string>
+    <string name="SI">SI</string>
+    <string name="NO">NO</string>
 </resources>

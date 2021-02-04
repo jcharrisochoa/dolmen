@@ -7,6 +7,7 @@ import co.dolmen.sid.entidad.TipoBaseFotocelda;
 import co.dolmen.sid.entidad.TipoBrazo;
 import co.dolmen.sid.modelo.ActaContratoDB;
 import co.dolmen.sid.modelo.ActividadOperativaDB;
+import co.dolmen.sid.modelo.ArchivoActividadDB;
 import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.BodegaDB;
 import co.dolmen.sid.modelo.CalibreDB;
@@ -42,6 +43,7 @@ import co.dolmen.sid.modelo.TipoReporteDanoDB;
 import co.dolmen.sid.modelo.TipoStockDB;
 import co.dolmen.sid.modelo.TipoTensionDB;
 import co.dolmen.sid.modelo.TipologiaDB;
+import co.dolmen.sid.utilidades.MiBaseDatos;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -79,48 +81,10 @@ public class Menu extends AppCompatActivity {
     TextView txtNombreContrato;
 
     SQLiteOpenHelper conn;
-    private CensoDB censoDB;
-    private CensoTipoArmadoDB censoTipoArmadoDB;
-    private CensoArchivoDB censoArchivoDB;
-    private ProgramaDB programaDB;
-    private CensoAsignadoDB censoAsignadoDB;
-    private ElementoDB elementoDB;
-
-    private ProcesoSgcDB procesoSgcDB;
-    private ContratoDB contratoDB;
-    private ActaContratoDB actaContratoDB;
-    private BarrioDB  barrioDB;
-    private MunicipioDB municipioDB;
-    private TipoReporteDanoDB tipoReporteDanoDB;
-    private TipoActividadDB tipoActividadDB;
-    private EstadoMobiliarioDB estadoMobiliarioDB;
-    private EstadoActividadDB estadoActividadDB;
-    private TipologiaDB tipologiaDB;
-    private MobiliarioDB mobiliarioDB;
-    private ReferenciaMobiliarioDB referenciaMobiliarioDB;
-    private ActividadOperativaDB actividadOperativaDB;
-    private StockDB stockDB;
-    private BodegaDB bodegaDB;
-    private TipoInstalacionRedDB tipoInstalacionRedDB;
-    private TipoBaseFotoceldaDB tipoBaseFotoceldaDB;
-    private TipoBrazoDB tipoBrazoDB;
-    private TipoBalastoDB tipoBalastoDB;
-    private ControlEncendidoDB controlEncendidoDB;
-    private TipoPosteDB tipoPosteDB;
-    private TipoRedDB tipoRedDB;
-    private NormaConstruccionPosteDB normaConstruccionPosteDB;
-    private CalibreDB calibreDB;
-    private TipoStockDB tipoStockDB;
-    private ClaseViaDB claseViaDB;
-    private RetenidaPosteDB retenidaPosteDB;
-    private TipoTensionDB tipoTensionDB;
-    private TipoEstructuraDB tipoEstructuraDB;
-    private NormaConstruccionRedDB normaConstruccionRedDB;
-    private EquipoDB equipoDB;
-
-
     SQLiteDatabase database;
     AlertDialog.Builder alert;
+
+    MiBaseDatos miBaseDatos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,44 +95,7 @@ public class Menu extends AppCompatActivity {
 
         conn = new BaseDatos(Menu.this);
         database = conn.getReadableDatabase();
-
-        censoDB                 = new CensoDB(database);
-        censoTipoArmadoDB       = new CensoTipoArmadoDB(database);
-        censoArchivoDB          = new CensoArchivoDB(database);
-        programaDB              = new ProgramaDB(database);
-        censoAsignadoDB         = new CensoAsignadoDB(database);
-        elementoDB              = new ElementoDB(database);
-        procesoSgcDB            = new ProcesoSgcDB(database);
-        contratoDB              = new ContratoDB(database);
-        actaContratoDB          = new ActaContratoDB(database);
-        barrioDB                = new BarrioDB(database);
-        municipioDB             = new MunicipioDB(database);
-        tipoReporteDanoDB       = new TipoReporteDanoDB(database);
-        tipoActividadDB         = new TipoActividadDB(database);
-        estadoMobiliarioDB      = new EstadoMobiliarioDB(database);
-        estadoActividadDB       = new EstadoActividadDB(database);
-        tipologiaDB             = new TipologiaDB(database);
-        mobiliarioDB            = new MobiliarioDB(database);
-        referenciaMobiliarioDB  = new ReferenciaMobiliarioDB(database);
-        actividadOperativaDB    = new ActividadOperativaDB(database);
-        stockDB                 = new StockDB(database);
-        bodegaDB                = new BodegaDB(database);
-        tipoInstalacionRedDB    = new TipoInstalacionRedDB(database);
-        tipoBaseFotoceldaDB     = new TipoBaseFotoceldaDB(database);
-        tipoBrazoDB             = new TipoBrazoDB(database);
-        tipoBalastoDB           = new TipoBalastoDB(database);
-        controlEncendidoDB      = new ControlEncendidoDB(database);
-        tipoPosteDB             = new TipoPosteDB(database);
-        tipoRedDB               = new TipoRedDB(database);
-        normaConstruccionPosteDB = new NormaConstruccionPosteDB(database);
-        calibreDB               = new CalibreDB(database);
-        tipoStockDB             = new TipoStockDB(database);
-        claseViaDB              = new ClaseViaDB(database);
-        retenidaPosteDB         = new RetenidaPosteDB(database);
-        tipoTensionDB           = new TipoTensionDB(database);
-        tipoEstructuraDB        = new TipoEstructuraDB(database);
-        normaConstruccionRedDB  = new NormaConstruccionRedDB(database);
-        equipoDB                = new EquipoDB(database);
+        miBaseDatos = new MiBaseDatos(database);
 
         alert = new AlertDialog.Builder(this);
 
@@ -216,44 +143,7 @@ public class Menu extends AppCompatActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         //
                         try {
-                            censoTipoArmadoDB.eliminarDatos();
-                            censoArchivoDB.eliminarDatos();
-                            censoDB.eliminarDatos();
-                            programaDB.eliminarDatos();
-                            censoAsignadoDB.eliminarDatos();
-                            elementoDB.eliminarDatos();
-                            procesoSgcDB.eliminarDatos();
-                            contratoDB.eliminarDatos();
-                            actaContratoDB.eliminarDatos();
-                            barrioDB.eliminarDatos();
-                            municipioDB.eliminarDatos();
-                            tipoReporteDanoDB.eliminarDatos();
-                            tipoActividadDB.eliminarDatos();
-                            estadoMobiliarioDB.eliminarDatos();
-                            estadoActividadDB.eliminarDatos();
-                            tipologiaDB.eliminarDatos();
-                            mobiliarioDB.eliminarDatos();
-                            referenciaMobiliarioDB.eliminarDatos();
-                            actividadOperativaDB.eliminarDatos();
-                            stockDB.eliminarDatos();
-                            bodegaDB.eliminarDatos();
-                            tipoInstalacionRedDB.eliminarDatos();
-                            tipoBaseFotoceldaDB.eliminarDatos();
-                            tipoBrazoDB.eliminarDatos();
-                            tipoBalastoDB.eliminarDatos();
-                            controlEncendidoDB.eliminarDatos();
-                            tipoPosteDB.eliminarDatos();
-                            tipoRedDB.eliminarDatos();
-                            normaConstruccionPosteDB.eliminarDatos();
-                            calibreDB.eliminarDatos();
-                            tipoStockDB.eliminarDatos();
-                            claseViaDB.eliminarDatos();
-                            retenidaPosteDB.eliminarDatos();
-                            tipoTensionDB.eliminarDatos();
-                            tipoEstructuraDB.eliminarDatos();
-                            normaConstruccionRedDB.eliminarDatos();
-                            equipoDB.eliminarDatos();
-
+                            miBaseDatos.eliminarDatos();
                             config.edit().clear().commit();
                             Intent intent = new Intent(Menu.this,Login.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);

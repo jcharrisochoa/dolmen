@@ -67,7 +67,7 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
                 "elemento_no_encontrado VARCHAR(1) NOT NULL DEFAULT 'N',"+
                 "afectado_por_vandalismo VARCHAR(1) NOT NULL DEFAULT 'N',"+
                 "observacion TEXT,"+
-                "pendiente_sincronizar VARCHAR(1) NOT NULL DEFAULT 'N'"+
+                "pendiente_sincronizar VARCHAR(1) NOT NULL DEFAULT 'S'"+
                 ");";
         db.execSQL(this.sql);
     }

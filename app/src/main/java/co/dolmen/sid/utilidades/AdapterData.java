@@ -101,8 +101,14 @@ public class AdapterData extends RecyclerView.Adapter<AdapterData.ViewHolderData
                 itemEstado.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorAccent));
             }
             else{
-                itemImgElemento.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.colorVerifed), android.graphics.PorterDuff.Mode.SRC_IN);
-                itemEstado.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorVerifed));
+                if(actividadOperativa.getPendienteSincronizar().contentEquals("S")){
+                    itemImgElemento.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.colorAccent), android.graphics.PorterDuff.Mode.SRC_IN);
+                    itemEstado.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorVerifed));
+                }
+                else {
+                    itemImgElemento.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.colorVerifed), android.graphics.PorterDuff.Mode.SRC_IN);
+                    itemEstado.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorVerifed));
+                }
             }
         }
 

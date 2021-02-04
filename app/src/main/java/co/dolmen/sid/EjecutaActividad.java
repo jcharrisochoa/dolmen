@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.location.LocationManager;
@@ -39,9 +40,11 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Locale;
 
 import co.dolmen.sid.entidad.ActividadOperativa;
+import co.dolmen.sid.entidad.ArchivoActividad;
 import co.dolmen.sid.entidad.Articulo;
 import co.dolmen.sid.entidad.Barrio;
 import co.dolmen.sid.entidad.Bodega;
@@ -67,7 +70,9 @@ import co.dolmen.sid.entidad.TipoPoste;
 import co.dolmen.sid.entidad.TipoRed;
 import co.dolmen.sid.entidad.TipoStock;
 import co.dolmen.sid.modelo.ActividadOperativaDB;
+import co.dolmen.sid.modelo.ArchivoActividadDB;
 import co.dolmen.sid.modelo.ElementoDB;
+import co.dolmen.sid.modelo.MovimientoArticuloDB;
 import co.dolmen.sid.modelo.StockDB;
 import co.dolmen.sid.utilidades.MiLocalizacion;
 import co.dolmen.sid.utilidades.ViewPagerAdapter;
@@ -353,7 +358,20 @@ public class EjecutaActividad extends AppCompatActivity {
         );
         elemento.setEncodeStringFoto(fragmentFotoDespues.encodeStringFoto_1);
         actividadOperativa.setElemento(elemento);
+
+        //--Fotos Antes
+        actividadOperativa.agregarArchivoActividad(new ArchivoActividad(actividadOperativa.getIdActividad(),fragmentFotoAntes.encodeStringFoto_1, "A"));
+        actividadOperativa.agregarArchivoActividad(new ArchivoActividad(actividadOperativa.getIdActividad(),fragmentFotoAntes.encodeStringFoto_2, "A"));
+        actividadOperativa.agregarArchivoActividad(new ArchivoActividad(actividadOperativa.getIdActividad(),fragmentFotoAntes.encodeStringFoto_3, "A"));
+        actividadOperativa.agregarArchivoActividad(new ArchivoActividad(actividadOperativa.getIdActividad(),fragmentFotoAntes.encodeStringFoto_4, "A"));
+        //--Fotos Despues
+        actividadOperativa.agregarArchivoActividad(new ArchivoActividad(actividadOperativa.getIdActividad(),fragmentFotoDespues.encodeStringFoto_1, "D"));
+        actividadOperativa.agregarArchivoActividad(new ArchivoActividad(actividadOperativa.getIdActividad(),fragmentFotoDespues.encodeStringFoto_2, "D"));
+        actividadOperativa.agregarArchivoActividad(new ArchivoActividad(actividadOperativa.getIdActividad(),fragmentFotoDespues.encodeStringFoto_3, "D"));
+        actividadOperativa.agregarArchivoActividad(new ArchivoActividad(actividadOperativa.getIdActividad(),fragmentFotoDespues.encodeStringFoto_4, "D"));
+
     }
+
     private void guardar(final View view){
         if(validarFotoAntes()){
             if(validarFotoDespues()){
@@ -457,6 +475,65 @@ public class EjecutaActividad extends AppCompatActivity {
     private void almacenarDatosLocal(){
         actualizarObjeto();
         actividadOperativa.setPendienteSincronizar("S");
+        try {
+            ActividadOperativaDB actividadOperativaDB = new ActividadOperativaDB(database);
+            ArchivoActividadDB archivoActividadDB = new ArchivoActividadDB(database);
+            ElementoDB elementoDB = new ElementoDB(database);
+            MovimientoArticuloDB movimientoArticuloDB = new MovimientoArticuloDB(database);
+
+            //--Actualizar actividad
+            actividadOperativaDB.actualizarDatos(actividadOperativa);
+
+            //--Guardar Fotos
+            Iterator<ArchivoActividad> it = actividadOperativa.getArchivoActividad().iterator();
+            while (it.hasNext()) {
+                archivoActividadDB.agregarDatos(it.next());
+            }
+            //--Guardar Movimientos de Inventario
+            Iterator<MovimientoArticulo> movimientoArticuloIterator = fragmentMateriales.movimientoArticuloArrayList.iterator();
+            while (movimientoArticuloIterator.hasNext()) {
+                movimientoArticuloDB.agregarDatos(movimientoArticuloIterator.next());
+            }
+            //--Actualiza el stock
+            actulizarStock();
+            //--Actualizar elemento
+            elementoDB.actualizarDatos(actividadOperativa.getElemento());
+            alert.setMessage(R.string.alert_almacenamiento_local);
+            alert.setNeutralButton("Aceptar",new DialogInterface.OnClickListener(){
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    Intent i = new Intent(EjecutaActividad.this,ListaActividad.class);
+                    startActivity(i);
+                    EjecutaActividad.this.finish();
+                }
+            });
+            alert.create().show();
+
+        }catch (SQLException e){
+            Toast.makeText(getApplicationContext(),"Error:"+e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void actulizarStock(){
+        int index = 0;
+        StockDB stockDB = new StockDB(database);
+        float cantidad = 0;
+        Cursor cursor;
+        while(index < fragmentMateriales.movimientoArticuloArrayList.size()){
+            Bodega bodega = new Bodega();
+            bodega.setIdBodega(idDefaultBodega);
+            Articulo articulo = new Articulo(fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo(),fragmentMateriales.movimientoArticuloArrayList.get(index).getArticulo());
+            TipoStock tipoStock = new TipoStock(fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock(),fragmentMateriales.movimientoArticuloArrayList.get(index).getTipo_stock());
+            cantidad = (fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento().contentEquals(getText(R.string.movimiento_entrada)))?fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad():fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()*(-1);
+            Stock stock = new Stock(bodega,actividadOperativa.getCentroCosto(),articulo,tipoStock,cantidad);
+            cursor = stockDB.consultarTodo(idDefaultBodega,fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo(),fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock(),actividadOperativa.getCentroCosto().getIdCentroCosto());
+            if(cursor.getCount()>0)
+                stockDB.actualizarDatos(stock);
+            else
+                stockDB.agregarDatos(stock);
+            index++;
+        }
     }
 
     private void almacenarDatosEnRemoto() {
@@ -487,18 +564,16 @@ public class EjecutaActividad extends AppCompatActivity {
 
             //--Fotos Antes
             JSONArray jsonArrayFotoAntes = new JSONArray();
-            jsonArrayFotoAntes.put(fragmentFotoAntes.encodeStringFoto_1);
-            jsonArrayFotoAntes.put(fragmentFotoAntes.encodeStringFoto_2);
-            jsonArrayFotoAntes.put(fragmentFotoAntes.encodeStringFoto_3);
-            jsonArrayFotoAntes.put(fragmentFotoAntes.encodeStringFoto_4);
+            for(int f=0;f<4;f++) {
+                jsonArrayFotoAntes.put(actividadOperativa.getArchivoActividad().get(f).getArchivo());
+            }
             jsonObject.put("foto_antes", jsonArrayFotoAntes);
 
             //--Fotos Despues
             JSONArray jsonArrayFotoDespues = new JSONArray();
-            jsonArrayFotoDespues.put(fragmentFotoDespues.encodeStringFoto_1);
-            jsonArrayFotoDespues.put(fragmentFotoDespues.encodeStringFoto_2);
-            jsonArrayFotoDespues.put(fragmentFotoDespues.encodeStringFoto_3);
-            jsonArrayFotoDespues.put(fragmentFotoDespues.encodeStringFoto_4);
+            for(int f=4;f<8;f++) {
+                jsonArrayFotoDespues.put(actividadOperativa.getArchivoActividad().get(f).getArchivo());
+            }
             jsonObject.put("foto_despues", jsonArrayFotoDespues);
 
             //--Materiales
@@ -652,33 +727,16 @@ public class EjecutaActividad extends AppCompatActivity {
                             1. actualizar stock con valores +
                             2. actualizar stock con valores -
                              */
-                            //--Actualiza el stock
-                            int index = 0;
-                            StockDB stockDB = new StockDB(database);
-                            float cantidad = 0;
-                            Cursor cursor;
-                            while(index < fragmentMateriales.movimientoArticuloArrayList.size()){
-                                Bodega bodega = new Bodega();
-                                bodega.setIdBodega(idDefaultBodega);
-                                Articulo articulo = new Articulo(fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo(),fragmentMateriales.movimientoArticuloArrayList.get(index).getArticulo());
-                                TipoStock tipoStock = new TipoStock(fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock(),fragmentMateriales.movimientoArticuloArrayList.get(index).getTipo_stock());
-                                cantidad = (fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento().contentEquals(getText(R.string.movimiento_entrada)))?fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad():fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()*(-1);
-                                Stock stock = new Stock(bodega,actividadOperativa.getCentroCosto(),articulo,tipoStock,cantidad);
-                                cursor = stockDB.consultarTodo(idDefaultBodega,fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo(),fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock(),actividadOperativa.getCentroCosto().getIdCentroCosto());
-                                if(cursor.getCount()>0)
-                                    stockDB.actualizarDatos(stock);
-                                else
-                                    stockDB.agregarDatos(stock);
-                                index++;
-                            }
-
                             actividadOperativa.setPendienteSincronizar("N");
                             ActividadOperativaDB actividadOperativaDB = new ActividadOperativaDB(database);
-                            actividadOperativaDB.actualizarDatos(actividadOperativa);
-
-
                             ElementoDB elementoDB = new ElementoDB(database);
+
+                            //--Actualiza Actividad
+                            actividadOperativaDB.actualizarDatos(actividadOperativa);
+                            //--Actuliza Elementos
                             elementoDB.actualizarDatos(actividadOperativa.getElemento());
+                            //--Actualiza el stock
+                            actulizarStock();
 
                             alert.setMessage(jsonResponse.getString("Mensaje"));
                             alert.setNeutralButton("Aceptar",new DialogInterface.OnClickListener(){

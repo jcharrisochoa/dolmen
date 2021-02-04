@@ -148,6 +148,17 @@
     </ScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_cerrar_sesion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|left"
+        android:layout_margin="@dimen/fab_margin"
+        android:tint="@color/colorIconText"
+        app:backgroundTint="@color/colorAccentCancel"
+        app:srcCompat="@drawable/icon_menu_cerrar_sesion"
+        tools:ignore="VectorDrawableCompat" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_siguiente"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

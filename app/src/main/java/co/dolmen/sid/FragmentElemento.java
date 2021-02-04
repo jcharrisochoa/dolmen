@@ -33,11 +33,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.dolmen.sid.entidad.ActividadOperativa;
+import co.dolmen.sid.entidad.Calibre;
+import co.dolmen.sid.entidad.ClaseVia;
+import co.dolmen.sid.entidad.ControlEncendido;
 import co.dolmen.sid.entidad.Elemento;
 import co.dolmen.sid.entidad.EstadoMobiliario;
 import co.dolmen.sid.entidad.Mobiliario;
+import co.dolmen.sid.entidad.NormaConstruccionPoste;
 import co.dolmen.sid.entidad.ReferenciaMobiliario;
+import co.dolmen.sid.entidad.TipoBalasto;
+import co.dolmen.sid.entidad.TipoBaseFotocelda;
 import co.dolmen.sid.entidad.TipoBrazo;
+import co.dolmen.sid.entidad.TipoEscenario;
+import co.dolmen.sid.entidad.TipoInstalacionRed;
+import co.dolmen.sid.entidad.TipoPoste;
+import co.dolmen.sid.entidad.TipoRed;
 import co.dolmen.sid.entidad.Tipologia;
 import co.dolmen.sid.modelo.CalibreDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
@@ -66,6 +76,7 @@ public class FragmentElemento extends Fragment {
     TextView txtMobiliario;
     TextView txtReferencia;
     TextView txtMobiliarioNo;
+    TextView txtDireccion;
 
     EditText editMobiliarioNo;
     EditText txtLatitud;
@@ -136,7 +147,6 @@ public class FragmentElemento extends Fragment {
         // Required empty public constructor
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -177,6 +187,7 @@ public class FragmentElemento extends Fragment {
         txtMobiliario       = view.findViewById(R.id.txt_mobiliario);
         txtReferencia       = view.findViewById(R.id.txt_referencia);
         txtMobiliarioNo     = view.findViewById(R.id.txt_mobiliario_numero);
+        txtDireccion        = view.findViewById(R.id.txt_direccion);
         txtLatitud          = view.findViewById(R.id.txt_latitud);
         txtLongitud         = view.findViewById(R.id.txt_longitud);
         txtInterdistancia           = view.findViewById(R.id.txt_interdistancia);
@@ -188,11 +199,6 @@ public class FragmentElemento extends Fragment {
 
 
         editMobiliarioNo    = view.findViewById(R.id.txt_mobiliario_no);
-
-        txtMobiliarioNo.setText(actividadOperativa.getElemento().getElemento_no());
-        txtMobiliario.setText(actividadOperativa.getElemento().getMobiliario().getDescripcionMobiliario());
-        txtReferencia.setText(actividadOperativa.getElemento().getReferenciaMobiliario().getDescripcionReferenciaMobiliario());
-
         editMobiliarioNo.setText(String.valueOf(actividadOperativa.getElemento().getElemento_no()));
 
         sltEstadoMobiliario         = view.findViewById(R.id.slt_estado_mobiliario);
@@ -211,7 +217,6 @@ public class FragmentElemento extends Fragment {
         rdZonaRural                 = view.findViewById(R.id.rd_rural);
         rdSectorNormal              = view.findViewById(R.id.rd_normal);
         rdSectorSubNormal           = view.findViewById(R.id.rd_subnormal);
-
         swPosteExclusivoAp          = view.findViewById(R.id.sw_poste_exclulsivo_alumbrado_publico);
         swTranformadorExclusivoAP   = view.findViewById(R.id.sw_transformador_exclusivo_ap);
 
@@ -272,6 +277,17 @@ public class FragmentElemento extends Fragment {
             }
         });
 
+        setFrmElemento();
+
+        return view;
+    }
+
+    private void setFrmElemento() {
+
+        txtMobiliarioNo.setText(actividadOperativa.getElemento().getElemento_no());
+        txtDireccion.setText(actividadOperativa.getElemento().getDireccion());
+        txtMobiliario.setText(actividadOperativa.getElemento().getMobiliario().getDescripcionMobiliario());
+        txtReferencia.setText(actividadOperativa.getElemento().getReferenciaMobiliario().getDescripcionReferenciaMobiliario());
 
         txtAnchoVia.setText(String.valueOf(actividadOperativa.getElemento().getAnchoVia()));
         txtInterdistancia.setText(String.valueOf(actividadOperativa.getElemento().getInterdistancia()));
@@ -291,7 +307,7 @@ public class FragmentElemento extends Fragment {
             rdZonaUrbano.setChecked(false);
             rdZonaRural.setChecked(true);
         }
-        
+
         if(actividadOperativa.getElemento().getSector().contentEquals("N")){
             rdSectorNormal.setChecked(true);
             rdSectorSubNormal.setChecked(false);
@@ -316,8 +332,6 @@ public class FragmentElemento extends Fragment {
         cargarCalibre(database);
         cargarNormaConstruccionPoste(database);
         cargarTipoInstalacionRed(database);
-
-        return view;
     }
     //--
     private void buscarElemento(SQLiteDatabase sqLiteDatabase) {
@@ -361,40 +375,97 @@ public class FragmentElemento extends Fragment {
                         elemento.setId(Integer.parseInt(cursorElemento.getString(cursorElemento.getColumnIndex("_id"))));
                         elemento.setElemento_no(cursorElemento.getString(cursorElemento.getColumnIndex("elemento_no")));
 
-                        Tipologia tipologia = new Tipologia();
-                        tipologia.setIdTipologia(Integer.parseInt(cursorElemento.getString(cursorElemento.getColumnIndex("id_tipologia"))));
-                        tipologia.setDescripcionTipologia(cursorElemento.getString(cursorElemento.getColumnIndex("tipologia")));
-                        elemento.setTipologia(tipologia);
+                        elemento.setTipologia(
+                                new Tipologia(
+                                        cursorElemento.getInt(cursorElemento.getColumnIndex("id_tipologia")),
+                                        cursorElemento.getString(cursorElemento.getColumnIndex("tipologia"))
+                                )
+                        );
+                        elemento.setMobiliario(new Mobiliario(
+                                cursorElemento.getInt(cursorElemento.getColumnIndex("id_mobiliario")),
+                                cursorElemento.getString(cursorElemento.getColumnIndex("mobiliario"))
+                        ));
 
-                        Mobiliario mobiliario = new Mobiliario();
-                        mobiliario.setIdMobiliario(Integer.parseInt(cursorElemento.getString(cursorElemento.getColumnIndex("id_mobiliario"))));
-                        mobiliario.setDescripcionMobiliario(cursorElemento.getString(cursorElemento.getColumnIndex("mobiliario")));
-                        elemento.setMobiliario(mobiliario);
+                        elemento.setReferenciaMobiliario(
+                                new ReferenciaMobiliario(
+                                        cursorElemento.getInt(cursorElemento.getColumnIndex("id_referencia")),
+                                        cursorElemento.getString(cursorElemento.getColumnIndex("referencia"))
+                                )
+                        );
+                        elemento.setEstadoMobiliario(new EstadoMobiliario(
+                                cursorElemento.getInt(cursorElemento.getColumnIndex("id_estado_mobiliario")),
+                                cursorElemento.getString(cursorElemento.getColumnIndex("estado_mobiliario"))
+                        ));
 
-                        EstadoMobiliario estadoMobiliario = new EstadoMobiliario();
-                        estadoMobiliario.setIdEstadoMobiliario(cursorElemento.getInt(cursorElemento.getColumnIndex("id_estado_mobiliario")));
-                        estadoMobiliario.setDescripcionEstadoMobiliario(cursorElemento.getString(cursorElemento.getColumnIndex("estado_mobiliario")));
-                        elemento.setEstadoMobiliario(estadoMobiliario);
+                        elemento.setTipoBalasto(new TipoBalasto(
+                                cursorElemento.getInt(cursorElemento.getColumnIndex("id_tipo_balasto")),
+                                cursorElemento.getString(cursorElemento.getColumnIndex("tipo_balasto"))
+                        ));
+
+                        elemento.setNormaConstruccionPoste(new NormaConstruccionPoste(
+                                cursorElemento.getInt(cursorElemento.getColumnIndex("id_norma_construccion_poste")),
+                                cursorElemento.getString(cursorElemento.getColumnIndex("norma_construccion_poste")),
+                                new TipoPoste(
+                                        cursorElemento.getInt(cursorElemento.getColumnIndex("id_tipo_poste")),
+                                        cursorElemento.getString(cursorElemento.getColumnIndex("tipo_poste"))
+                                )
+                        ));
+
+                        elemento.setTipoBaseFotocelda(new TipoBaseFotocelda(
+                                cursorElemento.getInt(cursorElemento.getColumnIndex("id_tipo_base_fotocelda")),
+                                cursorElemento.getString(cursorElemento.getColumnIndex("tipo_base_fotocelda"))
+                        ));
+
+                        elemento.setTipoBrazo(new TipoBrazo(
+                                cursorElemento.getInt(cursorElemento.getColumnIndex("id_tipo_brazo")),
+                                cursorElemento.getString(cursorElemento.getColumnIndex("tipo_brazo"))
+                        ));
+
+                        elemento.setControlEncendido(new ControlEncendido(
+                                cursorElemento.getInt(cursorElemento.getColumnIndex("id_control_encendido")),
+                                cursorElemento.getString(cursorElemento.getColumnIndex("control_encendido"))
+                        ));
+                        elemento.setTipoRed(new TipoRed(
+                                cursorElemento.getInt(cursorElemento.getColumnIndex("id_tipo_red")),
+                                cursorElemento.getString(cursorElemento.getColumnIndex("tipo_red"))
+                        ));
+
+                        elemento.setTipoInstalacionRed(new TipoInstalacionRed(
+                                cursorElemento.getInt(cursorElemento.getColumnIndex("id_tipo_instalacion_red_alimentacion")),
+                                cursorElemento.getString(cursorElemento.getColumnIndex("tipo_instalacion_red"))
+                        ));
+
+                        elemento.setTipoEscenario(new TipoEscenario(
+                                cursorElemento.getInt(cursorElemento.getColumnIndex("id_tipo_escenario")),
+                                cursorElemento.getString(cursorElemento.getColumnIndex("tipo_escenario"))
+                        ));
+
+                        elemento.setClaseVia(new ClaseVia(
+                                cursorElemento.getInt(cursorElemento.getColumnIndex("id_clase_via")),
+                                cursorElemento.getString(cursorElemento.getColumnIndex("clase_via"))
+                        ));
+
+                        elemento.setCalibre(new Calibre(
+                                cursorElemento.getInt(cursorElemento.getColumnIndex("id_calibre_conductores")),
+                                cursorElemento.getString(cursorElemento.getColumnIndex("calibre_conductor"))
+                        ));
+
+                        zona = cursorElemento.getString(cursorElemento.getColumnIndex("zona"));
+                        sector = cursorElemento.getString(cursorElemento.getColumnIndex("sector"));
+
+                        elemento.setZona(cursorElemento.getString(cursorElemento.getColumnIndex("zona")));
+                        elemento.setSector(cursorElemento.getString(cursorElemento.getColumnIndex("sector")));
+                        elemento.setAnchoVia(cursorElemento.getInt(cursorElemento.getColumnIndex("ancho_via")));
+                        elemento.setInterdistancia(cursorElemento.getInt(cursorElemento.getColumnIndex("interdistancia")));
+                        elemento.setPosteNo(cursorElemento.getString(cursorElemento.getColumnIndex("poste_no")));
+                        elemento.setTransformadorExclusivo((cursorElemento.getString(cursorElemento.getColumnIndex("transformador_compartido")).contentEquals("N"))?true:false);
+                        elemento.setPosteExclusivo((cursorElemento.getString(cursorElemento.getColumnIndex("estructura_soporte_compartida")).contentEquals("N"))?true:false);
+                        elemento.setPotenciaTransformador(cursorElemento.getDouble(cursorElemento.getColumnIndex("potencia_transformador")));
+                        elemento.setDireccion(cursorElemento.getString(cursorElemento.getColumnIndex("direccion")));
 
                         actividadOperativa.setElemento(elemento);
 
-                        txtMobiliarioNo.setText(cursorElemento.getString(cursorElemento.getColumnIndex("elemento_no")));
-                        //editDireccion.setText(cursorElemento.getString(cursorElemento.getColumnIndex("direccion")));
-                        txtMobiliario.setText(cursorElemento.getString(cursorElemento.getColumnIndex("mobiliario")));
-                        txtReferencia.setText(cursorElemento.getString(cursorElemento.getColumnIndex("referencia")));
-
-                        cargarTipoBalasto(database);
-                        cargarTipoBaseFotocelda(database);
-                        cargarTipoBrazo(database);
-                        cargarControlEncendido(database);
-                        cargarEstadoMobiliario(database);
-                        cargarClaseVia(database);
-                        cargarTipoPoste(database);
-                        cargarTipoRed(database);
-                        cargarTipoEscenario(database);
-                        cargarCalibre(database);
-                        cargarNormaConstruccionPoste(database);
-                        cargarTipoInstalacionRed(database);
+                        setFrmElemento();
 
                     }
 
@@ -407,11 +478,66 @@ public class FragmentElemento extends Fragment {
     }
     //--
     private void resetFrmBuscarElemento() {
+
+        Elemento elemento = actividadOperativa.getElemento();
+        elemento.setId(0);
+        elemento.setElemento_no("");
+        elemento.setTipologia(new Tipologia());
+        elemento.setMobiliario(new Mobiliario());
+        elemento.setReferenciaMobiliario(new ReferenciaMobiliario());
+        elemento.setEstadoMobiliario(new EstadoMobiliario());
+        elemento.setTipoBalasto(new TipoBalasto(0,""));
+        elemento.setNormaConstruccionPoste(new NormaConstruccionPoste());
+        elemento.setTipoBaseFotocelda(new TipoBaseFotocelda());
+        elemento.setTipoBrazo(new TipoBrazo());
+        elemento.setControlEncendido(new ControlEncendido());
+        elemento.setTipoRed(new TipoRed());
+        elemento.setTipoInstalacionRed(new TipoInstalacionRed());
+        elemento.setTipoEscenario(new TipoEscenario());
+        elemento.setClaseVia(new ClaseVia());
+        elemento.setCalibre(new Calibre());
+        elemento.setZona("U");
+        elemento.setSector("N");
+        elemento.setAnchoVia(0);
+        elemento.setInterdistancia(0);
+        elemento.setPosteNo("");
+        elemento.setTransformadorExclusivo(true);
+        elemento.setPosteExclusivo(true);
+        elemento.setPotenciaTransformador(0);
+        actividadOperativa.setElemento(elemento);
+
         editMobiliarioNo.setText("");
         txtMobiliarioNo.setText("");
         txtMobiliario.setText("");
         txtReferencia.setText("");
-        actividadOperativa.setElemento(new Elemento());
+        txtDireccion.setText("");
+        txtAnchoVia.setText("");
+        txtInterdistancia.setText("");
+        txtPosteNo.setText("");
+        txtMtTransformador.setText("");
+        txtCtTransformador.setText("");
+        txtPotenciaTransformador.setText("");
+        zona = "U";
+        sector = "N";
+        rdZonaUrbano.setChecked(true);
+        rdZonaRural.setChecked(false);
+        rdSectorNormal.setChecked(true);
+        rdSectorSubNormal.setChecked(false);
+        swPosteExclusivoAp.setChecked(false);
+        swTranformadorExclusivoAP.setChecked(false);
+
+        cargarTipoBalasto(database);
+        cargarTipoBaseFotocelda(database);
+        cargarTipoBrazo(database);
+        cargarControlEncendido(database);
+        cargarEstadoMobiliario(database);
+        cargarClaseVia(database);
+        cargarTipoPoste(database);
+        cargarTipoRed(database);
+        cargarTipoEscenario(database);
+        cargarCalibre(database);
+        cargarNormaConstruccionPoste(database);
+        cargarTipoInstalacionRed(database);
     }
     //--
     private void cargarTipoBrazo(SQLiteDatabase sqLiteDatabase) {
