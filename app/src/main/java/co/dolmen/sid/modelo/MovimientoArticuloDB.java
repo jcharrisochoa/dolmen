@@ -66,6 +66,10 @@ public class MovimientoArticuloDB extends MovimientoArticulo implements Database
         db.execSQL("DELETE FROM  "+Constantes.TABLA_MOVIMIENTO_ARTICULO);
     }
 
+    public void eliminarDatos(int id_actividad) {
+        db.execSQL("DELETE FROM  "+Constantes.TABLA_MOVIMIENTO_ARTICULO+" where id_actividad="+id_actividad);
+    }
+
     @Override
     public Cursor consultarTodo() {
         this.sql = "SELECT * FROM "+Constantes.TABLA_MOVIMIENTO_ARTICULO;

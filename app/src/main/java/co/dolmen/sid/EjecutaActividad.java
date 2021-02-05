@@ -503,7 +503,7 @@ public class EjecutaActividad extends AppCompatActivity {
             //--Guardar Movimientos de Inventario
             Iterator<MovimientoArticulo> movimientoArticuloIterator = fragmentMateriales.movimientoArticuloArrayList.iterator();
             while (movimientoArticuloIterator.hasNext()) {
-                if(movimientoArticuloDB.agregarDatos(movimientoArticuloIterator.next()))
+                if(!movimientoArticuloDB.agregarDatos(movimientoArticuloIterator.next()))
                     Toast.makeText(getApplicationContext(),"Error guardado los movimientos de inventario",Toast.LENGTH_LONG).show();
             }
 
@@ -733,11 +733,14 @@ public class EjecutaActividad extends AppCompatActivity {
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                     String respuesta = new String(responseBody);
                     progressGuardarActividad.setVisibility(View.INVISIBLE);
-                    Log.d("JSON-RESPONSE:", respuesta);
+                    Log.d(Constantes.TAG, respuesta);
                     try {
                         JSONObject jsonResponse = new JSONObject(new String(responseBody));
-                        Log.d("JSON-RESPONSE:", String.valueOf(jsonResponse.getBoolean("sw")));
-                        if(jsonResponse.getBoolean("sw")) {
+                        JSONArray jsonLog = jsonResponse.getJSONArray("log");
+
+                        //Log.d(Constantes.TAG, String.valueOf(jsonLog));
+                        //if(jsonResponse.getBoolean("sw")) {
+                        if(jsonLog.getJSONObject(0).getBoolean("sw")){
                             /*
                             actualiza stock
                             1. actualizar stock con valores +
@@ -777,6 +780,7 @@ public class EjecutaActividad extends AppCompatActivity {
                         enableButton(true);
                     }
                 }
+
                 @Override
                 public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                     String respuesta = new String(responseBody);

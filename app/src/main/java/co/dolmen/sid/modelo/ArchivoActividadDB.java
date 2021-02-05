@@ -48,7 +48,7 @@ public class ArchivoActividadDB extends ArchivoActividad implements DatabaseDDL,
             contentValues.put("archivo", archivoActividad.getArchivo());
             try {
                 lastId = db.insert(Constantes.TABLA_ARCHIVO_ACTIVIDAD_OPERATIVA, null, contentValues);
-                Log.d(Constantes.TAG,"lastid="+lastId);
+                //Log.d(Constantes.TAG,"lastid="+lastId);
                 return true;
             }
             catch (SQLiteException  e){
@@ -58,10 +58,7 @@ public class ArchivoActividadDB extends ArchivoActividad implements DatabaseDDL,
             }
 
         }
-        else {
-            Log.d(Constantes.TAG,"no es del tipo");
-            return false;
-        }
+        return false;
     }
 
     @Override
@@ -74,6 +71,10 @@ public class ArchivoActividadDB extends ArchivoActividad implements DatabaseDDL,
         db.execSQL("DELETE FROM  "+Constantes.TABLA_ARCHIVO_ACTIVIDAD_OPERATIVA);
     }
 
+    public void eliminarDatos(int id_actividad) {
+        db.execSQL("DELETE FROM  "+Constantes.TABLA_ARCHIVO_ACTIVIDAD_OPERATIVA+" where id_actividad="+id_actividad);
+    }
+
     @Override
     public Cursor consultarTodo() {
         this.sql = "SELECT * FROM "+Constantes.TABLA_ARCHIVO_ACTIVIDAD_OPERATIVA;
@@ -83,6 +84,11 @@ public class ArchivoActividadDB extends ArchivoActividad implements DatabaseDDL,
 
     public Cursor consultarTodo(int id_actividad) {
         this.sql = "SELECT * FROM "+Constantes.TABLA_ARCHIVO_ACTIVIDAD_OPERATIVA+" WHERE id_actividad="+id_actividad;
+        Cursor result = db.rawQuery(this.sql, null);
+        return result;
+    }
+    public Cursor consultarTodo(int id_actividad,String tipo) {
+        this.sql = "SELECT * FROM "+Constantes.TABLA_ARCHIVO_ACTIVIDAD_OPERATIVA+" WHERE id_actividad="+id_actividad+" and tipo='"+tipo+"'";
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }

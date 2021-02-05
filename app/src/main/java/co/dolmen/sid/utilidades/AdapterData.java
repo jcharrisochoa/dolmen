@@ -20,6 +20,7 @@ import java.util.Locale;
 
 import co.dolmen.sid.R;
 import co.dolmen.sid.entidad.ActividadOperativa;
+import co.dolmen.sid.entidad.MovimientoArticulo;
 
 public class AdapterData extends RecyclerView.Adapter<AdapterData.ViewHolderData> implements View.OnClickListener {
 
@@ -64,6 +65,36 @@ public class AdapterData extends RecyclerView.Adapter<AdapterData.ViewHolderData
     public void filterList(ArrayList<ActividadOperativa> list){
         this.actividadOperativaArrayList = list;
         notifyDataSetChanged();
+    }
+
+    public void notifySetChange() {
+        notifyDataSetChanged();
+    }
+
+    public void updateData(ArrayList<ActividadOperativa> list) {
+        actividadOperativaArrayList.clear();
+        actividadOperativaArrayList.addAll(list);
+        notifyDataSetChanged();
+    }
+
+    public void removeItem(int position){
+        //notifyDataSetChanged();
+        actividadOperativaArrayList.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, actividadOperativaArrayList.size());
+    }
+
+    public int getPositionItem(int id_actividad){
+        int pos = -1;
+        int i = 0;
+        for (ActividadOperativa ao : actividadOperativaArrayList) {
+            if(ao.getIdActividad() == id_actividad){
+                pos = i;
+                return pos;
+            }
+            i++;
+        }
+        return pos;
     }
 
     public class ViewHolderData extends RecyclerView.ViewHolder {

@@ -88,6 +88,7 @@ public class ConfigurarArea extends AppCompatActivity {
     FloatingActionButton btnCerrarSesion;
 
     AlertDialog.Builder alert;
+    AlertDialog.Builder alertConfirm;
     Spinner sltMunicipio;
     Spinner sltProceso;
     Spinner sltContrato;
@@ -118,6 +119,14 @@ public class ConfigurarArea extends AppCompatActivity {
 
 
         alert = new AlertDialog.Builder(this);
+        alert.setCancelable(false);
+        alert.setTitle(R.string.titulo_alerta);
+        alert.setIcon(R.drawable.icon_problem);
+
+        alertConfirm = new AlertDialog.Builder(this);
+        alertConfirm.setCancelable(false);
+        alertConfirm.setTitle(R.string.titulo_alerta);
+        alertConfirm.setIcon(R.drawable.icon_problem);
 
         btnSiguiente = findViewById(R.id.fab_siguiente);
         btnCerrarSesion = findViewById(R.id.fab_cerrar_sesion);
@@ -203,9 +212,16 @@ public class ConfigurarArea extends AppCompatActivity {
         btnCerrarSesion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                alert.setTitle(R.string.titulo_alerta);
-                alert.setMessage(R.string.alert_cerrar_sesion);
-                alert.setPositiveButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                Cursor cursor = miBaseDatos.actividadOperativaDB.porSincronizar();
+                if(cursor.getCount()>0){
+                    alertConfirm.setMessage("Tiene "+cursor.getCount()+" actividad(es) por sincrinozar\n\n"+getText(R.string.alert_cerrar_sesion));
+                }
+                else{
+                    alertConfirm.setMessage(R.string.alert_cerrar_sesion);
+                }
+
+
+                alertConfirm.setPositiveButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         //
@@ -222,13 +238,13 @@ public class ConfigurarArea extends AppCompatActivity {
 
                     }
                 });
-                alert.setNegativeButton(R.string.btn_cancelar, new DialogInterface.OnClickListener() {
+                alertConfirm.setNegativeButton(R.string.btn_cancelar, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         //dialogInterface.cancel();
                     }
                 });
-                alert.create().show();
+                alertConfirm.create().show();
             }
         });
         cargarMunicipio(database);

@@ -15,7 +15,7 @@
 
     <!--Hint-->
     <string name="nombre_usuario">Digite su Usuario</string>
-    <string name="clave_usuario">Digite su Usuario</string>
+    <string name="clave_usuario">Digite su clave</string>
     <string name="seleccione">-Seleccione-</string>
     <string name="buscar_elemento">Buscar Elemento</string>
 
@@ -73,14 +73,14 @@
     <string name="alert_municipio">Seleccione Municipio</string>
     <string name="alert_proceso">Seleccione el Proceso</string>
     <string name="alert_contrato">Seleccione Contrato</string>
-    <string name="alert_conexion">Sin Conexion a Internet</string>
+    <string name="alert_conexion">Sin Conexión a Internet</string>
     <string name="alert_error_camara">Error Capturando la Imagen</string>
     <string name="alert_cancelar_camara">Captura de imagen cancelada</string>
     <string name="alert_gps_deshabilitado">Habilita el GPS, para continuar</string>
     <string name="alert_elemento_buscar">Digite el elemento a buscar</string>
     <string name="alert_elemento_no_encontrado">No existe información</string>
     <string name="alert_cerrar_sesion">¿ Está seguro(a) de cerrar su sesión ?</string>
-    <string name="alert_observacion">Digite una observacion</string>
+    <string name="alert_observacion">Digite una observación</string>
     <string name="alert_fotografia">Incluya una fotografía</string>
     <string name="alert_tipo_reporte_dano">Seleccione un tipo de reporte</string>
     <string name="alert_sentido">Seleccione el Sentido del Mobiliario</string>

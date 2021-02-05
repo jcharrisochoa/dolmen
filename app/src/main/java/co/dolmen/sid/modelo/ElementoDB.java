@@ -54,6 +54,8 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
                     "transformador_compartido VARCHAR(1),"+
                     "estructura_soporte_compartida VARCHAR (1),"+
                     "potencia_transformador DECIMAL(5,2) NOT NULL DEFAULT 0,"+
+                    "placa_mt_transformador VARCHAR (20),"+
+                    "placa_ct_transformador VARCHAR (20),"+
                     "foto TEXT"+
                 ");"
         );
@@ -108,7 +110,7 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
                                 int id_norma_construccion_poste,String poste_no,int interdistancia,
                                 int id_calibre_conductores,int id_tipo_red,int id_tipo_instalacion_red_alimentacion,
                                 int id_control_encendido,int id_tipo_escenario,String transformador_compartido, String estructura_soporte_compartida,
-                                double potencia_transformador
+                                double potencia_transformador,String placa_mt,String placa_ct
                                 ){
         Cursor result = consultarId(id_elemento);
 
@@ -145,6 +147,8 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
             contentValues.put("transformador_compartido", transformador_compartido);
             contentValues.put("estructura_soporte_compartida", estructura_soporte_compartida);
             contentValues.put("potencia_transformador", potencia_transformador);
+            contentValues.put("placa_mt_transformador", placa_mt);
+            contentValues.put("placa_ct_transformador", placa_ct);
             //Log.d("VALUE",contentValues.toString());
             db.insert(Constantes.TABLA_ELEMENTO, null, contentValues);
         }
@@ -186,6 +190,8 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
             contentValues.put("transformador_compartido", transformador_compartido);
             contentValues.put("estructura_soporte_compartida", estructura_soporte_compartida);
             contentValues.put("potencia_transformador", elemento.getPotenciaTransformador());
+            contentValues.put("placa_mt_transformador",  elemento.getPlacaMT());
+            contentValues.put("placa_ct_transformador", elemento.getPlacaCT());
             contentValues.put("foto", elemento.getEncodeStringFoto());
             db.update(Constantes.TABLA_ELEMENTO,contentValues,"_id="+elemento.getId(),null);
         }
@@ -216,7 +222,8 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
         "e.zona,e.sector,e.id_control_encendido,ce.descripcion as control_encendido, e.id_tipo_poste,tp.descripcion as tipo_poste,e.id_norma_construccion_poste,"+
         "ncp.descripcion as norma_construccion_poste,e.id_tipo_red,trd.descripcion as tipo_red,e.id_tipo_escenario, tsc.descripcion as tipo_escenario,"+
         "e.id_tipo_instalacion_red_alimentacion, tir.descripcion as tipo_instalacion_red,e.id_clase_via,cv.descripcion as clase_via, e.id_calibre_conductores,"+
-        "cb.descripcion as calibre_conductor,e.ancho_via,e.interdistancia,e.poste_no ,e.estructura_soporte_compartida,e.transformador_compartido,e.potencia_transformador "+
+        "cb.descripcion as calibre_conductor,e.ancho_via,e.interdistancia,e.poste_no ,e.estructura_soporte_compartida,e.transformador_compartido,e.potencia_transformador,"+
+        "e.placa_mt_transformador,e.placa_ct_transformador "+
         "from "+ Constantes.TABLA_ELEMENTO+" e "+
         "left join "+Constantes.TABLA_BARRIO+" b ON (e.id_barrio = b._id ) " +
         "left join "+Constantes.TABLA_TIPOLOGIA_MOBILIARIO+" tm on(e.id_tipologia = tm._id) "+

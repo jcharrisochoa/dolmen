@@ -462,7 +462,8 @@ public class FragmentElemento extends Fragment {
                         elemento.setPosteExclusivo((cursorElemento.getString(cursorElemento.getColumnIndex("estructura_soporte_compartida")).contentEquals("N"))?true:false);
                         elemento.setPotenciaTransformador(cursorElemento.getDouble(cursorElemento.getColumnIndex("potencia_transformador")));
                         elemento.setDireccion(cursorElemento.getString(cursorElemento.getColumnIndex("direccion")));
-
+                        elemento.setPlacaMT(cursorElemento.getString(cursorElemento.getColumnIndex("placa_mt_transformador")));
+                        elemento.setPlacaCT(cursorElemento.getString(cursorElemento.getColumnIndex("placa_ct_transformador")));
                         actividadOperativa.setElemento(elemento);
 
                         setFrmElemento();

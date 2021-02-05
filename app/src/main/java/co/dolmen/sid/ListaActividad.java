@@ -7,15 +7,21 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -30,6 +36,10 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestHandle;
+import com.loopj.android.http.ResponseHandlerInterface;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -70,7 +80,14 @@ import co.dolmen.sid.entidad.TipoRed;
 import co.dolmen.sid.entidad.TipoReporteDano;
 import co.dolmen.sid.entidad.Tipologia;
 import co.dolmen.sid.modelo.ActividadOperativaDB;
+import co.dolmen.sid.modelo.ArchivoActividadDB;
+import co.dolmen.sid.modelo.MovimientoArticuloDB;
 import co.dolmen.sid.utilidades.AdapterData;
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.HttpResponse;
+import cz.msebera.android.httpclient.entity.StringEntity;
+import cz.msebera.android.httpclient.message.BasicHeader;
+import cz.msebera.android.httpclient.protocol.HTTP;
 
 public class ListaActividad extends AppCompatActivity  {
 
@@ -100,6 +117,10 @@ public class ListaActividad extends AppCompatActivity  {
     private int idMobiliarioBusqueda;
     private int idReferenciaBusqueda;
     private int idDefaultBodega;
+    private  int contenLenght =  0;
+    private MovimientoArticuloDB movimientoArticuloDB;
+    private ActividadOperativaDB actividadOperativaDB;
+    private ArchivoActividadDB archivoActividadDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,7 +141,12 @@ public class ListaActividad extends AppCompatActivity  {
         conn = new BaseDatos(ListaActividad.this);
         database = conn.getReadableDatabase();
 
+        actividadOperativaDB = new ActividadOperativaDB(database);
+
         alert = new AlertDialog.Builder(this);
+        alert.setCancelable(false);
+        alert.setTitle(R.string.titulo_alerta);
+        alert.setIcon(R.drawable.icon_problem);
 
         actividadOperativaArrayList = new ArrayList<ActividadOperativa>();
 
@@ -218,6 +244,8 @@ public class ListaActividad extends AppCompatActivity  {
                 ListaActividad.this.finish();
             }
         });
+
+
     }
 
     @Override
@@ -258,15 +286,11 @@ public class ListaActividad extends AppCompatActivity  {
         }
 
         adapterData.filterList(filterActividadOperativa);
-
     }
 
     public void consultarActividad(SQLiteDatabase database) throws ParseException {
         actividadOperativaArrayList.clear();
         ActividadOperativa actividadOperativa;
-        ActividadOperativaDB actividadOperativaDB;
-        actividadOperativaDB = new ActividadOperativaDB(database);
-
         try {
             Cursor cursor = actividadOperativaDB.consultarTodo(idDefaultMunicipio, idDefaultProceso);
             if (cursor.getCount() > 0) {
@@ -275,6 +299,7 @@ public class ListaActividad extends AppCompatActivity  {
                     Barrio barrio = new Barrio();
                     barrio.setId(cursor.getInt(cursor.getColumnIndex("id_municipio")));
                     barrio.setDescripcion(cursor.getString(cursor.getColumnIndex("municipio")));
+                    //barrio.setIdBarrio(cursor.getInt(cursor.getColumnIndex("id_barrio")));
                     barrio.setIdBarrio(0);
                     barrio.setNombreBarrio(cursor.getString(cursor.getColumnIndex("barrio")));
 
@@ -304,6 +329,8 @@ public class ListaActividad extends AppCompatActivity  {
                         elemento.setTransformadorExclusivo(true);
                         elemento.setPosteExclusivo(true);
                         elemento.setPotenciaTransformador(0);
+                        elemento.setPlacaMT("");
+                        elemento.setPlacaCT("");
                     } else {
                         elemento.setElemento_no(cursor.getString(cursor.getColumnIndex("elemento_no")));
                         elemento.setTipologia(
@@ -390,6 +417,8 @@ public class ListaActividad extends AppCompatActivity  {
                         elemento.setPosteExclusivo((cursor.getString(cursor.getColumnIndex("estructura_soporte_compartida")).contentEquals("N"))?true:false);
                         elemento.setPotenciaTransformador(cursor.getDouble(cursor.getColumnIndex("potencia_transformador")));
                         elemento.setDireccion(cursor.getString(cursor.getColumnIndex("direccion_elemento")));
+                        elemento.setPlacaMT(cursor.getString(cursor.getColumnIndex("placa_mt_transformador")));
+                        elemento.setPlacaCT(cursor.getString(cursor.getColumnIndex("placa_ct_transformador")));
 
                     }
                     ProcesoSgc procesoSgc = new ProcesoSgc();
@@ -456,6 +485,8 @@ public class ListaActividad extends AppCompatActivity  {
                     actividadOperativa.setLatitud(cursor.getDouble(cursor.getColumnIndex("latitud")));
                     actividadOperativa.setLongitud(cursor.getDouble(cursor.getColumnIndex("longitud")));
                     actividadOperativa.setPendienteSincronizar(cursor.getString(cursor.getColumnIndex("pendiente_sincronizar")));
+                    actividadOperativa.setElementoNoEncontrado(cursor.getString(cursor.getColumnIndex("elemento_no_encontrado")));
+                    actividadOperativa.setAfectadoPorVandalismo(cursor.getString(cursor.getColumnIndex("afectado_por_vandalismo")));
                     actividadOperativaArrayList.add(actividadOperativa);
                 }
             }
@@ -468,12 +499,9 @@ public class ListaActividad extends AppCompatActivity  {
         ConnectivityManager conn = (ConnectivityManager) getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = conn.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            //ActividadOperativaDB actividadOperativaDB = new ActividadOperativaDB(database);
-            JSONArray jsonArray = armarJSON();
-            Log.d(Constantes.TAG,"JSON->"+jsonArray.toString());
-
+            Sincronizar sincronizar = new Sincronizar(this);
+            sincronizar.execute();
         } else {
-            //
             alert.setTitle(R.string.titulo_alerta);
             alert.setMessage(R.string.alert_conexion);
             alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
@@ -488,10 +516,13 @@ public class ListaActividad extends AppCompatActivity  {
 
     private JSONArray armarJSON(){
         JSONArray principal = new JSONArray();
+        Cursor cursor;
+        ArchivoActividadDB archivoActividadDB = new ArchivoActividadDB(database);
+        MovimientoArticuloDB movimientoArticuloDB = new MovimientoArticuloDB(database);
 
         for(ActividadOperativa atendidaPendiente:actividadOperativaArrayList) {
             if (atendidaPendiente.getPendienteSincronizar().contentEquals("S") && atendidaPendiente.getEstadoActividad().getId() == 2) { //Filtra las atendidas pendientes por sincronizar
-                Log.d(Constantes.TAG,"List->"+atendidaPendiente.getIdActividad()+",Sincronizada->"+atendidaPendiente.getPendienteSincronizar());
+                //Log.d(Constantes.TAG,"List->"+atendidaPendiente.getIdActividad()+",Sincronizada->"+atendidaPendiente.getPendienteSincronizar());
                 try {
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("id_usuario", idUsuario);
@@ -515,8 +546,27 @@ public class ListaActividad extends AppCompatActivity  {
 
                     //--Fotos Antes
                     JSONArray jsonArrayFotoAntes = new JSONArray();
+                    cursor = archivoActividadDB.consultarTodo(atendidaPendiente.getIdActividad(),"A");
+                    if (cursor.getCount() > 0) {
+                        while (cursor.moveToNext()) {
+                            jsonArrayFotoAntes.put(cursor.getString(cursor.getColumnIndex("archivo")));
+                            //jsonArrayFotoAntes.put("textAntes");
+                        }
+                    }
+                    cursor.close();
+                    jsonObject.put("foto_antes", jsonArrayFotoAntes);
+
                     //--Fotos Despues
                     JSONArray jsonArrayFotoDespues = new JSONArray();
+                    cursor = archivoActividadDB.consultarTodo(atendidaPendiente.getIdActividad(),"D");
+                    if (cursor.getCount() > 0) {
+                        while (cursor.moveToNext()) {
+                            jsonArrayFotoDespues.put(cursor.getString(cursor.getColumnIndex("archivo")));
+                            //jsonArrayFotoDespues.put("textDespues");
+                        }
+                    }
+                    cursor.close();
+                    jsonObject.put("foto_despues", jsonArrayFotoDespues);
 
                     //--Materiales
                     JSONArray jsonArrayInst     = new JSONArray();
@@ -525,6 +575,84 @@ public class ListaActividad extends AppCompatActivity  {
                     JSONArray jsonArrayDesNoUtil = new JSONArray();
                     JSONArray jsonArrayPNC      = new JSONArray();
                     JSONArray jsonArrayAsig     = new JSONArray();
+
+                    cursor = movimientoArticuloDB.consultarTodo(atendidaPendiente.getIdActividad());
+                    if(cursor.getCount()>0){
+                        while (cursor.moveToNext()){
+                            switch (cursor.getInt(cursor.getColumnIndex("id_tipo_stock"))){
+                                case 1://stock
+                                    JSONObject jsonInst = new JSONObject();
+                                    jsonInst.put("id_bodega",cursor.getInt(cursor.getColumnIndex("id_bodega")));
+                                    jsonInst.put("id_centro_costo",cursor.getInt(cursor.getColumnIndex("id_centro_costo")));
+                                    jsonInst.put("id_tipo_stock", cursor.getInt(cursor.getColumnIndex("id_tipo_stock")));
+                                    jsonInst.put("id_articulo", cursor.getInt(cursor.getColumnIndex("id_articulo")));
+                                    jsonInst.put("cantidad", cursor.getInt(cursor.getColumnIndex("cantidad"))); ///cuando es un valor con decimales se van decimales equivocados
+                                    jsonInst.put("movimiento", cursor.getString(cursor.getColumnIndex("movimiento")));
+                                    jsonArrayInst.put(jsonInst);
+                                    break;
+                                case 2:
+                                    JSONObject jsonPNC = new JSONObject();
+                                    jsonPNC.put("id_bodega",cursor.getInt(cursor.getColumnIndex("id_bodega")));
+                                    jsonPNC.put("id_centro_costo",cursor.getInt(cursor.getColumnIndex("id_centro_costo")));
+                                    jsonPNC.put("id_tipo_stock", cursor.getInt(cursor.getColumnIndex("id_tipo_stock")));
+                                    jsonPNC.put("id_articulo", cursor.getInt(cursor.getColumnIndex("id_articulo")));
+                                    jsonPNC.put("cantidad", cursor.getInt(cursor.getColumnIndex("cantidad"))); ///cuando es un valor con decimales se van decimales equivocados
+                                    jsonPNC.put("movimiento", cursor.getString(cursor.getColumnIndex("movimiento")));
+                                    jsonArrayPNC.put(jsonPNC);
+                                    break;
+                                case 3:
+                                    if(cursor.getString(cursor.getColumnIndex("movimiento")).contentEquals(getString(R.string.movimiento_salida))){ //Movimiento Negativo
+                                        JSONObject jsonDesUtilInst = new JSONObject();
+                                        jsonDesUtilInst.put("id_bodega",cursor.getInt(cursor.getColumnIndex("id_bodega")));
+                                        jsonDesUtilInst.put("id_centro_costo",cursor.getInt(cursor.getColumnIndex("id_centro_costo")));
+                                        jsonDesUtilInst.put("id_tipo_stock", cursor.getInt(cursor.getColumnIndex("id_tipo_stock")));
+                                        jsonDesUtilInst.put("id_articulo", cursor.getInt(cursor.getColumnIndex("id_articulo")));
+                                        jsonDesUtilInst.put("cantidad", cursor.getInt(cursor.getColumnIndex("cantidad"))); ///cuando es un valor con decimales se van decimales equivocados
+                                        jsonDesUtilInst.put("movimiento", cursor.getInt(cursor.getColumnIndex("movimiento")));
+                                        jsonArrayDesUtilInst.put(jsonDesUtilInst);
+                                    }
+                                    else {
+                                        JSONObject jsonDesUtil = new JSONObject();
+                                        jsonDesUtil.put("id_bodega",cursor.getInt(cursor.getColumnIndex("id_bodega")));
+                                        jsonDesUtil.put("id_centro_costo",cursor.getInt(cursor.getColumnIndex("id_centro_costo")));
+                                        jsonDesUtil.put("id_tipo_stock", cursor.getInt(cursor.getColumnIndex("id_tipo_stock")));
+                                        jsonDesUtil.put("id_articulo", cursor.getInt(cursor.getColumnIndex("id_articulo")));
+                                        jsonDesUtil.put("cantidad", cursor.getInt(cursor.getColumnIndex("cantidad"))); ///cuando es un valor con decimales se van decimales equivocados
+                                        jsonDesUtil.put("movimiento", cursor.getInt(cursor.getColumnIndex("movimiento")));
+                                        jsonArrayDesUtil.put(jsonDesUtil);
+                                    }
+                                    break;
+                                case 4:
+                                    JSONObject jsonDesNoUtil = new JSONObject();
+                                    jsonDesNoUtil.put("id_bodega",cursor.getInt(cursor.getColumnIndex("id_bodega")));
+                                    jsonDesNoUtil.put("id_centro_costo",cursor.getInt(cursor.getColumnIndex("id_centro_costo")));
+                                    jsonDesNoUtil.put("id_tipo_stock", cursor.getInt(cursor.getColumnIndex("id_tipo_stock")));
+                                    jsonDesNoUtil.put("id_articulo", cursor.getInt(cursor.getColumnIndex("id_articulo")));
+                                    jsonDesNoUtil.put("cantidad", cursor.getInt(cursor.getColumnIndex("cantidad"))); ///cuando es un valor con decimales se van decimales equivocados
+                                    jsonDesNoUtil.put("movimiento", cursor.getInt(cursor.getColumnIndex("movimiento")));
+                                    jsonArrayDesNoUtil.put(jsonDesNoUtil);
+                                    break;
+                                case 5:
+                                    JSONObject jsonAsig = new JSONObject();
+                                    jsonAsig.put("id_bodega",cursor.getInt(cursor.getColumnIndex("id_bodega")));
+                                    jsonAsig.put("id_centro_costo",cursor.getInt(cursor.getColumnIndex("id_centro_costo")));
+                                    jsonAsig.put("id_tipo_stock", cursor.getInt(cursor.getColumnIndex("id_tipo_stock")));
+                                    jsonAsig.put("id_articulo", cursor.getInt(cursor.getColumnIndex("id_articulo")));
+                                    jsonAsig.put("cantidad", cursor.getInt(cursor.getColumnIndex("cantidad"))); ///cuando es un valor con decimales se van decimales equivocados
+                                    jsonAsig.put("movimiento", cursor.getInt(cursor.getColumnIndex("movimiento")));
+                                    jsonArrayAsig.put(jsonAsig);
+                                    break;
+                            }
+                        }
+                    }
+                    cursor.close();
+                    jsonObject.put("inst", jsonArrayInst);
+                    jsonObject.put("desmutil", jsonArrayDesUtil);
+                    jsonObject.put("desmutinst", jsonArrayDesUtilInst);
+                    jsonObject.put("desmnoutil", jsonArrayDesNoUtil);
+                    jsonObject.put("pnc", jsonArrayPNC);
+                    jsonObject.put("asig", jsonArrayAsig);
+
 
                     //--Elemento
                     JSONObject jsonElemento = new JSONObject();
@@ -554,12 +682,12 @@ public class ListaActividad extends AppCompatActivity  {
                     jsonElemento.put("poste_no", atendidaPendiente.getElemento().getPosteNo());
                     jsonElemento.put("interdistancia", atendidaPendiente.getElemento().getInterdistancia());
 
-                    // jsonElemento.put("poste_exclusivo_ap", fragmentElemento.swPosteExclusivoAp.isChecked());
+                    jsonElemento.put("poste_exclusivo_ap", atendidaPendiente.getElemento().isPosteExclusivo());
                     jsonElemento.put("potencia_transformador", atendidaPendiente.getElemento().getPotenciaTransformador());
-                    //jsonElemento.put("placa_mt_transformador", fragmentElemento.txtMtTransformador.getText());
-                    //jsonElemento.put("placa_ct_transformador", fragmentElemento.txtCtTransformador.getText());
-                    //jsonElemento.put("transformador_exclusivo_ap", fragmentElemento.swTranformadorExclusivoAP.isChecked());
-                    //jsonElemento.put("foto",atendidaPendiente.getElemento().getEncodeStringFoto());
+                    jsonElemento.put("placa_mt_transformador", atendidaPendiente.getElemento().getPlacaMT());
+                    jsonElemento.put("placa_ct_transformador", atendidaPendiente.getElemento().getPlacaCT());
+                    jsonElemento.put("transformador_exclusivo_ap", atendidaPendiente.getElemento().isTransformadorExclusivo());
+                    jsonElemento.put("foto",atendidaPendiente.getElemento().getEncodeStringFoto());
 
                     jsonObject.put("info_elemento",jsonElemento);
 
@@ -572,113 +700,138 @@ public class ListaActividad extends AppCompatActivity  {
         return principal;
     }
 
-    /*
-     * try {
+    class Sincronizar extends AsyncTask<Void,Integer,Boolean> {
+        JSONArray jsonArray;
+        ProgressDialog dialog;
+        public Sincronizar(Activity activity){
+            dialog = new ProgressDialog(activity);
+            dialog.setCancelable(false);
+        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            fabCancelar.setEnabled(false);
+            fabCancelar.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorLightPrimary)));
+            dialog.setMessage("Recopilando datos.");
+            dialog.show();
+        }
 
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            jsonArray = armarJSON();
+            return true;
+        }
+        @Override
+        protected void onPostExecute(Boolean result) {
+            if (result) {
+                //Toast.makeText(getApplicationContext(), "Recopilación de datos Finalizado", Toast.LENGTH_SHORT).show();
+                dialog.hide();
+                //Log.d(Constantes.TAG,"JSON->"+jsonArray.toString()+"Count:"+jsonArray.length());
+                if(jsonArray.length()==0){
+                    alert.setMessage(getText(R.string.alert_sin_datos_por_sincronizar));
+                    alert.setNeutralButton(R.string.btn_aceptar,new DialogInterface.OnClickListener(){
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            fabCancelar.setEnabled(true);
+                            fabCancelar.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccentCancel)));
+                        }
+                    });
+                    alert.create().show();
+                }
+                else {
+                    AsyncHttpClient client = new AsyncHttpClient();
+                    StringEntity jsonParams = new StringEntity(jsonArray.toString(), "UTF-8");
+                    jsonParams.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+                    client.setTimeout(Constantes.TIMEOUT);
 
-                  //--Fotos Antes
-     *             JSONArray jsonArrayFotoAntes = new JSONArray();
-     *             for(int f=0;f<4;f++) {
-     *                 jsonArrayFotoAntes.put(actividadOperativa.getArchivoActividad().get(f).getArchivo());
-     *             }
-     *             jsonObject.put("foto_antes", jsonArrayFotoAntes);
-     *
-     *             //--Fotos Despues
-     *             JSONArray jsonArrayFotoDespues = new JSONArray();
-     *             for(int f=4;f<8;f++) {
-     *                 jsonArrayFotoDespues.put(actividadOperativa.getArchivoActividad().get(f).getArchivo());
-     *             }
-     *             jsonObject.put("foto_despues", jsonArrayFotoDespues);
-     *
-     *             //--Materiales
-     *             JSONArray jsonArrayInst     = new JSONArray();
-     *             JSONArray jsonArrayDesUtil  = new JSONArray();
-     *             JSONArray jsonArrayDesUtilInst = new JSONArray();
-     *             JSONArray jsonArrayDesNoUtil = new JSONArray();
-     *             JSONArray jsonArrayPNC      = new JSONArray();
-     *             JSONArray jsonArrayAsig     = new JSONArray();
-     *
-     *             int index = 0;
-     *             while(index < fragmentMateriales.movimientoArticuloArrayList.size()){
-     *                 switch (fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock()){
-     *                     case 1://stock
-     *                         JSONObject jsonInst = new JSONObject();
-     *                         jsonInst.put("id_bodega",idDefaultBodega);
-     *                         jsonInst.put("id_centro_costo",actividadOperativa.getCentroCosto().getIdCentroCosto());
-     *                         jsonInst.put("id_tipo_stock", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
-     *                         jsonInst.put("id_articulo", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
-     *                         jsonInst.put("cantidad", fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
-     *                         jsonInst.put("movimiento", fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento());
-     *                         jsonArrayInst.put(jsonInst);
-     *                         break;
-     *                     case 2:
-     *                         JSONObject jsonPNC = new JSONObject();
-     *                         jsonPNC.put("id_bodega",idDefaultBodega);
-     *                         jsonPNC.put("id_centro_costo",actividadOperativa.getCentroCosto().getIdCentroCosto());
-     *                         jsonPNC.put("id_tipo_stock", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
-     *                         jsonPNC.put("id_articulo", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
-     *                         jsonPNC.put("cantidad", fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
-     *                         jsonPNC.put("movimiento", fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento());
-     *                         jsonArrayPNC.put(jsonPNC);
-     *                         break;
-     *                     case 3:
-     *                         if(fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento().toString().contentEquals(getString(R.string.movimiento_salida))){ //Movimiento Negativo
-     *                             JSONObject jsonDesUtilInst = new JSONObject();
-     *                             jsonDesUtilInst.put("id_bodega",idDefaultBodega);
-     *                             jsonDesUtilInst.put("id_centro_costo",actividadOperativa.getCentroCosto().getIdCentroCosto());
-     *                             jsonDesUtilInst.put("id_tipo_stock", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
-     *                             jsonDesUtilInst.put("id_articulo", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
-     *                             jsonDesUtilInst.put("cantidad", fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
-     *                             jsonDesUtilInst.put("movimiento", fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento());
-     *                             jsonArrayDesUtilInst.put(jsonDesUtilInst);
-     *                         }
-     *                         else {
-     *                             JSONObject jsonDesUtil = new JSONObject();
-     *                             jsonDesUtil.put("id_bodega",idDefaultBodega);
-     *                             jsonDesUtil.put("id_centro_costo",actividadOperativa.getCentroCosto().getIdCentroCosto());
-     *                             jsonDesUtil.put("id_tipo_stock", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
-     *                             jsonDesUtil.put("id_articulo", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
-     *                             jsonDesUtil.put("cantidad", fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
-     *                             jsonDesUtil.put("movimiento", fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento());
-     *                             jsonArrayDesUtil.put(jsonDesUtil);
-     *                         }
-     *                         break;
-     *                     case 4:
-     *                         JSONObject jsonDesNoUtil = new JSONObject();
-     *                         jsonDesNoUtil.put("id_bodega",idDefaultBodega);
-     *                         jsonDesNoUtil.put("id_centro_costo",actividadOperativa.getCentroCosto().getIdCentroCosto());
-     *                         jsonDesNoUtil.put("id_tipo_stock", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
-     *                         jsonDesNoUtil.put("id_articulo", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
-     *                         jsonDesNoUtil.put("cantidad", fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
-     *                         jsonDesNoUtil.put("movimiento", fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento());
-     *                         jsonArrayDesNoUtil.put(jsonDesNoUtil);
-     *                         break;
-     *                     case 5:
-     *                         JSONObject jsonAsig = new JSONObject();
-     *                         jsonAsig.put("id_bodega",idDefaultBodega);
-     *                         jsonAsig.put("id_centro_costo",actividadOperativa.getCentroCosto().getIdCentroCosto());
-     *                         jsonAsig.put("id_tipo_stock", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
-     *                         jsonAsig.put("id_articulo", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
-     *                         jsonAsig.put("cantidad", fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
-     *                         jsonAsig.put("movimiento", fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento());
-     *                         jsonArrayAsig.put(jsonAsig);
-     *                         break;
-     *                 }
-     *                 index++;
-     *             }
-     *
-     *             jsonObject.put("inst", jsonArrayInst);
-     *             jsonObject.put("desmutil", jsonArrayDesUtil);
-     *             jsonObject.put("desmutinst", jsonArrayDesUtilInst);
-     *             jsonObject.put("desmnoutil", jsonArrayDesNoUtil);
-     *             jsonObject.put("pnc", jsonArrayPNC);
-     *             jsonObject.put("asig", jsonArrayAsig);
-     *
-     *
-     *
-     *             JSONArray principal = new JSONArray();
-     *             principal.put(jsonObject);
-     *             Log.d("JSON","->"+jsonObject.toString());
-     */
+                    RequestHandle post = client.post(getApplicationContext(), ServicioWeb.urlGuardarActividad, jsonParams, "application/json", new AsyncHttpResponseHandler() {
+                        @Override
+                        public void onPreProcessResponse(ResponseHandlerInterface instance, HttpResponse response) {
+                            super.onPreProcessResponse(instance, response);
+                            Header[] headers = response.getAllHeaders();
+                            for (Header header : headers) {
+                                if (header.getName().equalsIgnoreCase("content-length")) {
+                                    String value = header.getValue();
+                                    contenLenght = Integer.valueOf(value);
+                                }
+                            }
+                        }
 
+                        @Override
+                        public void onProgress(long bytesWritten, long totalSize) {
+                            super.onProgress(bytesWritten, totalSize);
+                            dialog.setMessage("Procesnado Info en el server");
+                            dialog.show();
+                            //progress = (int)Math.round(((double)bytesWritten/(double)contenLenght)*100);
+                            //progressBar.setProgress(progress);
+                            //txt_porcentaje_carga.setText(progress+"%");
+                        }
+
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                            String respuesta = new String(responseBody);
+                            Log.d(Constantes.TAG, respuesta);
+                            int pos = -1;
+                            try {
+                                JSONObject jsonResponse = new JSONObject(new String(responseBody));
+                                JSONArray jsonArrayLog = jsonResponse.getJSONArray("log");
+                                archivoActividadDB = new ArchivoActividadDB(database);
+                                movimientoArticuloDB = new MovimientoArticuloDB(database);
+                                for (int i = 0; i < jsonArrayLog.length(); i++) {
+
+                                    //opcion eliminar registro;
+                                /*if(jsonArrayLog.getJSONObject(i).getBoolean("sw")) {
+                                    archivoActividadDB.eliminarDatos(jsonArrayLog.getJSONObject(i).getInt("id_actividad"));
+                                    movimientoArticuloDB.eliminarDatos(jsonArrayLog.getJSONObject(i).getInt("id_actividad"));
+                                    actividadOperativaDB.eliminarDatos(jsonArrayLog.getJSONObject(i).getInt("id_actividad"));
+                                    pos = adapterData.getPositionItem(jsonArrayLog.getJSONObject(i).getInt("id_actividad"));
+                                    adapterData.removeItem(pos);
+                                }*/
+
+                                    //opcion actualizar registro
+                                    if (jsonArrayLog.getJSONObject(i).getBoolean("sw")) {
+                                        pos = adapterData.getPositionItem(jsonArrayLog.getJSONObject(i).getInt("id_actividad"));
+                                        actividadOperativaArrayList.get(pos).setPendienteSincronizar("N");
+                                        actividadOperativaDB.actualizarDatos(actividadOperativaArrayList.get(pos));
+                                        adapterData.notifySetChange();
+                                    }
+                                    else{
+                                        //pantalla con los movitos del poque no se sincronizó
+                                    }
+
+                                }
+
+                            } catch (JSONException e) {
+                                Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
+                            }
+
+                            fabCancelar.setEnabled(true);
+                            fabCancelar.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccentCancel)));
+                            dialog.dismiss();
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                            String respuesta = new String(responseBody);
+                            Log.d(Constantes.TAG, respuesta);
+                            Toast.makeText(getApplicationContext(), getText(R.string.alert_error_ejecucion) + " Código: " + statusCode + " " + error.getMessage(), Toast.LENGTH_LONG).show();
+                            fabCancelar.setEnabled(true);
+                            fabCancelar.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccentCancel)));
+                        }
+
+                        @Override
+                        public void onUserException(Throwable error) {
+                            super.onUserException(error);
+                            fabCancelar.setEnabled(true);
+                            fabCancelar.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccentCancel)));
+                            Toast.makeText(getApplicationContext(), getText(R.string.alert_error_ejecucion) + " " + error.getMessage(), Toast.LENGTH_LONG).show();
+                            Log.d(Constantes.TAG, error.getMessage());
+                        }
+                    });
+                }
+            }
+        }
+    }
 }
+

@@ -806,7 +806,9 @@ public class Parametros extends AppCompatActivity {
                                 jObjectElemento.getInt("id_tipo_escenario"),
                                 transformador_compartido,
                                 estructura_soporte_compartida,
-                                jObjectElemento.getDouble("potencia_transformador")
+                                jObjectElemento.getDouble("potencia_transformador"),
+                                jObjectElemento.getString("placa_MT"),
+                                jObjectElemento.getString("placa_CT")
 
                         );
 

@@ -25,7 +25,7 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
 
     private String getSql() {
         this.sql = "select ao.id_municipio,pg.descripcion,m.descripcion as municipio, p.descripcion as proceso,ta.descripcion as tipo_operacion," +
-                "ea.descripcion as estado_actividad,e.elemento_no,e.direccion as direccion_elemento,e.id_barrio," +
+                "ea.descripcion as estado_actividad,e.elemento_no,e.direccion as direccion_elemento,e.id_barrio,ao.id_barrio as id_barrio_actividad," +
                 "b.descripcion as barrio_elemento,tm.descripcion as tipologia,mb.descripcion as mobiliario,rm.descripcion as referencia,ao.id_actividad," +
                 "ao.id_programa,ao.id_proceso_sgc,ao.id_espacio_publicitario,ao.id_elemento,ao.id_centro_costo,ao.centro_costo," +
                 "ao.barrio,ao.id_tipo_reporte_dano,tr.descripcion as tipo_reporte_dano,ao.id_tipo_operacion,ao.id_equipo,ao.serial_equipo,ao.id_estado_actividad," +
@@ -39,7 +39,7 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
                 "e.id_tipo_red,trd.descripcion as tipo_red,e.id_tipo_escenario,tsc.descripcion as tipo_escenario," +
                 "e.id_tipo_instalacion_red_alimentacion, tir.descripcion as tipo_instalacion_red,e.id_clase_via,cv.descripcion as clase_via," +
                 "e.id_calibre_conductores,cb.descripcion as calibre_conductor,e.ancho_via,e.interdistancia,e.poste_no,e.estructura_soporte_compartida,e.transformador_compartido," +
-                "e.potencia_transformador,e.foto " +
+                "e.potencia_transformador,e.placa_mt_transformador,e.placa_ct_transformador,e.foto " +
                 "from " + Constantes.TABLA_ACTIVIDAD_OPERATIVA + " ao " +
                 "join " + Constantes.TABLA_PROGRAMA + " pg on(ao.id_programa = pg._id) " +
                 "join " + Constantes.TABLA_MUNICIPIO + " m on(ao.id_municipio = m._id) " +
@@ -181,6 +181,7 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
             try {
                 db.update(Constantes.TABLA_ACTIVIDAD_OPERATIVA, contentValues, "id_actividad=" + actividad.getIdActividad(), null);
             }catch (SQLiteException e){
+                Log.d(Constantes.TAG,"Error:"+e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -189,6 +190,9 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
     @Override
     public void eliminarDatos() {
         db.execSQL("DELETE FROM  "+Constantes.TABLA_ACTIVIDAD_OPERATIVA);
+    }
+    public void eliminarDatos(int id) {
+        db.execSQL("DELETE FROM  "+Constantes.TABLA_ACTIVIDAD_OPERATIVA+ " where id_actividad="+id);
     }
 
     public void eliminarDatos(char pendiente) {
