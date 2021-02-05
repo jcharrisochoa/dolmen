@@ -20,7 +20,54 @@ import co.dolmen.sid.entidad.Stock;
 
 public class ActividadOperativaDB extends ActividadOperativa implements DatabaseDDL,DatabaseDLM {
     private SQLiteDatabase db;
+
     private String sql;
+
+    private String getSql() {
+        this.sql = "select ao.id_municipio,pg.descripcion,m.descripcion as municipio, p.descripcion as proceso,ta.descripcion as tipo_operacion," +
+                "ea.descripcion as estado_actividad,e.elemento_no,e.direccion as direccion_elemento,e.id_barrio," +
+                "b.descripcion as barrio_elemento,tm.descripcion as tipologia,mb.descripcion as mobiliario,rm.descripcion as referencia,ao.id_actividad," +
+                "ao.id_programa,ao.id_proceso_sgc,ao.id_espacio_publicitario,ao.id_elemento,ao.id_centro_costo,ao.centro_costo," +
+                "ao.barrio,ao.id_tipo_reporte_dano,tr.descripcion as tipo_reporte_dano,ao.id_tipo_operacion,ao.id_equipo,ao.serial_equipo,ao.id_estado_actividad," +
+                "ao.fch_programa,ao.fch_actividad,ao.direccion,ao.et,ao.usuario_programa_actividad," +
+                "ao.pendiente_sincronizar,pg.descripcion as programa,ao.id_espacio_publicitario," +
+                "e.id_tipologia,e.id_mobiliario,e.id_referencia,ao.elemento_no_encontrado,ao.afectado_por_vandalismo,ao.pendiente_sincronizar,ao.observacion," +
+                "ao.fch_ejecucion,ao.fch_en_sitio,ao.id_equipo,eq.serial,eq.codigo,ao.latitud,ao.longitud, e.id_estado_mobiliario,em.descripcion as estado_mobiliario ," +
+                "e.id_tipo_balasto,tb.descripcion as tipo_balasto,e.id_tipo_base_fotocelda,tbf.descripcion as tipo_base_fotocelda," +
+                "e.id_tipo_brazo,tbz.descripcion as tipo_brazo,e.zona,e.sector,e.id_control_encendido,ce.descripcion as control_encendido," +
+                "e.id_tipo_poste,tp.descripcion as tipo_poste,e.id_norma_construccion_poste,ncp.descripcion as norma_construccion_poste," +
+                "e.id_tipo_red,trd.descripcion as tipo_red,e.id_tipo_escenario,tsc.descripcion as tipo_escenario," +
+                "e.id_tipo_instalacion_red_alimentacion, tir.descripcion as tipo_instalacion_red,e.id_clase_via,cv.descripcion as clase_via," +
+                "e.id_calibre_conductores,cb.descripcion as calibre_conductor,e.ancho_via,e.interdistancia,e.poste_no,e.estructura_soporte_compartida,e.transformador_compartido," +
+                "e.potencia_transformador,e.foto " +
+                "from " + Constantes.TABLA_ACTIVIDAD_OPERATIVA + " ao " +
+                "join " + Constantes.TABLA_PROGRAMA + " pg on(ao.id_programa = pg._id) " +
+                "join " + Constantes.TABLA_MUNICIPIO + " m on(ao.id_municipio = m._id) " +
+                "join " + Constantes.TABLA_PROCESO + " p on(ao.id_proceso_sgc = p._id) " +
+                "join " + Constantes.TABLA_ESTADO_ACTIVIDAD + " ea on(ao.id_estado_actividad = ea._id) " +
+                "join " + Constantes.TABLA_TIPO_ACTIVIDAD + " ta on(ao.id_tipo_operacion = ta._id) " +
+                "left join " + Constantes.TABLA_TIPO_REPORTE_DANO + " tr on(ao.id_tipo_reporte_dano = tr._id) " +
+                "left join " + Constantes.TABLA_ELEMENTO + " e on(ao.id_elemento = e._id) " +
+                "left join " + Constantes.TABLA_ESTADO_MOBILIARIO + " em on(e.id_estado_mobiliario = em._id) " +
+                "left join " + Constantes.TABLA_TIPOLOGIA_MOBILIARIO + " tm on(e.id_tipologia = tm._id) " +
+                "left join " + Constantes.TABLA_MOBILIARIO + " mb on(e.id_mobiliario = mb._id) " +
+                "left join " + Constantes.TABLA_REFERNCIA_MOBILIARIO + " rm on(e.id_referencia = rm._id) " +
+                "left join " + Constantes.TABLA_BARRIO + " b on(e.id_barrio = b._id) " +
+                "left join " + Constantes.TABLA_EQUIPO + " eq on(ao.id_equipo = eq._id) " +
+                "left join " + Constantes.TABLA_TIPO_BALASTO + " tb on(e.id_tipo_balasto = tb._id) " +
+                "left join " + Constantes.TABLA_TIPO_BASE_FOTOCELDA + " tbf on(e.id_tipo_base_fotocelda = tbf._id) " +
+                "left join " + Constantes.TABLA_TIPO_BRAZO + " tbz on(e.id_tipo_brazo = tbz._id) " +
+                "left join " + Constantes.TABLA_CONTROL_ENCENDIDO + " ce on(e.id_control_encendido = ce._id) " +
+                "left join " + Constantes.TABLA_TIPO_POSTE + " tp on(e.id_tipo_poste = tp._id) " +
+                "left join " + Constantes.TABLA_NORMA_CONSTRUCCION_POSTE + " ncp on(e.id_norma_construccion_poste = ncp._id) " +
+                "left join " + Constantes.TABLA_TIPO_RED + " trd on(e.id_tipo_red = trd._id) " +
+                "left join " + Constantes.TABLA_TIPO_ESCENARIO + " tsc on(e.id_tipo_escenario = tsc._id) " +
+                "left join " + Constantes.TABLA_TIPO_INSTALACION_RED + " tir on(e.id_tipo_instalacion_red_alimentacion = tir._id) " +
+                "left join " + Constantes.TABLA_CLASE_VIA + " cv on(e.id_clase_via = cv._id) " +
+                "left join " + Constantes.TABLA_CALIBRE + " cb on(e.id_calibre_conductores = cb._id) ";
+        return this.sql;
+    }
+
     private ActividadOperativa actividad;
 
     public ActividadOperativaDB (SQLiteDatabase sqLiteDatabase){
@@ -150,48 +197,7 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
 
     @Override
     public Cursor consultarTodo() {
-        this.sql = "select ao.id_municipio,pg.descripcion,m.descripcion as municipio, p.descripcion as proceso,ta.descripcion as tipo_operacion," +
-                "ea.descripcion as estado_actividad,e.elemento_no,e.direccion as direccion_elemento,e.id_barrio," +
-                "b.descripcion as barrio_elemento,tm.descripcion as tipologia,mb.descripcion as mobiliario,rm.descripcion as referencia,ao.id_actividad," +
-                "ao.id_programa,ao.id_proceso_sgc,ao.id_espacio_publicitario,ao.id_elemento,ao.id_centro_costo,ao.centro_costo," +
-                "ao.barrio,ao.id_tipo_reporte_dano,tr.descripcion as tipo_reporte_dano,ao.id_tipo_operacion,ao.id_equipo,ao.serial_equipo,ao.id_estado_actividad," +
-                "ao.fch_programa,ao.fch_actividad,ao.direccion,ao.et,ao.usuario_programa_actividad," +
-                "ao.pendiente_sincronizar,pg.descripcion as programa,ao.id_espacio_publicitario," +
-                "e.id_tipologia,e.id_mobiliario,e.id_referencia,ao.elemento_no_encontrado,ao.afectado_por_vandalismo,ao.pendiente_sincronizar,ao.observacion," +
-                "ao.fch_ejecucion,ao.id_equipo,eq.serial,eq.codigo,ao.latitud,ao.longitud, e.id_estado_mobiliario,em.descripcion as estado_mobiliario ," +
-                "e.id_tipo_balasto,tb.descripcion as tipo_balasto,e.id_tipo_base_fotocelda,tbf.descripcion as tipo_base_fotocelda," +
-                "e.id_tipo_brazo,tbz.descripcion as tipo_brazo,e.zona,e.sector,e.id_control_encendido,ce.descripcion as control_encendido," +
-                "e.id_tipo_poste,tp.descripcion as tipo_poste,e.id_norma_construccion_poste,ncp.descripcion as norma_construccion_poste," +
-                "e.id_tipo_red,trd.descripcion as tipo_red,e.id_tipo_escenario,tsc.descripcion as tipo_escenario,"+
-                "e.id_tipo_instalacion_red_alimentacion, tir.descripcion as tipo_instalacion_red,e.id_clase_via,cv.descripcion as clase_via,"+
-                "e.id_calibre_conductores,cb.descripcion as calibre_conductor,e.ancho_via,e.interdistancia,e.poste_no,e.estructura_soporte_compartida,e.transformador_compartido,"+
-                "e.potencia_transformador,e.foto "+
-                "from "+Constantes.TABLA_ACTIVIDAD_OPERATIVA+" ao " +
-                "join "+Constantes.TABLA_PROGRAMA+" pg on(ao.id_programa = pg._id) " +
-                "join "+Constantes.TABLA_MUNICIPIO+" m on(ao.id_municipio = m._id) " +
-                "join "+Constantes.TABLA_PROCESO+" p on(ao.id_proceso_sgc = p._id) " +
-                "join "+Constantes.TABLA_ESTADO_ACTIVIDAD+" ea on(ao.id_estado_actividad = ea._id) " +
-                "join "+Constantes.TABLA_TIPO_ACTIVIDAD+" ta on(ao.id_tipo_operacion = ta._id) " +
-                "left join "+Constantes.TABLA_TIPO_REPORTE_DANO+" tr on(ao.id_tipo_reporte_dano = tr._id) " +
-                "left join "+Constantes.TABLA_ELEMENTO+" e on(ao.id_elemento = e._id) " +
-                "left join "+Constantes.TABLA_ESTADO_MOBILIARIO+" em on(e.id_estado_mobiliario = em._id) "+
-                "left join "+Constantes.TABLA_TIPOLOGIA_MOBILIARIO+" tm on(e.id_tipologia = tm._id) " +
-                "left join "+Constantes.TABLA_MOBILIARIO+" mb on(e.id_mobiliario = mb._id) " +
-                "left join "+Constantes.TABLA_REFERNCIA_MOBILIARIO+" rm on(e.id_referencia = rm._id) " +
-                "left join "+Constantes.TABLA_BARRIO+" b on(e.id_barrio = b._id) " +
-                "left join "+Constantes.TABLA_EQUIPO+" eq on(ao.id_equipo = eq._id) " +
-                "left join "+Constantes.TABLA_TIPO_BALASTO+" tb on(e.id_tipo_balasto = tb._id) "+
-                "left join "+Constantes.TABLA_TIPO_BASE_FOTOCELDA+" tbf on(e.id_tipo_base_fotocelda = tbf._id) "+
-                "left join "+Constantes.TABLA_TIPO_BRAZO+" tbz on(e.id_tipo_brazo = tbz._id) "+
-                "left join "+Constantes.TABLA_CONTROL_ENCENDIDO+" ce on(e.id_control_encendido = ce._id) "+
-                "left join "+Constantes.TABLA_TIPO_POSTE+" tp on(e.id_tipo_poste = tp._id) "+
-                "left join "+Constantes.TABLA_NORMA_CONSTRUCCION_POSTE+" ncp on(e.id_norma_construccion_poste = ncp._id) "+
-                "left join "+Constantes.TABLA_TIPO_RED+" trd on(e.id_tipo_red = trd._id) "+
-                "left join "+Constantes.TABLA_TIPO_ESCENARIO+" tsc on(e.id_tipo_escenario = tsc._id) "+
-                "left join "+Constantes.TABLA_TIPO_INSTALACION_RED+" tir on(e.id_tipo_instalacion_red_alimentacion = tir._id) "+
-                "left join "+Constantes.TABLA_CLASE_VIA+" cv on(e.id_clase_via = cv._id) "+
-                "left join "+Constantes.TABLA_CALIBRE+" cb on(e.id_calibre_conductores = cb._id) "+
-                "order by ao.direccion";
+        this.sql = getSql() + " order by ao.direccion";
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }
@@ -205,50 +211,14 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
         if(id_proceso_sgc != 0)
             q = q + " and ao.id_proceso_sgc ="+id_proceso_sgc;
 
-        this.sql = "select ao.id_municipio,pg.descripcion,m.descripcion as municipio, p.descripcion as proceso,ta.descripcion as tipo_operacion," +
-                "ea.descripcion as estado_actividad,e.elemento_no,e.direccion as direccion_elemento,e.id_barrio," +
-                "b.descripcion as barrio_elemento,tm.descripcion as tipologia,mb.descripcion as mobiliario,rm.descripcion as referencia,ao.id_actividad," +
-                "ao.id_programa,ao.id_proceso_sgc,ao.id_espacio_publicitario,ao.id_elemento,ao.id_centro_costo,ao.centro_costo," +
-                "ao.barrio,ao.id_tipo_reporte_dano,tr.descripcion as tipo_reporte_dano,ao.id_tipo_operacion,ao.id_equipo,ao.serial_equipo,ao.id_estado_actividad," +
-                "ao.fch_programa,ao.fch_actividad,ao.direccion,ao.et,ao.usuario_programa_actividad," +
-                "ao.pendiente_sincronizar,pg.descripcion as programa,ao.id_espacio_publicitario," +
-                "e.id_tipologia,e.id_mobiliario,e.id_referencia,ao.elemento_no_encontrado,ao.afectado_por_vandalismo,ao.pendiente_sincronizar,ao.observacion," +
-                "ao.fch_ejecucion,ao.id_equipo,eq.serial,eq.codigo,ao.latitud,ao.longitud, e.id_estado_mobiliario,em.descripcion as estado_mobiliario ," +
-                "e.id_tipo_balasto,tb.descripcion as tipo_balasto,e.id_tipo_base_fotocelda,tbf.descripcion as tipo_base_fotocelda," +
-                "e.id_tipo_brazo,tbz.descripcion as tipo_brazo,e.zona,e.sector,e.id_control_encendido,ce.descripcion as control_encendido," +
-                "e.id_tipo_poste,tp.descripcion as tipo_poste,e.id_norma_construccion_poste,ncp.descripcion as norma_construccion_poste," +
-                "e.id_tipo_red,trd.descripcion as tipo_red,e.id_tipo_escenario,tsc.descripcion as tipo_escenario, "+
-                "e.id_tipo_instalacion_red_alimentacion, tir.descripcion as tipo_instalacion_red,e.id_clase_via,cv.descripcion as clase_via, "+
-                "e.id_calibre_conductores,cb.descripcion as calibre_conductor,e.ancho_via,e.interdistancia,e.poste_no,e.estructura_soporte_compartida,e.transformador_compartido,"+
-                "e.potencia_transformador,e.foto "+
-                "from "+Constantes.TABLA_ACTIVIDAD_OPERATIVA+" ao " +
-                "join "+Constantes.TABLA_PROGRAMA+" pg on(ao.id_programa = pg._id) " +
-                "join "+Constantes.TABLA_MUNICIPIO+" m on(ao.id_municipio = m._id) " +
-                "join "+Constantes.TABLA_PROCESO+" p on(ao.id_proceso_sgc = p._id) " +
-                "join "+Constantes.TABLA_ESTADO_ACTIVIDAD+" ea on(ao.id_estado_actividad = ea._id) " +
-                "join "+Constantes.TABLA_TIPO_ACTIVIDAD+" ta on(ao.id_tipo_operacion = ta._id) " +
-                "left join "+Constantes.TABLA_TIPO_REPORTE_DANO+" tr on(ao.id_tipo_reporte_dano = tr._id) " +
-                "left join "+Constantes.TABLA_ELEMENTO+" e on(ao.id_elemento = e._id) " +
-                "left join "+Constantes.TABLA_ESTADO_MOBILIARIO+" em on(e.id_estado_mobiliario = em._id) "+
-                "left join "+Constantes.TABLA_TIPOLOGIA_MOBILIARIO+" tm on(e.id_tipologia = tm._id) " +
-                "left join "+Constantes.TABLA_MOBILIARIO+" mb on(e.id_mobiliario = mb._id) " +
-                "left join "+Constantes.TABLA_REFERNCIA_MOBILIARIO+" rm on(e.id_referencia = rm._id) " +
-                "left join "+Constantes.TABLA_BARRIO+" b on(e.id_barrio = b._id) " +
-                "left join "+Constantes.TABLA_EQUIPO+" eq on(ao.id_equipo = eq._id) " +
-                "left join "+Constantes.TABLA_TIPO_BALASTO+" tb on(e.id_tipo_balasto = tb._id) "+
-                "left join "+Constantes.TABLA_TIPO_BASE_FOTOCELDA+" tbf on(e.id_tipo_base_fotocelda = tbf._id) "+
-                "left join "+Constantes.TABLA_TIPO_BRAZO+" tbz on(e.id_tipo_brazo = tbz._id) "+
-                "left join "+Constantes.TABLA_CONTROL_ENCENDIDO+" ce on(e.id_control_encendido = ce._id) "+
-                "left join "+Constantes.TABLA_TIPO_POSTE+" tp on(e.id_tipo_poste = tp._id) "+
-                "left join "+Constantes.TABLA_NORMA_CONSTRUCCION_POSTE+" ncp on(e.id_norma_construccion_poste = ncp._id) "+
-                "left join "+Constantes.TABLA_TIPO_RED+" trd on(e.id_tipo_red = trd._id) "+
-                "left join "+Constantes.TABLA_TIPO_ESCENARIO+" tsc on(e.id_tipo_escenario = tsc._id) "+
-                "left join "+Constantes.TABLA_TIPO_INSTALACION_RED+" tir on(e.id_tipo_instalacion_red_alimentacion = tir._id) "+
-                "left join "+Constantes.TABLA_CLASE_VIA+" cv on(e.id_clase_via = cv._id) "+
-                "left join "+Constantes.TABLA_CALIBRE+" cb on(e.id_calibre_conductores = cb._id) "+
-                "WHERE 1=1 "+q+
-                " order by ao.direccion";
-        //Log.d("programacion",""+this.sql);
+        this.sql = getSql() + " where 1=1 "+q+" order by ao.direccion";
+
+        Cursor result = db.rawQuery(this.sql, null);
+        return result;
+    }
+
+    public Cursor porSincronizar(){
+        this.sql = getSql() +  " where pendiente_sincronizar='S' and id_estado_actividad=2 order by ao.id_actividad";
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }

@@ -1,21 +1,26 @@
 package co.dolmen.sid;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,11 +31,16 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import co.dolmen.sid.entidad.ActividadOperativa;
 import co.dolmen.sid.entidad.Barrio;
@@ -89,6 +99,7 @@ public class ListaActividad extends AppCompatActivity  {
     private int idDefaultContrato;
     private int idMobiliarioBusqueda;
     private int idReferenciaBusqueda;
+    private int idDefaultBodega;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +112,7 @@ public class ListaActividad extends AppCompatActivity  {
         idDefaultProceso    = config.getInt("id_proceso", 0);
         idDefaultContrato   = config.getInt("id_contrato", 0);
         idDefaultMunicipio  = config.getInt("id_municipio", 0);
+        idDefaultBodega     = config.getInt("id_bodega", 0);
         /*nombreMunicipio = config.getString("nombreMunicipio", "");
         nombreProceso = config.getString("nombreProceso", "");
         nombreContrato = config.getString("nombreContrato", "");*/
@@ -208,7 +220,23 @@ public class ListaActividad extends AppCompatActivity  {
         });
     }
 
-    private void filter(String dato,boolean elemento,boolean direccion,boolean actividad){
+    @Override
+    public boolean onCreateOptionsMenu(android.view.Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_mis_actividades,menu);
+        return true; //super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_sincronizar:
+                sincronizarAtendidas();
+                break;
+        }
+        return true;//super.onOptionsItemSelected(item);
+    }
+
+    private void filter(String dato, boolean elemento, boolean direccion, boolean actividad){
         ArrayList<ActividadOperativa> filterActividadOperativa = new ArrayList<ActividadOperativa>();
 
         for(ActividadOperativa a:actividadOperativaArrayList){
@@ -417,9 +445,13 @@ public class ListaActividad extends AppCompatActivity  {
                     );
 
                     if(cursor.getString(cursor.getColumnIndex("fch_ejecucion"))!=null) {
-
                         actividadOperativa.setFechaEjecucion(new SimpleDateFormat("yyyy-MM-dd H:mm:ss").parse(cursor.getString(cursor.getColumnIndex("fch_ejecucion"))));
                     }
+
+                    if(cursor.getString(cursor.getColumnIndex("fch_en_sitio"))!=null) {
+                        actividadOperativa.setFechaEnSitio(new SimpleDateFormat("yyyy-MM-dd H:mm:ss").parse(cursor.getString(cursor.getColumnIndex("fch_en_sitio"))));
+                    }
+
                     actividadOperativa.setObservacion(cursor.getString(cursor.getColumnIndex("observacion")));
                     actividadOperativa.setLatitud(cursor.getDouble(cursor.getColumnIndex("latitud")));
                     actividadOperativa.setLongitud(cursor.getDouble(cursor.getColumnIndex("longitud")));
@@ -431,5 +463,222 @@ public class ListaActividad extends AppCompatActivity  {
             Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_SHORT).show();
         }
     }
+
+    private void sincronizarAtendidas(){
+        ConnectivityManager conn = (ConnectivityManager) getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = conn.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            //ActividadOperativaDB actividadOperativaDB = new ActividadOperativaDB(database);
+            JSONArray jsonArray = armarJSON();
+            Log.d(Constantes.TAG,"JSON->"+jsonArray.toString());
+
+        } else {
+            //
+            alert.setTitle(R.string.titulo_alerta);
+            alert.setMessage(R.string.alert_conexion);
+            alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                }
+            });
+            alert.create().show();
+        }
+    }
+
+    private JSONArray armarJSON(){
+        JSONArray principal = new JSONArray();
+
+        for(ActividadOperativa atendidaPendiente:actividadOperativaArrayList) {
+            if (atendidaPendiente.getPendienteSincronizar().contentEquals("S") && atendidaPendiente.getEstadoActividad().getId() == 2) { //Filtra las atendidas pendientes por sincronizar
+                Log.d(Constantes.TAG,"List->"+atendidaPendiente.getIdActividad()+",Sincronizada->"+atendidaPendiente.getPendienteSincronizar());
+                try {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("id_usuario", idUsuario);
+                    jsonObject.put("id_actividad", atendidaPendiente.getIdActividad());
+                    jsonObject.put("fch_ejecucion", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(atendidaPendiente.getFechaEjecucion()));
+                    jsonObject.put("fecha_hora_llegada", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(atendidaPendiente.getFechaEnSitio()));
+                    jsonObject.put("id_elemento", atendidaPendiente.getElemento().getId());
+                    jsonObject.put("id_bodega", idDefaultBodega);
+                    jsonObject.put("id_centro_costo", atendidaPendiente.getCentroCosto().getIdCentroCosto());
+                    jsonObject.put("latitud", atendidaPendiente.getLatitud());
+                    jsonObject.put("longitud", atendidaPendiente.getLongitud());
+                    jsonObject.put("elemento_no_encontrado", atendidaPendiente.isElementoNoEncontrado());
+                    jsonObject.put("afectado_por_vandalismo", atendidaPendiente.isAfectadoPorVandalismo());
+                    jsonObject.put("id_barrio", atendidaPendiente.getBarrio().getIdBarrio());
+                    jsonObject.put("barrio",atendidaPendiente.getBarrio().getNombreBarrio());
+                    jsonObject.put("direccion", atendidaPendiente.getDireccion());
+                    jsonObject.put("id_tipo_actividad", atendidaPendiente.getTipoActividad().getId());
+                    jsonObject.put("id_estado_actividad", atendidaPendiente.getEstadoActividad().getId());
+                    jsonObject.put("id_equipo", atendidaPendiente.getEquipo().getIdEquipo());
+                    jsonObject.put("observacion", atendidaPendiente.getObservacion());
+
+                    //--Fotos Antes
+                    JSONArray jsonArrayFotoAntes = new JSONArray();
+                    //--Fotos Despues
+                    JSONArray jsonArrayFotoDespues = new JSONArray();
+
+                    //--Materiales
+                    JSONArray jsonArrayInst     = new JSONArray();
+                    JSONArray jsonArrayDesUtil  = new JSONArray();
+                    JSONArray jsonArrayDesUtilInst = new JSONArray();
+                    JSONArray jsonArrayDesNoUtil = new JSONArray();
+                    JSONArray jsonArrayPNC      = new JSONArray();
+                    JSONArray jsonArrayAsig     = new JSONArray();
+
+                    //--Elemento
+                    JSONObject jsonElemento = new JSONObject();
+                    jsonElemento.put("id_usuario", idUsuario);
+                    jsonElemento.put("fch_actualizacion",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(atendidaPendiente.getFechaEjecucion()));
+                    jsonElemento.put("id_elemento",atendidaPendiente.getElemento().getId());
+                    jsonElemento.put("elemento_no",atendidaPendiente.getElemento().getElemento_no());
+                    jsonElemento.put("id_barrio", atendidaPendiente.getBarrio().getIdBarrio());
+                    jsonElemento.put("direccion", atendidaPendiente.getDireccion());
+                    jsonElemento.put("id_tipo_balasto", atendidaPendiente.getElemento().getTipoBalasto().getIdTipoBalasto());
+                    jsonElemento.put("id_tipo_base_fotocelda", atendidaPendiente.getElemento().getTipoBaseFotocelda().getidTipoBaseFotocelda());
+                    jsonElemento.put("id_tipo_brazo", atendidaPendiente.getElemento().getTipoBrazo().getidTipoBrazo());
+                    jsonElemento.put("id_control_encendido", atendidaPendiente.getElemento().getControlEncendido().getidControlEncendido());
+                    jsonElemento.put("id_estado_mobiliario", atendidaPendiente.getElemento().getEstadoMobiliario().getIdEstadoMobiliario());
+                    jsonElemento.put("id_tipo_escenario", atendidaPendiente.getElemento().getTipoEscenario().getId());
+                    jsonElemento.put("id_clase_via", atendidaPendiente.getElemento().getClaseVia().getId());
+                    jsonElemento.put("id_tipo_poste", atendidaPendiente.getElemento().getNormaConstruccionPoste().getTipoPoste().getId());
+                    jsonElemento.put("id_norma_construccion_poste", atendidaPendiente.getElemento().getNormaConstruccionPoste().getId());
+                    jsonElemento.put("id_calibre", atendidaPendiente.getElemento().getCalibre().getId_calibre());
+                    jsonElemento.put("id_tipo_instalacion_red", atendidaPendiente.getElemento().getTipoInstalacionRed().getidTipoInstalacionRed());
+                    jsonElemento.put("id_tipo_red", atendidaPendiente.getElemento().getTipoRed().getId());
+                    jsonElemento.put("zona", atendidaPendiente.getElemento().getZona());
+                    jsonElemento.put("sector", atendidaPendiente.getElemento().getSector());
+                    jsonElemento.put("latitud", atendidaPendiente.getElemento().getLatitud());
+                    jsonElemento.put("longitud", atendidaPendiente.getElemento().getLongitud());
+                    jsonElemento.put("ancho_via", atendidaPendiente.getElemento().getAnchoVia());
+                    jsonElemento.put("poste_no", atendidaPendiente.getElemento().getPosteNo());
+                    jsonElemento.put("interdistancia", atendidaPendiente.getElemento().getInterdistancia());
+
+                    // jsonElemento.put("poste_exclusivo_ap", fragmentElemento.swPosteExclusivoAp.isChecked());
+                    jsonElemento.put("potencia_transformador", atendidaPendiente.getElemento().getPotenciaTransformador());
+                    //jsonElemento.put("placa_mt_transformador", fragmentElemento.txtMtTransformador.getText());
+                    //jsonElemento.put("placa_ct_transformador", fragmentElemento.txtCtTransformador.getText());
+                    //jsonElemento.put("transformador_exclusivo_ap", fragmentElemento.swTranformadorExclusivoAP.isChecked());
+                    //jsonElemento.put("foto",atendidaPendiente.getElemento().getEncodeStringFoto());
+
+                    jsonObject.put("info_elemento",jsonElemento);
+
+                    principal.put(jsonObject);
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+        return principal;
+    }
+
+    /*
+     * try {
+
+
+                  //--Fotos Antes
+     *             JSONArray jsonArrayFotoAntes = new JSONArray();
+     *             for(int f=0;f<4;f++) {
+     *                 jsonArrayFotoAntes.put(actividadOperativa.getArchivoActividad().get(f).getArchivo());
+     *             }
+     *             jsonObject.put("foto_antes", jsonArrayFotoAntes);
+     *
+     *             //--Fotos Despues
+     *             JSONArray jsonArrayFotoDespues = new JSONArray();
+     *             for(int f=4;f<8;f++) {
+     *                 jsonArrayFotoDespues.put(actividadOperativa.getArchivoActividad().get(f).getArchivo());
+     *             }
+     *             jsonObject.put("foto_despues", jsonArrayFotoDespues);
+     *
+     *             //--Materiales
+     *             JSONArray jsonArrayInst     = new JSONArray();
+     *             JSONArray jsonArrayDesUtil  = new JSONArray();
+     *             JSONArray jsonArrayDesUtilInst = new JSONArray();
+     *             JSONArray jsonArrayDesNoUtil = new JSONArray();
+     *             JSONArray jsonArrayPNC      = new JSONArray();
+     *             JSONArray jsonArrayAsig     = new JSONArray();
+     *
+     *             int index = 0;
+     *             while(index < fragmentMateriales.movimientoArticuloArrayList.size()){
+     *                 switch (fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock()){
+     *                     case 1://stock
+     *                         JSONObject jsonInst = new JSONObject();
+     *                         jsonInst.put("id_bodega",idDefaultBodega);
+     *                         jsonInst.put("id_centro_costo",actividadOperativa.getCentroCosto().getIdCentroCosto());
+     *                         jsonInst.put("id_tipo_stock", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
+     *                         jsonInst.put("id_articulo", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
+     *                         jsonInst.put("cantidad", fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
+     *                         jsonInst.put("movimiento", fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento());
+     *                         jsonArrayInst.put(jsonInst);
+     *                         break;
+     *                     case 2:
+     *                         JSONObject jsonPNC = new JSONObject();
+     *                         jsonPNC.put("id_bodega",idDefaultBodega);
+     *                         jsonPNC.put("id_centro_costo",actividadOperativa.getCentroCosto().getIdCentroCosto());
+     *                         jsonPNC.put("id_tipo_stock", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
+     *                         jsonPNC.put("id_articulo", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
+     *                         jsonPNC.put("cantidad", fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
+     *                         jsonPNC.put("movimiento", fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento());
+     *                         jsonArrayPNC.put(jsonPNC);
+     *                         break;
+     *                     case 3:
+     *                         if(fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento().toString().contentEquals(getString(R.string.movimiento_salida))){ //Movimiento Negativo
+     *                             JSONObject jsonDesUtilInst = new JSONObject();
+     *                             jsonDesUtilInst.put("id_bodega",idDefaultBodega);
+     *                             jsonDesUtilInst.put("id_centro_costo",actividadOperativa.getCentroCosto().getIdCentroCosto());
+     *                             jsonDesUtilInst.put("id_tipo_stock", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
+     *                             jsonDesUtilInst.put("id_articulo", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
+     *                             jsonDesUtilInst.put("cantidad", fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
+     *                             jsonDesUtilInst.put("movimiento", fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento());
+     *                             jsonArrayDesUtilInst.put(jsonDesUtilInst);
+     *                         }
+     *                         else {
+     *                             JSONObject jsonDesUtil = new JSONObject();
+     *                             jsonDesUtil.put("id_bodega",idDefaultBodega);
+     *                             jsonDesUtil.put("id_centro_costo",actividadOperativa.getCentroCosto().getIdCentroCosto());
+     *                             jsonDesUtil.put("id_tipo_stock", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
+     *                             jsonDesUtil.put("id_articulo", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
+     *                             jsonDesUtil.put("cantidad", fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
+     *                             jsonDesUtil.put("movimiento", fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento());
+     *                             jsonArrayDesUtil.put(jsonDesUtil);
+     *                         }
+     *                         break;
+     *                     case 4:
+     *                         JSONObject jsonDesNoUtil = new JSONObject();
+     *                         jsonDesNoUtil.put("id_bodega",idDefaultBodega);
+     *                         jsonDesNoUtil.put("id_centro_costo",actividadOperativa.getCentroCosto().getIdCentroCosto());
+     *                         jsonDesNoUtil.put("id_tipo_stock", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
+     *                         jsonDesNoUtil.put("id_articulo", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
+     *                         jsonDesNoUtil.put("cantidad", fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
+     *                         jsonDesNoUtil.put("movimiento", fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento());
+     *                         jsonArrayDesNoUtil.put(jsonDesNoUtil);
+     *                         break;
+     *                     case 5:
+     *                         JSONObject jsonAsig = new JSONObject();
+     *                         jsonAsig.put("id_bodega",idDefaultBodega);
+     *                         jsonAsig.put("id_centro_costo",actividadOperativa.getCentroCosto().getIdCentroCosto());
+     *                         jsonAsig.put("id_tipo_stock", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock());
+     *                         jsonAsig.put("id_articulo", fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo());
+     *                         jsonAsig.put("cantidad", fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()); ///cuando es un valor con decimales se van decimales equivo
+     *                         jsonAsig.put("movimiento", fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento());
+     *                         jsonArrayAsig.put(jsonAsig);
+     *                         break;
+     *                 }
+     *                 index++;
+     *             }
+     *
+     *             jsonObject.put("inst", jsonArrayInst);
+     *             jsonObject.put("desmutil", jsonArrayDesUtil);
+     *             jsonObject.put("desmutinst", jsonArrayDesUtilInst);
+     *             jsonObject.put("desmnoutil", jsonArrayDesNoUtil);
+     *             jsonObject.put("pnc", jsonArrayPNC);
+     *             jsonObject.put("asig", jsonArrayAsig);
+     *
+     *
+     *
+     *             JSONArray principal = new JSONArray();
+     *             principal.put(jsonObject);
+     *             Log.d("JSON","->"+jsonObject.toString());
+     */
 
 }
