@@ -221,4 +221,6 @@
     <string name="articulo">Artículos</string>
     <string name="SI">SI</string>
     <string name="NO">NO</string>
+    <string name="dialogo_procesando">Procesando</string>
+    <string name="recopilando_datos">Recopilando datos</string>
 </resources>
