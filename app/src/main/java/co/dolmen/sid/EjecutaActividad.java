@@ -1,15 +1,12 @@
 package co.dolmen.sid;
 
 
-import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -25,11 +22,9 @@ import com.loopj.android.http.RequestHandle;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -51,10 +46,10 @@ import co.dolmen.sid.entidad.Articulo;
 import co.dolmen.sid.entidad.Barrio;
 import co.dolmen.sid.entidad.Bodega;
 import co.dolmen.sid.entidad.Calibre;
-import co.dolmen.sid.entidad.CentroCosto;
 import co.dolmen.sid.entidad.ClaseVia;
 import co.dolmen.sid.entidad.ControlEncendido;
 import co.dolmen.sid.entidad.Elemento;
+import co.dolmen.sid.modelo.ElementoDesmontadoDB;
 import co.dolmen.sid.entidad.Equipo;
 import co.dolmen.sid.entidad.EstadoActividad;
 import co.dolmen.sid.entidad.EstadoMobiliario;
@@ -224,7 +219,6 @@ public class EjecutaActividad extends AppCompatActivity {
         });
 
     }
-
 
     private void actualizarObjeto(){
 
@@ -485,6 +479,8 @@ public class EjecutaActividad extends AppCompatActivity {
             progressGuardarActividad.setVisibility(View.VISIBLE);
             ActividadOperativaDB actividadOperativaDB = new ActividadOperativaDB(database);
             ArchivoActividadDB archivoActividadDB = new ArchivoActividadDB(database);
+            ElementoDesmontadoDB    elementoDesmontadoDB = new ElementoDesmontadoDB(database);
+
             ElementoDB elementoDB = new ElementoDB(database);
             MovimientoArticuloDB movimientoArticuloDB = new MovimientoArticuloDB(database);
 
@@ -508,6 +504,13 @@ public class EjecutaActividad extends AppCompatActivity {
             while (movimientoArticuloIterator.hasNext()) {
                 if(!movimientoArticuloDB.agregarDatos(movimientoArticuloIterator.next()))
                     Toast.makeText(getApplicationContext(),"Error guardado los movimientos de inventario",Toast.LENGTH_LONG).show();
+            }
+
+            //--Relacionar los elementos desmontados
+            Iterator<Elemento> desmontadoIterator = actividadOperativa.getElementosDesmontadosList().iterator();
+            while(desmontadoIterator.hasNext()){
+                if(!elementoDesmontadoDB.agregarDatos(actividadOperativa.getIdActividad(),desmontadoIterator.next().getId()))
+                    Toast.makeText(getApplicationContext(),"Error relacionando los elementos desmontados",Toast.LENGTH_LONG).show();
             }
 
             //--Actualiza el stock
@@ -580,6 +583,14 @@ public class EjecutaActividad extends AppCompatActivity {
             jsonObject.put("id_estado_actividad", actividadOperativa.getEstadoActividad().getId());
             jsonObject.put("id_equipo", actividadOperativa.getEquipo().getIdEquipo());
             jsonObject.put("observacion", actividadOperativa.getObservacion());
+
+            //--Elementos desmontados relacionados
+            JSONArray jsonArrayDesmontado = new JSONArray();
+            Iterator<Elemento> desmontadoIterator = actividadOperativa.getElementosDesmontadosList().iterator();
+            while(desmontadoIterator.hasNext()) {
+                jsonArrayDesmontado.put(desmontadoIterator.next().getId());
+            }
+            jsonObject.put("elemento_desmontado", jsonArrayDesmontado);
 
             //--Fotos Antes
             JSONArray jsonArrayFotoAntes = new JSONArray();

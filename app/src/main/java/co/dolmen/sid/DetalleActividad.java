@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.zip.Inflater;
 
 import co.dolmen.sid.entidad.ActividadOperativa;
+import co.dolmen.sid.modelo.ElementoDesmontadoDB;
 import co.dolmen.sid.modelo.MovimientoArticuloDB;
 import co.dolmen.sid.utilidades.MiLocalizacion;
 
@@ -64,6 +65,7 @@ public class DetalleActividad extends AppCompatActivity {
     private TextView txtSincronizada;
 
     private LinearLayout layoutMaterial;
+    private LinearLayout layoutElementoDesmontado;
     private ActividadOperativa actividadOperativa;
     public LocationManager ubicacion;
     private boolean gpsListener;
@@ -89,7 +91,6 @@ public class DetalleActividad extends AppCompatActivity {
         actividadOperativa = (ActividadOperativa)i.getSerializableExtra("actividadOperativa");
         setTitle(getString(R.string.titulo_actividad)+" No "+actividadOperativa.getIdActividad());
 
-
         btnEnSitio     = findViewById(R.id.fab_en_sitio);
         btnCancelar     = findViewById(R.id.fab_cancelar);
 
@@ -114,7 +115,8 @@ public class DetalleActividad extends AppCompatActivity {
         txtLongitud      = findViewById(R.id.txt_longitud);
         txtSincronizada = findViewById(R.id.txt_sincronizada);
 
-        layoutMaterial    = findViewById(R.id.layout_material);
+        layoutMaterial              = findViewById(R.id.layout_material);
+        layoutElementoDesmontado    = findViewById(R.id.layout_elemento_desmontado);
 
         setDetalle(actividadOperativa);
 
@@ -192,6 +194,7 @@ public class DetalleActividad extends AppCompatActivity {
     }
 
     private void setDetalle(ActividadOperativa  ao){
+        Cursor cursor;
         txtMunicipio.setText(ao.getBarrio().getDescripcion());
        //txtActividad.setText(String.valueOf(ao.getIdActividad()));
         txtFchActividad.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(ao.getFechaActividad()));
@@ -222,10 +225,18 @@ public class DetalleActividad extends AppCompatActivity {
 
         //--Materiales
         MovimientoArticuloDB movimientoArticuloDB = new MovimientoArticuloDB(database);
-        Cursor cursor = movimientoArticuloDB.consultarTodo(actividadOperativa.getIdActividad());
+        cursor = movimientoArticuloDB.consultarTodo(actividadOperativa.getIdActividad());
         tablaMateriales(cursor);
+        cursor.close();
+
+        //--Elemento Desmontado
+        ElementoDesmontadoDB elementoDesmontadoDB = new ElementoDesmontadoDB(database);
+        cursor = elementoDesmontadoDB.consultarTodo(actividadOperativa.getIdActividad());
+        visualizarDesmontado(cursor);
+        cursor.close();
 
     }
+
 
     public boolean estadoGPS() {
         ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
@@ -281,6 +292,26 @@ public class DetalleActividad extends AppCompatActivity {
                 layoutMaterial.addView(view);
             }
         }
-
     }
+
+    private void visualizarDesmontado(Cursor cursor) {
+        LayoutInflater layoutInflater;
+        if(cursor.getCount()>0){
+            while(cursor.moveToNext()){
+                layoutInflater = LayoutInflater.from(this);
+                View view = layoutInflater.inflate(R.layout.view_elemento_desmontado,null);
+
+                TextView txtMobiliarioNo = view.findViewById(R.id.txt_mobiliario_no);
+                TextView txtDescripcionMobiliario = view.findViewById(R.id.txt_descripcion_mobiliario);
+                TextView txtDireccionMobiliario = view.findViewById(R.id.txt_direccion);
+
+                txtMobiliarioNo.setText(String.valueOf(cursor.getInt(cursor.getColumnIndex("mobiliario_no"))));
+                txtDescripcionMobiliario.setText(cursor.getString(cursor.getColumnIndex("mobiliario")) + " " + cursor.getString(cursor.getColumnIndex("referencia_mobiliario")));
+                txtDireccionMobiliario.setText(cursor.getString(cursor.getColumnIndex("direccion")));
+
+                layoutElementoDesmontado.addView(view);
+            }
+        }
+    }
+
 }

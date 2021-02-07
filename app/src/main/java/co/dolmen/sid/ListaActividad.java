@@ -6,11 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -29,12 +26,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -47,21 +42,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
 
 import co.dolmen.sid.entidad.ActividadOperativa;
 import co.dolmen.sid.entidad.Barrio;
-import co.dolmen.sid.entidad.Bodega;
 import co.dolmen.sid.entidad.Calibre;
 import co.dolmen.sid.entidad.CentroCosto;
 import co.dolmen.sid.entidad.ClaseVia;
 import co.dolmen.sid.entidad.ControlEncendido;
 import co.dolmen.sid.entidad.Elemento;
+import co.dolmen.sid.modelo.ElementoDesmontadoDB;
 import co.dolmen.sid.entidad.Equipo;
 import co.dolmen.sid.entidad.EstadoActividad;
 import co.dolmen.sid.entidad.EstadoMobiliario;
@@ -488,6 +481,7 @@ public class ListaActividad extends AppCompatActivity  {
                     actividadOperativa.setPendienteSincronizar(cursor.getString(cursor.getColumnIndex("pendiente_sincronizar")));
                     actividadOperativa.setElementoNoEncontrado(cursor.getString(cursor.getColumnIndex("elemento_no_encontrado")));
                     actividadOperativa.setAfectadoPorVandalismo(cursor.getString(cursor.getColumnIndex("afectado_por_vandalismo")));
+
                     actividadOperativaArrayList.add(actividadOperativa);
                 }
             }
@@ -692,6 +686,7 @@ public class ListaActividad extends AppCompatActivity  {
             Cursor cursor;
             ArchivoActividadDB archivoActividadDB = new ArchivoActividadDB(database);
             MovimientoArticuloDB movimientoArticuloDB = new MovimientoArticuloDB(database);
+            ElementoDesmontadoDB elementoDesmontadoDB = new ElementoDesmontadoDB(database);
             int p = 0;
             for(ActividadOperativa atendidaPendiente:actividadOperativaArrayList) {
                 if (atendidaPendiente.getPendienteSincronizar().contentEquals("S") && atendidaPendiente.getEstadoActividad().getId() == 2) { //Filtra las atendidas pendientes por sincronizar
@@ -716,6 +711,17 @@ public class ListaActividad extends AppCompatActivity  {
                         jsonObject.put("id_estado_actividad", atendidaPendiente.getEstadoActividad().getId());
                         jsonObject.put("id_equipo", atendidaPendiente.getEquipo().getIdEquipo());
                         jsonObject.put("observacion", atendidaPendiente.getObservacion());
+
+                        //--Elementos desmontados relacionados
+                        JSONArray jsonArrayDesmontado = new JSONArray();
+                        cursor = elementoDesmontadoDB.consultarTodo(atendidaPendiente.getIdActividad());
+                        if (cursor.getCount() > 0) {
+                            while (cursor.moveToNext()) {
+                                jsonArrayDesmontado.put(cursor.getInt(cursor.getColumnIndex("id_elemento")));
+                            }
+                        }
+                        cursor.close();
+                        jsonObject.put("elemento_desmontado", jsonArrayDesmontado);
 
                         //--Fotos Antes
                         JSONArray jsonArrayFotoAntes = new JSONArray();
@@ -825,7 +831,6 @@ public class ListaActividad extends AppCompatActivity  {
                         jsonObject.put("desmnoutil", jsonArrayDesNoUtil);
                         jsonObject.put("pnc", jsonArrayPNC);
                         jsonObject.put("asig", jsonArrayAsig);
-
 
                         //--Elemento
                         JSONObject jsonElemento = new JSONObject();

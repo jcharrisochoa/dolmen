@@ -262,7 +262,7 @@ public class FragmentInformacion extends Fragment {
                 else {
                     desmontadoList.add(elementoDesmontado);
                     LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-                    final View item = layoutInflater.inflate(R.layout.view_elemento_desmontado, null);
+                    final View item = layoutInflater.inflate(R.layout.item_elemento_desmontado, null);
 
                     LinearLayout linearLayoutRemover = item.findViewById(R.id.layout_remover_elemento);
                     TextView txtMobiliarioNo = item.findViewById(R.id.txt_mobiliario_no);

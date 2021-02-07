@@ -1,8 +1,10 @@
-package co.dolmen.sid.entidad;
+package co.dolmen.sid.modelo;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+import android.util.Log;
 
 import co.dolmen.sid.Constantes;
 import co.dolmen.sid.modelo.DatabaseDDL;
@@ -36,8 +38,16 @@ public class ElementoDesmontadoDB implements DatabaseDDL, DatabaseDLM {
         ContentValues contentValues = new ContentValues();
         contentValues.put("id_elemento", id_elemento);
         contentValues.put("id_actividad", id_actividad);
-        db.insert(Constantes.TABLA_ELEMENTO, null, contentValues);
-        return true;
+        try {
+            long lastId = db.insert(Constantes.TABLA_ELEMENTO_DESMONTADO, null, contentValues);
+            //Log.d(Constantes.TAG,"lastid="+lastId);
+            return true;
+        }
+        catch (SQLiteException e){
+            Log.d(Constantes.TAG,"Error"+e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
@@ -53,6 +63,17 @@ public class ElementoDesmontadoDB implements DatabaseDDL, DatabaseDLM {
     @Override
     public Cursor consultarTodo() {
         this.sql = "select * from "+Constantes.TABLA_ELEMENTO_DESMONTADO;
+        Cursor result = db.rawQuery(this.sql, null);
+        return result;
+    }
+
+    public Cursor consultarTodo(int id_actividad) {
+        this.sql = "select e._id,e.elemento_no as mobiliario_no,e.direccion,m.descripcion as mobiliario,rm.descripcion as referencia_mobiliario " +
+                "from "+Constantes.TABLA_ELEMENTO_DESMONTADO +" ed " +
+                "join "+Constantes.TABLA_ELEMENTO+" e on(ed.id_elemento = e._id) " +
+                "join "+Constantes.TABLA_MOBILIARIO+" m on(e.id_mobiliario = m._id) " +
+                "join "+Constantes.TABLA_REFERNCIA_MOBILIARIO+" rm on(e.id_referencia = rm._id) " +
+                "where id_actividad="+id_actividad;
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }

@@ -2,6 +2,7 @@ package co.dolmen.sid.utilidades;
 
 import android.database.sqlite.SQLiteDatabase;
 
+import co.dolmen.sid.modelo.ElementoDesmontadoDB;
 import co.dolmen.sid.modelo.ActaContratoDB;
 import co.dolmen.sid.modelo.ActividadOperativaDB;
 import co.dolmen.sid.modelo.ArchivoActividadDB;
@@ -103,6 +104,7 @@ public class MiBaseDatos {
     public ArchivoActividadDB archivoActividadDB;
     public MovimientoArticuloDB movimientoArticuloDB;
     public CentroCostoDB centroCostoDB;
+    public ElementoDesmontadoDB elementoDesmontadoDB;
 
     public MiBaseDatos(SQLiteDatabase sqLiteDatabase){
         tipologiaDB = new TipologiaDB(sqLiteDatabase);
@@ -154,6 +156,7 @@ public class MiBaseDatos {
         archivoActividadDB = new ArchivoActividadDB(sqLiteDatabase);
         movimientoArticuloDB    = new MovimientoArticuloDB(sqLiteDatabase);
         centroCostoDB   = new CentroCostoDB(sqLiteDatabase);
+        elementoDesmontadoDB = new ElementoDesmontadoDB(sqLiteDatabase);
     }
 
     public void crearTabla(){
@@ -206,6 +209,7 @@ public class MiBaseDatos {
         archivoActividadDB.crearTabla();
         movimientoArticuloDB.crearTabla();
         centroCostoDB.crearTabla();
+        elementoDesmontadoDB.crearTabla();
         //Log.d("DataBase","create");
     }
 
@@ -259,6 +263,7 @@ public class MiBaseDatos {
         archivoActividadDB.borrarTabla();
         movimientoArticuloDB.borrarTabla();
         centroCostoDB.borrarTabla();
+        elementoDesmontadoDB.borrarTabla();
     }
 
     public void eliminarDatos(){
@@ -302,5 +307,6 @@ public class MiBaseDatos {
         archivoActividadDB.eliminarDatos();
         movimientoArticuloDB.eliminarDatos();
         centroCostoDB.eliminarDatos();
+        elementoDesmontadoDB.eliminarDatos();
     }
 }
