@@ -9,11 +9,21 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.text.LineBreaker;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -21,8 +31,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.zip.Inflater;
 
 import co.dolmen.sid.entidad.ActividadOperativa;
+import co.dolmen.sid.modelo.MovimientoArticuloDB;
 import co.dolmen.sid.utilidades.MiLocalizacion;
 
 public class DetalleActividad extends AppCompatActivity {
@@ -51,16 +63,22 @@ public class DetalleActividad extends AppCompatActivity {
     private TextView txtLongitud;
     private TextView txtSincronizada;
 
+    private LinearLayout layoutMaterial;
     private ActividadOperativa actividadOperativa;
     public LocationManager ubicacion;
     private boolean gpsListener;
     AlertDialog.Builder alert;
     MiLocalizacion miLocalizacion;
+    SQLiteOpenHelper conn;
+    SQLiteDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detalle_actividad);
+
+        conn = new BaseDatos(this);
+        database = conn.getReadableDatabase();
 
         alert = new AlertDialog.Builder(this);
         alert.setCancelable(false);
@@ -95,6 +113,8 @@ public class DetalleActividad extends AppCompatActivity {
         txtLatitud      = findViewById(R.id.txt_latitud);
         txtLongitud      = findViewById(R.id.txt_longitud);
         txtSincronizada = findViewById(R.id.txt_sincronizada);
+
+        layoutMaterial    = findViewById(R.id.layout_material);
 
         setDetalle(actividadOperativa);
 
@@ -200,6 +220,11 @@ public class DetalleActividad extends AppCompatActivity {
         txtLongitud.setText(String.valueOf(ao.getLongitud()));
         txtSincronizada.setText((ao.getPendienteSincronizar().contentEquals("S"))?getString(R.string.NO):getString(R.string.SI));
 
+        //--Materiales
+        MovimientoArticuloDB movimientoArticuloDB = new MovimientoArticuloDB(database);
+        Cursor cursor = movimientoArticuloDB.consultarTodo(actividadOperativa.getIdActividad());
+        tablaMateriales(cursor);
+
     }
 
     public boolean estadoGPS() {
@@ -236,5 +261,26 @@ public class DetalleActividad extends AppCompatActivity {
             }
         }
         return sw;
+    }
+
+    private void tablaMateriales(Cursor cursor){
+        LayoutInflater layoutInflater;
+        if(cursor.getCount()>0){
+            while(cursor.moveToNext()){
+                layoutInflater = LayoutInflater.from(this);
+                View view = layoutInflater.inflate(R.layout.view_item_articulos,null);
+                TextView tipoStock = view.findViewById(R.id.txt_tipo_stock);
+                TextView movimiento = view.findViewById(R.id.txt_tipo_movimiento);
+                TextView cantidad   = view.findViewById(R.id.txt_cantidad);
+                TextView articulo   = view.findViewById(R.id.txt_descripcion_articulo);
+
+                tipoStock.setText(cursor.getString(cursor.getColumnIndex("tipo_stock")));
+                movimiento.setText(cursor.getString(cursor.getColumnIndex("movimiento")));
+                cantidad.setText(String.valueOf(cursor.getDouble(cursor.getColumnIndex("cantidad"))));
+                articulo.setText("("+String.valueOf(cursor.getInt(cursor.getColumnIndex("id_articulo")))+") : "+cursor.getString(cursor.getColumnIndex("articulo")));
+                layoutMaterial.addView(view);
+            }
+        }
+
     }
 }

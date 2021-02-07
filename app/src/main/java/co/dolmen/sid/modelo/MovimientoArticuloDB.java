@@ -78,7 +78,13 @@ public class MovimientoArticuloDB extends MovimientoArticulo implements Database
     }
 
     public Cursor consultarTodo(int id_actividad) {
-        this.sql = "SELECT * FROM "+Constantes.TABLA_MOVIMIENTO_ARTICULO+" WHERE id_actividad="+id_actividad;
+        this.sql = "select ma._id,ma.id_articulo,ma.id_tipo_stock,ma.id_bodega,ma.id_centro_costo,ma.movimiento,ma.cantidad," +
+                    "a.descripcion as articulo,ts.descripcion as tipo_stock,b.descripcion as bodega " +
+                    "from "+Constantes.TABLA_MOVIMIENTO_ARTICULO+" ma " +
+                    "join "+Constantes.TABLA_ARTICULO+" a on(ma.id_articulo = a._id) " +
+                    "join "+Constantes.TABLA_TIPO_STOCK+" ts on(ma.id_tipo_stock = ts._id) " +
+                    "join "+Constantes.TABLA_BODEGA+" b on(ma.id_bodega = b._id) " +
+                    "where id_actividad="+id_actividad;
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }
