@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
@@ -21,18 +22,23 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import co.dolmen.sid.entidad.ActividadOperativa;
 import co.dolmen.sid.entidad.Elemento;
 import co.dolmen.sid.entidad.EstadoMobiliario;
 import co.dolmen.sid.entidad.Mobiliario;
+import co.dolmen.sid.entidad.ReferenciaMobiliario;
 import co.dolmen.sid.entidad.Tipologia;
 import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.ElementoDB;
@@ -61,8 +67,10 @@ public class FragmentInformacion extends Fragment {
     EditText txtNumeroInterseccion;
     EditText txtNumeracionA;
     EditText txtNumeracionB;
+    EditText editMobiliarioNo;
 
     ImageButton btnEditarDireccion;
+    ImageButton btnAgregarDesmontado;
 
     //-
     View view;
@@ -91,6 +99,9 @@ public class FragmentInformacion extends Fragment {
     private int idDefaultProceso;
     private int idDefaultContrato;
 
+    LinearLayout layoutDesmontadoList;
+    public List<Elemento> desmontadoList;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,11 +124,14 @@ public class FragmentInformacion extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.fragment_informacion, container, false);
+        desmontadoList = new ArrayList<>();
 
         alert = new AlertDialog.Builder(view.getContext());
         alert.setCancelable(false);
         alert.setTitle(R.string.titulo_alerta);
         alert.setIcon(R.drawable.icon_problem);
+
+        layoutDesmontadoList    = view.findViewById(R.id.layout_lista_desmontado);
 
         swVandalismo        = view.findViewById(R.id.sw_afectado_vandalismo);
         swElementoNoEncontrado  = view.findViewById(R.id.sw_elemento_no_encontrado);
@@ -129,7 +143,10 @@ public class FragmentInformacion extends Fragment {
 
         editDireccion       = view.findViewById(R.id.txt_direccion);
         editObservacion     = view.findViewById(R.id.txt_observacion);
+        editMobiliarioNo    = view.findViewById(R.id.txt_buscar_elemento);
+
         btnEditarDireccion  = view.findViewById(R.id.btn_editar_direccion);
+        btnAgregarDesmontado = view.findViewById(R.id.btn_agregar_elemento_desmontado);
 
         //--
         editDireccion.setText(actividadOperativa.getDireccion());
@@ -158,6 +175,13 @@ public class FragmentInformacion extends Fragment {
                 armarDireccion();
             }
         });
+        
+        btnAgregarDesmontado.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                agregarElementoDesmontado();
+            }
+        });
 
         cargarBarrio(database);
         cargarTipoActividad(database);
@@ -165,6 +189,120 @@ public class FragmentInformacion extends Fragment {
         cargarVehiculo(database);
 
         return view;
+    }
+
+    private Elemento buscarElemento(){
+        ElementoDB elementoDB = new ElementoDB(database);
+        Cursor cursorElemento = elementoDB.consultarElemento(idDefaultMunicipio, idDefaultProceso, Integer.parseInt(editMobiliarioNo.getText().toString()));
+        if (cursorElemento.getCount() == 0) {
+            return null;
+        }
+        else{
+            cursorElemento.moveToFirst();
+            Elemento elemento = new Elemento();
+            elemento.setId(Integer.parseInt(cursorElemento.getString(cursorElemento.getColumnIndex("_id"))));
+            elemento.setElemento_no(cursorElemento.getString(cursorElemento.getColumnIndex("elemento_no")));
+
+            elemento.setTipologia(
+                    new Tipologia(
+                            cursorElemento.getInt(cursorElemento.getColumnIndex("id_tipologia")),
+                            cursorElemento.getString(cursorElemento.getColumnIndex("tipologia"))
+                    )
+            );
+            elemento.setMobiliario(new Mobiliario(
+                    cursorElemento.getInt(cursorElemento.getColumnIndex("id_mobiliario")),
+                    cursorElemento.getString(cursorElemento.getColumnIndex("mobiliario"))
+            ));
+
+            elemento.setReferenciaMobiliario(
+                    new ReferenciaMobiliario(
+                            cursorElemento.getInt(cursorElemento.getColumnIndex("id_referencia")),
+                            cursorElemento.getString(cursorElemento.getColumnIndex("referencia"))
+                    )
+            );
+            elemento.setDireccion(cursorElemento.getString(cursorElemento.getColumnIndex("direccion")));
+            return elemento;
+        }
+    }
+
+    private void agregarElementoDesmontado() {
+        if (editMobiliarioNo.getText().toString().trim().length() == 0) {
+            alert.setMessage(R.string.alert_elemento_buscar);
+            alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                }
+            });
+            alert.create().show();
+        } else {
+            final Elemento elementoDesmontado = buscarElemento();
+            if(elementoDesmontado == null){
+                alert.setMessage(getText(R.string.alert_elemento_no_encontrado) + " sobre el Elemento: " + editMobiliarioNo.getText());
+                alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+                alert.create().show();
+            }
+            else {
+                int pos = buscarListaDesmontado(elementoDesmontado);
+                if(pos>=0){
+                    alert.setMessage("El Elemento ya está en lista");
+                    alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+                    alert.create().show();
+                }
+                else {
+                    desmontadoList.add(elementoDesmontado);
+                    LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+                    final View item = layoutInflater.inflate(R.layout.view_elemento_desmontado, null);
+
+                    LinearLayout linearLayoutRemover = item.findViewById(R.id.layout_remover_elemento);
+                    TextView txtMobiliarioNo = item.findViewById(R.id.txt_mobiliario_no);
+                    TextView txtDescripcionMobiliario = item.findViewById(R.id.txt_descripcion_mobiliario);
+                    TextView txtDireccionMobiliario = item.findViewById(R.id.txt_direccion);
+
+                    txtMobiliarioNo.setText(elementoDesmontado.getElemento_no());
+                    txtDescripcionMobiliario.setText(elementoDesmontado.getMobiliario().getDescripcionMobiliario() + " " + elementoDesmontado.getReferenciaMobiliario().getDescripcionReferenciaMobiliario());
+                    txtDireccionMobiliario.setText(elementoDesmontado.getDireccion());
+
+                    linearLayoutRemover.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            removerElementoDesmontado(item, elementoDesmontado);
+                        }
+                    });
+                    layoutDesmontadoList.addView(item);
+                }
+            }
+        }
+        editMobiliarioNo.setText("");
+
+    }
+
+    private void removerElementoDesmontado(View item,Elemento elemento){
+        layoutDesmontadoList.removeView(item);
+        desmontadoList.remove(buscarListaDesmontado(elemento));
+    }
+
+    private int buscarListaDesmontado(Elemento elemento){
+        int pos = -1;
+        int i = 0;
+        Iterator<Elemento> iterator = desmontadoList.iterator();
+        while(iterator.hasNext()){
+            if(iterator.next().getId() == elemento.getId()){
+                pos = i;
+            }
+            i++;
+        }
+        return pos;
     }
 
     private void cargarVehiculo(SQLiteDatabase sqLiteDatabase) {

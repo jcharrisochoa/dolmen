@@ -13,6 +13,7 @@ import co.dolmen.sid.modelo.CensoArchivoDB;
 import co.dolmen.sid.modelo.CensoAsignadoDB;
 import co.dolmen.sid.modelo.CensoDB;
 import co.dolmen.sid.modelo.CensoTipoArmadoDB;
+import co.dolmen.sid.modelo.CentroCostoDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
 import co.dolmen.sid.modelo.ContratoDB;
 import co.dolmen.sid.modelo.ControlEncendidoDB;
@@ -101,6 +102,7 @@ public class MiBaseDatos {
     public EquipoDB equipoDB;
     public ArchivoActividadDB archivoActividadDB;
     public MovimientoArticuloDB movimientoArticuloDB;
+    public CentroCostoDB centroCostoDB;
 
     public MiBaseDatos(SQLiteDatabase sqLiteDatabase){
         tipologiaDB = new TipologiaDB(sqLiteDatabase);
@@ -151,6 +153,7 @@ public class MiBaseDatos {
         equipoDB    = new EquipoDB(sqLiteDatabase);
         archivoActividadDB = new ArchivoActividadDB(sqLiteDatabase);
         movimientoArticuloDB    = new MovimientoArticuloDB(sqLiteDatabase);
+        centroCostoDB   = new CentroCostoDB(sqLiteDatabase);
     }
 
     public void crearTabla(){
@@ -202,6 +205,7 @@ public class MiBaseDatos {
         equipoDB.crearTabla();
         archivoActividadDB.crearTabla();
         movimientoArticuloDB.crearTabla();
+        centroCostoDB.crearTabla();
         //Log.d("DataBase","create");
     }
 
@@ -254,6 +258,7 @@ public class MiBaseDatos {
         equipoDB.borrarTabla();
         archivoActividadDB.borrarTabla();
         movimientoArticuloDB.borrarTabla();
+        centroCostoDB.borrarTabla();
     }
 
     public void eliminarDatos(){
@@ -296,5 +301,6 @@ public class MiBaseDatos {
         equipoDB.eliminarDatos();
         archivoActividadDB.eliminarDatos();
         movimientoArticuloDB.eliminarDatos();
+        centroCostoDB.eliminarDatos();
     }
 }

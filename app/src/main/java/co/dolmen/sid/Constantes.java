@@ -63,4 +63,5 @@ public final class Constantes {
     public static final String TABLA_ARCHIVO_ACTIVIDAD_OPERATIVA= "archivo_actividad_operativa";
     public static final String TABLA_MOVIMIENTO_ARTICULO        = "movimiento_articulo";
     public static final String TABLA_CENTRO_COSTO               = "centro_costo";
+    public static final String TABLA_ELEMENTO_DESMONTADO        = "elemento_desmontado";
 }

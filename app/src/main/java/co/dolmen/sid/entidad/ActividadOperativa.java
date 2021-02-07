@@ -3,6 +3,7 @@ package co.dolmen.sid.entidad;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class ActividadOperativa implements Serializable {
 
@@ -34,6 +35,7 @@ public class ActividadOperativa implements Serializable {
     private String afectadoPorVandalismo;
     private String elementoNoEncontrado;
     private ArrayList<ArchivoActividad> archivoActividadList;
+    private List<Elemento> elementosDesmontadosList;
 
     public ActividadOperativa(){
         archivoActividadList = new ArrayList<ArchivoActividad>();
@@ -292,5 +294,21 @@ public class ActividadOperativa implements Serializable {
 
     public void setPendienteSincronizar(String pendienteSincronizar) {
         this.pendienteSincronizar = pendienteSincronizar;
+    }
+
+    public List<Elemento> getElementosDesmontadosList() {
+        return elementosDesmontadosList;
+    }
+
+    public void setElementosDesmontadosList(List<Elemento> elementosDesmontadosList) {
+        this.elementosDesmontadosList = elementosDesmontadosList;
+    }
+
+    public ArrayList<ArchivoActividad> getArchivoActividadList() {
+        return archivoActividadList;
+    }
+
+    public void setArchivoActividadList(ArrayList<ArchivoActividad> archivoActividadList) {
+        this.archivoActividadList = archivoActividadList;
     }
 }

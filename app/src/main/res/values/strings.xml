@@ -223,4 +223,6 @@
     <string name="NO">NO</string>
     <string name="dialogo_procesando">Procesando</string>
     <string name="recopilando_datos">Recopilando datos</string>
+    <string name="titulo_lista_elementos_desmontado">Elementos desmontados agregados</string>
+    <string name="titulo_centro_costo">Centro Costo</string>
 </resources>

@@ -44,6 +44,7 @@ import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.BodegaDB;
 import co.dolmen.sid.modelo.CalibreDB;
 import co.dolmen.sid.modelo.CensoAsignadoDB;
+import co.dolmen.sid.modelo.CentroCostoDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
 import co.dolmen.sid.modelo.ContratoDB;
 import co.dolmen.sid.modelo.ControlEncendidoDB;
@@ -734,6 +735,20 @@ public class Parametros extends AppCompatActivity {
                     progress = (int)Math.round((double)(i+1)/arrayEquipo.length()*100);
                     publishProgress(progress, R.string.titulo_vehiculo);
                     Log.d("parametros","->Vehiculo:"+progress+"%");
+                }
+
+                //--Centro Costo
+                CentroCostoDB centroCostoDB = new CentroCostoDB(database);
+                JSONArray arrayCentroCosto= parametros.getJSONArray("centro_costo");
+                for (int i = 0;i<arrayEquipo.length();i++){
+                    JSONObject jObjectCentroCosto = arrayCentroCosto.getJSONObject(i);
+                    centroCostoDB.setIdCentroCosto(jObjectCentroCosto.getInt("id"));
+                    centroCostoDB.setCodigo(jObjectCentroCosto.getInt("codigo"));
+                    centroCostoDB.setDescripcionCentroCosto(jObjectCentroCosto.getString("descripcion"));
+                    centroCostoDB.agregarDatos(centroCostoDB);
+                    progress = (int)Math.round((double)(i+1)/arrayCentroCosto.length()*100);
+                    publishProgress(progress, R.string.titulo_centro_costo);
+                    Log.d("parametros","->Centro Costo:"+progress+"%");
                 }
 
                 //Proveedor

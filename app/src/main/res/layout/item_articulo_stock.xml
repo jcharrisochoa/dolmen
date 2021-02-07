@@ -25,40 +25,34 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/txt_codigo_articulo"
-                android:layout_width="match_parent"
-                android:layout_height="20dp"
-                android:text="Código"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="12sp" />
-
-            <TextView
                 android:id="@+id/txt_descripcion_articulo"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:text="ABRAZADERA  PARA POSTE 5-6 DOBLE SALIDA 150 ET 2 TORNILLOS CARRUAJE DE 5/8 X 4 + TUERCA ROSCA COMPLETA + TORNILLO CARRUAJE DE 5/8 X 2.1/2 + TUERCA PARA EL OMBLIGO x UND."
-                android:textSize="9sp" />
+                android:textSize="12sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/txt_centro_costo"
                 android:layout_width="match_parent"
-                android:layout_height="20dp"
-                android:text="Centro Costo" />
+                android:layout_height="wrap_content"
+                android:text="Centro Costo"
+                android:textSize="10sp" />
 
             <TextView
                 android:id="@+id/txt_tipo_stock"
                 android:layout_width="match_parent"
-                android:layout_height="20dp"
+                android:layout_height="wrap_content"
                 android:text="Tipo Stock"
                 android:textColor="@color/colorAccentOk"
-                android:textSize="12sp" />
+                android:textSize="10sp" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="6"
+            android:layout_weight="9"
             android:orientation="vertical">
 
             <TextView
@@ -67,7 +61,7 @@
                 android:layout_height="match_parent"
                 android:gravity="right|center_vertical"
                 android:text="10000.00"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 android:textStyle="bold" />
         </LinearLayout>
 

@@ -373,6 +373,9 @@ public class EjecutaActividad extends AppCompatActivity {
         actividadOperativa.agregarArchivoActividad(new ArchivoActividad(actividadOperativa.getIdActividad(),fragmentFotoDespues.encodeStringFoto_3, "D"));
         actividadOperativa.agregarArchivoActividad(new ArchivoActividad(actividadOperativa.getIdActividad(),fragmentFotoDespues.encodeStringFoto_4, "D"));
 
+        //--Elementos desmontados
+        actividadOperativa.setElementosDesmontadosList(fragmentInformacion.desmontadoList);
+
     }
 
     private void guardar(final View view){

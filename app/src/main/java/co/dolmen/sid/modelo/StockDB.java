@@ -91,11 +91,14 @@ public class StockDB extends Stock implements DatabaseDDL,DatabaseDLM {
     @Override
     public Cursor consultarTodo() {
         this.sql = "select s.id_bodega,s.id_tipo_stock,s.id_centro_costo,s.id_articulo,s.cantidad, " +
-                "a.descripcion as articulo,te.descripcion as tipo_stock,b.descripcion as bodega " +
+                "a.descripcion as articulo,te.descripcion as tipo_stock,b.descripcion as bodega, " +
+                "cc.codigo,cc.descripcion as centro_costo "+
                 " from "+ Constantes.TABLA_STOCK + " s " +
                 " join "+Constantes.TABLA_BODEGA+" b on(s.id_bodega = b._id)" +
                 " join "+Constantes.TABLA_TIPO_STOCK+" te on(s.id_tipo_stock = te._id)" +
-                " join "+Constantes.TABLA_ARTICULO+" a on(s.id_articulo = a._id)  ORDER BY id_articulo";
+                " join "+Constantes.TABLA_ARTICULO+" a on(s.id_articulo = a._id)  " +
+                " join "+Constantes.TABLA_CENTRO_COSTO+" cc on(s.id_centro_costo = cc._id)  " +
+                "ORDER BY id_articulo";
 
         Cursor result = db.rawQuery(this.sql, null);
         return result;
@@ -120,11 +123,13 @@ public class StockDB extends Stock implements DatabaseDDL,DatabaseDLM {
         }
 
         this.sql = "select s.id_bodega,s.id_tipo_stock,s.id_centro_costo,s.id_articulo,s.cantidad," +
-                "a.descripcion as articulo,te.descripcion as tipo_stock,b.descripcion as bodega " +
+                "a.descripcion as articulo,te.descripcion as tipo_stock,b.descripcion as bodega, " +
+                "cc.codigo,cc.descripcion as centro_costo"+
                 " from "+ Constantes.TABLA_STOCK + " s " +
                 " join "+Constantes.TABLA_BODEGA+" b on(s.id_bodega = b._id)" +
                 " join "+Constantes.TABLA_TIPO_STOCK+" te on(s.id_tipo_stock = te._id)" +
                 " join "+Constantes.TABLA_ARTICULO+" a on(s.id_articulo = a._id) " +
+                " join "+Constantes.TABLA_CENTRO_COSTO+" cc on(s.id_centro_costo = cc._id)  " +
                 " where 1=1 " +
                 q+
                 " ORDER BY s.id_tipo_stock,s.id_articulo";
