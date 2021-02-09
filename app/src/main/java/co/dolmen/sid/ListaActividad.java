@@ -718,7 +718,7 @@ public class ListaActividad extends AppCompatActivity  {
                         cursor = elementoDesmontadoDB.consultarTodo(atendidaPendiente.getIdActividad());
                         if (cursor.getCount() > 0) {
                             while (cursor.moveToNext()) {
-                                jsonArrayDesmontado.put(cursor.getInt(cursor.getColumnIndex("id_elemento")));
+                                jsonArrayDesmontado.put(cursor.getInt(cursor.getColumnIndex("_id")));
                             }
                         }
                         cursor.close();

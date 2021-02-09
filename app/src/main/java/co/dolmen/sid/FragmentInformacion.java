@@ -46,6 +46,7 @@ import co.dolmen.sid.modelo.EquipoDB;
 import co.dolmen.sid.modelo.EstadoActividadDB;
 import co.dolmen.sid.modelo.TipoActividadDB;
 import co.dolmen.sid.modelo.TipoInterseccionDB;
+import co.dolmen.sid.modelo.VatiajeDB;
 import co.dolmen.sid.utilidades.DataSpinner;
 
 import static java.lang.Integer.parseInt;
@@ -59,6 +60,7 @@ public class FragmentInformacion extends Fragment {
     Spinner sltTipoInterseccionA;
     Spinner sltTipoInterseccionB;
     Spinner sltVehiculo;
+    Spinner sltVatiaje;
 
 
     EditText editDireccion;
@@ -71,6 +73,7 @@ public class FragmentInformacion extends Fragment {
 
     ImageButton btnEditarDireccion;
     ImageButton btnAgregarDesmontado;
+    ImageButton btnAgregarVatiajeDesmontado;
 
     //-
     View view;
@@ -88,6 +91,7 @@ public class FragmentInformacion extends Fragment {
     ArrayList<DataSpinner> tipoInterseccionA;
     ArrayList<DataSpinner> tipoInterseccionB;
     ArrayList<DataSpinner> vehiculoList;
+    ArrayList<DataSpinner> vatiajeList;
     //--
     Switch swVandalismo;
     Switch swElementoNoEncontrado;
@@ -100,7 +104,9 @@ public class FragmentInformacion extends Fragment {
     private int idDefaultContrato;
 
     LinearLayout layoutDesmontadoList;
-    public List<Elemento> desmontadoList;
+    LinearLayout layoutVatiajeDesmontadoList;
+    List<Elemento> desmontadoList;
+    List<Integer> vatiajeDesmontadoList;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -125,6 +131,7 @@ public class FragmentInformacion extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_informacion, container, false);
         desmontadoList = new ArrayList<>();
+        vatiajeDesmontadoList = new ArrayList<>();
 
         alert = new AlertDialog.Builder(view.getContext());
         alert.setCancelable(false);
@@ -132,6 +139,7 @@ public class FragmentInformacion extends Fragment {
         alert.setIcon(R.drawable.icon_problem);
 
         layoutDesmontadoList    = view.findViewById(R.id.layout_lista_desmontado);
+        layoutVatiajeDesmontadoList = view.findViewById(R.id.layout_lista_vatiaje_desmontado);
 
         swVandalismo        = view.findViewById(R.id.sw_afectado_vandalismo);
         swElementoNoEncontrado  = view.findViewById(R.id.sw_elemento_no_encontrado);
@@ -140,6 +148,7 @@ public class FragmentInformacion extends Fragment {
         sltTipoActividad    = view.findViewById(R.id.slt_tipo_actividad);
         sltEstadoActividad  = view.findViewById(R.id.slt_estado_actividad);
         sltVehiculo         = view.findViewById(R.id.slt_vehiculo);
+        sltVatiaje          = view.findViewById(R.id.slt_vatiaje);
 
         editDireccion       = view.findViewById(R.id.txt_direccion);
         editObservacion     = view.findViewById(R.id.txt_observacion);
@@ -147,6 +156,7 @@ public class FragmentInformacion extends Fragment {
 
         btnEditarDireccion  = view.findViewById(R.id.btn_editar_direccion);
         btnAgregarDesmontado = view.findViewById(R.id.btn_agregar_elemento_desmontado);
+        btnAgregarVatiajeDesmontado = view.findViewById(R.id.btn_agregar_vatiaje_desmontado);
 
         //--
         editDireccion.setText(actividadOperativa.getDireccion());
@@ -183,10 +193,18 @@ public class FragmentInformacion extends Fragment {
             }
         });
 
+        btnAgregarVatiajeDesmontado.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                agregarVatiajeDesmontado();
+            }
+        });
+
         cargarBarrio(database);
         cargarTipoActividad(database);
         cargarEstadoActividad(database);
         cargarVehiculo(database);
+        cargarVatiaje(database);
 
         return view;
     }
@@ -287,6 +305,42 @@ public class FragmentInformacion extends Fragment {
 
     }
 
+    private void agregarVatiajeDesmontado(){
+        if(vatiajeList.get(sltVatiaje.getSelectedItemPosition()).getId() == 0){
+            alert.setMessage(R.string.alert_vatiaje);
+            alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                }
+            });
+            alert.create().show();
+        }
+        else{
+            LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+            final View item = layoutInflater.inflate(R.layout.item_vatiaje_desmontado, null);
+
+            LinearLayout linearLayoutRemover = item.findViewById(R.id.layout_remover_vatiaje);
+            TextView txtVatiajeDesmontado = item.findViewById(R.id.txt_vatiaje_desmontado);
+
+            txtVatiajeDesmontado.setText(vatiajeList.get(sltVatiaje.getSelectedItemPosition()).getDescripcion());
+            linearLayoutRemover.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    removerVatiajeDesmontado(item, vatiajeList.get(sltVatiaje.getSelectedItemPosition()).getId());
+                }
+            });
+            layoutVatiajeDesmontadoList.addView(item);
+            vatiajeDesmontadoList.add(vatiajeList.get(sltVatiaje.getSelectedItemPosition()).getId());
+            sltVatiaje.setSelection(0);
+        }
+    }
+
+    private void removerVatiajeDesmontado(View item, int id) {
+        layoutVatiajeDesmontadoList.removeView(item);
+        //vatiajeDesmontadoList.remove();
+    }
+
     private void removerElementoDesmontado(View item,Elemento elemento){
         layoutDesmontadoList.removeView(item);
         desmontadoList.remove(buscarListaDesmontado(elemento));
@@ -335,7 +389,7 @@ public class FragmentInformacion extends Fragment {
         sltVehiculo.setAdapter(dataAdapter);
         sltVehiculo.setSelection(pos);
     }
-
+    //--
     private void cargarEstadoActividad(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
         //int pos = 0;
@@ -457,6 +511,32 @@ public class FragmentInformacion extends Fragment {
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltTipoInterseccionA.setAdapter(dataAdapter);
         sltTipoInterseccionB.setAdapter(dataAdapter);
+    }
+    //--
+    private void cargarVatiaje(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        vatiajeList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        VatiajeDB vatiajeDB = new VatiajeDB(sqLiteDatabase);
+        Cursor cursor = vatiajeDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        vatiajeList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    vatiajeList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltVatiaje.setAdapter(dataAdapter);
     }
     //--
     private void armarDireccion() {

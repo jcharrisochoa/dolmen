@@ -36,6 +36,8 @@ public class ActividadOperativa implements Serializable {
     private String elementoNoEncontrado;
     private ArrayList<ArchivoActividad> archivoActividadList;
     private List<Elemento> elementosDesmontadosList;
+    private List<Integer> vatiajeDesmontadoList;
+
 
     public ActividadOperativa(){
         archivoActividadList = new ArrayList<ArchivoActividad>();
@@ -310,5 +312,13 @@ public class ActividadOperativa implements Serializable {
 
     public void setArchivoActividadList(ArrayList<ArchivoActividad> archivoActividadList) {
         this.archivoActividadList = archivoActividadList;
+    }
+
+    public List<Integer> getVatiajeDesmontadoList() {
+        return vatiajeDesmontadoList;
+    }
+
+    public void setVatiajeDesmontadoList(List<Integer> vatiajeDesmontadoList) {
+        this.vatiajeDesmontadoList = vatiajeDesmontadoList;
     }
 }

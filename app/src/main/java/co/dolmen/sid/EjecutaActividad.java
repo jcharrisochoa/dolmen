@@ -81,6 +81,7 @@ import co.dolmen.sid.modelo.ArchivoActividadDB;
 import co.dolmen.sid.modelo.ElementoDB;
 import co.dolmen.sid.modelo.MovimientoArticuloDB;
 import co.dolmen.sid.modelo.StockDB;
+import co.dolmen.sid.modelo.VatiajeDesmontadoDB;
 import co.dolmen.sid.utilidades.MiLocalizacion;
 import co.dolmen.sid.utilidades.ViewPagerAdapter;
 import cz.msebera.android.httpclient.Header;
@@ -97,7 +98,6 @@ public class EjecutaActividad extends AppCompatActivity {
     SQLiteOpenHelper conn;
     SQLiteDatabase database;
     SharedPreferences config;
-    String TAG = "programacion";
 
     AlertDialog.Builder alert;
 
@@ -376,6 +376,9 @@ public class EjecutaActividad extends AppCompatActivity {
         //--Elementos desmontados
         actividadOperativa.setElementosDesmontadosList(fragmentInformacion.desmontadoList);
 
+        //--Vatiaje Desmontado
+        actividadOperativa.setVatiajeDesmontadoList(fragmentInformacion.vatiajeDesmontadoList);
+
     }
 
     private void guardar(final View view){
@@ -582,9 +585,10 @@ public class EjecutaActividad extends AppCompatActivity {
             ActividadOperativaDB actividadOperativaDB = new ActividadOperativaDB(database);
             ArchivoActividadDB archivoActividadDB = new ArchivoActividadDB(database);
             ElementoDesmontadoDB    elementoDesmontadoDB = new ElementoDesmontadoDB(database);
-
-            ElementoDB elementoDB = new ElementoDB(database);
             MovimientoArticuloDB movimientoArticuloDB = new MovimientoArticuloDB(database);
+            VatiajeDesmontadoDB vatiajeDesmontadoDB = new VatiajeDesmontadoDB(database);
+            ElementoDB elementoDB = new ElementoDB(database);
+
 
             //--Actualizar actividad
             actividadOperativaDB.actualizarDatos(actividadOperativa);
@@ -613,6 +617,13 @@ public class EjecutaActividad extends AppCompatActivity {
             while(desmontadoIterator.hasNext()){
                 if(!elementoDesmontadoDB.agregarDatos(actividadOperativa.getIdActividad(),desmontadoIterator.next().getId()))
                     Toast.makeText(getApplicationContext(),"Error relacionando los elementos desmontados",Toast.LENGTH_LONG).show();
+            }
+
+            //--Relacionar los vatiaje desmontados
+            Iterator<Integer> vatiajeDesmontadoIterator = actividadOperativa.getVatiajeDesmontadoList().iterator();
+            while(vatiajeDesmontadoIterator.hasNext()){
+                if(!vatiajeDesmontadoDB.agregarDatos(actividadOperativa.getIdActividad(),vatiajeDesmontadoIterator.next().intValue()))
+                    Toast.makeText(getApplicationContext(),"Error relacionando los vatiajes desmontados",Toast.LENGTH_LONG).show();
             }
 
             //--Actualiza el stock
@@ -662,6 +673,7 @@ public class EjecutaActividad extends AppCompatActivity {
 
     private void almacenarDatosEnRemoto() {
         actualizarObjeto();
+
         AsyncHttpClient client = new AsyncHttpClient();
 
         try {
@@ -864,12 +876,51 @@ public class EjecutaActividad extends AppCompatActivity {
                              */
                             actividadOperativa.setPendienteSincronizar("N");
                             ActividadOperativaDB actividadOperativaDB = new ActividadOperativaDB(database);
+                            ArchivoActividadDB archivoActividadDB = new ArchivoActividadDB(database);
+                            ElementoDesmontadoDB    elementoDesmontadoDB = new ElementoDesmontadoDB(database);
+                            MovimientoArticuloDB movimientoArticuloDB = new MovimientoArticuloDB(database);
+                            VatiajeDesmontadoDB vatiajeDesmontadoDB = new VatiajeDesmontadoDB(database);
+
                             ElementoDB elementoDB = new ElementoDB(database);
 
                             //--Actualiza Actividad
                             actividadOperativaDB.actualizarDatos(actividadOperativa);
                             //--Actuliza Elementos
                             elementoDB.actualizarDatos(actividadOperativa.getElemento());
+
+                            //--Guardar Fotos
+                            Iterator<ArchivoActividad> archivoActividadIterator = actividadOperativa.getArchivoActividad().iterator();
+                            ArchivoActividad tmpArchivoActividad;
+                            while (archivoActividadIterator.hasNext()) {
+                                tmpArchivoActividad = archivoActividadIterator.next();
+                                if(!tmpArchivoActividad.getArchivo().isEmpty()) {
+                                    if (!archivoActividadDB.agregarDatos(tmpArchivoActividad)) {
+                                        Toast.makeText(getApplicationContext(),"Error guardado las imagenes",Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            }
+
+                            //--Guardar Movimientos de Inventario
+                            Iterator<MovimientoArticulo> movimientoArticuloIterator = fragmentMateriales.movimientoArticuloArrayList.iterator();
+                            while (movimientoArticuloIterator.hasNext()) {
+                                if(!movimientoArticuloDB.agregarDatos(movimientoArticuloIterator.next()))
+                                    Toast.makeText(getApplicationContext(),"Error guardado los movimientos de inventario",Toast.LENGTH_LONG).show();
+                            }
+
+                            //--Relacionar los elementos desmontados
+                            Iterator<Elemento> desmontadoIterator = actividadOperativa.getElementosDesmontadosList().iterator();
+                            while(desmontadoIterator.hasNext()){
+                                if(!elementoDesmontadoDB.agregarDatos(actividadOperativa.getIdActividad(),desmontadoIterator.next().getId()))
+                                    Toast.makeText(getApplicationContext(),"Error relacionando los elementos desmontados",Toast.LENGTH_LONG).show();
+                            }
+
+                            //--Relacionar los vatiaje desmontados
+                            Iterator<Integer> vatiajeDesmontadoIterator = actividadOperativa.getVatiajeDesmontadoList().iterator();
+                            while(vatiajeDesmontadoIterator.hasNext()){
+                                if(!vatiajeDesmontadoDB.agregarDatos(actividadOperativa.getIdActividad(),vatiajeDesmontadoIterator.next().intValue()))
+                                    Toast.makeText(getApplicationContext(),"Error relacionando los vatiajes desmontados",Toast.LENGTH_LONG).show();
+                            }
+
                             //--Actualiza el stock
                             actulizarStock();
 

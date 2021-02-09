@@ -223,6 +223,8 @@
     <string name="NO">NO</string>
     <string name="dialogo_procesando">Procesando</string>
     <string name="recopilando_datos">Recopilando datos</string>
-    <string name="titulo_lista_elementos_desmontado">Elementos desmontados agregados</string>
+    <string name="titulo_lista_elementos_desmontado">Elementos desmontado agregado(s)</string>
     <string name="titulo_centro_costo">Centro Costo</string>
+    <string name="titulo_lista_vatiaje_desmontado">Vatiaje Desmontado agregado(s)</string>
+    <string name="alert_vatiaje">Seleccione un vatiaje</string>
 </resources>

@@ -52,6 +52,7 @@ import co.dolmen.sid.modelo.TipoTensionDB;
 import co.dolmen.sid.modelo.TipologiaDB;
 import co.dolmen.sid.modelo.UnidadMedidaDB;
 import co.dolmen.sid.modelo.VatiajeDB;
+import co.dolmen.sid.modelo.VatiajeDesmontadoDB;
 
 public class MiBaseDatos {
     private SQLiteDatabase db;
@@ -105,6 +106,7 @@ public class MiBaseDatos {
     public MovimientoArticuloDB movimientoArticuloDB;
     public CentroCostoDB centroCostoDB;
     public ElementoDesmontadoDB elementoDesmontadoDB;
+    public VatiajeDesmontadoDB vatiajeDesmontadoDB;
 
     public MiBaseDatos(SQLiteDatabase sqLiteDatabase){
         tipologiaDB = new TipologiaDB(sqLiteDatabase);
@@ -157,6 +159,7 @@ public class MiBaseDatos {
         movimientoArticuloDB    = new MovimientoArticuloDB(sqLiteDatabase);
         centroCostoDB   = new CentroCostoDB(sqLiteDatabase);
         elementoDesmontadoDB = new ElementoDesmontadoDB(sqLiteDatabase);
+        vatiajeDesmontadoDB = new VatiajeDesmontadoDB(sqLiteDatabase);
     }
 
     public void crearTabla(){
@@ -210,6 +213,7 @@ public class MiBaseDatos {
         movimientoArticuloDB.crearTabla();
         centroCostoDB.crearTabla();
         elementoDesmontadoDB.crearTabla();
+        vatiajeDesmontadoDB.crearTabla();
         //Log.d("DataBase","create");
     }
 
@@ -264,6 +268,7 @@ public class MiBaseDatos {
         movimientoArticuloDB.borrarTabla();
         centroCostoDB.borrarTabla();
         elementoDesmontadoDB.borrarTabla();
+        vatiajeDesmontadoDB.borrarTabla();
     }
 
     public void eliminarDatos(){
@@ -308,5 +313,6 @@ public class MiBaseDatos {
         movimientoArticuloDB.eliminarDatos();
         centroCostoDB.eliminarDatos();
         elementoDesmontadoDB.eliminarDatos();
+        vatiajeDesmontadoDB.eliminarDatos();
     }
 }

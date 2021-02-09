@@ -36,6 +36,7 @@ import java.util.zip.Inflater;
 import co.dolmen.sid.entidad.ActividadOperativa;
 import co.dolmen.sid.modelo.ElementoDesmontadoDB;
 import co.dolmen.sid.modelo.MovimientoArticuloDB;
+import co.dolmen.sid.modelo.VatiajeDesmontadoDB;
 import co.dolmen.sid.utilidades.MiLocalizacion;
 
 public class DetalleActividad extends AppCompatActivity {
@@ -66,6 +67,8 @@ public class DetalleActividad extends AppCompatActivity {
 
     private LinearLayout layoutMaterial;
     private LinearLayout layoutElementoDesmontado;
+    private LinearLayout layoutVatiajeDesmontado;
+
     private ActividadOperativa actividadOperativa;
     public LocationManager ubicacion;
     private boolean gpsListener;
@@ -117,6 +120,7 @@ public class DetalleActividad extends AppCompatActivity {
 
         layoutMaterial              = findViewById(R.id.layout_material);
         layoutElementoDesmontado    = findViewById(R.id.layout_elemento_desmontado);
+        layoutVatiajeDesmontado     = findViewById(R.id.layout_vatiaje_desmontado);
 
         setDetalle(actividadOperativa);
 
@@ -219,6 +223,12 @@ public class DetalleActividad extends AppCompatActivity {
         visualizarDesmontado(cursor);
         cursor.close();
 
+        //--Vatiaje Desmontado
+        VatiajeDesmontadoDB vatiajeDesmontadoDB = new VatiajeDesmontadoDB(database);
+        cursor = vatiajeDesmontadoDB.consultarTodo(actividadOperativa.getIdActividad());
+        visualizarVatiajeDesmontado(cursor);
+        cursor.close();
+
     }
 
     private void tablaMateriales(Cursor cursor){
@@ -257,6 +267,19 @@ public class DetalleActividad extends AppCompatActivity {
                 txtDireccionMobiliario.setText(cursor.getString(cursor.getColumnIndex("direccion")));
 
                 layoutElementoDesmontado.addView(view);
+            }
+        }
+    }
+
+    private void visualizarVatiajeDesmontado(Cursor cursor) {
+        LayoutInflater layoutInflater;
+        if(cursor.getCount()>0){
+            while(cursor.moveToNext()){
+                layoutInflater = LayoutInflater.from(this);
+                View view = layoutInflater.inflate(R.layout.view_vatiaje_desmontado,null);
+                TextView txtVatiajeDesmontado = view.findViewById(R.id.txt_vatiaje_desmontado);
+                txtVatiajeDesmontado.setText(String.valueOf(cursor.getString(cursor.getColumnIndex("vatiaje"))));
+                layoutVatiajeDesmontado.addView(view);
             }
         }
     }

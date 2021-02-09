@@ -186,6 +186,49 @@
                     android:orientation="vertical"/>
 
                 <TextView
+                    android:id="@+id/textView46"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Vatiaje Desmontado" />
+
+                <LinearLayout
+                    android:id="@+id/linearLayoutDes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                        <Spinner
+                            android:id="@+id/slt_vatiaje"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@android:drawable/btn_dropdown"
+                            android:layout_weight="1"/>
+
+                    <ImageButton
+                        android:id="@+id/btn_agregar_vatiaje_desmontado"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="4"
+                        android:background="@android:drawable/btn_default_small"
+                        android:contentDescription="@string/buscar_elemento"
+                        android:src="@drawable/ic_add"
+                        android:tint="@color/colorAccentOk" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/textView45"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/titulo_lista_vatiaje_desmontado" />
+
+                <LinearLayout
+                    android:id="@+id/layout_lista_vatiaje_desmontado"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:orientation="vertical"/>
+
+                <TextView
                     android:id="@+id/textView43"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
