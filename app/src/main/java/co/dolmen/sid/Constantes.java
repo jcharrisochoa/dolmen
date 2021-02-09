@@ -4,11 +4,11 @@ public final class Constantes {
     //--Camara
     public static final String IMAGE_DIRECTORY_NAME = "sdcard";
     public static final int TIMEOUT = 150000;
-    public static final int CONS_GPS = 1000;
     public static final int CONS_TOMAR_FOTO = 100;
     public static final int CONS_SELECCIONAR_IMAGEN = 200;
-    public static final int MEDIA_TYPE_IMAGE = 1;
     public static final String TAG = "DOLMEN-DEBUGER";
+    public static final int MIN_UPDATE_TIME = 2000;
+    public static final int MIN_UPDATE_DISTANCE = 0;
     //--Base Datos
     public static final int VERSION_BASEDATOS = 9;
     public static int OLD_VERSION_BASEDATOS;

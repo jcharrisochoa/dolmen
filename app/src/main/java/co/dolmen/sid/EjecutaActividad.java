@@ -1,13 +1,19 @@
 package co.dolmen.sid;
 
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -22,10 +28,12 @@ import com.loopj.android.http.RequestHandle;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,10 +42,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 
 import co.dolmen.sid.entidad.ActividadOperativa;
@@ -109,9 +119,6 @@ public class EjecutaActividad extends AppCompatActivity {
     private int idDefaultProceso;
     private int idDefaultContrato;
     private int idDefaultBodega;
-    LocationManager ubicacion;
-    MiLocalizacion miLocalizacion;
-    private boolean gpsListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -217,7 +224,6 @@ public class EjecutaActividad extends AppCompatActivity {
                 alert.create().show();
             }
         });
-
     }
 
     private void actualizarObjeto(){
@@ -452,7 +458,103 @@ public class EjecutaActividad extends AppCompatActivity {
                             return false;
                         }
                         else{
-                            return true;
+                            if(fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId()==239
+                            || fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId()==220){
+                                if(actividadOperativa.getElemento().getId()==0){
+                                    Snackbar.make(view, "Numero de elemento es Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                    return false;
+                                }
+                                else{
+                                    if(fragmentElemento.tipoBalastoList.get(fragmentElemento.sltTipoBalasto.getSelectedItemPosition()).getId()==0){
+                                        Snackbar.make(view, "Tipo Balasto Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                        return false;
+                                    }
+                                    else{
+                                        if(fragmentElemento.tipoBaseFotoceldaList.get(fragmentElemento.sltTipoBaseFotocelda.getSelectedItemPosition()).getId()==0){
+                                            Snackbar.make(view, "Tipo Base Fotocelda Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                            return false;
+                                        }
+                                        else{
+                                            if(fragmentElemento.tipoBrazoList.get(fragmentElemento.sltTipoBrazo.getSelectedItemPosition()).getId()==0){
+                                                Snackbar.make(view, "Tipo Soporte Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                return false;
+                                            }
+                                            else{
+                                                if(fragmentElemento.controlEncendidoList.get(fragmentElemento.sltControlEncendido.getSelectedItemPosition()).getId()==0){
+                                                    Snackbar.make(view, "Control de Encendido Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                    return false;
+                                                }
+                                                else{
+                                                    if(fragmentElemento.estadoMobiliarioList.get(fragmentElemento.sltEstadoMobiliario.getSelectedItemPosition()).getId()==0){
+                                                        Snackbar.make(view, "Funcionamiento del Mobiliario Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                        return false;
+                                                    }
+                                                    else{
+                                                        if(fragmentElemento.tipoEscenarioList.get(fragmentElemento.sltTipoEscenario.getSelectedItemPosition()).getId()==0){
+                                                            Snackbar.make(view, "Tipo Espacio Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                            return false;
+                                                        }
+                                                        else{
+                                                            if(fragmentElemento.claseViaList.get(fragmentElemento.sltClaseVia.getSelectedItemPosition()).getId()==0){
+                                                                Snackbar.make(view, "Clase via Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                                return false;
+                                                            }
+                                                            else{
+                                                                if(fragmentElemento.tipoPosteList.get(fragmentElemento.sltTipoPoste.getSelectedItemPosition()).getId()==0){
+                                                                    Snackbar.make(view, "Tipo poste Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                                    return false;
+                                                                }
+                                                                else{
+                                                                    if(fragmentElemento.normaConstruccionPosteList.get(fragmentElemento.sltNormaConstruccionPoste.getSelectedItemPosition()).getId()==0){
+                                                                        Snackbar.make(view, "Norma Construccion Poste Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                                        return false;
+                                                                    }
+                                                                    else{
+                                                                        if(fragmentElemento.calibreList.get(fragmentElemento.sltCalibreConexionElemento.getSelectedItemPosition()).getId()==0){
+                                                                            Snackbar.make(view, "Calibre Conductor Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                                            return false;
+                                                                        }
+                                                                        else{
+                                                                            if(fragmentElemento.tipoInstalacionRedList.get(fragmentElemento.sltTipoInstalacionRed.getSelectedItemPosition()).getId()==0){
+                                                                                Snackbar.make(view, "Tipo Instalación Red Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                                                return false;
+                                                                            }
+                                                                            else{
+                                                                                if(fragmentElemento.tipoRedList.get(fragmentElemento.sltTipoRed.getSelectedItemPosition()).getId()==0){
+                                                                                    Snackbar.make(view, "Tipo Red Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                                                    return false;
+                                                                                }
+                                                                                else{
+                                                                                    if(Integer.parseInt(fragmentElemento.txtAnchoVia.getText().toString())==0){
+                                                                                        Snackbar.make(view, "Ancho Via Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                                                        return false;
+                                                                                    }
+                                                                                    else{
+                                                                                        if(Integer.parseInt(fragmentElemento.txtInterdistancia.getText().toString())==0){
+                                                                                            Snackbar.make(view, "Interdistancia Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                                                            return false;
+                                                                                        }
+                                                                                        else{
+                                                                                            return true;
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            else {
+                                return true;
+                            }
                         }
                     }
                 }

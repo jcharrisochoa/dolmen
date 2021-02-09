@@ -3,21 +3,24 @@ package co.dolmen.sid.utilidades;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.io.Serializable;
-
+import co.dolmen.sid.Constantes;
 
 public class MiLocalizacion implements LocationListener {
 
     Context context;
     double latitud;
     double longitud;
-
+    LocationManager ubicacion;
+    //private HandleListenLocation<Location> callback;
+   // private  Exception mException;
     public MiLocalizacion(Context context){
         this.context = context;
+        //this.callback = callback;
     }
 
     public double getLatitud() {
@@ -41,10 +44,19 @@ public class MiLocalizacion implements LocationListener {
         //coordenadaActiva = false;
         float mts =  Math.round(location.getAccuracy()*100)/100;
         float alt =  Math.round(location.getAltitude()*100)/100;
-        //Log.d("programacion","Lat:"+location.getLatitude()+",Lon:"+location.getLongitude()+",Context="+context.getClass().getSimpleName());
+        Log.d(Constantes.TAG,"Lat:"+location.getLatitude()+",Lon:"+location.getLongitude()+",Context="+context.getClass().getSimpleName());
         setLatitud(location.getLatitude());
         setLongitud(location.getLongitude());
-        /*viewLatitud.setText(""+location.getLatitude());
+
+        /*if (callback != null) {
+            if (mException == null) {
+                callback.onSuccess(location);
+            } else {
+                callback.onFailure(mException);
+            }
+        }*/
+        /*
+        viewLatitud.setText(""+location.getLatitude());
         viewLongitud.setText(""+location.getLongitude());
         viewAltitud.setText(alt+ "Mts");
         viewPrecision.setText(mts+ " Mts");
@@ -80,4 +92,8 @@ public class MiLocalizacion implements LocationListener {
         Toast.makeText(context,s+" Inactivo",Toast.LENGTH_LONG).show();
     }
 
+    public boolean estadoGPS() {
+        ubicacion = (LocationManager) context.getSystemService(context.LOCATION_SERVICE);
+        return (ubicacion.isProviderEnabled(LocationManager.GPS_PROVIDER));
+    }
 }

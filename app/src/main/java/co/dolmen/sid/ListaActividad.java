@@ -407,8 +407,8 @@ public class ListaActividad extends AppCompatActivity  {
                         elemento.setAnchoVia(cursor.getInt(cursor.getColumnIndex("ancho_via")));
                         elemento.setInterdistancia(cursor.getInt(cursor.getColumnIndex("interdistancia")));
                         elemento.setPosteNo(cursor.getString(cursor.getColumnIndex("poste_no")));
-                        elemento.setTransformadorExclusivo((cursor.getString(cursor.getColumnIndex("transformador_compartido")).contentEquals("N"))?true:false);
-                        elemento.setPosteExclusivo((cursor.getString(cursor.getColumnIndex("estructura_soporte_compartida")).contentEquals("N"))?true:false);
+                        elemento.setTransformadorExclusivo((cursor.getString(cursor.getColumnIndex("transformador_compartido")).contentEquals("S"))?false:true);
+                        elemento.setPosteExclusivo((cursor.getString(cursor.getColumnIndex("estructura_soporte_compartida")).contentEquals("S"))?false:true);
                         elemento.setPotenciaTransformador(cursor.getDouble(cursor.getColumnIndex("potencia_transformador")));
                         elemento.setDireccion(cursor.getString(cursor.getColumnIndex("direccion_elemento")));
                         elemento.setPlacaMT(cursor.getString(cursor.getColumnIndex("placa_mt_transformador")));
@@ -481,6 +481,7 @@ public class ListaActividad extends AppCompatActivity  {
                     actividadOperativa.setPendienteSincronizar(cursor.getString(cursor.getColumnIndex("pendiente_sincronizar")));
                     actividadOperativa.setElementoNoEncontrado(cursor.getString(cursor.getColumnIndex("elemento_no_encontrado")));
                     actividadOperativa.setAfectadoPorVandalismo(cursor.getString(cursor.getColumnIndex("afectado_por_vandalismo")));
+                    Log.d(Constantes.TAG,"poste:"+cursor.getString(cursor.getColumnIndex("afectado_por_vandalismo")));
 
                     actividadOperativaArrayList.add(actividadOperativa);
                 }

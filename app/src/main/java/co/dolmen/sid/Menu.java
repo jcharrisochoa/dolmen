@@ -2,17 +2,25 @@ package co.dolmen.sid;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import co.dolmen.sid.utilidades.HandleListenLocation;
 import co.dolmen.sid.utilidades.MiBaseDatos;
+import co.dolmen.sid.utilidades.MiLocalizacion;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -46,6 +54,13 @@ public class Menu extends AppCompatActivity {
     AlertDialog.Builder alert;
 
     MiBaseDatos miBaseDatos;
+    public LocationManager ubicacion;
+    private boolean gpsListener;
+    static MiLocalizacion miLocalizacion;
+
+    public void getLocation(Location lo){
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +68,18 @@ public class Menu extends AppCompatActivity {
         setContentView(R.layout.activity_menu);
 
         setTitle(getText(R.string.titulo_menu));
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if(miLocalizacion == null) {
+                miLocalizacion = new MiLocalizacion(getApplicationContext());
+                if(miLocalizacion.estadoGPS()) {
+                    ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
+                    ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, miLocalizacion);
+                    //gpsListener = true;
+                }
+            }
+        }
+
 
         conn = new BaseDatos(Menu.this);
         database = conn.getReadableDatabase();
@@ -191,6 +218,7 @@ public class Menu extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(Menu.this, ListaActividad.class);
+                //i.putExtra("LOCATION","");
                 startActivity(i);
                 Menu.this.finish();
             }

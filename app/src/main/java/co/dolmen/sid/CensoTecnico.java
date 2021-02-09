@@ -297,7 +297,7 @@ public class CensoTecnico extends AppCompatActivity {
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
-            ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, new miLocalizacion());
+            ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, Constantes.MIN_UPDATE_TIME, Constantes.MIN_UPDATE_DISTANCE, new miLocalizacion());
             gpsListener  = true;
         }
 
@@ -2251,7 +2251,7 @@ public class CensoTecnico extends AppCompatActivity {
         else {
             if(!gpsListener) {
                 //Log.d("respuesta","activo");
-                ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, new miLocalizacion());
+               // ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, new miLocalizacion());
             }
         }
     }

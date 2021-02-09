@@ -2,6 +2,7 @@ package co.dolmen.sid;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import co.dolmen.sid.entidad.Equipo;
 import co.dolmen.sid.modelo.ActaContratoDB;
@@ -45,13 +46,16 @@ import co.dolmen.sid.modelo.TipologiaDB;
 import co.dolmen.sid.utilidades.DataSpinner;
 import co.dolmen.sid.utilidades.MiBaseDatos;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -101,6 +105,7 @@ public class ConfigurarArea extends AppCompatActivity {
     List<DataSpinner> bodegaList;
 
     MiBaseDatos miBaseDatos;
+    public LocationManager ubicacion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,22 +184,43 @@ public class ConfigurarArea extends AppCompatActivity {
         btnSiguiente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                int PERMISSIONS_REQUEST_LOCATION = 0;
                 if(validarFrm()){
-                    Log.d("GidDefaultContrato",""+contratoList.get(sltContrato.getSelectedItemPosition()).getId());
-                    SharedPreferences.Editor editar = config.edit();
-                    editar.putBoolean("config",true);
-                    editar.putInt("id_municipio", municipioList.get(sltMunicipio.getSelectedItemPosition()).getId());
-                    editar.putInt("id_proceso", procesoList.get(sltProceso.getSelectedItemPosition()).getId());
-                    editar.putInt("id_contrato",contratoList.get(sltContrato.getSelectedItemPosition()).getId());
-                    editar.putString("nombreMunicipio",municipioList.get(sltMunicipio.getSelectedItemPosition()).getDescripcion());
-                    editar.putString("nombreProceso",procesoList.get(sltProceso.getSelectedItemPosition()).getDescripcion());
-                    editar.putString("nombreContrato",contratoList.get(sltContrato.getSelectedItemPosition()).getDescripcion());
-                    editar.putInt("id_bodega",bodegaList.get(sltBodega.getSelectedItemPosition()).getId());
-                    editar.commit();
-                    database.close();
-                    Intent i = new Intent(ConfigurarArea.this, Menu.class);
-                    startActivity(i);
-                    finish();
+                    //Log.d("GidDefaultContrato",""+contratoList.get(sltContrato.getSelectedItemPosition()).getId());
+                    if(!estadoGPS()){
+                        alert.setTitle(getString(R.string.titulo_alerta));
+                        alert.setMessage(getString(R.string.alert_gps_deshabilitado));
+                        alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        });
+                        alert.create().show();
+                    }
+                    else {
+                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(ConfigurarArea.this,
+                                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                    PERMISSIONS_REQUEST_LOCATION);
+                        }
+                        else {
+                            SharedPreferences.Editor editar = config.edit();
+                            editar.putBoolean("config", true);
+                            editar.putInt("id_municipio", municipioList.get(sltMunicipio.getSelectedItemPosition()).getId());
+                            editar.putInt("id_proceso", procesoList.get(sltProceso.getSelectedItemPosition()).getId());
+                            editar.putInt("id_contrato", contratoList.get(sltContrato.getSelectedItemPosition()).getId());
+                            editar.putString("nombreMunicipio", municipioList.get(sltMunicipio.getSelectedItemPosition()).getDescripcion());
+                            editar.putString("nombreProceso", procesoList.get(sltProceso.getSelectedItemPosition()).getDescripcion());
+                            editar.putString("nombreContrato", contratoList.get(sltContrato.getSelectedItemPosition()).getDescripcion());
+                            editar.putInt("id_bodega", bodegaList.get(sltBodega.getSelectedItemPosition()).getId());
+                            editar.commit();
+                            database.close();
+                            Intent i = new Intent(ConfigurarArea.this, Menu.class);
+                            startActivity(i);
+                            finish();
+                        }
+                    }
                 }
                 else{
                     alert.setTitle(R.string.titulo_alerta);
@@ -402,5 +428,10 @@ public class ConfigurarArea extends AppCompatActivity {
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltBodega.setAdapter(dataAdapter);
         sltBodega.setSelection(setDefaultPositionBodega);
+    }
+
+    public boolean estadoGPS() {
+        ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
+        return (ubicacion.isProviderEnabled(LocationManager.GPS_PROVIDER));
     }
 }

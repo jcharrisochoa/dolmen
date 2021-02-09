@@ -121,10 +121,11 @@ public class DetalleActividad extends AppCompatActivity {
         setDetalle(actividadOperativa);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
-            miLocalizacion = new MiLocalizacion(getApplicationContext());
-            ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, miLocalizacion);
-            gpsListener  = true;
+            if(Menu.miLocalizacion == null) {
+                ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
+                miLocalizacion = new MiLocalizacion(getApplicationContext());
+                ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, Constantes.MIN_UPDATE_TIME, Constantes.MIN_UPDATE_DISTANCE, Menu.miLocalizacion);
+            }
         }
 
         if(actividadOperativa.getEstadoActividad().getId()==2){
@@ -143,50 +144,33 @@ public class DetalleActividad extends AppCompatActivity {
         btnEnSitio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!estadoGPS()){
-                    alert.setTitle(getString(R.string.titulo_alerta));
-                    alert.setMessage(getString(R.string.alert_gps_deshabilitado));
-                    alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                actividadOperativa.setLatitud(Menu.miLocalizacion.getLatitud());
+                actividadOperativa.setLongitud(Menu.miLocalizacion.getLongitud());
+                actividadOperativa.setFechaEnSitio(new Date());
+                if (Menu.miLocalizacion.getLatitud() == 0 && Menu.miLocalizacion.getLongitud() == 0) {
+                    alert.setMessage("No fue posible capturar la geolocalización.\n ¿Quiere Continuar?");
+                    alert.setNegativeButton(getText(R.string.btn_cancelar), new DialogInterface.OnClickListener() {
                         @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.cancel();
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
                         }
                     });
-                    alert.create().show();
-                }
-                else {
-                    actividadOperativa.setFechaEnSitio(new Date());
-                    if(activarCoordenadas()) {
-                        Log.d("programacion","Lat:"+miLocalizacion.getLatitud());
-
-                        actividadOperativa.setLatitud(miLocalizacion.getLatitud());
-                        actividadOperativa.setLongitud(miLocalizacion.getLongitud());
-                        if (miLocalizacion.getLatitud() == 0 && miLocalizacion.getLongitud() == 0) {
-                            alert.setMessage("No fue posible capturar la geolocalización.\n ¿Quiere Continuar?");
-                            alert.setNegativeButton(getText(R.string.btn_cancelar), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            });
-                            alert.setPositiveButton(getText(R.string.btn_aceptar), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                    Intent i = new Intent(DetalleActividad.this, EjecutaActividad.class);
-                                    i.putExtra("actividadOperativa", actividadOperativa);
-                                    startActivity(i);
-                                    DetalleActividad.this.finish();
-                                }
-                            });
-                            alert.create().show();
-                        } else {
+                    alert.setPositiveButton(getText(R.string.btn_aceptar), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
                             Intent i = new Intent(DetalleActividad.this, EjecutaActividad.class);
                             i.putExtra("actividadOperativa", actividadOperativa);
                             startActivity(i);
                             DetalleActividad.this.finish();
                         }
-                    }
+                    });
+                    alert.create().show();
+                } else {
+                    Intent i = new Intent(DetalleActividad.this, EjecutaActividad.class);
+                    i.putExtra("actividadOperativa", actividadOperativa);
+                    startActivity(i);
+                    DetalleActividad.this.finish();
                 }
             }
         });
@@ -237,43 +221,6 @@ public class DetalleActividad extends AppCompatActivity {
 
     }
 
-
-    public boolean estadoGPS() {
-        ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
-        return (ubicacion.isProviderEnabled(LocationManager.GPS_PROVIDER));
-    }
-
-    private boolean activarCoordenadas() {
-        boolean sw = true;
-        ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
-        int PERMISSIONS_REQUEST_LOCATION = 0;
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    PERMISSIONS_REQUEST_LOCATION);
-            sw = false;
-
-        }
-        else {
-            if(!gpsListener) {
-                //Log.d("programacion","activo");
-                //ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, miLocalizacion);
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
-                    miLocalizacion = new MiLocalizacion(getApplicationContext());
-                    ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, miLocalizacion);
-                    gpsListener  = true;
-                }
-
-            }
-            else{
-                ubicacion.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, miLocalizacion);
-            }
-        }
-        return sw;
-    }
-
     private void tablaMateriales(Cursor cursor){
         LayoutInflater layoutInflater;
         if(cursor.getCount()>0){
@@ -313,5 +260,4 @@ public class DetalleActividad extends AppCompatActivity {
             }
         }
     }
-
 }
