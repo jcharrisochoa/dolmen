@@ -2,6 +2,7 @@ package co.dolmen.sid.modelo;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
@@ -153,7 +154,12 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
             contentValues.put("et",actividad.getEt());
             contentValues.put("usuario_programa_actividad",actividad.getUsuarioProgramaActividad());
             contentValues.put("observacion",actividad.getObservacion());
-            db.insert(Constantes.TABLA_ACTIVIDAD_OPERATIVA, null, contentValues);
+            try {
+                long lastId = db.insert(Constantes.TABLA_ACTIVIDAD_OPERATIVA, null, contentValues);
+            }catch (SQLException e){
+                Log.d(Constantes.TAG,"SqlError:"+e.getMessage());
+            }
+
         }
         return false;
     }

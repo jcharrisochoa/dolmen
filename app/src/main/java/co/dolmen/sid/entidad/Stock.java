@@ -43,4 +43,7 @@ public class Stock implements Serializable {
         this.cantidad = cantidad;
     }
 
+    public void setTipoStock(TipoStock tipoStock){
+        this.tipoStock = tipoStock;
+    }
 }

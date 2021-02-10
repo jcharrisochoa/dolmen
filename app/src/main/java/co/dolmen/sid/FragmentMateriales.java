@@ -257,7 +257,7 @@ public class FragmentMateriales extends Fragment{
                     if (pos >= 0)
                         cantEnLista = movimientoArticuloArrayList.get(pos).getCantidad();
 
-                    stock = consultarStock() + cantEnListaTmp;
+                    stock = consultarStock(tipoStockList.get(sltTipoStock.getSelectedItemPosition()).getId()) + cantEnListaTmp;
 
                     totalMovimiento = cantEnLista + Float.parseFloat(txtCantidad.getText().toString());
                     //Log.d("programacion","pos:"+pos+",posTmp:"+posTmp+",Stock:"+stock+",Lista:"+cantEnLista+",ListaTmp:"+cantEnListaTmp+",Digitado:"+Float.parseFloat(txtCantidad.getText().toString())+",Total:"+totalMovimiento);
@@ -287,11 +287,7 @@ public class FragmentMateriales extends Fragment{
                 } else { //Movimientos de Entrada
 
                     //--Caso PNC, Solo control para stock, pendiente control para desmontado util
-                    if(tipoStockList.get(sltTipoStock.getSelectedItemPosition()).getDescripcion().contentEquals("PNC")){
-                        //--Pendiente de desarrollo
-                    }
-
-
+                    //buscar movimiento pnc
                     movimientoArticulo = new MovimientoArticulo(
                             actividadOperativa.getIdActividad(),
                             articuloList.get(sltArticulo.getSelectedItemPosition()).getId(),
@@ -304,10 +300,72 @@ public class FragmentMateriales extends Fragment{
                             actividadOperativa.getCentroCosto().getIdCentroCosto()
                     );
                     pos = adapterMovimientoArticulo.getPositionItem(movimientoArticulo);
-                    if (pos >= 0) {
-                        adapterMovimientoArticulo.updateItem(movimientoArticulo, pos);
-                    } else {
-                        adapterMovimientoArticulo.addItem(movimientoArticulo);
+
+                    if(tipoStockList.get(sltTipoStock.getSelectedItemPosition()).getDescripcion().contentEquals("PNC")){
+                        //buscar movimiento stock
+                        movimientoTmp = new MovimientoArticulo(
+                                actividadOperativa.getIdActividad(),
+                                articuloList.get(sltArticulo.getSelectedItemPosition()).getId(),
+                                1,
+                                Float.parseFloat(txtCantidad.getText().toString()),
+                                articuloList.get(sltArticulo.getSelectedItemPosition()).getDescripcion(),
+                                "STOCK",
+                                getString(R.string.movimiento_salida),
+                                idDefaultBodega,
+                                actividadOperativa.getCentroCosto().getIdCentroCosto()
+                        );
+                        posTmp = adapterMovimientoArticulo.getPositionItem(movimientoTmp);
+
+                        if (posTmp >= 0)
+                            cantEnListaTmp = movimientoArticuloArrayList.get(posTmp).getCantidad();
+
+                        stock = consultarStock(1);//pero stock normal
+
+                        if (pos >= 0) { //si está en listado
+                            cantEnLista = movimientoArticuloArrayList.get(pos).getCantidad();
+                            totalMovimiento =  cantEnLista + cantEnListaTmp + Float.parseFloat(txtCantidad.getText().toString());
+                            if(totalMovimiento > stock){
+                                cantEnLista = cantEnLista + cantEnListaTmp;
+                                float tmp = cantEnLista - stock;
+                                stock = (cantEnLista>=stock)?tmp:tmp*(-1);
+
+                                alert.setMessage(getString(R.string.cantidad_insuficiente) + stock);
+                                alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        resetFrmArticulo();
+                                        dialogInterface.cancel();
+                                    }
+                                });
+                                alert.create().show();
+                            }
+                            else {
+                                adapterMovimientoArticulo.updateItem(movimientoArticulo, pos);
+                            }
+                        } else {
+                            stock = stock - cantEnListaTmp;
+                            if(stock<Float.parseFloat(txtCantidad.getText().toString())){
+                                alert.setMessage(getString(R.string.cantidad_insuficiente) + stock);
+                                alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        resetFrmArticulo();
+                                        dialogInterface.cancel();
+                                    }
+                                });
+                                alert.create().show();
+                            } else {
+                                adapterMovimientoArticulo.addItem(movimientoArticulo);
+                            }
+                        }
+
+                    }
+                    else {
+                        if (pos >= 0) {
+                            adapterMovimientoArticulo.updateItem(movimientoArticulo, pos);
+                        } else {
+                            adapterMovimientoArticulo.addItem(movimientoArticulo);
+                        }
                     }
                     resetFrmArticulo();
                 }
@@ -324,12 +382,12 @@ public class FragmentMateriales extends Fragment{
         }
     }
 
-    private float consultarStock() {
+    private float consultarStock(int id_tipo_stock) {
         float cantidad = 0;
         StockDB stockDB = new StockDB(database);
         Cursor cursor = stockDB.consultarTodo(idDefaultBodega,
                 articuloList.get(sltArticulo.getSelectedItemPosition()).getId(),
-                tipoStockList.get(sltTipoStock.getSelectedItemPosition()).getId(),
+                id_tipo_stock,
                 actividadOperativa.getCentroCosto().getIdCentroCosto()
                 );
         if (cursor.getCount() > 0) {

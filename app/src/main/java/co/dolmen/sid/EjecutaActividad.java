@@ -663,10 +663,26 @@ public class EjecutaActividad extends AppCompatActivity {
             cantidad = (fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento().contentEquals(getText(R.string.movimiento_entrada)))?fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad():fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()*(-1);
             Stock stock = new Stock(bodega,actividadOperativa.getCentroCosto(),articulo,tipoStock,cantidad);
             cursor = stockDB.consultarTodo(idDefaultBodega,fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo(),fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock(),actividadOperativa.getCentroCosto().getIdCentroCosto());
-            if(cursor.getCount()>0)
+            if(cursor.getCount()>0) {
+               //--------------------Caso PNC------------------
+                if(tipoStock.getId() == 2){ //pnc
+                    //actualizar mi stock normal
+
+                    Stock stockTmp = stock;
+                    stockTmp.setTipoStock(
+                            new TipoStock(1,"STOCK")
+                    );
+                    stockTmp.setCantidad(cantidad*(-1));
+
+                    Log.d(Constantes.TAG,"PNC:"+stockTmp.getTipoStock().getDescripcion()+",Cantidad:"+stockTmp.getCantidad());
+                    stockDB.actualizarDatos(stockTmp);
+                }
+                //--------------------------------------------
                 stockDB.actualizarDatos(stock);
-            else
+            }
+            else {
                 stockDB.agregarDatos(stock);
+            }
             index++;
         }
     }
