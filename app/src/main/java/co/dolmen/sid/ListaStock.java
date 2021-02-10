@@ -177,6 +177,8 @@ public class ListaStock extends AppCompatActivity {
 
                 CentroCosto centroCosto = new CentroCosto();
                 centroCosto.setIdCentroCosto(cursor.getInt(cursor.getColumnIndex("id_centro_costo")));
+                centroCosto.setCodigo(cursor.getInt(cursor.getColumnIndex("codigo")));
+                centroCosto.setDescripcionCentroCosto(cursor.getString(cursor.getColumnIndex("centro_costo")));
 
                 TipoStock tipoStock = new TipoStock();
                 tipoStock.setId(cursor.getInt(cursor.getColumnIndex("id_tipo_stock")));

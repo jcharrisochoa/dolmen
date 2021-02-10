@@ -1,8 +1,17 @@
 package co.dolmen.sid.entidad;
 
-public class TipoEscenario {
+import java.io.Serializable;
+
+public class TipoEscenario implements Serializable {
     int id;
     String descripcion;
+
+    public TipoEscenario(){}
+
+    public TipoEscenario(int id, String descripcion) {
+        this.id = id;
+        this.descripcion = descripcion;
+    }
 
     public int getId() {
         return id;

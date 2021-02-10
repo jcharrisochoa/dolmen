@@ -20,6 +20,7 @@ import java.util.Locale;
 
 import co.dolmen.sid.R;
 import co.dolmen.sid.entidad.ActividadOperativa;
+import co.dolmen.sid.entidad.MovimientoArticulo;
 
 public class AdapterData extends RecyclerView.Adapter<AdapterData.ViewHolderData> implements View.OnClickListener {
 
@@ -66,13 +67,43 @@ public class AdapterData extends RecyclerView.Adapter<AdapterData.ViewHolderData
         notifyDataSetChanged();
     }
 
+    public void notifySetChange() {
+        notifyDataSetChanged();
+    }
+
+    public void updateData(ArrayList<ActividadOperativa> list) {
+        actividadOperativaArrayList.clear();
+        actividadOperativaArrayList.addAll(list);
+        notifyDataSetChanged();
+    }
+
+    public void removeItem(int position){
+        //notifyDataSetChanged();
+        actividadOperativaArrayList.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, actividadOperativaArrayList.size());
+    }
+
+    public int getPositionItem(int id_actividad){
+        int pos = -1;
+        int i = 0;
+        for (ActividadOperativa ao : actividadOperativaArrayList) {
+            if(ao.getIdActividad() == id_actividad){
+                pos = i;
+                return pos;
+            }
+            i++;
+        }
+        return pos;
+    }
+
     public class ViewHolderData extends RecyclerView.ViewHolder {
         TextView itemActividad;
         TextView itemFecha;
         TextView itemElemento;
         TextView itemDireccion;
         TextView itemEstado;
-        //TextView itemProceso;
+        TextView itemPrograma;
         TextView itemTipoOperacion;
         ImageView itemImgElemento;
 
@@ -83,7 +114,7 @@ public class AdapterData extends RecyclerView.Adapter<AdapterData.ViewHolderData
             itemElemento = itemView.findViewById(R.id.item_elemento_no);
             itemDireccion = itemView.findViewById(R.id.item_direccion);
             itemEstado = itemView.findViewById(R.id.item_estado);
-            //itemProceso = itemView.findViewById(R.id.item_proceso);
+            itemPrograma = itemView.findViewById(R.id.item_programa);
             itemTipoOperacion = itemView.findViewById(R.id.item_tipo_operacion);
             itemImgElemento = itemView.findViewById(R.id.item_img_elemento);
         }
@@ -94,15 +125,21 @@ public class AdapterData extends RecyclerView.Adapter<AdapterData.ViewHolderData
             itemElemento.setText(String.valueOf(actividadOperativa.getElemento().getElemento_no()));
             itemEstado.setText(actividadOperativa.getEstadoActividad().getDescripcion());
             itemFecha.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(actividadOperativa.getFechaActividad()));
-            //itemProceso.setText(actividadOperativa.getProcesoSgc().getDescripcion());
+            itemPrograma.setText("Prg:"+String.valueOf(actividadOperativa.getPrograma().getId()));
             itemTipoOperacion.setText(actividadOperativa.getTipoActividad().getDescripcion());
             if(actividadOperativa.getEstadoActividad().getId()!=2){
                 itemImgElemento.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.colorLightPrimary), android.graphics.PorterDuff.Mode.SRC_IN);
                 itemEstado.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorAccent));
             }
             else{
-                itemImgElemento.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.colorVerifed), android.graphics.PorterDuff.Mode.SRC_IN);
-                itemEstado.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorVerifed));
+                if(actividadOperativa.getPendienteSincronizar().contentEquals("S")){
+                    itemImgElemento.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.colorAccent), android.graphics.PorterDuff.Mode.SRC_IN);
+                    itemEstado.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorVerifed));
+                }
+                else {
+                    itemImgElemento.setColorFilter(ContextCompat.getColor(itemView.getContext(), R.color.colorVerifed), android.graphics.PorterDuff.Mode.SRC_IN);
+                    itemEstado.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorVerifed));
+                }
             }
         }
 

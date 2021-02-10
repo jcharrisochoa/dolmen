@@ -10,6 +10,11 @@ public class EstadoMobiliario extends ProcesoSgc implements Serializable {
         super();
     }
 
+    public EstadoMobiliario(int id,String descripcion){
+        this.id = id;
+        this.descripcion = descripcion;
+    }
+
     public int getIdEstadoMobiliario() {
         return id;
     }

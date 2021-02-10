@@ -1,6 +1,8 @@
 package co.dolmen.sid.entidad;
 
-public class ControlEncendido {
+import java.io.Serializable;
+
+public class ControlEncendido implements Serializable {
     int idControlEncendido;
     String descripcion;
 

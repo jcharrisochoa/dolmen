@@ -107,7 +107,7 @@ public class FragmentMateriales extends Fragment{
         recyclerView.setLayoutManager(
                 new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false)
         );
-        adapterMovimientoArticulo = new AdapterMovimientoArticulo(movimientoArticuloArrayList,database,idDefaultBodega,actividadOperativa.getCentroCosto().getIdCentroCosto());
+        adapterMovimientoArticulo = new AdapterMovimientoArticulo(movimientoArticuloArrayList,database);
         recyclerView.setAdapter(adapterMovimientoArticulo);
 
         sltTipoStock.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -225,22 +225,28 @@ public class FragmentMateriales extends Fragment{
             if (validarAgregarMaterial()) {
                 if (tipoMovimientoList.get(sltTipoMovimiento.getSelectedItemPosition()).getId() == 1) { //Movimientos de salida
                     movimientoArticulo = new MovimientoArticulo(
+                            actividadOperativa.getIdActividad(),
                             articuloList.get(sltArticulo.getSelectedItemPosition()).getId(),
                             tipoStockList.get(sltTipoStock.getSelectedItemPosition()).getId(),
                             Float.parseFloat(txtCantidad.getText().toString()),
                             articuloList.get(sltArticulo.getSelectedItemPosition()).getDescripcion(),
                             tipoStockList.get(sltTipoStock.getSelectedItemPosition()).getDescripcion(),
-                            tipoMovimientoList.get(sltTipoMovimiento.getSelectedItemPosition()).getDescripcion()
+                            tipoMovimientoList.get(sltTipoMovimiento.getSelectedItemPosition()).getDescripcion(),
+                            idDefaultBodega,
+                            actividadOperativa.getCentroCosto().getIdCentroCosto()
                     );
                     //-----------bloque caso Stock Desmontado Util-----------------------------
                     //--Consulta si existe un stock en lista
                     movimientoTmp = new MovimientoArticulo(
+                            actividadOperativa.getIdActividad(),
                             articuloList.get(sltArticulo.getSelectedItemPosition()).getId(),
                             tipoStockList.get(sltTipoStock.getSelectedItemPosition()).getId(),
                             Float.parseFloat(txtCantidad.getText().toString()),
                             articuloList.get(sltArticulo.getSelectedItemPosition()).getDescripcion(),
                             tipoStockList.get(sltTipoStock.getSelectedItemPosition()).getDescripcion(),
-                            getString(R.string.movimiento_entrada)
+                            getString(R.string.movimiento_entrada),
+                            idDefaultBodega,
+                            actividadOperativa.getCentroCosto().getIdCentroCosto()
                     );
                     posTmp = adapterMovimientoArticulo.getPositionItem(movimientoTmp);
                     if (posTmp >= 0)
@@ -279,13 +285,23 @@ public class FragmentMateriales extends Fragment{
                         resetFrmArticulo();
                     }
                 } else { //Movimientos de Entrada
+
+                    //--Caso PNC, Solo control para stock, pendiente control para desmontado util
+                    if(tipoStockList.get(sltTipoStock.getSelectedItemPosition()).getDescripcion().contentEquals("PNC")){
+                        //--Pendiente de desarrollo
+                    }
+
+
                     movimientoArticulo = new MovimientoArticulo(
+                            actividadOperativa.getIdActividad(),
                             articuloList.get(sltArticulo.getSelectedItemPosition()).getId(),
                             tipoStockList.get(sltTipoStock.getSelectedItemPosition()).getId(),
                             Float.parseFloat(txtCantidad.getText().toString()),
                             articuloList.get(sltArticulo.getSelectedItemPosition()).getDescripcion(),
                             tipoStockList.get(sltTipoStock.getSelectedItemPosition()).getDescripcion(),
-                            tipoMovimientoList.get(sltTipoMovimiento.getSelectedItemPosition()).getDescripcion()
+                            tipoMovimientoList.get(sltTipoMovimiento.getSelectedItemPosition()).getDescripcion(),
+                            idDefaultBodega,
+                            actividadOperativa.getCentroCosto().getIdCentroCosto()
                     );
                     pos = adapterMovimientoArticulo.getPositionItem(movimientoArticulo);
                     if (pos >= 0) {

@@ -44,6 +44,7 @@ import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.BodegaDB;
 import co.dolmen.sid.modelo.CalibreDB;
 import co.dolmen.sid.modelo.CensoAsignadoDB;
+import co.dolmen.sid.modelo.CentroCostoDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
 import co.dolmen.sid.modelo.ContratoDB;
 import co.dolmen.sid.modelo.ControlEncendidoDB;
@@ -736,6 +737,20 @@ public class Parametros extends AppCompatActivity {
                     Log.d("parametros","->Vehiculo:"+progress+"%");
                 }
 
+                //--Centro Costo
+                CentroCostoDB centroCostoDB = new CentroCostoDB(database);
+                JSONArray arrayCentroCosto= parametros.getJSONArray("centro_costo");
+                for (int i = 0;i<arrayEquipo.length();i++){
+                    JSONObject jObjectCentroCosto = arrayCentroCosto.getJSONObject(i);
+                    centroCostoDB.setIdCentroCosto(jObjectCentroCosto.getInt("id"));
+                    centroCostoDB.setCodigo(jObjectCentroCosto.getInt("codigo"));
+                    centroCostoDB.setDescripcionCentroCosto(jObjectCentroCosto.getString("descripcion"));
+                    centroCostoDB.agregarDatos(centroCostoDB);
+                    progress = (int)Math.round((double)(i+1)/arrayCentroCosto.length()*100);
+                    publishProgress(progress, R.string.titulo_centro_costo);
+                    Log.d("parametros","->Centro Costo:"+progress+"%");
+                }
+
                 //Proveedor
                 ProveedorDB proveedorDB = new ProveedorDB(database);
                 JSONArray arrayProveedor = parametros.getJSONArray("proveedor");
@@ -766,20 +781,52 @@ public class Parametros extends AppCompatActivity {
 
                 //Elementos
                 try {
+                    String transformador_compartido;
+                    String estructura_soporte_compartida;
+
                     elementoDB.iniciarTransaccion();
                     for (int i = 0; i < arrayElemento.length(); i++) {
                         JSONObject jObjectElemento = arrayElemento.getJSONObject(i);
+                        transformador_compartido = (jObjectElemento.getInt("transformador_compartido")==1)?"S":"N";
+                        estructura_soporte_compartida = (jObjectElemento.getInt("estructura_soporte_compartida")==1)?"S":"N";
+
                         elementoDB.agregarDatos(
-                        jObjectElemento.getInt("id_elemento"),
-                        jObjectElemento.getString("elemento_no"),
-                        jObjectElemento.getString("direccion"),
-                        jObjectElemento.getInt("id_municipio"),
-                        jObjectElemento.getInt("id_barrio"),
-                        jObjectElemento.getInt("id_proceso_sgc"),
-                        jObjectElemento.getInt("id_tipologia"),
-                        jObjectElemento.getInt("id_mobiliario"),
-                        jObjectElemento.getInt("id_referencia"),
-                        jObjectElemento.getInt("id_estado_mobiliario"));
+                                jObjectElemento.getInt("id_elemento"),
+                                jObjectElemento.getString("elemento_no"),
+                                jObjectElemento.getString("direccion"),
+                                jObjectElemento.getInt("id_municipio"),
+                                jObjectElemento.getInt("id_barrio"),
+                                jObjectElemento.getInt("id_proceso_sgc"),
+                                jObjectElemento.getInt("id_tipologia"),
+                                jObjectElemento.getInt("id_mobiliario"),
+                                jObjectElemento.getInt("id_referencia"),
+                                jObjectElemento.getInt("id_estado_mobiliario"),
+                                jObjectElemento.getInt("id_tipo_balasto"),
+                                jObjectElemento.getInt("id_tipo_base_fotocelda"),
+                                jObjectElemento.getInt("id_tipo_brazo"),
+                                jObjectElemento.getString("zona"),
+                                jObjectElemento.getString("sector"),
+                                Float.parseFloat(jObjectElemento.getString("latitud")),
+                                Float.parseFloat(jObjectElemento.getString("longitud")),
+                                jObjectElemento.getInt("id_clase_via"),
+                                jObjectElemento.getInt("ancho_via"),
+                                jObjectElemento.getInt("id_tipo_poste"),
+                                jObjectElemento.getInt("id_norma_construccion_poste"),
+                                jObjectElemento.getString("poste_no"),
+                                jObjectElemento.getInt("interdistancia"),
+                                jObjectElemento.getInt("id_calibre_conductores"),
+                                jObjectElemento.getInt("id_tipo_red"),
+                                jObjectElemento.getInt("id_tipo_instalacion_red_alimentacion"),
+                                jObjectElemento.getInt("id_control_encendido"),
+                                jObjectElemento.getInt("id_tipo_escenario"),
+                                transformador_compartido,
+                                estructura_soporte_compartida,
+                                jObjectElemento.getDouble("potencia_transformador"),
+                                jObjectElemento.getString("placa_MT"),
+                                jObjectElemento.getString("placa_CT")
+
+                        );
+
                         progress = (int) Math.round((double) (i + 1) / arrayElemento.length() * 100);
                         publishProgress(progress, R.string.titulo_elemento);
                         Log.d("parametros", "->Elementos:" + progress + "%");

@@ -1,7 +1,9 @@
 package co.dolmen.sid.entidad;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class ActividadOperativa implements Serializable {
 
@@ -32,9 +34,13 @@ public class ActividadOperativa implements Serializable {
     private String pendienteSincronizar;
     private String afectadoPorVandalismo;
     private String elementoNoEncontrado;
+    private ArrayList<ArchivoActividad> archivoActividadList;
+    private List<Elemento> elementosDesmontadosList;
+    private List<Integer> vatiajeDesmontadoList;
+
 
     public ActividadOperativa(){
-
+        archivoActividadList = new ArrayList<ArchivoActividad>();
     }
 
     public void setAfectadoPorVandalismo(String afectadoPorVandalismo) {
@@ -43,6 +49,22 @@ public class ActividadOperativa implements Serializable {
 
     public void setElementoNoEncontrado(String elementoNoEncontrado) {
         this.elementoNoEncontrado = elementoNoEncontrado;
+    }
+
+    public ArrayList<ArchivoActividad> getArchivoActividad() {
+        return archivoActividadList;
+    }
+
+    public void setArchivoActividads(ArrayList<ArchivoActividad> archivoActividad) {
+        this.archivoActividadList = archivoActividad;
+    }
+
+    public void agregarArchivoActividad(ArchivoActividad archivoActividad){
+        archivoActividadList.add(archivoActividad);
+    }
+
+    public int getCantidadArchivoActividad(){
+        return archivoActividadList.size();
     }
 
     public ActividadOperativa(int idActividad, int idEspacioPublicitario, Programa programa, ProcesoSgc procesoSgc, Elemento elemento, CentroCosto centroCosto, Barrio barrio, EstadoActividad estadoActividad,
@@ -65,6 +87,7 @@ public class ActividadOperativa implements Serializable {
         this.et = et;
         this.usuarioProgramaActividad = usuarioProgramaActividad;
         this.usuarioGeneraActividad = usuarioGeneraActividad;
+        archivoActividadList = new ArrayList<ArchivoActividad>();
     }
 
     public String isAfectadoPorVandalismo() {
@@ -273,5 +296,29 @@ public class ActividadOperativa implements Serializable {
 
     public void setPendienteSincronizar(String pendienteSincronizar) {
         this.pendienteSincronizar = pendienteSincronizar;
+    }
+
+    public List<Elemento> getElementosDesmontadosList() {
+        return elementosDesmontadosList;
+    }
+
+    public void setElementosDesmontadosList(List<Elemento> elementosDesmontadosList) {
+        this.elementosDesmontadosList = elementosDesmontadosList;
+    }
+
+    public ArrayList<ArchivoActividad> getArchivoActividadList() {
+        return archivoActividadList;
+    }
+
+    public void setArchivoActividadList(ArrayList<ArchivoActividad> archivoActividadList) {
+        this.archivoActividadList = archivoActividadList;
+    }
+
+    public List<Integer> getVatiajeDesmontadoList() {
+        return vatiajeDesmontadoList;
+    }
+
+    public void setVatiajeDesmontadoList(List<Integer> vatiajeDesmontadoList) {
+        this.vatiajeDesmontadoList = vatiajeDesmontadoList;
     }
 }

@@ -1,8 +1,19 @@
 package co.dolmen.sid.entidad;
 
-public class TipoRed {
+import java.io.Serializable;
+
+public class TipoRed  implements Serializable {
     int id;
     String descripcion;
+
+    public TipoRed(){
+
+    }
+
+    public TipoRed(int id, String descripcion) {
+        this.id = id;
+        this.descripcion = descripcion;
+    }
 
     public int getId() {
         return id;

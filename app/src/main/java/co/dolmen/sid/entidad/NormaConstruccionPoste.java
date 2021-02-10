@@ -1,12 +1,20 @@
 package co.dolmen.sid.entidad;
 
-public class NormaConstruccionPoste {
+import java.io.Serializable;
+
+public class NormaConstruccionPoste implements Serializable {
     int id;
     String descripcion;
     TipoPoste tipoPoste;
 
     public NormaConstruccionPoste() {
         this.tipoPoste = new TipoPoste();
+    }
+
+    public NormaConstruccionPoste(int id, String descripcion, TipoPoste tipoPoste) {
+        this.id = id;
+        this.descripcion = descripcion;
+        this.tipoPoste = tipoPoste;
     }
 
     public int getId() {

@@ -1,6 +1,8 @@
 package co.dolmen.sid.entidad;
 
-public class TipoBaseFotocelda {
+import java.io.Serializable;
+
+public class TipoBaseFotocelda implements Serializable {
     int idTipoBaseFotocelda;
     String descripcion;
 

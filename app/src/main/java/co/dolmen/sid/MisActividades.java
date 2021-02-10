@@ -233,6 +233,7 @@ class MisActividades {
                                 jObjectActividad.getString("et"),
                                 jObjectActividad.getString("usuario_programa_actividad")
                         );
+                        actividadOperativa.setObservacion(jObjectActividad.getString("observacion"));
                         actividadOperativaDB.agregarDatos(actividadOperativa);
                         //Thread.sleep(200);
                     }

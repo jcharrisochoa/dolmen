@@ -6,6 +6,8 @@ public class Elemento implements Serializable {
     private int id;
     private String elemento_no;
     private String direccion;
+    private float latitud;
+    private float longitud;
 
     private Municipio municipio;
     private Barrio barrio;
@@ -15,6 +17,27 @@ public class Elemento implements Serializable {
     private Mobiliario mobiliario;
     private ReferenciaMobiliario referenciaMobiliario;
     private EstadoMobiliario estadoMobiliario;
+    private TipoBalasto tipoBalasto;
+    private TipoBaseFotocelda tipoBaseFotocelda;
+    private TipoBrazo tipoBrazo;
+    private ControlEncendido controlEncendido;
+    private String zona;
+    private String sector;
+    private TipoEscenario tipoEscenario;
+    private ClaseVia claseVia;
+    private int anchoVia;
+    private NormaConstruccionPoste normaConstruccionPoste;
+    private boolean posteExclusivo;
+    private String posteNo;
+    private int interdistancia;
+    private double potenciaTransformador;
+    private String placaMT;
+    private String placaCT;
+    private boolean transformadorExclusivo;
+    private Calibre calibre;
+    private TipoInstalacionRed tipoInstalacionRed;
+    private TipoRed tipoRed;
+    private String encodeStringFoto;
 
     public Elemento(){
 
@@ -119,5 +142,189 @@ public class Elemento implements Serializable {
 
     public void setEstadoMobiliario(EstadoMobiliario estadoMobiliario) {
         this.estadoMobiliario = estadoMobiliario;
+    }
+
+    public TipoBalasto getTipoBalasto() {
+        return tipoBalasto;
+    }
+
+    public void setTipoBalasto(TipoBalasto tipoBalasto) {
+        this.tipoBalasto = tipoBalasto;
+    }
+
+    public TipoBaseFotocelda getTipoBaseFotocelda() {
+        return tipoBaseFotocelda;
+    }
+
+    public void setTipoBaseFotocelda(TipoBaseFotocelda tipoBaseFotocelda) {
+        this.tipoBaseFotocelda = tipoBaseFotocelda;
+    }
+
+    public TipoBrazo getTipoBrazo() {
+        return tipoBrazo;
+    }
+
+    public void setTipoBrazo(TipoBrazo tipoBrazo) {
+        this.tipoBrazo = tipoBrazo;
+    }
+
+    public ControlEncendido getControlEncendido() {
+        return controlEncendido;
+    }
+
+    public void setControlEncendido(ControlEncendido controlEncendido) {
+        this.controlEncendido = controlEncendido;
+    }
+
+    public String getZona() {
+        return zona;
+    }
+
+    public void setZona(String zona) {
+        this.zona = zona;
+    }
+
+    public String getSector() {
+        return sector;
+    }
+
+    public void setSector(String sector) {
+        this.sector = sector;
+    }
+
+    public TipoEscenario getTipoEscenario() {
+        return tipoEscenario;
+    }
+
+    public void setTipoEscenario(TipoEscenario tipoEscenario) {
+        this.tipoEscenario = tipoEscenario;
+    }
+
+    public ClaseVia getClaseVia() {
+        return claseVia;
+    }
+
+    public void setClaseVia(ClaseVia claseVia) {
+        this.claseVia = claseVia;
+    }
+
+    public int getAnchoVia() {
+        return anchoVia;
+    }
+
+    public void setAnchoVia(int anchoVia) {
+        this.anchoVia = anchoVia;
+    }
+
+    public NormaConstruccionPoste getNormaConstruccionPoste() {
+        return normaConstruccionPoste;
+    }
+
+    public void setNormaConstruccionPoste(NormaConstruccionPoste normaConstruccionPoste) {
+        this.normaConstruccionPoste = normaConstruccionPoste;
+    }
+
+    public boolean isPosteExclusivo() {
+        return posteExclusivo;
+    }
+
+    public void setPosteExclusivo(boolean posteExclusivo) {
+        this.posteExclusivo = posteExclusivo;
+    }
+
+    public String getPosteNo() {
+        return posteNo;
+    }
+
+    public void setPosteNo(String posteNo) {
+        this.posteNo = posteNo;
+    }
+
+    public int getInterdistancia() {
+        return interdistancia;
+    }
+
+    public void setInterdistancia(int interdistancia) {
+        this.interdistancia = interdistancia;
+    }
+
+    public double getPotenciaTransformador() {
+        return potenciaTransformador;
+    }
+
+    public void setPotenciaTransformador(double potenciaTransformador) {
+        this.potenciaTransformador = potenciaTransformador;
+    }
+
+    public String getPlacaMT() {
+        return placaMT;
+    }
+
+    public void setPlacaMT(String placaMT) {
+        this.placaMT = placaMT;
+    }
+
+    public String getPlacaCT() {
+        return placaCT;
+    }
+
+    public void setPlacaCT(String placaCT) {
+        this.placaCT = placaCT;
+    }
+
+    public boolean isTransformadorExclusivo() {
+        return transformadorExclusivo;
+    }
+
+    public void setTransformadorExclusivo(boolean transformadorExclusivo) {
+        this.transformadorExclusivo = transformadorExclusivo;
+    }
+
+    public Calibre getCalibre() {
+        return calibre;
+    }
+
+    public void setCalibre(Calibre calibre) {
+        this.calibre = calibre;
+    }
+
+    public TipoInstalacionRed getTipoInstalacionRed() {
+        return tipoInstalacionRed;
+    }
+
+    public void setTipoInstalacionRed(TipoInstalacionRed tipoInstalacionRed) {
+        this.tipoInstalacionRed = tipoInstalacionRed;
+    }
+
+    public TipoRed getTipoRed() {
+        return tipoRed;
+    }
+
+    public void setTipoRed(TipoRed tipoRed) {
+        this.tipoRed = tipoRed;
+    }
+
+    public float getLatitud() {
+        return latitud;
+    }
+
+    public void setLatitud(float latitud) {
+        this.latitud = latitud;
+    }
+
+    public float getLongitud() {
+        return longitud;
+    }
+
+    public void setLongitud(float longitud) {
+        this.longitud = longitud;
+    }
+
+    public String getEncodeStringFoto() {
+        return encodeStringFoto;
+    }
+
+    public void setEncodeStringFoto(String encodeStringFoto) {
+        this.encodeStringFoto = encodeStringFoto;
     }
 }

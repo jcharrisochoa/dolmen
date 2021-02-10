@@ -2,9 +2,12 @@ package co.dolmen.sid;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import co.dolmen.sid.entidad.Equipo;
 import co.dolmen.sid.modelo.ActaContratoDB;
 import co.dolmen.sid.modelo.ActividadOperativaDB;
+import co.dolmen.sid.modelo.ArchivoActividadDB;
 import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.BodegaDB;
 import co.dolmen.sid.modelo.CalibreDB;
@@ -16,6 +19,7 @@ import co.dolmen.sid.modelo.ClaseViaDB;
 import co.dolmen.sid.modelo.ContratoDB;
 import co.dolmen.sid.modelo.ControlEncendidoDB;
 import co.dolmen.sid.modelo.ElementoDB;
+import co.dolmen.sid.modelo.EquipoDB;
 import co.dolmen.sid.modelo.EstadoActividadDB;
 import co.dolmen.sid.modelo.EstadoMobiliarioDB;
 import co.dolmen.sid.modelo.MobiliarioDB;
@@ -40,14 +44,18 @@ import co.dolmen.sid.modelo.TipoStockDB;
 import co.dolmen.sid.modelo.TipoTensionDB;
 import co.dolmen.sid.modelo.TipologiaDB;
 import co.dolmen.sid.utilidades.DataSpinner;
+import co.dolmen.sid.utilidades.MiBaseDatos;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -81,7 +89,10 @@ public class ConfigurarArea extends AppCompatActivity {
     SQLiteDatabase database;
     SharedPreferences config;
     FloatingActionButton btnSiguiente;
+    FloatingActionButton btnCerrarSesion;
+
     AlertDialog.Builder alert;
+    AlertDialog.Builder alertConfirm;
     Spinner sltMunicipio;
     Spinner sltProceso;
     Spinner sltContrato;
@@ -93,43 +104,8 @@ public class ConfigurarArea extends AppCompatActivity {
     List<DataSpinner> contratoList;
     List<DataSpinner> bodegaList;
 
-    private CensoDB censoDB;
-    private CensoTipoArmadoDB censoTipoArmadoDB;
-    private CensoArchivoDB censoArchivoDB;
-    private ProgramaDB programaDB;
-    private CensoAsignadoDB censoAsignadoDB;
-    private ElementoDB elementoDB;
-
-    private ProcesoSgcDB procesoSgcDB;
-    private ContratoDB contratoDB;
-    private ActaContratoDB actaContratoDB;
-    private BarrioDB  barrioDB;
-    private MunicipioDB municipioDB;
-    private TipoReporteDanoDB tipoReporteDanoDB;
-    private TipoActividadDB tipoActividadDB;
-    private EstadoMobiliarioDB estadoMobiliarioDB;
-    private EstadoActividadDB estadoActividadDB;
-    private TipologiaDB tipologiaDB;
-    private MobiliarioDB mobiliarioDB;
-    private ReferenciaMobiliarioDB referenciaMobiliarioDB;
-    private ActividadOperativaDB actividadOperativaDB;
-    private StockDB stockDB;
-    private BodegaDB bodegaDB;
-    private TipoInstalacionRedDB tipoInstalacionRedDB;
-    private TipoBaseFotoceldaDB tipoBaseFotoceldaDB;
-    private TipoBrazoDB tipoBrazoDB;
-    private TipoBalastoDB tipoBalastoDB;
-    private ControlEncendidoDB controlEncendidoDB;
-    private TipoPosteDB tipoPosteDB;
-    private TipoRedDB tipoRedDB;
-    private NormaConstruccionPosteDB normaConstruccionPosteDB;
-    private CalibreDB calibreDB;
-    private TipoStockDB tipoStockDB;
-    private ClaseViaDB claseViaDB;
-    private RetenidaPosteDB retenidaPosteDB;
-    private TipoTensionDB tipoTensionDB;
-    private TipoEstructuraDB tipoEstructuraDB;
-    private NormaConstruccionRedDB normaConstruccionRedDB;
+    MiBaseDatos miBaseDatos;
+    public LocationManager ubicacion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,7 +113,7 @@ public class ConfigurarArea extends AppCompatActivity {
         setContentView(R.layout.activity_configurar_area);
         conn = new BaseDatos(ConfigurarArea.this);
         database = conn.getReadableDatabase();
-
+        miBaseDatos = new MiBaseDatos(database);
         //Log.d("versiondb","db:"+database.getVersion() +"!="+ Constantes.OLD_VERSION_BASEDATOS);
 
         /*if(database.getVersion() != Constantes.OLD_VERSION_BASEDATOS){
@@ -146,47 +122,19 @@ public class ConfigurarArea extends AppCompatActivity {
             finish();
         }*/
 
-        censoDB                 = new CensoDB(database);
-        censoTipoArmadoDB       = new CensoTipoArmadoDB(database);
-        censoArchivoDB          = new CensoArchivoDB(database);
-        programaDB              = new ProgramaDB(database);
-        censoAsignadoDB         = new CensoAsignadoDB(database);
-        elementoDB              = new ElementoDB(database);
-        procesoSgcDB            = new ProcesoSgcDB(database);
-        contratoDB              = new ContratoDB(database);
-        actaContratoDB          = new ActaContratoDB(database);
-        barrioDB                = new BarrioDB(database);
-        municipioDB             = new MunicipioDB(database);
-        tipoReporteDanoDB       = new TipoReporteDanoDB(database);
-        tipoActividadDB         = new TipoActividadDB(database);
-        estadoMobiliarioDB      = new EstadoMobiliarioDB(database);
-        estadoActividadDB       = new EstadoActividadDB(database);
-        tipologiaDB             = new TipologiaDB(database);
-        mobiliarioDB            = new MobiliarioDB(database);
-        referenciaMobiliarioDB  = new ReferenciaMobiliarioDB(database);
-        actividadOperativaDB    = new ActividadOperativaDB(database);
-        stockDB                 = new StockDB(database);
-        bodegaDB                = new BodegaDB(database);
-        tipoInstalacionRedDB    = new TipoInstalacionRedDB(database);
-        tipoBaseFotoceldaDB     = new TipoBaseFotoceldaDB(database);
-        tipoBrazoDB             = new TipoBrazoDB(database);
-        tipoBalastoDB           = new TipoBalastoDB(database);
-        controlEncendidoDB      = new ControlEncendidoDB(database);
-        tipoPosteDB             = new TipoPosteDB(database);
-        tipoRedDB               = new TipoRedDB(database);
-        normaConstruccionPosteDB = new NormaConstruccionPosteDB(database);
-        calibreDB               = new CalibreDB(database);
-        tipoStockDB             = new TipoStockDB(database);
-        claseViaDB              = new ClaseViaDB(database);
-        retenidaPosteDB         = new RetenidaPosteDB(database);
-        tipoTensionDB           = new TipoTensionDB(database);
-        tipoEstructuraDB        = new TipoEstructuraDB(database);
-        normaConstruccionRedDB  = new NormaConstruccionRedDB(database);
-
 
         alert = new AlertDialog.Builder(this);
+        alert.setCancelable(false);
+        alert.setTitle(R.string.titulo_alerta);
+        alert.setIcon(R.drawable.icon_problem);
+
+        alertConfirm = new AlertDialog.Builder(this);
+        alertConfirm.setCancelable(false);
+        alertConfirm.setTitle(R.string.titulo_alerta);
+        alertConfirm.setIcon(R.drawable.icon_problem);
 
         btnSiguiente = findViewById(R.id.fab_siguiente);
+        btnCerrarSesion = findViewById(R.id.fab_cerrar_sesion);
         //-
         sltMunicipio    = findViewById(R.id.sltMunicipio);
         sltProceso      = findViewById(R.id.sltProceso);
@@ -195,8 +143,6 @@ public class ConfigurarArea extends AppCompatActivity {
         tvNombreUsuario = findViewById(R.id.nombre_usuario);
 
         //--Preferencias--
-
-
         config = getSharedPreferences("config",MODE_PRIVATE);
         SharedPreferences.Editor editar = config.edit();
         editar.putBoolean("usuario_logueado",true);
@@ -238,22 +184,43 @@ public class ConfigurarArea extends AppCompatActivity {
         btnSiguiente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                int PERMISSIONS_REQUEST_LOCATION = 0;
                 if(validarFrm()){
-                    Log.d("GidDefaultContrato",""+contratoList.get(sltContrato.getSelectedItemPosition()).getId());
-                    SharedPreferences.Editor editar = config.edit();
-                    editar.putBoolean("config",true);
-                    editar.putInt("id_municipio", municipioList.get(sltMunicipio.getSelectedItemPosition()).getId());
-                    editar.putInt("id_proceso", procesoList.get(sltProceso.getSelectedItemPosition()).getId());
-                    editar.putInt("id_contrato",contratoList.get(sltContrato.getSelectedItemPosition()).getId());
-                    editar.putString("nombreMunicipio",municipioList.get(sltMunicipio.getSelectedItemPosition()).getDescripcion());
-                    editar.putString("nombreProceso",procesoList.get(sltProceso.getSelectedItemPosition()).getDescripcion());
-                    editar.putString("nombreContrato",contratoList.get(sltContrato.getSelectedItemPosition()).getDescripcion());
-                    editar.putInt("id_bodega",bodegaList.get(sltBodega.getSelectedItemPosition()).getId());
-                    editar.commit();
-                    database.close();
-                    Intent i = new Intent(ConfigurarArea.this, Menu.class);
-                    startActivity(i);
-                    finish();
+                    //Log.d("GidDefaultContrato",""+contratoList.get(sltContrato.getSelectedItemPosition()).getId());
+                    if(!estadoGPS()){
+                        alert.setTitle(getString(R.string.titulo_alerta));
+                        alert.setMessage(getString(R.string.alert_gps_deshabilitado));
+                        alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        });
+                        alert.create().show();
+                    }
+                    else {
+                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(ConfigurarArea.this,
+                                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                    PERMISSIONS_REQUEST_LOCATION);
+                        }
+                        else {
+                            SharedPreferences.Editor editar = config.edit();
+                            editar.putBoolean("config", true);
+                            editar.putInt("id_municipio", municipioList.get(sltMunicipio.getSelectedItemPosition()).getId());
+                            editar.putInt("id_proceso", procesoList.get(sltProceso.getSelectedItemPosition()).getId());
+                            editar.putInt("id_contrato", contratoList.get(sltContrato.getSelectedItemPosition()).getId());
+                            editar.putString("nombreMunicipio", municipioList.get(sltMunicipio.getSelectedItemPosition()).getDescripcion());
+                            editar.putString("nombreProceso", procesoList.get(sltProceso.getSelectedItemPosition()).getDescripcion());
+                            editar.putString("nombreContrato", contratoList.get(sltContrato.getSelectedItemPosition()).getDescripcion());
+                            editar.putInt("id_bodega", bodegaList.get(sltBodega.getSelectedItemPosition()).getId());
+                            editar.commit();
+                            database.close();
+                            Intent i = new Intent(ConfigurarArea.this, Menu.class);
+                            startActivity(i);
+                            finish();
+                        }
+                    }
                 }
                 else{
                     alert.setTitle(R.string.titulo_alerta);
@@ -268,10 +235,49 @@ public class ConfigurarArea extends AppCompatActivity {
             }
         });
 
+        btnCerrarSesion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Cursor cursor = miBaseDatos.actividadOperativaDB.porSincronizar();
+                if(cursor.getCount()>0){
+                    alertConfirm.setMessage("Tiene "+cursor.getCount()+" actividad(es) por sincrinozar\n\n"+getText(R.string.alert_cerrar_sesion));
+                }
+                else{
+                    alertConfirm.setMessage(R.string.alert_cerrar_sesion);
+                }
+
+
+                alertConfirm.setPositiveButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //
+                        try {
+                            miBaseDatos.eliminarDatos();
+                            config.edit().clear().commit();
+                            Intent intent = new Intent(ConfigurarArea.this,Login.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                            startActivity(intent);
+                            ConfigurarArea.this.finish();
+                        }catch (SQLException e){
+                            Toast.makeText(getApplicationContext(),"ERROR"+e.getMessage(),Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                });
+                alertConfirm.setNegativeButton(R.string.btn_cancelar, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //dialogInterface.cancel();
+                    }
+                });
+                alertConfirm.create().show();
+            }
+        });
         cargarMunicipio(database);
         cargarProceso(database);
         cargarBodega(database);
     }
+
     private boolean validarFrm() {
         if (municipioList.get(sltMunicipio.getSelectedItemPosition()).getId() == 0) {
             alert.setMessage(getString(R.string.alert_municipio));
@@ -422,5 +428,10 @@ public class ConfigurarArea extends AppCompatActivity {
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltBodega.setAdapter(dataAdapter);
         sltBodega.setSelection(setDefaultPositionBodega);
+    }
+
+    public boolean estadoGPS() {
+        ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
+        return (ubicacion.isProviderEnabled(LocationManager.GPS_PROVIDER));
     }
 }

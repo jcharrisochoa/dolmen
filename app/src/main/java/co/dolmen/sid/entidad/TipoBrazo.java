@@ -1,6 +1,8 @@
 package co.dolmen.sid.entidad;
 
-public class TipoBrazo {
+import java.io.Serializable;
+
+public class TipoBrazo implements Serializable {
     int idTipoBrazo;
     String descripcion;
 

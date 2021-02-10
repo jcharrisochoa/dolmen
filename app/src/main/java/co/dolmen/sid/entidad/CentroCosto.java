@@ -3,8 +3,17 @@ package co.dolmen.sid.entidad;
 import java.io.Serializable;
 
 public class CentroCosto implements Serializable {
-    int idCentroCosto;
-    String descripcionCentroCosto;
+    private int idCentroCosto;
+    private int codigo;
+    private String descripcionCentroCosto;
+
+    public CentroCosto(){}
+
+    public CentroCosto(int idCentroCosto, int codigo, String descripcionCentroCosto) {
+        this.idCentroCosto = idCentroCosto;
+        this.codigo = codigo;
+        this.descripcionCentroCosto = descripcionCentroCosto;
+    }
 
     public int getIdCentroCosto() {
         return idCentroCosto;
@@ -20,5 +29,13 @@ public class CentroCosto implements Serializable {
 
     public void setDescripcionCentroCosto(String descripcionCentroCosto) {
         this.descripcionCentroCosto = descripcionCentroCosto;
+    }
+
+    public int getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(int codigo) {
+        this.codigo = codigo;
     }
 }

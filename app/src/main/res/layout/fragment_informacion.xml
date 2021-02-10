@@ -29,6 +29,42 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
+                <TextView
+                    android:id="@+id/textV_estado_actividad"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Estado Actividad *" />
+
+                <Spinner
+                    android:id="@+id/slt_estado_actividad"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/btn_dropdown" />
+
+                <TextView
+                    android:id="@+id/text_tipo_operacion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tipo Operacion *" />
+
+                <Spinner
+                    android:id="@+id/slt_tipo_actividad"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/btn_dropdown" />
+
+                <TextView
+                    android:id="@+id/textView51"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/titulo_vehiculo" />
+
+                <Spinner
+                    android:id="@+id/slt_vehiculo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/btn_dropdown" />
+
                 <Switch
                     android:id="@+id/sw_elemento_no_encontrado"
                     android:layout_width="match_parent"
@@ -96,68 +132,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
-                <TextView
-                    android:id="@+id/text_tipo_operacion"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Tipo Operacion *" />
-
-                <Spinner
-                    android:id="@+id/slt_tipo_actividad"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown" />
-
 
                 <TextView
-                    android:id="@+id/textView51"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/titulo_vehiculo" />
-
-                <Spinner
-                    android:id="@+id/slt_vehiculo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown" />
-
-                <TextView
-                    android:id="@+id/textV_estado_actividad"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Estado Actividad *" />
-
-                <Spinner
-                    android:id="@+id/slt_estado_actividad"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown" />
-
-                <TextView
-                    android:id="@+id/textView43"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/titulo_observacion" />
-
-                <EditText
-                    android:id="@+id/txt_observacion"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/edit_text"
-                    android:ems="10"
-                    android:gravity="top|left"
-                    android:inputType="textMultiLine"
-                    android:maxLines="10"
-                    android:minLines="6"
-                    android:scrollbars="vertical"
-                    android:singleLine="false" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:orientation="vertical"></LinearLayout>
-
-                <!--<TextView
                     android:id="@+id/textView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -183,43 +159,98 @@
                         tools:text="@string/buscar_elemento" />
 
                     <ImageButton
-                        android:id="@+id/btn_buscar_elemento"
+                        android:id="@+id/btn_agregar_elemento_desmontado"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_weight="2"
+                        android:layout_weight="4"
                         android:background="@android:drawable/btn_default_small"
                         android:contentDescription="@string/buscar_elemento"
-                        android:src="@drawable/icon_search" />
-
-                    <ImageButton
-                        android:id="@+id/btn_limpiar"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="2"
-                        android:background="@android:drawable/btn_default_small"
-                        android:src="@drawable/icon_cancel"
-                        android:tint="@color/colorAccentCancel" />
+                        android:src="@drawable/ic_add"
+                        android:tint="@color/colorAccentOk" />
 
 
                 </LinearLayout>
 
+
+                <TextView
+                    android:id="@+id/textView44"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/titulo_lista_elementos_desmontado" />
+
+                <LinearLayout
+                    android:id="@+id/layout_lista_desmontado"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:orientation="vertical"/>
+
+                <TextView
+                    android:id="@+id/textView46"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Vatiaje Desmontado" />
+
+                <LinearLayout
+                    android:id="@+id/linearLayoutDes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                        <Spinner
+                            android:id="@+id/slt_vatiaje"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@android:drawable/btn_dropdown"
+                            android:layout_weight="1"/>
+
+                    <ImageButton
+                        android:id="@+id/btn_agregar_vatiaje_desmontado"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="4"
+                        android:background="@android:drawable/btn_default_small"
+                        android:contentDescription="@string/buscar_elemento"
+                        android:src="@drawable/ic_add"
+                        android:tint="@color/colorAccentOk" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/textView45"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/titulo_lista_vatiaje_desmontado" />
+
+                <LinearLayout
+                    android:id="@+id/layout_lista_vatiaje_desmontado"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:orientation="vertical"/>
+
+                <TextView
+                    android:id="@+id/textView43"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/titulo_observacion" />
+
+                <EditText
+                    android:id="@+id/txt_observacion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:drawable/edit_text"
+                    android:ems="10"
+                    android:gravity="top|left"
+                    android:inputType="textMultiLine"
+                    android:maxLines="10"
+                    android:minLines="6"
+                    android:scrollbars="vertical"
+                    android:singleLine="false" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/textView35"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Array de Elementos Desmontados"
-                        android:textSize="36sp" />
-
-                </LinearLayout>-->
-
-
-
-
+                    android:layout_height="100dp"
+                    android:orientation="vertical"></LinearLayout>
 
 
             </LinearLayout>

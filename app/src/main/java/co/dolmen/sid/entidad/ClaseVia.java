@@ -1,9 +1,18 @@
 package co.dolmen.sid.entidad;
 
-public class ClaseVia {
+import java.io.Serializable;
+
+public class ClaseVia implements Serializable {
     int id;
     String descripcion;
     String abreviatura;
+
+    public ClaseVia(){}
+
+    public ClaseVia(int id, String descripcion) {
+        this.id = id;
+        this.descripcion = descripcion;
+    }
 
     public void setId(int id) {
         this.id = id;

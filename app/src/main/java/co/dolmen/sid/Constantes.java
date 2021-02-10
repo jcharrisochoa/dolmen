@@ -4,11 +4,11 @@ public final class Constantes {
     //--Camara
     public static final String IMAGE_DIRECTORY_NAME = "sdcard";
     public static final int TIMEOUT = 150000;
-    public static final int CONS = 100;
     public static final int CONS_TOMAR_FOTO = 100;
     public static final int CONS_SELECCIONAR_IMAGEN = 200;
-    public static final int MEDIA_TYPE_IMAGE = 1;
-
+    public static final String TAG = "DOLMEN-DEBUGER";
+    public static final int MIN_UPDATE_TIME = 2000;
+    public static final int MIN_UPDATE_DISTANCE = 0;
     //--Base Datos
     public static final int VERSION_BASEDATOS = 9;
     public static int OLD_VERSION_BASEDATOS;
@@ -49,20 +49,20 @@ public final class Constantes {
     public static final String TABLA_TIPO_ESCENARIO             = "tipo_escenario";
     public static final String TABLA_CONDUCTOR_ELECTRICO        = "tipo_conductor_electrico";
     public static final String TABLA_CALIBRE                    = "calibre";
-    public static final String TABLA_TIPO_STOCK                = "tipo_stock";
-    public static final String TABLA_ARTICULO                  = "articulo";
-    public static final String TABLA_STOCK                     = "stock";
-    public static final String TABLA_ACTIVIDAD_OPERATIVA       = "actividad_operativa";
-    public static final String TABLA_TIPO_BRAZO                = "tipo_brazo";
-    public static final String TABLA_TIPO_BALASTO              = "tipo_balasto";
+    public static final String TABLA_TIPO_STOCK                 = "tipo_stock";
+    public static final String TABLA_ARTICULO                   = "articulo";
+    public static final String TABLA_STOCK                      = "stock";
+    public static final String TABLA_ACTIVIDAD_OPERATIVA        = "actividad_operativa";
+    public static final String TABLA_TIPO_BRAZO                 = "tipo_brazo";
+    public static final String TABLA_TIPO_BALASTO               = "tipo_balasto";
     public static final String TABLA_CONTROL_ENCENDIDO          = "control_encendido";
-    public static final String TABLA_TIPO_BASE_FOTOCELDA       = "tipo_base_fotocelda";
-    public static final String TABLA_TIPO_INSTALACION_RED      = "tipo_instalacion_red";
+    public static final String TABLA_TIPO_BASE_FOTOCELDA        = "tipo_base_fotocelda";
+    public static final String TABLA_TIPO_INSTALACION_RED       = "tipo_instalacion_red";
     public static final String TABLA_BODEGA                     = "bodega";
     public static final String TABLA_EQUIPO                     = "equipo";
-    public static final String TABLA_CENTRO_COSTO              = "centro_costo";
-    public static final String TABLA_ARCHIVO_ACTIVIDAD_OPERATIVA   = "archivo_actividad_operativa";
-    public static final String TABLA_ORDEN_INVENTARIO          = "orden_inventario";
-    public static final String TABLA_DETALLE_ORDEN_INVENTARIO  = "detalle_orden_inventario";
-
+    public static final String TABLA_ARCHIVO_ACTIVIDAD_OPERATIVA= "archivo_actividad_operativa";
+    public static final String TABLA_MOVIMIENTO_ARTICULO        = "movimiento_articulo";
+    public static final String TABLA_CENTRO_COSTO               = "centro_costo";
+    public static final String TABLA_ELEMENTO_DESMONTADO        = "elemento_desmontado";
+    public static final String TABLA_VATIAJE_DESMONTADO         = "vatiaje_desmontado";
 }

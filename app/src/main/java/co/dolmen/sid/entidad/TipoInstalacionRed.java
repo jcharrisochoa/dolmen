@@ -1,6 +1,8 @@
 package co.dolmen.sid.entidad;
 
-public class TipoInstalacionRed {
+import java.io.Serializable;
+
+public class TipoInstalacionRed  implements Serializable {
     int idTipoInstalacionRed;
     String descripcion;
 

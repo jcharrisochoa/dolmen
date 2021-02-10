@@ -7,8 +7,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -28,6 +33,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,25 +42,46 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 
 import co.dolmen.sid.entidad.ActividadOperativa;
+import co.dolmen.sid.entidad.ArchivoActividad;
 import co.dolmen.sid.entidad.Articulo;
 import co.dolmen.sid.entidad.Barrio;
 import co.dolmen.sid.entidad.Bodega;
-import co.dolmen.sid.entidad.CentroCosto;
+import co.dolmen.sid.entidad.Calibre;
+import co.dolmen.sid.entidad.ClaseVia;
+import co.dolmen.sid.entidad.ControlEncendido;
 import co.dolmen.sid.entidad.Elemento;
+import co.dolmen.sid.modelo.ElementoDesmontadoDB;
 import co.dolmen.sid.entidad.Equipo;
 import co.dolmen.sid.entidad.EstadoActividad;
+import co.dolmen.sid.entidad.EstadoMobiliario;
 import co.dolmen.sid.entidad.MovimientoArticulo;
+import co.dolmen.sid.entidad.Municipio;
+import co.dolmen.sid.entidad.NormaConstruccionPoste;
 import co.dolmen.sid.entidad.Stock;
 import co.dolmen.sid.entidad.TipoActividad;
+import co.dolmen.sid.entidad.TipoBalasto;
+import co.dolmen.sid.entidad.TipoBaseFotocelda;
+import co.dolmen.sid.entidad.TipoBrazo;
+import co.dolmen.sid.entidad.TipoEscenario;
+import co.dolmen.sid.entidad.TipoInstalacionRed;
+import co.dolmen.sid.entidad.TipoPoste;
+import co.dolmen.sid.entidad.TipoRed;
 import co.dolmen.sid.entidad.TipoStock;
 import co.dolmen.sid.modelo.ActividadOperativaDB;
+import co.dolmen.sid.modelo.ArchivoActividadDB;
+import co.dolmen.sid.modelo.ElementoDB;
+import co.dolmen.sid.modelo.MovimientoArticuloDB;
 import co.dolmen.sid.modelo.StockDB;
+import co.dolmen.sid.modelo.VatiajeDesmontadoDB;
 import co.dolmen.sid.utilidades.MiLocalizacion;
 import co.dolmen.sid.utilidades.ViewPagerAdapter;
 import cz.msebera.android.httpclient.Header;
@@ -71,7 +98,6 @@ public class EjecutaActividad extends AppCompatActivity {
     SQLiteOpenHelper conn;
     SQLiteDatabase database;
     SharedPreferences config;
-    String TAG = "programacion";
 
     AlertDialog.Builder alert;
 
@@ -93,9 +119,6 @@ public class EjecutaActividad extends AppCompatActivity {
     private int idDefaultProceso;
     private int idDefaultContrato;
     private int idDefaultBodega;
-    LocationManager ubicacion;
-    MiLocalizacion miLocalizacion;
-    private boolean gpsListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -201,12 +224,16 @@ public class EjecutaActividad extends AppCompatActivity {
                 alert.create().show();
             }
         });
-
     }
 
-    private void guardar(final View view){
-        //--Actualizar Pojo--
+    private void actualizarObjeto(){
+
+        //--Actualizar Pojo Actividad operativa--
         actividadOperativa.setFechaEjecucion(new Date());
+        actividadOperativa.setDireccion(fragmentInformacion.editDireccion.getText().toString());
+        actividadOperativa.setObservacion(fragmentInformacion.editObservacion.getText().toString());
+        actividadOperativa.setAfectadoPorVandalismo((fragmentInformacion.swVandalismo.isChecked())?"S":"N");
+        actividadOperativa.setElementoNoEncontrado((fragmentInformacion.swElementoNoEncontrado.isChecked())?"S":"N");
 
         Equipo equipo = actividadOperativa.getEquipo();
         equipo.setIdEquipo(fragmentInformacion.vehiculoList.get(fragmentInformacion.sltVehiculo.getSelectedItemPosition()).getId());
@@ -223,29 +250,143 @@ public class EjecutaActividad extends AppCompatActivity {
         Barrio barrio = actividadOperativa.getBarrio();
         barrio.setIdBarrio(fragmentInformacion.barrioList.get(fragmentInformacion.sltBarrio.getSelectedItemPosition()).getId());
         barrio.setNombreBarrio(fragmentInformacion.barrioList.get(fragmentInformacion.sltBarrio.getSelectedItemPosition()).getDescripcion());
+        barrio.setId(idDefaultMunicipio);
 
+        if(!fragmentElemento.txtLatitud.getText().toString().isEmpty() && actividadOperativa.getLatitud() == 0)
+            actividadOperativa.setLatitud(Float.parseFloat(fragmentElemento.txtLatitud.getText().toString()));
+
+        if(!fragmentElemento.txtLongitud.getText().toString().isEmpty() && actividadOperativa.getLongitud() == 0)
+            actividadOperativa.setLongitud(Float.parseFloat(fragmentElemento.txtLongitud.getText().toString()));
+
+        //--Actualiza Objeto Elemento
         Elemento elemento = actividadOperativa.getElemento();
         elemento.setDireccion(fragmentInformacion.editDireccion.getText().toString());
         elemento.setBarrio(barrio);
+        elemento.setMunicipio( (Municipio) barrio);
+        elemento.setTipoBalasto(
+                new TipoBalasto(
+                        fragmentElemento.tipoBalastoList.get(fragmentElemento.sltTipoBalasto.getSelectedItemPosition()).getId(),
+                        fragmentElemento.tipoBalastoList.get(fragmentElemento.sltTipoBalasto.getSelectedItemPosition()).getDescripcion()
+                )
+        );
+        elemento.setTipoBaseFotocelda(
+                new TipoBaseFotocelda(
+                        fragmentElemento.tipoBaseFotoceldaList.get(fragmentElemento.sltTipoBaseFotocelda.getSelectedItemPosition()).getId(),
+                        fragmentElemento.tipoBaseFotoceldaList.get(fragmentElemento.sltTipoBaseFotocelda.getSelectedItemPosition()).getDescripcion()
+                )
+        );
+        elemento.setTipoBrazo(
+                new TipoBrazo(
+                        fragmentElemento.tipoBrazoList.get(fragmentElemento.sltTipoBrazo.getSelectedItemPosition()).getId(),
+                        fragmentElemento.tipoBrazoList.get(fragmentElemento.sltTipoBrazo.getSelectedItemPosition()).getDescripcion()
+                )
+        );
+        elemento.setControlEncendido(
+                new ControlEncendido(
+                        fragmentElemento.controlEncendidoList.get(fragmentElemento.sltControlEncendido.getSelectedItemPosition()).getId(),
+                        fragmentElemento.controlEncendidoList.get(fragmentElemento.sltControlEncendido.getSelectedItemPosition()).getDescripcion()
+                )
+        );
+        elemento.setEstadoMobiliario(
+                new EstadoMobiliario(
+                        fragmentElemento.estadoMobiliarioList.get(fragmentElemento.sltEstadoMobiliario.getSelectedItemPosition()).getId(),
+                        fragmentElemento.estadoMobiliarioList.get(fragmentElemento.sltEstadoMobiliario.getSelectedItemPosition()).getDescripcion()
+                )
+        );
+        elemento.setZona(fragmentElemento.zona);
+        elemento.setSector(fragmentElemento.sector);
 
-        if(!fragmentElemento.txtLatitud.getText().toString().isEmpty())
-            actividadOperativa.setLatitud(Float.parseFloat(fragmentElemento.txtLatitud.getText().toString()));
+        elemento.setTipoEscenario(
+                new TipoEscenario(
+                        fragmentElemento.tipoEscenarioList.get(fragmentElemento.sltTipoEscenario.getSelectedItemPosition()).getId(),
+                        fragmentElemento.tipoEscenarioList.get(fragmentElemento.sltTipoEscenario.getSelectedItemPosition()).getDescripcion()
+                )
+        );
 
-        if(!fragmentElemento.txtLongitud.getText().toString().isEmpty())
-            actividadOperativa.setLongitud(Float.parseFloat(fragmentElemento.txtLongitud.getText().toString()));
+        Float latitud = (fragmentElemento.txtLatitud.getText().toString().isEmpty()) ? 0 : Float.parseFloat(fragmentElemento.txtLatitud.getText().toString());
+        Float longitud = (fragmentElemento.txtLongitud.getText().toString().isEmpty()) ? 0 : Float.parseFloat(fragmentElemento.txtLongitud.getText().toString());
+        elemento.setLatitud(latitud);
+        elemento.setLongitud(longitud);
 
-        actividadOperativa.setDireccion(fragmentInformacion.editDireccion.getText().toString());
-        actividadOperativa.setObservacion(fragmentInformacion.editObservacion.getText().toString());
-        actividadOperativa.setAfectadoPorVandalismo((fragmentInformacion.swVandalismo.isChecked())?"S":"N");
-        actividadOperativa.setElementoNoEncontrado((fragmentInformacion.swElementoNoEncontrado.isChecked())?"S":"N");
-        actividadOperativa.setPendienteSincronizar("N");
+        elemento.setClaseVia(
+                new ClaseVia(
+                        fragmentElemento.claseViaList.get(fragmentElemento.sltClaseVia.getSelectedItemPosition()).getId(),
+                        fragmentElemento.claseViaList.get(fragmentElemento.sltClaseVia.getSelectedItemPosition()).getDescripcion()
+                )
+        );
 
+        Integer anchoVia = (fragmentElemento.txtAnchoVia.getText().toString().isEmpty()) ? 0 : Integer.parseInt(fragmentElemento.txtAnchoVia.getText().toString());
+        elemento.setAnchoVia(anchoVia);
+
+        elemento.setNormaConstruccionPoste(
+                new NormaConstruccionPoste(
+                        fragmentElemento.normaConstruccionPosteList.get(fragmentElemento.sltNormaConstruccionPoste.getSelectedItemPosition()).getId(),
+                        fragmentElemento.normaConstruccionPosteList.get(fragmentElemento.sltNormaConstruccionPoste.getSelectedItemPosition()).getDescripcion(),
+                        new TipoPoste(
+                                fragmentElemento.tipoPosteList.get(fragmentElemento.sltTipoPoste.getSelectedItemPosition()).getId(),
+                                fragmentElemento.tipoPosteList.get(fragmentElemento.sltTipoPoste.getSelectedItemPosition()).getDescripcion()
+                        )
+                )
+        );
+        elemento.setPosteExclusivo(fragmentElemento.swPosteExclusivoAp.isChecked());
+
+        elemento.setPosteNo(fragmentElemento.txtPosteNo.getText().toString());
+
+        Integer interdistancia = (fragmentElemento.txtInterdistancia.getText().toString().isEmpty()) ? 0 : Integer.parseInt(fragmentElemento.txtInterdistancia.getText().toString());
+        elemento.setInterdistancia(interdistancia);
+
+        Double potencia = (fragmentElemento.txtPotenciaTransformador.getText().toString().isEmpty()) ? 0 : Double.parseDouble(fragmentElemento.txtPotenciaTransformador.getText().toString());
+        elemento.setPotenciaTransformador(potencia);
+
+        elemento.setPlacaCT(fragmentElemento.txtCtTransformador.getText().toString());
+        elemento.setPlacaMT(fragmentElemento.txtMtTransformador.getText().toString());
+        elemento.setTransformadorExclusivo(fragmentElemento.swTranformadorExclusivoAP.isChecked());
+        elemento.setCalibre(
+                new Calibre(
+                        fragmentElemento.calibreList.get(fragmentElemento.sltCalibreConexionElemento.getSelectedItemPosition()).getId(),
+                        fragmentElemento.calibreList.get(fragmentElemento.sltCalibreConexionElemento.getSelectedItemPosition()).getDescripcion()
+                )
+        );
+        elemento.setTipoInstalacionRed(
+                new TipoInstalacionRed(
+                        fragmentElemento.tipoInstalacionRedList.get(fragmentElemento.sltTipoInstalacionRed.getSelectedItemPosition()).getId(),
+                        fragmentElemento.tipoInstalacionRedList.get(fragmentElemento.sltTipoInstalacionRed.getSelectedItemPosition()).getDescripcion()
+                )
+        );
+        elemento.setTipoRed(
+                new TipoRed(
+                        fragmentElemento.tipoRedList.get(fragmentElemento.sltTipoRed.getSelectedItemPosition()).getId(),
+                        fragmentElemento.tipoRedList.get(fragmentElemento.sltTipoRed.getSelectedItemPosition()).getDescripcion()
+                )
+        );
+        elemento.setEncodeStringFoto(fragmentFotoDespues.encodeStringFoto_1);
+        actividadOperativa.setElemento(elemento);
+
+        //--Fotos Antes
+        actividadOperativa.agregarArchivoActividad(new ArchivoActividad(actividadOperativa.getIdActividad(),fragmentFotoAntes.encodeStringFoto_1, "A"));
+        actividadOperativa.agregarArchivoActividad(new ArchivoActividad(actividadOperativa.getIdActividad(),fragmentFotoAntes.encodeStringFoto_2, "A"));
+        actividadOperativa.agregarArchivoActividad(new ArchivoActividad(actividadOperativa.getIdActividad(),fragmentFotoAntes.encodeStringFoto_3, "A"));
+        actividadOperativa.agregarArchivoActividad(new ArchivoActividad(actividadOperativa.getIdActividad(),fragmentFotoAntes.encodeStringFoto_4, "A"));
+        //--Fotos Despues
+        actividadOperativa.agregarArchivoActividad(new ArchivoActividad(actividadOperativa.getIdActividad(),fragmentFotoDespues.encodeStringFoto_1, "D"));
+        actividadOperativa.agregarArchivoActividad(new ArchivoActividad(actividadOperativa.getIdActividad(),fragmentFotoDespues.encodeStringFoto_2, "D"));
+        actividadOperativa.agregarArchivoActividad(new ArchivoActividad(actividadOperativa.getIdActividad(),fragmentFotoDespues.encodeStringFoto_3, "D"));
+        actividadOperativa.agregarArchivoActividad(new ArchivoActividad(actividadOperativa.getIdActividad(),fragmentFotoDespues.encodeStringFoto_4, "D"));
+
+        //--Elementos desmontados
+        actividadOperativa.setElementosDesmontadosList(fragmentInformacion.desmontadoList);
+
+        //--Vatiaje Desmontado
+        actividadOperativa.setVatiajeDesmontadoList(fragmentInformacion.vatiajeDesmontadoList);
+
+    }
+
+    private void guardar(final View view){
         if(validarFotoAntes()){
             if(validarFotoDespues()){
                 if(validarInfo(view)){
                     ConnectivityManager conn = (ConnectivityManager) getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
                     NetworkInfo networkInfo = conn.getActiveNetworkInfo();
-
                     if (networkInfo != null && networkInfo.isConnected()) {
                         guardarFormulario('R');
                         //Snackbar.make(view, "Guardar Remoto", Snackbar.LENGTH_LONG).setAction("Action", null).show();
@@ -320,7 +461,103 @@ public class EjecutaActividad extends AppCompatActivity {
                             return false;
                         }
                         else{
-                            return true;
+                            if(fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId()==239
+                            || fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId()==220){
+                                if(actividadOperativa.getElemento().getId()==0){
+                                    Snackbar.make(view, "Numero de elemento es Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                    return false;
+                                }
+                                else{
+                                    if(fragmentElemento.tipoBalastoList.get(fragmentElemento.sltTipoBalasto.getSelectedItemPosition()).getId()==0){
+                                        Snackbar.make(view, "Tipo Balasto Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                        return false;
+                                    }
+                                    else{
+                                        if(fragmentElemento.tipoBaseFotoceldaList.get(fragmentElemento.sltTipoBaseFotocelda.getSelectedItemPosition()).getId()==0){
+                                            Snackbar.make(view, "Tipo Base Fotocelda Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                            return false;
+                                        }
+                                        else{
+                                            if(fragmentElemento.tipoBrazoList.get(fragmentElemento.sltTipoBrazo.getSelectedItemPosition()).getId()==0){
+                                                Snackbar.make(view, "Tipo Soporte Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                return false;
+                                            }
+                                            else{
+                                                if(fragmentElemento.controlEncendidoList.get(fragmentElemento.sltControlEncendido.getSelectedItemPosition()).getId()==0){
+                                                    Snackbar.make(view, "Control de Encendido Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                    return false;
+                                                }
+                                                else{
+                                                    if(fragmentElemento.estadoMobiliarioList.get(fragmentElemento.sltEstadoMobiliario.getSelectedItemPosition()).getId()==0){
+                                                        Snackbar.make(view, "Funcionamiento del Mobiliario Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                        return false;
+                                                    }
+                                                    else{
+                                                        if(fragmentElemento.tipoEscenarioList.get(fragmentElemento.sltTipoEscenario.getSelectedItemPosition()).getId()==0){
+                                                            Snackbar.make(view, "Tipo Espacio Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                            return false;
+                                                        }
+                                                        else{
+                                                            if(fragmentElemento.claseViaList.get(fragmentElemento.sltClaseVia.getSelectedItemPosition()).getId()==0){
+                                                                Snackbar.make(view, "Clase via Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                                return false;
+                                                            }
+                                                            else{
+                                                                if(fragmentElemento.tipoPosteList.get(fragmentElemento.sltTipoPoste.getSelectedItemPosition()).getId()==0){
+                                                                    Snackbar.make(view, "Tipo poste Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                                    return false;
+                                                                }
+                                                                else{
+                                                                    if(fragmentElemento.normaConstruccionPosteList.get(fragmentElemento.sltNormaConstruccionPoste.getSelectedItemPosition()).getId()==0){
+                                                                        Snackbar.make(view, "Norma Construccion Poste Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                                        return false;
+                                                                    }
+                                                                    else{
+                                                                        if(fragmentElemento.calibreList.get(fragmentElemento.sltCalibreConexionElemento.getSelectedItemPosition()).getId()==0){
+                                                                            Snackbar.make(view, "Calibre Conductor Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                                            return false;
+                                                                        }
+                                                                        else{
+                                                                            if(fragmentElemento.tipoInstalacionRedList.get(fragmentElemento.sltTipoInstalacionRed.getSelectedItemPosition()).getId()==0){
+                                                                                Snackbar.make(view, "Tipo Instalación Red Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                                                return false;
+                                                                            }
+                                                                            else{
+                                                                                if(fragmentElemento.tipoRedList.get(fragmentElemento.sltTipoRed.getSelectedItemPosition()).getId()==0){
+                                                                                    Snackbar.make(view, "Tipo Red Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                                                    return false;
+                                                                                }
+                                                                                else{
+                                                                                    if(Integer.parseInt(fragmentElemento.txtAnchoVia.getText().toString())==0){
+                                                                                        Snackbar.make(view, "Ancho Via Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                                                        return false;
+                                                                                    }
+                                                                                    else{
+                                                                                        if(Integer.parseInt(fragmentElemento.txtInterdistancia.getText().toString())==0){
+                                                                                            Snackbar.make(view, "Interdistancia Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                                                            return false;
+                                                                                        }
+                                                                                        else{
+                                                                                            return true;
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            else {
+                                return true;
+                            }
                         }
                     }
                 }
@@ -340,15 +577,108 @@ public class EjecutaActividad extends AppCompatActivity {
         }
     }
 
-    private void almacenarDatosLocal() {
+    private void almacenarDatosLocal(){
+        actualizarObjeto();
+        actividadOperativa.setPendienteSincronizar("S");
+        try {
+            progressGuardarActividad.setVisibility(View.VISIBLE);
+            ActividadOperativaDB actividadOperativaDB = new ActividadOperativaDB(database);
+            ArchivoActividadDB archivoActividadDB = new ArchivoActividadDB(database);
+            ElementoDesmontadoDB    elementoDesmontadoDB = new ElementoDesmontadoDB(database);
+            MovimientoArticuloDB movimientoArticuloDB = new MovimientoArticuloDB(database);
+            VatiajeDesmontadoDB vatiajeDesmontadoDB = new VatiajeDesmontadoDB(database);
+            ElementoDB elementoDB = new ElementoDB(database);
 
+
+            //--Actualizar actividad
+            actividadOperativaDB.actualizarDatos(actividadOperativa);
+
+            //--Guardar Fotos
+            Iterator<ArchivoActividad> archivoActividadIterator = actividadOperativa.getArchivoActividad().iterator();
+            ArchivoActividad tmpArchivoActividad;
+            while (archivoActividadIterator.hasNext()) {
+                tmpArchivoActividad = archivoActividadIterator.next();
+                if(!tmpArchivoActividad.getArchivo().isEmpty()) {
+                    if (!archivoActividadDB.agregarDatos(tmpArchivoActividad)) {
+                        Toast.makeText(getApplicationContext(),"Error guardado las imagenes",Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+
+            //--Guardar Movimientos de Inventario
+            Iterator<MovimientoArticulo> movimientoArticuloIterator = fragmentMateriales.movimientoArticuloArrayList.iterator();
+            while (movimientoArticuloIterator.hasNext()) {
+                if(!movimientoArticuloDB.agregarDatos(movimientoArticuloIterator.next()))
+                    Toast.makeText(getApplicationContext(),"Error guardado los movimientos de inventario",Toast.LENGTH_LONG).show();
+            }
+
+            //--Relacionar los elementos desmontados
+            Iterator<Elemento> desmontadoIterator = actividadOperativa.getElementosDesmontadosList().iterator();
+            while(desmontadoIterator.hasNext()){
+                if(!elementoDesmontadoDB.agregarDatos(actividadOperativa.getIdActividad(),desmontadoIterator.next().getId()))
+                    Toast.makeText(getApplicationContext(),"Error relacionando los elementos desmontados",Toast.LENGTH_LONG).show();
+            }
+
+            //--Relacionar los vatiaje desmontados
+            Iterator<Integer> vatiajeDesmontadoIterator = actividadOperativa.getVatiajeDesmontadoList().iterator();
+            while(vatiajeDesmontadoIterator.hasNext()){
+                if(!vatiajeDesmontadoDB.agregarDatos(actividadOperativa.getIdActividad(),vatiajeDesmontadoIterator.next().intValue()))
+                    Toast.makeText(getApplicationContext(),"Error relacionando los vatiajes desmontados",Toast.LENGTH_LONG).show();
+            }
+
+            //--Actualiza el stock
+            actulizarStock();
+
+            //--Actualizar elemento
+            elementoDB.actualizarDatos(actividadOperativa.getElemento());
+            alert.setMessage(R.string.alert_almacenamiento_local);
+            alert.setNeutralButton("Aceptar",new DialogInterface.OnClickListener(){
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    Intent i = new Intent(EjecutaActividad.this,ListaActividad.class);
+                    startActivity(i);
+                    EjecutaActividad.this.finish();
+                }
+            });
+            alert.create().show();
+
+        }catch (SQLException e){
+            progressGuardarActividad.setVisibility(View.INVISIBLE);
+            enableButton(true);
+            Toast.makeText(getApplicationContext(),"Error:"+e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void actulizarStock(){
+        int index = 0;
+        StockDB stockDB = new StockDB(database);
+        float cantidad = 0;
+        Cursor cursor;
+        while(index < fragmentMateriales.movimientoArticuloArrayList.size()){
+            Bodega bodega = new Bodega();
+            bodega.setIdBodega(idDefaultBodega);
+            Articulo articulo = new Articulo(fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo(),fragmentMateriales.movimientoArticuloArrayList.get(index).getArticulo());
+            TipoStock tipoStock = new TipoStock(fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock(),fragmentMateriales.movimientoArticuloArrayList.get(index).getTipo_stock());
+            cantidad = (fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento().contentEquals(getText(R.string.movimiento_entrada)))?fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad():fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()*(-1);
+            Stock stock = new Stock(bodega,actividadOperativa.getCentroCosto(),articulo,tipoStock,cantidad);
+            cursor = stockDB.consultarTodo(idDefaultBodega,fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo(),fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock(),actividadOperativa.getCentroCosto().getIdCentroCosto());
+            if(cursor.getCount()>0)
+                stockDB.actualizarDatos(stock);
+            else
+                stockDB.agregarDatos(stock);
+            index++;
+        }
     }
 
     private void almacenarDatosEnRemoto() {
+        actualizarObjeto();
+
         AsyncHttpClient client = new AsyncHttpClient();
 
         try {
             JSONObject jsonObject = new JSONObject();
+            //--Informacion actividad
             jsonObject.put("id_usuario", idUsuario);
             jsonObject.put("id_actividad",actividadOperativa.getIdActividad());
             jsonObject.put("fch_ejecucion",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(actividadOperativa.getFechaEjecucion()));
@@ -358,21 +688,36 @@ public class EjecutaActividad extends AppCompatActivity {
             jsonObject.put("id_centro_costo",actividadOperativa.getCentroCosto().getIdCentroCosto());
             jsonObject.put("latitud",actividadOperativa.getLatitud());
             jsonObject.put("longitud",actividadOperativa.getLongitud());
+            jsonObject.put("elemento_no_encontrado", actividadOperativa.isElementoNoEncontrado());
+            jsonObject.put("afectado_por_vandalismo", actividadOperativa.isAfectadoPorVandalismo());
+            jsonObject.put("id_barrio", actividadOperativa.getBarrio().getIdBarrio());
+            jsonObject.put("barrio", fragmentInformacion.barrioList.get(fragmentInformacion.sltBarrio.getSelectedItemPosition()).getDescripcion());
+            jsonObject.put("direccion", actividadOperativa.getDireccion());
+            jsonObject.put("id_tipo_actividad", actividadOperativa.getTipoActividad().getId());
+            jsonObject.put("id_estado_actividad", actividadOperativa.getEstadoActividad().getId());
+            jsonObject.put("id_equipo", actividadOperativa.getEquipo().getIdEquipo());
+            jsonObject.put("observacion", actividadOperativa.getObservacion());
+
+            //--Elementos desmontados relacionados
+            JSONArray jsonArrayDesmontado = new JSONArray();
+            Iterator<Elemento> desmontadoIterator = actividadOperativa.getElementosDesmontadosList().iterator();
+            while(desmontadoIterator.hasNext()) {
+                jsonArrayDesmontado.put(desmontadoIterator.next().getId());
+            }
+            jsonObject.put("elemento_desmontado", jsonArrayDesmontado);
 
             //--Fotos Antes
             JSONArray jsonArrayFotoAntes = new JSONArray();
-            jsonArrayFotoAntes.put(fragmentFotoAntes.encodeStringFoto_1);
-            jsonArrayFotoAntes.put(fragmentFotoAntes.encodeStringFoto_2);
-            jsonArrayFotoAntes.put(fragmentFotoAntes.encodeStringFoto_3);
-            jsonArrayFotoAntes.put(fragmentFotoAntes.encodeStringFoto_4);
+            for(int f=0;f<4;f++) {
+                jsonArrayFotoAntes.put(actividadOperativa.getArchivoActividad().get(f).getArchivo());
+            }
             jsonObject.put("foto_antes", jsonArrayFotoAntes);
 
             //--Fotos Despues
             JSONArray jsonArrayFotoDespues = new JSONArray();
-            jsonArrayFotoDespues.put(fragmentFotoDespues.encodeStringFoto_1);
-            jsonArrayFotoDespues.put(fragmentFotoDespues.encodeStringFoto_2);
-            jsonArrayFotoDespues.put(fragmentFotoDespues.encodeStringFoto_3);
-            jsonArrayFotoDespues.put(fragmentFotoDespues.encodeStringFoto_4);
+            for(int f=4;f<8;f++) {
+                jsonArrayFotoDespues.put(actividadOperativa.getArchivoActividad().get(f).getArchivo());
+            }
             jsonObject.put("foto_despues", jsonArrayFotoDespues);
 
             //--Materiales
@@ -459,17 +804,6 @@ public class EjecutaActividad extends AppCompatActivity {
             jsonObject.put("pnc", jsonArrayPNC);
             jsonObject.put("asig", jsonArrayAsig);
 
-            //--Informacion actividad
-            jsonObject.put("elemento_no_encontrado", fragmentInformacion.swElementoNoEncontrado.isChecked());
-            jsonObject.put("afectado_por_vandalismo", fragmentInformacion.swVandalismo.isChecked());
-            jsonObject.put("id_barrio", fragmentInformacion.barrioList.get(fragmentInformacion.sltBarrio.getSelectedItemPosition()).getId());
-            jsonObject.put("barrio", fragmentInformacion.barrioList.get(fragmentInformacion.sltBarrio.getSelectedItemPosition()).getDescripcion());
-            jsonObject.put("direccion", fragmentInformacion.editDireccion.getText());
-            jsonObject.put("id_tipo_actividad", fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId());
-            jsonObject.put("id_estado_actividad", fragmentInformacion.estadoActividadList.get(fragmentInformacion.sltEstadoActividad.getSelectedItemPosition()).getId());
-            jsonObject.put("id_estado_actividad", fragmentInformacion.estadoActividadList.get(fragmentInformacion.sltEstadoActividad.getSelectedItemPosition()).getId());
-            jsonObject.put("id_equipo", fragmentInformacion.vehiculoList.get(fragmentInformacion.sltVehiculo.getSelectedItemPosition()).getId());
-            jsonObject.put("observacion", fragmentInformacion.editObservacion.getText());
 
             //--Elemento
             JSONObject jsonElemento = new JSONObject();
@@ -477,40 +811,40 @@ public class EjecutaActividad extends AppCompatActivity {
             jsonElemento.put("fch_actualizacion",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(actividadOperativa.getFechaEjecucion()));
             jsonElemento.put("id_elemento",actividadOperativa.getElemento().getId());
             jsonElemento.put("elemento_no",actividadOperativa.getElemento().getElemento_no());
-            jsonElemento.put("id_barrio", fragmentInformacion.barrioList.get(fragmentInformacion.sltBarrio.getSelectedItemPosition()).getId());
-            jsonElemento.put("direccion", fragmentInformacion.editDireccion.getText());
-            jsonElemento.put("id_tipo_balasto", fragmentElemento.tipoBalastoList.get(fragmentElemento.sltTipoBalasto.getSelectedItemPosition()).getId());
-            jsonElemento.put("id_tipo_base_fotocelda", fragmentElemento.tipoBaseFotoceldaList.get(fragmentElemento.sltTipoBaseFotocelda.getSelectedItemPosition()).getId());
-            jsonElemento.put("id_tipo_brazo", fragmentElemento.tipoBrazoList.get(fragmentElemento.sltTipoBrazo.getSelectedItemPosition()).getId());
-            jsonElemento.put("id_control_encendido", fragmentElemento.controlEncendidoList.get(fragmentElemento.sltControlEncendido.getSelectedItemPosition()).getId());
-            jsonElemento.put("id_estado_mobiliario", fragmentElemento.estadoMobiliarioList.get(fragmentElemento.sltEstadoMobiliario.getSelectedItemPosition()).getId());
-            jsonElemento.put("id_tipo_escenario", fragmentElemento.tipoEscenarioList.get(fragmentElemento.sltTipoEscenario.getSelectedItemPosition()).getId());
-            jsonElemento.put("id_clase_via", fragmentElemento.claseViaList.get(fragmentElemento.sltClaseVia.getSelectedItemPosition()).getId());
-            jsonElemento.put("id_tipo_poste", fragmentElemento.tipoPosteList.get(fragmentElemento.sltTipoPoste.getSelectedItemPosition()).getId());
-            jsonElemento.put("id_norma_construccion_poste", fragmentElemento.normaConstruccionPosteList.get(fragmentElemento.sltNormaConstruccionPoste.getSelectedItemPosition()).getId());
-            jsonElemento.put("id_tipo_balasto", fragmentElemento.tipoBalastoList.get(fragmentElemento.sltTipoBalasto.getSelectedItemPosition()).getId());
-            jsonElemento.put("id_calibre", fragmentElemento.calibreList.get( fragmentElemento.sltCalibreConexionElemento.getSelectedItemPosition()).getId());
-            jsonElemento.put("id_tipo_instalacion_red", fragmentElemento.tipoInstalacionRedList.get(fragmentElemento.sltTipoInstalacionRed.getSelectedItemPosition()).getId());
-            jsonElemento.put("id_tipo_red", fragmentElemento.tipoRedList.get(fragmentElemento.sltTipoRed.getSelectedItemPosition()).getId());
-            jsonElemento.put("zona", fragmentElemento.zona);
-            jsonElemento.put("sector", fragmentElemento.sector);
-            jsonElemento.put("latitud", fragmentElemento.txtLatitud.getText());
-            jsonElemento.put("longitud", fragmentElemento.txtLongitud.getText());
-            jsonElemento.put("ancho_via", fragmentElemento.txtAnchoVia.getText());
-            jsonElemento.put("poste_no", fragmentElemento.txtPosteNo.getText());
-            jsonElemento.put("interdistancia", fragmentElemento.txtInterdistancia.getText());
+            jsonElemento.put("id_barrio", actividadOperativa.getElemento().getBarrio().getIdBarrio());
+            jsonElemento.put("direccion", actividadOperativa.getDireccion());
+            jsonElemento.put("id_tipo_balasto", actividadOperativa.getElemento().getTipoBalasto().getIdTipoBalasto());
+            jsonElemento.put("id_tipo_base_fotocelda", actividadOperativa.getElemento().getTipoBaseFotocelda().getidTipoBaseFotocelda());
+            jsonElemento.put("id_tipo_brazo", actividadOperativa.getElemento().getTipoBrazo().getidTipoBrazo());
+            jsonElemento.put("id_control_encendido", actividadOperativa.getElemento().getControlEncendido().getidControlEncendido());
+            jsonElemento.put("id_estado_mobiliario", actividadOperativa.getElemento().getEstadoMobiliario().getIdEstadoMobiliario());
+            jsonElemento.put("id_tipo_escenario", actividadOperativa.getElemento().getTipoEscenario().getId());
+            jsonElemento.put("id_clase_via", actividadOperativa.getElemento().getClaseVia().getId());
+            jsonElemento.put("id_tipo_poste", actividadOperativa.getElemento().getNormaConstruccionPoste().getTipoPoste().getId());
+            jsonElemento.put("id_norma_construccion_poste", actividadOperativa.getElemento().getNormaConstruccionPoste().getId());
+            jsonElemento.put("id_calibre", actividadOperativa.getElemento().getCalibre().getId_calibre());
+            jsonElemento.put("id_tipo_instalacion_red", actividadOperativa.getElemento().getTipoInstalacionRed().getidTipoInstalacionRed());
+            jsonElemento.put("id_tipo_red", actividadOperativa.getElemento().getTipoRed().getId());
+            jsonElemento.put("zona", actividadOperativa.getElemento().getZona());
+            jsonElemento.put("sector", actividadOperativa.getElemento().getSector());
+            jsonElemento.put("latitud", actividadOperativa.getElemento().getLatitud());
+            jsonElemento.put("longitud", actividadOperativa.getElemento().getLongitud());
+            jsonElemento.put("ancho_via", actividadOperativa.getElemento().getAnchoVia());
+            jsonElemento.put("poste_no", actividadOperativa.getElemento().getPosteNo());
+            jsonElemento.put("interdistancia", actividadOperativa.getElemento().getInterdistancia());
+
             jsonElemento.put("poste_exclusivo_ap", fragmentElemento.swPosteExclusivoAp.isChecked());
-            jsonElemento.put("potencia_transformador", fragmentElemento.txtPotenciaTransformador.getText());
+            jsonElemento.put("potencia_transformador", actividadOperativa.getElemento().getPotenciaTransformador());
             jsonElemento.put("placa_mt_transformador", fragmentElemento.txtMtTransformador.getText());
             jsonElemento.put("placa_ct_transformador", fragmentElemento.txtCtTransformador.getText());
             jsonElemento.put("transformador_exclusivo_ap", fragmentElemento.swTranformadorExclusivoAP.isChecked());
-            jsonElemento.put("foto",fragmentFotoDespues.encodeStringFoto_1);
+            jsonElemento.put("foto",actividadOperativa.getElemento().getEncodeStringFoto());
 
             jsonObject.put("info_elemento",jsonElemento);
 
             JSONArray principal = new JSONArray();
             principal.put(jsonObject);
-            //Log.d("JSON","->"+principal.toString());
+            Log.d("JSON","->"+jsonObject.toString());
 
             client = new AsyncHttpClient();
             StringEntity jsonParams = new StringEntity(principal.toString(), "UTF-8");
@@ -527,37 +861,68 @@ public class EjecutaActividad extends AppCompatActivity {
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                     String respuesta = new String(responseBody);
                     progressGuardarActividad.setVisibility(View.INVISIBLE);
-                    Log.d("JSON-RESPONSE:", respuesta);
+                    Log.d(Constantes.TAG, respuesta);
                     try {
                         JSONObject jsonResponse = new JSONObject(new String(responseBody));
-                        Log.d("JSON-RESPONSE:", String.valueOf(jsonResponse.getBoolean("sw")));
-                        if(jsonResponse.getBoolean("sw")) {
+                        JSONArray jsonLog = jsonResponse.getJSONArray("log");
+
+                        //Log.d(Constantes.TAG, String.valueOf(jsonLog));
+                        //if(jsonResponse.getBoolean("sw")) {
+                        if(jsonLog.getJSONObject(0).getBoolean("sw")){
                             /*
                             actualiza stock
                             1. actualizar stock con valores +
                             2. actualizar stock con valores -
                              */
-                            int index = 0;
-                            StockDB stockDB = new StockDB(database);
-                            float cantidad = 0;
-                            Cursor cursor;
-                            while(index < fragmentMateriales.movimientoArticuloArrayList.size()){
-                                Bodega bodega = new Bodega();
-                                bodega.setIdBodega(idDefaultBodega);
-                                Articulo articulo = new Articulo(fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo(),fragmentMateriales.movimientoArticuloArrayList.get(index).getArticulo());
-                                TipoStock tipoStock = new TipoStock(fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock(),fragmentMateriales.movimientoArticuloArrayList.get(index).getTipo_stock());
-                                cantidad = (fragmentMateriales.movimientoArticuloArrayList.get(index).getMovimiento().contentEquals(getText(R.string.movimiento_entrada)))?fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad():fragmentMateriales.movimientoArticuloArrayList.get(index).getCantidad()*(-1);
-                                Stock stock = new Stock(bodega,actividadOperativa.getCentroCosto(),articulo,tipoStock,cantidad);
-                                cursor = stockDB.consultarTodo(idDefaultBodega,fragmentMateriales.movimientoArticuloArrayList.get(index).getId_articulo(),fragmentMateriales.movimientoArticuloArrayList.get(index).getId_tipo_stock(),actividadOperativa.getCentroCosto().getIdCentroCosto());
-                                if(cursor.getCount()>0)
-                                    stockDB.actualizarDatos(stock);
-                                else
-                                    stockDB.agregarDatos(stock);
-                                index++;
+                            actividadOperativa.setPendienteSincronizar("N");
+                            ActividadOperativaDB actividadOperativaDB = new ActividadOperativaDB(database);
+                            ArchivoActividadDB archivoActividadDB = new ArchivoActividadDB(database);
+                            ElementoDesmontadoDB    elementoDesmontadoDB = new ElementoDesmontadoDB(database);
+                            MovimientoArticuloDB movimientoArticuloDB = new MovimientoArticuloDB(database);
+                            VatiajeDesmontadoDB vatiajeDesmontadoDB = new VatiajeDesmontadoDB(database);
+
+                            ElementoDB elementoDB = new ElementoDB(database);
+
+                            //--Actualiza Actividad
+                            actividadOperativaDB.actualizarDatos(actividadOperativa);
+                            //--Actuliza Elementos
+                            elementoDB.actualizarDatos(actividadOperativa.getElemento());
+
+                            //--Guardar Fotos
+                            Iterator<ArchivoActividad> archivoActividadIterator = actividadOperativa.getArchivoActividad().iterator();
+                            ArchivoActividad tmpArchivoActividad;
+                            while (archivoActividadIterator.hasNext()) {
+                                tmpArchivoActividad = archivoActividadIterator.next();
+                                if(!tmpArchivoActividad.getArchivo().isEmpty()) {
+                                    if (!archivoActividadDB.agregarDatos(tmpArchivoActividad)) {
+                                        Toast.makeText(getApplicationContext(),"Error guardado las imagenes",Toast.LENGTH_LONG).show();
+                                    }
+                                }
                             }
 
-                            ActividadOperativaDB actividadOperativaDB = new ActividadOperativaDB(database);
-                            actividadOperativaDB.actualizarDatos(actividadOperativa);
+                            //--Guardar Movimientos de Inventario
+                            Iterator<MovimientoArticulo> movimientoArticuloIterator = fragmentMateriales.movimientoArticuloArrayList.iterator();
+                            while (movimientoArticuloIterator.hasNext()) {
+                                if(!movimientoArticuloDB.agregarDatos(movimientoArticuloIterator.next()))
+                                    Toast.makeText(getApplicationContext(),"Error guardado los movimientos de inventario",Toast.LENGTH_LONG).show();
+                            }
+
+                            //--Relacionar los elementos desmontados
+                            Iterator<Elemento> desmontadoIterator = actividadOperativa.getElementosDesmontadosList().iterator();
+                            while(desmontadoIterator.hasNext()){
+                                if(!elementoDesmontadoDB.agregarDatos(actividadOperativa.getIdActividad(),desmontadoIterator.next().getId()))
+                                    Toast.makeText(getApplicationContext(),"Error relacionando los elementos desmontados",Toast.LENGTH_LONG).show();
+                            }
+
+                            //--Relacionar los vatiaje desmontados
+                            Iterator<Integer> vatiajeDesmontadoIterator = actividadOperativa.getVatiajeDesmontadoList().iterator();
+                            while(vatiajeDesmontadoIterator.hasNext()){
+                                if(!vatiajeDesmontadoDB.agregarDatos(actividadOperativa.getIdActividad(),vatiajeDesmontadoIterator.next().intValue()))
+                                    Toast.makeText(getApplicationContext(),"Error relacionando los vatiajes desmontados",Toast.LENGTH_LONG).show();
+                            }
+
+                            //--Actualiza el stock
+                            actulizarStock();
 
                             alert.setMessage(jsonResponse.getString("Mensaje"));
                             alert.setNeutralButton("Aceptar",new DialogInterface.OnClickListener(){
@@ -582,6 +947,7 @@ public class EjecutaActividad extends AppCompatActivity {
                         enableButton(true);
                     }
                 }
+
                 @Override
                 public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                     String respuesta = new String(responseBody);
