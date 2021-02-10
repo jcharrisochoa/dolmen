@@ -77,6 +77,7 @@ import co.dolmen.sid.entidad.Tipologia;
 import co.dolmen.sid.modelo.ActividadOperativaDB;
 import co.dolmen.sid.modelo.ArchivoActividadDB;
 import co.dolmen.sid.modelo.MovimientoArticuloDB;
+import co.dolmen.sid.modelo.VatiajeDesmontadoDB;
 import co.dolmen.sid.utilidades.AdapterData;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.HttpResponse;
@@ -688,6 +689,7 @@ public class ListaActividad extends AppCompatActivity  {
             ArchivoActividadDB archivoActividadDB = new ArchivoActividadDB(database);
             MovimientoArticuloDB movimientoArticuloDB = new MovimientoArticuloDB(database);
             ElementoDesmontadoDB elementoDesmontadoDB = new ElementoDesmontadoDB(database);
+            VatiajeDesmontadoDB vatiajeDesmontadoDB = new VatiajeDesmontadoDB(database);
             int p = 0;
             for(ActividadOperativa atendidaPendiente:actividadOperativaArrayList) {
                 if (atendidaPendiente.getPendienteSincronizar().contentEquals("S") && atendidaPendiente.getEstadoActividad().getId() == 2) { //Filtra las atendidas pendientes por sincronizar
@@ -723,6 +725,20 @@ public class ListaActividad extends AppCompatActivity  {
                         }
                         cursor.close();
                         jsonObject.put("elemento_desmontado", jsonArrayDesmontado);
+
+
+                        //--Elementos desmontados relacionados
+                        JSONArray jsonArrayVatiajeDesmontado = new JSONArray();
+                        cursor = vatiajeDesmontadoDB.consultarTodo(atendidaPendiente.getIdActividad());
+                        if (cursor.getCount() > 0) {
+                            while (cursor.moveToNext()) {
+                                jsonArrayVatiajeDesmontado.put(cursor.getInt(cursor.getColumnIndex("id_vatiaje")));
+                            }
+                        }
+                        cursor.close();
+                        jsonObject.put("vatiaje_desmontado", jsonArrayVatiajeDesmontado);
+
+
 
                         //--Fotos Antes
                         JSONArray jsonArrayFotoAntes = new JSONArray();

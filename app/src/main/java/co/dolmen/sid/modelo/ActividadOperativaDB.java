@@ -45,8 +45,8 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
                 "join " + Constantes.TABLA_PROGRAMA + " pg on(ao.id_programa = pg._id) " +
                 "join " + Constantes.TABLA_MUNICIPIO + " m on(ao.id_municipio = m._id) " +
                 "join " + Constantes.TABLA_PROCESO + " p on(ao.id_proceso_sgc = p._id) " +
-                "join " + Constantes.TABLA_ESTADO_ACTIVIDAD + " ea on(ao.id_estado_actividad = ea._id) " +
-                "join " + Constantes.TABLA_TIPO_ACTIVIDAD + " ta on(ao.id_tipo_operacion = ta._id) " +
+                "left join " + Constantes.TABLA_ESTADO_ACTIVIDAD + " ea on(ao.id_estado_actividad = ea._id) " +
+                "left join " + Constantes.TABLA_TIPO_ACTIVIDAD + " ta on(ao.id_tipo_operacion = ta._id) " +
                 "left join " + Constantes.TABLA_TIPO_REPORTE_DANO + " tr on(ao.id_tipo_reporte_dano = tr._id) " +
                 "left join " + Constantes.TABLA_ELEMENTO + " e on(ao.id_elemento = e._id) " +
                 "left join " + Constantes.TABLA_ESTADO_MOBILIARIO + " em on(e.id_estado_mobiliario = em._id) " +
@@ -66,7 +66,9 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
                 "left join " + Constantes.TABLA_TIPO_INSTALACION_RED + " tir on(e.id_tipo_instalacion_red_alimentacion = tir._id) " +
                 "left join " + Constantes.TABLA_CLASE_VIA + " cv on(e.id_clase_via = cv._id) " +
                 "left join " + Constantes.TABLA_CALIBRE + " cb on(e.id_calibre_conductores = cb._id) ";
+        Log.d(Constantes.TAG,"->"+this.sql);
         return this.sql;
+
     }
 
     private ActividadOperativa actividad;
@@ -197,6 +199,7 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
     public void eliminarDatos() {
         db.execSQL("DELETE FROM  "+Constantes.TABLA_ACTIVIDAD_OPERATIVA);
     }
+
     public void eliminarDatos(int id) {
         db.execSQL("DELETE FROM  "+Constantes.TABLA_ACTIVIDAD_OPERATIVA+ " where id_actividad="+id);
     }

@@ -205,11 +205,13 @@ public class FragmentMateriales extends Fragment{
         int pos;
         int posTmp;
         float cantEnListaTmp = 0;
+        float cantEnListaPnc = 0;
         float stock = 0;
         float cantEnLista = 0;
         float totalMovimiento = 0;
         MovimientoArticulo movimientoArticulo = null;
         MovimientoArticulo movimientoTmp = null;
+        MovimientoArticulo movimientoTmpPnc = null;
         if(idDefaultBodega == 0){
             alert.setMessage(R.string.alert_perfil_bodega);
             alert.setTitle(R.string.titulo_alerta);
@@ -253,18 +255,35 @@ public class FragmentMateriales extends Fragment{
                         cantEnListaTmp = movimientoArticuloArrayList.get(posTmp).getCantidad();
                     //------------------------------------------------------------------------------
 
+                    //----------------Consultar si el articulo esta en lista PNC---------------------
+                    movimientoTmpPnc = new MovimientoArticulo(
+                            actividadOperativa.getIdActividad(),
+                            articuloList.get(sltArticulo.getSelectedItemPosition()).getId(),
+                            2,
+                            Float.parseFloat(txtCantidad.getText().toString()),
+                            articuloList.get(sltArticulo.getSelectedItemPosition()).getDescripcion(),
+                            "PNC",
+                            getString(R.string.movimiento_entrada),
+                            idDefaultBodega,
+                            actividadOperativa.getCentroCosto().getIdCentroCosto()
+                    );
+                    int posTmpPnc =  adapterMovimientoArticulo.getPositionItem(movimientoTmpPnc);
+                    if (posTmpPnc >= 0)
+                        cantEnListaPnc = movimientoArticuloArrayList.get(posTmpPnc).getCantidad();
+                    //-----------------------------------fin pnc------------------------------------
+
                     pos = adapterMovimientoArticulo.getPositionItem(movimientoArticulo);
                     if (pos >= 0)
                         cantEnLista = movimientoArticuloArrayList.get(pos).getCantidad();
 
                     stock = consultarStock(tipoStockList.get(sltTipoStock.getSelectedItemPosition()).getId()) + cantEnListaTmp;
 
-                    totalMovimiento = cantEnLista + Float.parseFloat(txtCantidad.getText().toString());
+                    totalMovimiento = cantEnLista + cantEnListaPnc + Float.parseFloat(txtCantidad.getText().toString());
                     //Log.d("programacion","pos:"+pos+",posTmp:"+posTmp+",Stock:"+stock+",Lista:"+cantEnLista+",ListaTmp:"+cantEnListaTmp+",Digitado:"+Float.parseFloat(txtCantidad.getText().toString())+",Total:"+totalMovimiento);
 
                     if (totalMovimiento > stock) {
 
-                        float tmp = cantEnLista - stock;
+                        float tmp = (cantEnLista + cantEnListaPnc) - stock;
                         stock = (cantEnLista>=stock)?tmp:tmp*(-1);
 
                         alert.setMessage(getString(R.string.cantidad_insuficiente) + stock);

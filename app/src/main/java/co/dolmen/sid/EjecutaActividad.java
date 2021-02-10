@@ -462,7 +462,9 @@ public class EjecutaActividad extends AppCompatActivity {
                         }
                         else{
                             if(fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId()==239
-                            || fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId()==220){
+                            || fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId()==220
+                            || fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId()==4
+                            || fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId()==135){
                                 if(actividadOperativa.getElemento().getId()==0){
                                     Snackbar.make(view, "Numero de elemento es Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                                     return false;
@@ -588,7 +590,6 @@ public class EjecutaActividad extends AppCompatActivity {
             MovimientoArticuloDB movimientoArticuloDB = new MovimientoArticuloDB(database);
             VatiajeDesmontadoDB vatiajeDesmontadoDB = new VatiajeDesmontadoDB(database);
             ElementoDB elementoDB = new ElementoDB(database);
-
 
             //--Actualizar actividad
             actividadOperativaDB.actualizarDatos(actividadOperativa);
@@ -721,6 +722,15 @@ public class EjecutaActividad extends AppCompatActivity {
                 jsonArrayDesmontado.put(desmontadoIterator.next().getId());
             }
             jsonObject.put("elemento_desmontado", jsonArrayDesmontado);
+
+
+            //--Vatiaje Desmontado
+            JSONArray jsonArrayVatiajeDesmontado = new JSONArray();
+            Iterator<Integer> vatiajeDesmontadoIterator = actividadOperativa.getVatiajeDesmontadoList().iterator();
+            while(vatiajeDesmontadoIterator.hasNext()) {
+                jsonArrayVatiajeDesmontado.put(vatiajeDesmontadoIterator.next().intValue());
+            }
+            jsonObject.put("vatiaje_desmontado", jsonArrayDesmontado);
 
             //--Fotos Antes
             JSONArray jsonArrayFotoAntes = new JSONArray();
@@ -901,6 +911,7 @@ public class EjecutaActividad extends AppCompatActivity {
 
                             //--Actualiza Actividad
                             actividadOperativaDB.actualizarDatos(actividadOperativa);
+
                             //--Actuliza Elementos
                             elementoDB.actualizarDatos(actividadOperativa.getElemento());
 
