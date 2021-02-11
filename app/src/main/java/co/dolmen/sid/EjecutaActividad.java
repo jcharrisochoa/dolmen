@@ -669,17 +669,24 @@ public class EjecutaActividad extends AppCompatActivity {
                 if(tipoStock.getId() == 2){ //pnc
                     //actualizar mi stock normal
 
-                    Stock stockTmp = stock;
+                    /*Stock stockTmp = stock;
                     stockTmp.setTipoStock(
                             new TipoStock(1,"STOCK")
                     );
-                    stockTmp.setCantidad(cantidad*(-1));
+                    stockTmp.setCantidad(cantidad*(-1));*/
 
-                    Log.d(Constantes.TAG,"PNC:"+stockTmp.getTipoStock().getDescripcion()+",Cantidad:"+stockTmp.getCantidad());
+                    Stock stockTmp = new Stock(
+                            bodega,
+                            actividadOperativa.getCentroCosto(),
+                            articulo,new TipoStock(1,"STOCK"),
+                            cantidad*(-1)
+                    );
+                    //Log.d(Constantes.TAG,"INVENT Descontar PNC stock:"+stockTmp.getTipoStock().getDescripcion()+",Cantidad:"+stockTmp.getCantidad()+"");
                     stockDB.actualizarDatos(stockTmp);
                 }
                 //--------------------------------------------
                 stockDB.actualizarDatos(stock);
+                //Log.d(Constantes.TAG,"INVENT Agregar:"+stock.getTipoStock().getDescripcion()+",Cantidad:"+stock.getCantidad());
             }
             else {
                 stockDB.agregarDatos(stock);
