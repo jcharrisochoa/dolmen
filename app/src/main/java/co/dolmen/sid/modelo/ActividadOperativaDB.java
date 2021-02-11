@@ -66,7 +66,7 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
                 "left join " + Constantes.TABLA_TIPO_INSTALACION_RED + " tir on(e.id_tipo_instalacion_red_alimentacion = tir._id) " +
                 "left join " + Constantes.TABLA_CLASE_VIA + " cv on(e.id_clase_via = cv._id) " +
                 "left join " + Constantes.TABLA_CALIBRE + " cb on(e.id_calibre_conductores = cb._id) ";
-        Log.d(Constantes.TAG,"->"+this.sql);
+        //Log.d(Constantes.TAG,"->"+this.sql);
         return this.sql;
 
     }

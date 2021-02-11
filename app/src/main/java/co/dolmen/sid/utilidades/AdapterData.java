@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import co.dolmen.sid.Constantes;
 import co.dolmen.sid.R;
 import co.dolmen.sid.entidad.ActividadOperativa;
 import co.dolmen.sid.entidad.MovimientoArticulo;
@@ -64,6 +65,7 @@ public class AdapterData extends RecyclerView.Adapter<AdapterData.ViewHolderData
 
     public void filterList(ArrayList<ActividadOperativa> list){
         this.actividadOperativaArrayList = list;
+        Log.d(Constantes.TAG,"->List:"+toString());
         notifyDataSetChanged();
     }
 
@@ -82,6 +84,10 @@ public class AdapterData extends RecyclerView.Adapter<AdapterData.ViewHolderData
         actividadOperativaArrayList.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, actividadOperativaArrayList.size());
+    }
+
+    public ArrayList<ActividadOperativa>getActividadOperativaArrayList(){
+        return actividadOperativaArrayList;
     }
 
     public int getPositionItem(int id_actividad){
@@ -143,5 +149,16 @@ public class AdapterData extends RecyclerView.Adapter<AdapterData.ViewHolderData
             }
         }
 
+    }
+
+    @Override
+    public String toString(){
+        String cad = "";
+        int i = 0;
+        for(ActividadOperativa a:actividadOperativaArrayList) {
+            cad = cad +"pos:"+ i + "Act:"+ a.getIdActividad()+",Dir:"+a.getDireccion();
+            i++;
+        }
+        return cad;
     }
 }

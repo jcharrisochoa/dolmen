@@ -172,11 +172,11 @@ public class ListaActividad extends AppCompatActivity  {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(ListaActividad.this,DetalleActividad.class);
-                ActividadOperativa actividadOperativa  =  actividadOperativaArrayList.get(recyclerView.getChildAdapterPosition(v));
+                ActividadOperativa actividadOperativa  =  adapterData.getActividadOperativaArrayList().get(recyclerView.getChildLayoutPosition(v));
                 i.putExtra("actividadOperativa",actividadOperativa);
                 startActivity(i);
                 ListaActividad.this.finish();
-               // v.setBackgroundColor(R.color.colorAccent);
+                //v.setBackgroundColor(R.color.colorAccent);
             }
         });
 
@@ -279,7 +279,6 @@ public class ListaActividad extends AppCompatActivity  {
                 }
             }
         }
-
         adapterData.filterList(filterActividadOperativa);
     }
 
@@ -543,6 +542,7 @@ public class ListaActividad extends AppCompatActivity  {
         @Override
         protected Boolean doInBackground(Void... voids) {
             jsonArray = armarJSON();
+            Log.d(Constantes.TAG,"->"+jsonArray.toString());
             return true;
         }
 
@@ -738,8 +738,6 @@ public class ListaActividad extends AppCompatActivity  {
                         cursor.close();
                         jsonObject.put("vatiaje_desmontado", jsonArrayVatiajeDesmontado);
 
-
-
                         //--Fotos Antes
                         JSONArray jsonArrayFotoAntes = new JSONArray();
                         cursor = archivoActividadDB.consultarTodo(atendidaPendiente.getIdActividad(),"A");
@@ -782,7 +780,7 @@ public class ListaActividad extends AppCompatActivity  {
                                         jsonInst.put("id_centro_costo",cursor.getInt(cursor.getColumnIndex("id_centro_costo")));
                                         jsonInst.put("id_tipo_stock", cursor.getInt(cursor.getColumnIndex("id_tipo_stock")));
                                         jsonInst.put("id_articulo", cursor.getInt(cursor.getColumnIndex("id_articulo")));
-                                        jsonInst.put("cantidad", cursor.getInt(cursor.getColumnIndex("cantidad"))); ///cuando es un valor con decimales se van decimales equivocados
+                                        jsonInst.put("cantidad", cursor.getFloat(cursor.getColumnIndex("cantidad"))); ///cuando es un valor con decimales se van decimales equivocados
                                         jsonInst.put("movimiento", cursor.getString(cursor.getColumnIndex("movimiento")));
                                         jsonArrayInst.put(jsonInst);
                                         break;
@@ -792,7 +790,7 @@ public class ListaActividad extends AppCompatActivity  {
                                         jsonPNC.put("id_centro_costo",cursor.getInt(cursor.getColumnIndex("id_centro_costo")));
                                         jsonPNC.put("id_tipo_stock", cursor.getInt(cursor.getColumnIndex("id_tipo_stock")));
                                         jsonPNC.put("id_articulo", cursor.getInt(cursor.getColumnIndex("id_articulo")));
-                                        jsonPNC.put("cantidad", cursor.getInt(cursor.getColumnIndex("cantidad"))); ///cuando es un valor con decimales se van decimales equivocados
+                                        jsonPNC.put("cantidad", cursor.getFloat(cursor.getColumnIndex("cantidad"))); ///cuando es un valor con decimales se van decimales equivocados
                                         jsonPNC.put("movimiento", cursor.getString(cursor.getColumnIndex("movimiento")));
                                         jsonArrayPNC.put(jsonPNC);
                                         break;
@@ -803,8 +801,8 @@ public class ListaActividad extends AppCompatActivity  {
                                             jsonDesUtilInst.put("id_centro_costo",cursor.getInt(cursor.getColumnIndex("id_centro_costo")));
                                             jsonDesUtilInst.put("id_tipo_stock", cursor.getInt(cursor.getColumnIndex("id_tipo_stock")));
                                             jsonDesUtilInst.put("id_articulo", cursor.getInt(cursor.getColumnIndex("id_articulo")));
-                                            jsonDesUtilInst.put("cantidad", cursor.getInt(cursor.getColumnIndex("cantidad"))); ///cuando es un valor con decimales se van decimales equivocados
-                                            jsonDesUtilInst.put("movimiento", cursor.getInt(cursor.getColumnIndex("movimiento")));
+                                            jsonDesUtilInst.put("cantidad", cursor.getFloat(cursor.getColumnIndex("cantidad"))); ///cuando es un valor con decimales se van decimales equivocados
+                                            jsonDesUtilInst.put("movimiento", cursor.getString(cursor.getColumnIndex("movimiento")));
                                             jsonArrayDesUtilInst.put(jsonDesUtilInst);
                                         }
                                         else {
@@ -813,8 +811,8 @@ public class ListaActividad extends AppCompatActivity  {
                                             jsonDesUtil.put("id_centro_costo",cursor.getInt(cursor.getColumnIndex("id_centro_costo")));
                                             jsonDesUtil.put("id_tipo_stock", cursor.getInt(cursor.getColumnIndex("id_tipo_stock")));
                                             jsonDesUtil.put("id_articulo", cursor.getInt(cursor.getColumnIndex("id_articulo")));
-                                            jsonDesUtil.put("cantidad", cursor.getInt(cursor.getColumnIndex("cantidad"))); ///cuando es un valor con decimales se van decimales equivocados
-                                            jsonDesUtil.put("movimiento", cursor.getInt(cursor.getColumnIndex("movimiento")));
+                                            jsonDesUtil.put("cantidad", cursor.getFloat(cursor.getColumnIndex("cantidad"))); ///cuando es un valor con decimales se van decimales equivocados
+                                            jsonDesUtil.put("movimiento", cursor.getString(cursor.getColumnIndex("movimiento")));
                                             jsonArrayDesUtil.put(jsonDesUtil);
                                         }
                                         break;
@@ -824,8 +822,8 @@ public class ListaActividad extends AppCompatActivity  {
                                         jsonDesNoUtil.put("id_centro_costo",cursor.getInt(cursor.getColumnIndex("id_centro_costo")));
                                         jsonDesNoUtil.put("id_tipo_stock", cursor.getInt(cursor.getColumnIndex("id_tipo_stock")));
                                         jsonDesNoUtil.put("id_articulo", cursor.getInt(cursor.getColumnIndex("id_articulo")));
-                                        jsonDesNoUtil.put("cantidad", cursor.getInt(cursor.getColumnIndex("cantidad"))); ///cuando es un valor con decimales se van decimales equivocados
-                                        jsonDesNoUtil.put("movimiento", cursor.getInt(cursor.getColumnIndex("movimiento")));
+                                        jsonDesNoUtil.put("cantidad", cursor.getFloat(cursor.getColumnIndex("cantidad"))); ///cuando es un valor con decimales se van decimales equivocados
+                                        jsonDesNoUtil.put("movimiento", cursor.getString(cursor.getColumnIndex("movimiento")));
                                         jsonArrayDesNoUtil.put(jsonDesNoUtil);
                                         break;
                                     case 5:
@@ -834,8 +832,8 @@ public class ListaActividad extends AppCompatActivity  {
                                         jsonAsig.put("id_centro_costo",cursor.getInt(cursor.getColumnIndex("id_centro_costo")));
                                         jsonAsig.put("id_tipo_stock", cursor.getInt(cursor.getColumnIndex("id_tipo_stock")));
                                         jsonAsig.put("id_articulo", cursor.getInt(cursor.getColumnIndex("id_articulo")));
-                                        jsonAsig.put("cantidad", cursor.getInt(cursor.getColumnIndex("cantidad"))); ///cuando es un valor con decimales se van decimales equivocados
-                                        jsonAsig.put("movimiento", cursor.getInt(cursor.getColumnIndex("movimiento")));
+                                        jsonAsig.put("cantidad", cursor.getFloat(cursor.getColumnIndex("cantidad"))); ///cuando es un valor con decimales se van decimales equivocados
+                                        jsonAsig.put("movimiento", cursor.getString(cursor.getColumnIndex("movimiento")));
                                         jsonArrayAsig.put(jsonAsig);
                                         break;
                                 }

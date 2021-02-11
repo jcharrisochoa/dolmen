@@ -244,7 +244,7 @@ public class DetalleActividad extends AppCompatActivity {
 
                 tipoStock.setText(cursor.getString(cursor.getColumnIndex("tipo_stock")));
                 movimiento.setText(cursor.getString(cursor.getColumnIndex("movimiento")));
-                cantidad.setText(String.valueOf(cursor.getDouble(cursor.getColumnIndex("cantidad"))));
+                cantidad.setText(String.valueOf(cursor.getFloat(cursor.getColumnIndex("cantidad"))));
                 articulo.setText("("+String.valueOf(cursor.getInt(cursor.getColumnIndex("id_articulo")))+") : "+cursor.getString(cursor.getColumnIndex("articulo")));
                 layoutMaterial.addView(view);
             }
