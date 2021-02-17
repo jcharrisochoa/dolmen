@@ -227,7 +227,6 @@ public class EjecutaActividad extends AppCompatActivity {
     }
 
     private void actualizarObjeto(){
-
         //--Actualizar Pojo Actividad operativa--
         actividadOperativa.setFechaEjecucion(new Date());
         actividadOperativa.setDireccion(fragmentInformacion.editDireccion.getText().toString());
@@ -382,6 +381,7 @@ public class EjecutaActividad extends AppCompatActivity {
     }
 
     private void guardar(final View view){
+        actualizarObjeto();
         if(validarFotoAntes()){
             if(validarFotoDespues()){
                 if(validarInfo(view)){
@@ -436,110 +436,115 @@ public class EjecutaActividad extends AppCompatActivity {
     }
 
     private boolean validarInfo(View view){
-        if(actividadOperativa.getElemento().getId()==0){
-            Snackbar.make(view, "Elemento es Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+        if(fragmentInformacion.barrioList.get(fragmentInformacion.sltBarrio.getSelectedItemPosition()).getId()==0){
+            Snackbar.make(view, "Barrio es Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
             return false;
         }
         else{
-            if(fragmentInformacion.barrioList.get(fragmentInformacion.sltBarrio.getSelectedItemPosition()).getId()==0){
-                Snackbar.make(view, "Barrio es Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            if(fragmentInformacion.editDireccion.getText().toString().isEmpty()){
+                Snackbar.make(view, "Direccion es Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 return false;
             }
             else{
-                if(fragmentInformacion.editDireccion.getText().toString().trim()==""){
-                    Snackbar.make(view, "Direccion es Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                if(fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId()==0){
+                    Snackbar.make(view, "Tipo Operacion es Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                     return false;
                 }
                 else{
-                    if(fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId()==0){
-                        Snackbar.make(view, "Tipo Operacion es Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                    if(fragmentInformacion.estadoActividadList.get(fragmentInformacion.sltEstadoActividad.getSelectedItemPosition()).getId()==0){
+                        Snackbar.make(view, "Estado Actividad es Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                         return false;
                     }
                     else{
-                        if(fragmentInformacion.estadoActividadList.get(fragmentInformacion.sltEstadoActividad.getSelectedItemPosition()).getId()==0){
-                            Snackbar.make(view, "Estado Actividad es Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-                            return false;
-                        }
-                        else{
-                            if(fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId()==239
-                            || fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId()==220
-                            || fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId()==4
-                            || fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId()==135){
-                                if(actividadOperativa.getElemento().getId()==0){
-                                    Snackbar.make(view, "Numero de elemento es Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                        if(fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId()==239
+                        || fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId()==220
+                        || fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId()==4
+                        || fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId()==135){
+                            if(actividadOperativa.getElemento().getId()==0){
+                                Snackbar.make(view, "Numero de elemento es Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                return false;
+                            }
+                            else{
+                                if(fragmentElemento.tipoBalastoList.get(fragmentElemento.sltTipoBalasto.getSelectedItemPosition()).getId()==0){
+                                    Snackbar.make(view, "Tipo Balasto Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                                     return false;
                                 }
                                 else{
-                                    if(fragmentElemento.tipoBalastoList.get(fragmentElemento.sltTipoBalasto.getSelectedItemPosition()).getId()==0){
-                                        Snackbar.make(view, "Tipo Balasto Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                    if(fragmentElemento.tipoBaseFotoceldaList.get(fragmentElemento.sltTipoBaseFotocelda.getSelectedItemPosition()).getId()==0){
+                                        Snackbar.make(view, "Tipo Base Fotocelda Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                                         return false;
                                     }
                                     else{
-                                        if(fragmentElemento.tipoBaseFotoceldaList.get(fragmentElemento.sltTipoBaseFotocelda.getSelectedItemPosition()).getId()==0){
-                                            Snackbar.make(view, "Tipo Base Fotocelda Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                        if(fragmentElemento.tipoBrazoList.get(fragmentElemento.sltTipoBrazo.getSelectedItemPosition()).getId()==0){
+                                            Snackbar.make(view, "Tipo Soporte Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                                             return false;
                                         }
                                         else{
-                                            if(fragmentElemento.tipoBrazoList.get(fragmentElemento.sltTipoBrazo.getSelectedItemPosition()).getId()==0){
-                                                Snackbar.make(view, "Tipo Soporte Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                            if(fragmentElemento.controlEncendidoList.get(fragmentElemento.sltControlEncendido.getSelectedItemPosition()).getId()==0){
+                                                Snackbar.make(view, "Control de Encendido Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                                                 return false;
                                             }
                                             else{
-                                                if(fragmentElemento.controlEncendidoList.get(fragmentElemento.sltControlEncendido.getSelectedItemPosition()).getId()==0){
-                                                    Snackbar.make(view, "Control de Encendido Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                if(fragmentElemento.estadoMobiliarioList.get(fragmentElemento.sltEstadoMobiliario.getSelectedItemPosition()).getId()==0){
+                                                    Snackbar.make(view, "Funcionamiento del Mobiliario Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                                                     return false;
                                                 }
                                                 else{
-                                                    if(fragmentElemento.estadoMobiliarioList.get(fragmentElemento.sltEstadoMobiliario.getSelectedItemPosition()).getId()==0){
-                                                        Snackbar.make(view, "Funcionamiento del Mobiliario Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                    if(fragmentElemento.tipoEscenarioList.get(fragmentElemento.sltTipoEscenario.getSelectedItemPosition()).getId()==0){
+                                                        Snackbar.make(view, "Tipo Espacio Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                                                         return false;
                                                     }
                                                     else{
-                                                        if(fragmentElemento.tipoEscenarioList.get(fragmentElemento.sltTipoEscenario.getSelectedItemPosition()).getId()==0){
-                                                            Snackbar.make(view, "Tipo Espacio Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                        if(fragmentElemento.claseViaList.get(fragmentElemento.sltClaseVia.getSelectedItemPosition()).getId()==0){
+                                                            Snackbar.make(view, "Clase via Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                                                             return false;
                                                         }
                                                         else{
-                                                            if(fragmentElemento.claseViaList.get(fragmentElemento.sltClaseVia.getSelectedItemPosition()).getId()==0){
-                                                                Snackbar.make(view, "Clase via Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                            if(fragmentElemento.tipoPosteList.get(fragmentElemento.sltTipoPoste.getSelectedItemPosition()).getId()==0){
+                                                                Snackbar.make(view, "Tipo poste Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                                                                 return false;
                                                             }
                                                             else{
-                                                                if(fragmentElemento.tipoPosteList.get(fragmentElemento.sltTipoPoste.getSelectedItemPosition()).getId()==0){
-                                                                    Snackbar.make(view, "Tipo poste Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                                if(fragmentElemento.normaConstruccionPosteList.get(fragmentElemento.sltNormaConstruccionPoste.getSelectedItemPosition()).getId()==0){
+                                                                    Snackbar.make(view, "Norma Construccion Poste Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                                                                     return false;
                                                                 }
                                                                 else{
-                                                                    if(fragmentElemento.normaConstruccionPosteList.get(fragmentElemento.sltNormaConstruccionPoste.getSelectedItemPosition()).getId()==0){
-                                                                        Snackbar.make(view, "Norma Construccion Poste Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                                    if(fragmentElemento.calibreList.get(fragmentElemento.sltCalibreConexionElemento.getSelectedItemPosition()).getId()==0){
+                                                                        Snackbar.make(view, "Calibre Conductor Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                                                                         return false;
                                                                     }
                                                                     else{
-                                                                        if(fragmentElemento.calibreList.get(fragmentElemento.sltCalibreConexionElemento.getSelectedItemPosition()).getId()==0){
-                                                                            Snackbar.make(view, "Calibre Conductor Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                                        if(fragmentElemento.tipoInstalacionRedList.get(fragmentElemento.sltTipoInstalacionRed.getSelectedItemPosition()).getId()==0){
+                                                                            Snackbar.make(view, "Tipo Instalación Red Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                                                                             return false;
                                                                         }
                                                                         else{
-                                                                            if(fragmentElemento.tipoInstalacionRedList.get(fragmentElemento.sltTipoInstalacionRed.getSelectedItemPosition()).getId()==0){
-                                                                                Snackbar.make(view, "Tipo Instalación Red Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                                            if(fragmentElemento.tipoRedList.get(fragmentElemento.sltTipoRed.getSelectedItemPosition()).getId()==0){
+                                                                                Snackbar.make(view, "Tipo Red Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                                                                                 return false;
                                                                             }
                                                                             else{
-                                                                                if(fragmentElemento.tipoRedList.get(fragmentElemento.sltTipoRed.getSelectedItemPosition()).getId()==0){
-                                                                                    Snackbar.make(view, "Tipo Red Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                                                if(Integer.parseInt(fragmentElemento.txtAnchoVia.getText().toString())==0){
+                                                                                    Snackbar.make(view, "Ancho Via Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                                                                                     return false;
                                                                                 }
                                                                                 else{
-                                                                                    if(Integer.parseInt(fragmentElemento.txtAnchoVia.getText().toString())==0){
-                                                                                        Snackbar.make(view, "Ancho Via Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                                                    if(Integer.parseInt(fragmentElemento.txtInterdistancia.getText().toString())==0){
+                                                                                        Snackbar.make(view, "Interdistancia Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                                                                                         return false;
                                                                                     }
                                                                                     else{
-                                                                                        if(Integer.parseInt(fragmentElemento.txtInterdistancia.getText().toString())==0){
-                                                                                            Snackbar.make(view, "Interdistancia Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-                                                                                            return false;
+                                                                                        if((fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId()==239 || fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId()==220)){
+                                                                                            if(actividadOperativa.getVatiajeDesmontadoList().size()==0 && actividadOperativa.getElementosDesmontadosList().size()==0){
+                                                                                                Snackbar.make(view, "Elemento Desmontado o Vatiaje Desmontado es Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                                                                                return false;
+                                                                                            }
+                                                                                            else{
+                                                                                                return true;
+                                                                                            }
                                                                                         }
-                                                                                        else{
+                                                                                        else {
                                                                                             return true;
                                                                                         }
                                                                                     }
@@ -555,6 +560,19 @@ public class EjecutaActividad extends AppCompatActivity {
                                             }
                                         }
                                     }
+                                }
+                            }
+                        }
+                        else {
+                            if(fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId() == 3 ||
+                                fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId() == 7 ||
+                                fragmentInformacion.tipoActividadList.get(fragmentInformacion.sltTipoActividad.getSelectedItemPosition()).getId() == 292 ){
+                                if(actividadOperativa.getElemento().getId()==0 && actividadOperativa.getVatiajeDesmontadoList().size()==0) {
+                                    Snackbar.make(view, "Vatiaje Desmontado es Requerido", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                    return false;
+                                }
+                                else{
+                                    return true;
                                 }
                             }
                             else {
@@ -580,7 +598,6 @@ public class EjecutaActividad extends AppCompatActivity {
     }
 
     private void almacenarDatosLocal(){
-        actualizarObjeto();
         actividadOperativa.setPendienteSincronizar("S");
         try {
             progressGuardarActividad.setVisibility(View.VISIBLE);
@@ -696,8 +713,6 @@ public class EjecutaActividad extends AppCompatActivity {
     }
 
     private void almacenarDatosEnRemoto() {
-        actualizarObjeto();
-
         AsyncHttpClient client = new AsyncHttpClient();
 
         try {
@@ -735,9 +750,9 @@ public class EjecutaActividad extends AppCompatActivity {
             JSONArray jsonArrayVatiajeDesmontado = new JSONArray();
             Iterator<Integer> vatiajeDesmontadoIterator = actividadOperativa.getVatiajeDesmontadoList().iterator();
             while(vatiajeDesmontadoIterator.hasNext()) {
-                jsonArrayVatiajeDesmontado.put(vatiajeDesmontadoIterator.next().intValue());
+                jsonArrayVatiajeDesmontado.put(vatiajeDesmontadoIterator.next());
             }
-            jsonObject.put("vatiaje_desmontado", jsonArrayDesmontado);
+            jsonObject.put("vatiaje_desmontado", jsonArrayVatiajeDesmontado);
 
             //--Fotos Antes
             JSONArray jsonArrayFotoAntes = new JSONArray();
@@ -836,7 +851,6 @@ public class EjecutaActividad extends AppCompatActivity {
             jsonObject.put("desmnoutil", jsonArrayDesNoUtil);
             jsonObject.put("pnc", jsonArrayPNC);
             jsonObject.put("asig", jsonArrayAsig);
-
 
             //--Elemento
             JSONObject jsonElemento = new JSONObject();

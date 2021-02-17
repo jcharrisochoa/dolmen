@@ -10,11 +10,19 @@ import co.dolmen.sid.entidad.EstadoMobiliario;
 import co.dolmen.sid.entidad.Mobiliario;
 import co.dolmen.sid.entidad.ReferenciaMobiliario;
 import co.dolmen.sid.modelo.BarrioDB;
+import co.dolmen.sid.modelo.CalibreDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
+import co.dolmen.sid.modelo.ControlEncendidoDB;
 import co.dolmen.sid.modelo.ElementoDB;
 import co.dolmen.sid.modelo.EstadoMobiliarioDB;
 import co.dolmen.sid.modelo.MobiliarioDB;
+import co.dolmen.sid.modelo.NormaConstruccionPosteDB;
 import co.dolmen.sid.modelo.ReferenciaMobiliarioDB;
+import co.dolmen.sid.modelo.TipoBalastoDB;
+import co.dolmen.sid.modelo.TipoBaseFotoceldaDB;
+import co.dolmen.sid.modelo.TipoBrazoDB;
+import co.dolmen.sid.modelo.TipoEscenarioDB;
+import co.dolmen.sid.modelo.TipoInstalacionRedDB;
 import co.dolmen.sid.modelo.TipoInterseccionDB;
 import co.dolmen.sid.modelo.TipoPosteDB;
 import co.dolmen.sid.modelo.TipoRedDB;
@@ -58,11 +66,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestHandle;
@@ -90,9 +100,6 @@ public class ActualizarElemento extends AppCompatActivity {
     AlertDialog.Builder alertDireccion;
 
     private String encodeString;
-    private String nombreMunicipio;
-    private String nombreProceso;
-    private String nombreContrato;
     private String path;
     private String actualizarCoordenadas;
     private int idUsuario;
@@ -102,13 +109,10 @@ public class ActualizarElemento extends AppCompatActivity {
     private int idMobiliarioBusqueda;
     private int idReferenciaBusqueda;
 
-    private TextView txtNombreMunicipio;
-    private TextView txtNombreProceso;
-    private TextView txtNombreContrato;
     private TextView txtMensajeDireccion;
 
-    private Button btnCancelar;
-    private Button btnGuardar;
+    private FloatingActionButton btnCancelar;
+    private FloatingActionButton btnGuardar;
     private Button btnTomarFoto;
     private Button btnBorrarFoto;
 
@@ -130,6 +134,9 @@ public class ActualizarElemento extends AppCompatActivity {
     private EditText txtNumeracionA;
     private EditText txtNumeracionB;
     private EditText txtBuscarElemento;
+    private EditText txtMtTransformador;
+    private EditText txtCtTransformador;
+    private EditText txtAnchoVia;
 
     TextView viewLatitud;
     TextView viewLongitud;
@@ -151,6 +158,22 @@ public class ActualizarElemento extends AppCompatActivity {
     private Spinner sltEstadoMobiliario;
     private Spinner sltTipoInterseccionA;
     private Spinner sltTipoInterseccionB;
+    private Spinner sltNormaConstruccionPoste;
+    private Spinner sltTipoEscenario;
+    private Spinner sltCalibreConexionElemento;
+    private Spinner sltTipoBrazo;
+    private Spinner sltTipoBalasto;
+    private Spinner sltTipoBaseFotocelda;
+    private Spinner sltTipoInstalacionRed;
+    private Spinner sltControlEncendido;
+
+    private RadioButton rdZonaUrbano;
+    private RadioButton rdZonaRural;
+    private RadioButton rdSectorNormal;
+    private RadioButton rdSectorSubNormal;
+
+    private Switch swPosteExclusivoAp;
+    private Switch swTranformadorExclusivoAP;
 
     private ProgressBar progressBar;
 
@@ -166,6 +189,17 @@ public class ActualizarElemento extends AppCompatActivity {
     ArrayList<DataSpinner> tipoRedList;
     ArrayList<DataSpinner> tipoInterseccionA;
     ArrayList<DataSpinner> tipoInterseccionB;
+    ArrayList<DataSpinner> normaConstruccionPosteList;
+    ArrayList<DataSpinner> tipoEscenarioList;
+    ArrayList<DataSpinner> calibreList;
+    ArrayList<DataSpinner> tipoBrazoList;
+    ArrayList<DataSpinner> tipoBalastoList;
+    ArrayList<DataSpinner> tipoBaseFotoceldaList;
+    ArrayList<DataSpinner> tipoInstalacionRedList;
+    ArrayList<DataSpinner> controlEncendidoList;
+
+    private String zona ="U";
+    private String sector = "N";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,9 +213,6 @@ public class ActualizarElemento extends AppCompatActivity {
         idDefaultProceso    = config.getInt("id_proceso", 0);
         idDefaultContrato   = config.getInt("id_contrato", 0);
         idDefaultMunicipio  = config.getInt("id_municipio", 0);
-        nombreMunicipio = config.getString("nombreMunicipio", "");
-        nombreProceso = config.getString("nombreProceso", "");
-        nombreContrato = config.getString("nombreContrato", "");
 
         conn = new BaseDatos(ActualizarElemento.this);
         database = conn.getReadableDatabase();
@@ -196,22 +227,18 @@ public class ActualizarElemento extends AppCompatActivity {
         alert = new AlertDialog.Builder(this);
 
         progressBar = findViewById(R.id.progressBarConsultarElemento);
-        btnCancelar     = findViewById(R.id.btnCancelar);
-        btnGuardar      = findViewById(R.id.btnGuardar);
+        btnCancelar     = findViewById(R.id.fab_cancelar);
+        btnGuardar      = findViewById(R.id.fab_guardar);
         btnEditarDireccion          = findViewById(R.id.btn_editar_direccion);
         btnTomarFoto    = findViewById(R.id.btn_tomar_foto);
         btnBorrarFoto   = findViewById(R.id.btn_borrar_foto);
         btnCapturarGPS  = findViewById(R.id.btn_capturar_gps);
         btnBuscarElemento           = findViewById(R.id.btn_buscar_elemento);
 
-        txtNombreMunicipio  = findViewById(R.id.txtNombreMunicipio);
-        txtNombreProceso    = findViewById(R.id.txtNombreProceso);
-        txtNombreContrato   = findViewById(R.id.txtNombreContrato);
-
         txtPosteno          =  findViewById(R.id.txtPosteNo);
         txtAlturaPoste      =  findViewById(R.id.txtAlturaPoste);
         txtInterdistancia   =  findViewById(R.id.txtInterdistancia);
-        txtTransformadorno  =  findViewById(R.id.txtTransformadorNo);
+        //txtTransformadorno  =  findViewById(R.id.txtTransformadorNo);
         txtPotenciaTransformador=  findViewById(R.id.txtPotenciaTransformador);
 
         txtBuscarElemento   =  findViewById(R.id.txt_buscar_elemento);
@@ -220,6 +247,9 @@ public class ActualizarElemento extends AppCompatActivity {
         txtLatitud          =  findViewById(R.id.txt_latitud);
         txtLongitud         =  findViewById(R.id.txt_longitud);
         txtIdElemento       =  findViewById(R.id.txtIdElmento);
+        txtMtTransformador          = findViewById(R.id.txt_mt_transformador);
+        txtCtTransformador          = findViewById(R.id.txt_ct_transformador);
+        txtAnchoVia                 = findViewById(R.id.txt_ancho_via);
 
         sltTipologia        =  findViewById(R.id.sltTipologia);
         sltMobiliario       =  findViewById(R.id.sltMobiliario);
@@ -229,6 +259,20 @@ public class ActualizarElemento extends AppCompatActivity {
         sltClaseVia         =  findViewById(R.id.sltClaseVia);
         sltEstadoMobiliario =  findViewById(R.id.sltEstadoMobiliario);
         sltBarrio           =  findViewById(R.id.sltBarrio);
+        sltNormaConstruccionPoste   = findViewById(R.id.slt_norma_construccion_poste);
+        sltTipoEscenario            = findViewById(R.id.slt_tipo_escenario);
+        sltCalibreConexionElemento  = findViewById(R.id.slt_calibre_conexion_elemento);
+        sltTipoBrazo                = findViewById(R.id.slt_tipo_brazo);
+        sltTipoBalasto              = findViewById(R.id.slt_tipo_balasto);
+        sltTipoBaseFotocelda        = findViewById(R.id.slt_tipo_base_fotocelda);
+        sltTipoInstalacionRed       = findViewById(R.id.slt_tipo_instalacion_red);
+        sltControlEncendido         = findViewById(R.id.slt_control_encendido);
+        rdZonaUrbano                = findViewById(R.id.rd_urbano);
+        rdZonaRural                 = findViewById(R.id.rd_rural);
+        rdSectorNormal              = findViewById(R.id.rd_normal);
+        rdSectorSubNormal           = findViewById(R.id.rd_subnormal);
+        swPosteExclusivoAp          = findViewById(R.id.sw_poste_exclulsivo_alumbrado_publico);
+        swTranformadorExclusivoAP   = findViewById(R.id.sw_transformador_exclusivo_ap);
 
         //--
         viewLatitud = findViewById(R.id.gps_latitud);
@@ -259,9 +303,9 @@ public class ActualizarElemento extends AppCompatActivity {
         txtIdElemento.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.INVISIBLE);
 
-        txtNombreMunicipio.setText(nombreMunicipio);
+        /*txtNombreMunicipio.setText(nombreMunicipio);
         txtNombreProceso.setText(nombreProceso);
-        txtNombreContrato.setText(nombreContrato);
+        txtNombreContrato.setText(nombreContrato);*/
 
         btnCancelar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -354,7 +398,45 @@ public class ActualizarElemento extends AppCompatActivity {
                 }
             }
         });
+        rdZonaUrbano.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                zona = "U";
+            }
+        });
 
+        rdZonaRural.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                zona = "R";
+            }
+        });
+
+        rdSectorNormal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sector = "N";
+            }
+        });
+
+        rdSectorSubNormal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sector = "S";
+            }
+        });
+
+        sltTipoPoste.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                cargarNormaConstruccionPoste(database);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
         sltTipologia.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -378,12 +460,21 @@ public class ActualizarElemento extends AppCompatActivity {
 
             }
         });
+
         cargarTipologia(database);
         cargarBarrio(database);
         cargarEstadoMobiliario(database);
         cargarClaseVia(database);
         cargarTipoPoste(database);
         cargarTipoRed(database);
+        cargarTipoBalasto(database);
+        cargarTipoBaseFotocelda(database);
+        cargarTipoBrazo(database);
+        cargarControlEncendido(database);
+        cargarTipoEscenario(database);
+        cargarCalibre(database);
+        cargarNormaConstruccionPoste(database);
+        cargarTipoInstalacionRed(database);
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -703,6 +794,257 @@ public class ActualizarElemento extends AppCompatActivity {
         sltTipoInterseccionB.setAdapter(dataAdapter);
     }
     //--
+    private void cargarTipoBrazo(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        int pos = 0;
+        tipoBrazoList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        TipoBrazoDB tipoBrazoDB = new TipoBrazoDB(sqLiteDatabase);
+        Cursor cursor = tipoBrazoDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        tipoBrazoList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                   /* if(actividadOperativa.getElemento().getTipoBrazo().getidTipoBrazo()== cursor.getInt(0)){
+                        pos = i;
+                    }*/
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    tipoBrazoList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltTipoBrazo.setAdapter(dataAdapter);
+        sltTipoBrazo.setSelection(pos);
+    }
+    //--
+    private void cargarTipoBalasto(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        int pos = 0;
+        tipoBalastoList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        TipoBalastoDB tipoBalastoDB = new TipoBalastoDB(sqLiteDatabase);
+        Cursor cursor = tipoBalastoDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        tipoBalastoList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    /*if(actividadOperativa.getElemento().getTipoBalasto().getIdTipoBalasto()== cursor.getInt(0)){
+                        pos = i;
+                    }*/
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    tipoBalastoList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltTipoBalasto.setAdapter(dataAdapter);
+        sltTipoBalasto.setSelection(pos);
+    }
+    //--
+    private void cargarTipoBaseFotocelda(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        int pos = 0;
+        tipoBaseFotoceldaList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        TipoBaseFotoceldaDB tipoBaseFotoceldaDB = new TipoBaseFotoceldaDB(sqLiteDatabase);
+        Cursor cursor = tipoBaseFotoceldaDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        tipoBaseFotoceldaList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    /*if(actividadOperativa.getElemento().getTipoBaseFotocelda().getidTipoBaseFotocelda()== cursor.getInt(0)){
+                        pos = i;
+                    }*/
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    tipoBaseFotoceldaList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltTipoBaseFotocelda.setAdapter(dataAdapter);
+        sltTipoBaseFotocelda.setSelection(pos);
+    }
+    //--
+    private void cargarControlEncendido(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        int pos = 0;
+        controlEncendidoList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        ControlEncendidoDB controlEncendidoDB = new ControlEncendidoDB(sqLiteDatabase);
+        Cursor cursor = controlEncendidoDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        controlEncendidoList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    /*if(actividadOperativa.getElemento().getControlEncendido().getidControlEncendido()== cursor.getInt(0)){
+                        pos = i;
+                    }*/
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    controlEncendidoList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltControlEncendido.setAdapter(dataAdapter);
+        sltControlEncendido.setSelection(pos);
+    }
+    //--
+    private void cargarTipoEscenario(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        int pos = 0;
+        tipoEscenarioList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        TipoEscenarioDB tipoEscenarioDB = new TipoEscenarioDB(sqLiteDatabase);
+        Cursor cursor = tipoEscenarioDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        tipoEscenarioList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    /*if(actividadOperativa.getElemento().getTipoEscenario().getId() == cursor.getInt(0)){
+                        pos = i;
+                    }*/
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    tipoEscenarioList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltTipoEscenario.setAdapter(dataAdapter);
+        sltTipoEscenario.setSelection(pos);
+    }
+    //--
+    private void cargarCalibre(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        int pos = 0;
+        calibreList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        CalibreDB calibreDB = new CalibreDB(sqLiteDatabase);
+        Cursor cursor = calibreDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        calibreList.add(dataSpinner);
+
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    /*if(actividadOperativa.getElemento().getCalibre().getId_calibre() == cursor.getInt(0)){
+                        pos = i;
+                    }*/
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    calibreList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltCalibreConexionElemento.setAdapter(dataAdapter);
+        sltCalibreConexionElemento.setAdapter(dataAdapter);
+        sltCalibreConexionElemento.setSelection(pos);
+    }
+    //--
+    private void cargarNormaConstruccionPoste(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        int pos = 0;
+        int idTipoPoste = tipoPosteList.get(sltTipoPoste.getSelectedItemPosition()).getId();
+        normaConstruccionPosteList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        NormaConstruccionPosteDB normaConstruccionPosteDB = new NormaConstruccionPosteDB(sqLiteDatabase);
+        Cursor cursor = normaConstruccionPosteDB.consultarTodo(idTipoPoste);
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        normaConstruccionPosteList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    /*if(actividadOperativa.getElemento().getNormaConstruccionPoste().getId() == cursor.getInt(0)){
+                        pos = i;
+                    }*/
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(2).toUpperCase());
+                    normaConstruccionPosteList.add(dataSpinner);
+                    labels.add(cursor.getString(2).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltNormaConstruccionPoste.setAdapter(dataAdapter);
+        sltNormaConstruccionPoste.setSelection(pos);
+    }
+    //--
+    private void cargarTipoInstalacionRed(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        int pos = 0;
+        tipoInstalacionRedList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        TipoInstalacionRedDB tipoInstalacionRedDB = new TipoInstalacionRedDB(sqLiteDatabase);
+        Cursor cursor = tipoInstalacionRedDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        tipoInstalacionRedList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    /*if(actividadOperativa.getElemento().getTipoInstalacionRed().getidTipoInstalacionRed() == cursor.getInt(0)){
+                        pos = i;
+                    }*/
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    tipoInstalacionRedList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltTipoInstalacionRed.setAdapter(dataAdapter);
+        sltTipoInstalacionRed.setSelection(pos);
+    }
+    //--
     private void armarDireccion(){
         alertDireccion = new AlertDialog.Builder(this);
         alertDireccion.setCancelable(false);
@@ -898,7 +1240,7 @@ public class ActualizarElemento extends AppCompatActivity {
                             txtPosteno.setText(jsonObject.getString("posteno"));
                             txtAlturaPoste.setText(jsonObject.getString("alturaposte"));
                             txtInterdistancia.setText(jsonObject.getString("interdistancia"));
-                            txtTransformadorno.setText(jsonObject.getString("transformador"));
+                            //txtTransformadorno.setText(jsonObject.getString("transformador"));
                             txtPotenciaTransformador.setText(jsonObject.getString("potenciatransformador"));
                             txtDireccion.setText(jsonObject.getString("direccion"));
                             txtLatitud.setText(jsonObject.getString("latitud"));
@@ -1081,7 +1423,7 @@ public class ActualizarElemento extends AppCompatActivity {
         requestParams.put("poste_no",txtPosteno.getText());
         requestParams.put("altura_poste",txtAlturaPoste.getText());
         requestParams.put("interdistancia",txtInterdistancia.getText());
-        requestParams.put("transformador_no",txtTransformadorno.getText());
+        //requestParams.put("transformador_no",txtTransformadorno.getText());
         requestParams.put("potencia_transformador",txtPotenciaTransformador.getText());
         requestParams.put("encode_string",encodeString);
         client.setTimeout(Constantes.TIMEOUT);
@@ -1137,7 +1479,9 @@ public class ActualizarElemento extends AppCompatActivity {
         txtPosteno.setText("");
         txtAlturaPoste.setText("");
         txtInterdistancia.setText("");
-        txtTransformadorno.setText("");
+        txtMtTransformador.setText("");
+        txtCtTransformador.setText("");
+        txtAnchoVia.setText("");
         txtPotenciaTransformador.setText("");
         txtIdElemento.setText("");
         txtDireccion.setText("");
@@ -1149,7 +1493,17 @@ public class ActualizarElemento extends AppCompatActivity {
         sltTipoRed.setSelection(0);
         sltClaseVia.setSelection(0);
         sltEstadoMobiliario.setSelection(0);
+        sltNormaConstruccionPoste.setSelection(0);
+        sltTipoEscenario.setSelection(0);
+        sltCalibreConexionElemento.setSelection(0);
+        sltTipoBrazo.setSelection(0);
+        sltTipoBalasto.setSelection(0);
+        sltTipoBaseFotocelda.setSelection(0);
+        sltTipoInstalacionRed.setSelection(0);
+        sltControlEncendido.setSelection(0);
         swActualizarPosicion.setChecked(false);
+        swPosteExclusivoAp.setChecked(false);
+        swTranformadorExclusivoAP.setChecked(false);
         imgFoto.setImageResource(R.drawable.imagen_no_disponible);
         encodeString=null;
     }

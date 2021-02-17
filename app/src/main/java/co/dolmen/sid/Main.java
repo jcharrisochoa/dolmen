@@ -47,7 +47,7 @@ public class Main extends AppCompatActivity {
                     startActivity(i);
                     finish();
                 }
-            },3000);
+            },1000);
         }
         else{
             t.schedule(new TimerTask() {
@@ -57,7 +57,7 @@ public class Main extends AppCompatActivity {
                     startActivity(i);
                     finish();
                 }
-            }, 3000);
+            }, 1000);
         }
     }
 }

@@ -320,8 +320,8 @@ public class ListaActividad extends AppCompatActivity  {
                         elemento.setAnchoVia(0);
                         elemento.setInterdistancia(0);
                         elemento.setPosteNo("");
-                        elemento.setTransformadorExclusivo(true);
-                        elemento.setPosteExclusivo(true);
+                        elemento.setTransformadorExclusivo(false);
+                        elemento.setPosteExclusivo(false);
                         elemento.setPotenciaTransformador(0);
                         elemento.setPlacaMT("");
                         elemento.setPlacaCT("");
@@ -481,7 +481,7 @@ public class ListaActividad extends AppCompatActivity  {
                     actividadOperativa.setPendienteSincronizar(cursor.getString(cursor.getColumnIndex("pendiente_sincronizar")));
                     actividadOperativa.setElementoNoEncontrado(cursor.getString(cursor.getColumnIndex("elemento_no_encontrado")));
                     actividadOperativa.setAfectadoPorVandalismo(cursor.getString(cursor.getColumnIndex("afectado_por_vandalismo")));
-                    Log.d(Constantes.TAG,"poste:"+cursor.getString(cursor.getColumnIndex("afectado_por_vandalismo")));
+                    //Log.d(Constantes.TAG,"poste:"+cursor.getString(cursor.getColumnIndex("afectado_por_vandalismo")));
 
                     actividadOperativaArrayList.add(actividadOperativa);
                 }

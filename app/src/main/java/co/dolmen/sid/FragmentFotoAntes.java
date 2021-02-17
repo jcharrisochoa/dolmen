@@ -277,10 +277,20 @@ public class FragmentFotoAntes extends Fragment {
 
     public void quitarFoto(ImageView imageView){
         imageView.setImageResource(R.drawable.icon_no_photography);
-        encodeStringFoto_1 = "";
-        encodeStringFoto_2 = "";
-        encodeStringFoto_3 = "";
-        encodeStringFoto_4 = "";
+        switch (imageView.getId()){
+            case R.id.foto_antes_1:
+                encodeStringFoto_1 = "";
+                break;
+            case R.id.foto_antes_2:
+                encodeStringFoto_2 = "";
+                break;
+            case R.id.foto_antes_3:
+                encodeStringFoto_3 = "";
+                break;
+            case R.id.foto_antes_4:
+                encodeStringFoto_4 = "";
+                break;
+        }
     }
     //--
     private void cargarImagen(){

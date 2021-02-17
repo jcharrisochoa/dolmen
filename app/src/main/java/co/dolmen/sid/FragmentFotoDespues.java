@@ -21,6 +21,7 @@ import androidx.fragment.app.Fragment;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -242,6 +243,20 @@ public class FragmentFotoDespues extends Fragment {
 
     public void quitarFoto(ImageView imageView){
         imageView.setImageResource(R.drawable.icon_no_photography);
+        switch (imageView.getId()){
+            case R.id.foto_antes_1:
+                encodeStringFoto_1 = "";
+                break;
+            case R.id.foto_antes_2:
+                encodeStringFoto_2 = "";
+                break;
+            case R.id.foto_antes_3:
+                encodeStringFoto_3 = "";
+                break;
+            case R.id.foto_antes_4:
+                encodeStringFoto_4 = "";
+                break;
+        }
     }
     //--
     private void cargarImagen(){

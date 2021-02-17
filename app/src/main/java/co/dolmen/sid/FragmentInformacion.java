@@ -178,7 +178,6 @@ public class FragmentInformacion extends Fragment {
             }
         });
 
-
         btnEditarDireccion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -322,23 +321,23 @@ public class FragmentInformacion extends Fragment {
 
             LinearLayout linearLayoutRemover = item.findViewById(R.id.layout_remover_vatiaje);
             TextView txtVatiajeDesmontado = item.findViewById(R.id.txt_vatiaje_desmontado);
-
+            final int id_vatiaje = vatiajeList.get(sltVatiaje.getSelectedItemPosition()).getId();
             txtVatiajeDesmontado.setText(vatiajeList.get(sltVatiaje.getSelectedItemPosition()).getDescripcion());
             linearLayoutRemover.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    removerVatiajeDesmontado(item, vatiajeList.get(sltVatiaje.getSelectedItemPosition()).getId());
+                    removerVatiajeDesmontado(item,id_vatiaje);
                 }
             });
             layoutVatiajeDesmontadoList.addView(item);
-            vatiajeDesmontadoList.add(vatiajeList.get(sltVatiaje.getSelectedItemPosition()).getId());
+            vatiajeDesmontadoList.add(id_vatiaje);
             sltVatiaje.setSelection(0);
         }
     }
 
     private void removerVatiajeDesmontado(View item, int id) {
         layoutVatiajeDesmontadoList.removeView(item);
-        //vatiajeDesmontadoList.remove();
+        vatiajeDesmontadoList.remove(buscarListaVatiajeDesmontado(id));
     }
 
     private void removerElementoDesmontado(View item,Elemento elemento){
@@ -352,6 +351,19 @@ public class FragmentInformacion extends Fragment {
         Iterator<Elemento> iterator = desmontadoList.iterator();
         while(iterator.hasNext()){
             if(iterator.next().getId() == elemento.getId()){
+                pos = i;
+            }
+            i++;
+        }
+        return pos;
+    }
+
+    private int buscarListaVatiajeDesmontado(int id_desmontado){
+        int pos = -1;
+        int i = 0;
+        Iterator<Integer> iterator = vatiajeDesmontadoList.iterator();
+        while(iterator.hasNext()){
+            if(iterator.next().intValue() == id_desmontado){
                 pos = i;
             }
             i++;
