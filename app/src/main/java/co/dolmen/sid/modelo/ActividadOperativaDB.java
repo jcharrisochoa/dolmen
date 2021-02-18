@@ -40,7 +40,8 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
                 "e.id_tipo_red,trd.descripcion as tipo_red,e.id_tipo_escenario,tsc.descripcion as tipo_escenario," +
                 "e.id_tipo_instalacion_red_alimentacion, tir.descripcion as tipo_instalacion_red,e.id_clase_via,cv.descripcion as clase_via," +
                 "e.id_calibre_conductores,cb.descripcion as calibre_conductor,e.ancho_via,e.interdistancia,e.poste_no,e.estructura_soporte_compartida,e.transformador_compartido," +
-                "e.potencia_transformador,e.placa_mt_transformador,e.placa_ct_transformador,e.foto " +
+                "e.potencia_transformador,e.placa_mt_transformador,e.placa_ct_transformador,e.foto," +
+                "ao.id_reporte_dano,ao.id_cliente_externo,ao.nombre_cliente,ao.direccion_cliente,ao.telefono_cliente "+
                 "from " + Constantes.TABLA_ACTIVIDAD_OPERATIVA + " ao " +
                 "join " + Constantes.TABLA_PROGRAMA + " pg on(ao.id_programa = pg._id) " +
                 "join " + Constantes.TABLA_MUNICIPIO + " m on(ao.id_municipio = m._id) " +
@@ -119,7 +120,12 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
                 "elemento_no_encontrado VARCHAR(1) NOT NULL DEFAULT 'N',"+
                 "afectado_por_vandalismo VARCHAR(1) NOT NULL DEFAULT 'N',"+
                 "observacion TEXT,"+
-                "pendiente_sincronizar VARCHAR(1) NOT NULL DEFAULT 'S'"+
+                "pendiente_sincronizar VARCHAR(1) NOT NULL DEFAULT 'S',"+
+                "id_reporte_dano INTEGER,"+
+                "id_cliente_externo INTEGER,"+
+                "nombre_cliente VARCHAR(80),"+
+                "direccion_cliente VARCHAR(80),"+
+                "telefono_cliente VARCHAR(45)"+
                 ");";
         db.execSQL(this.sql);
     }
@@ -156,6 +162,11 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
             contentValues.put("et",actividad.getEt());
             contentValues.put("usuario_programa_actividad",actividad.getUsuarioProgramaActividad());
             contentValues.put("observacion",actividad.getObservacion());
+            contentValues.put("id_reporte_dano",actividad.getIdReporteDano());
+            contentValues.put("id_cliente_externo",actividad.getIdClienteExterno());
+            contentValues.put("nombre_cliente",actividad.getNombreCliente());
+            contentValues.put("direccion_cliente",actividad.getDireccionCliente());
+            contentValues.put("telefono_cliente",actividad.getTelefonoCliente());
             try {
                 long lastId = db.insert(Constantes.TABLA_ACTIVIDAD_OPERATIVA, null, contentValues);
             }catch (SQLException e){

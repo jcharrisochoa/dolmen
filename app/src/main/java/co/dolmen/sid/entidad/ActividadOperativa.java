@@ -10,6 +10,13 @@ public class ActividadOperativa implements Serializable {
     private int idActividad;
     private int idEspacioPublicitario;
     private int idUsuarioDescarga;
+
+    private int idReporteDano;
+    private int idClienteExterno;
+    private String nombreCliente;
+    private String direccionCliente;
+    private String telefonoCliente;
+
     private Programa programa;
     private ProcesoSgc procesoSgc;
     private Elemento elemento;
@@ -320,5 +327,45 @@ public class ActividadOperativa implements Serializable {
 
     public void setVatiajeDesmontadoList(List<Integer> vatiajeDesmontadoList) {
         this.vatiajeDesmontadoList = vatiajeDesmontadoList;
+    }
+
+    public int getIdReporteDano() {
+        return idReporteDano;
+    }
+
+    public void setIdReporteDano(int idReporteDano) {
+        this.idReporteDano = idReporteDano;
+    }
+
+    public int getIdClienteExterno() {
+        return idClienteExterno;
+    }
+
+    public void setIdClienteExterno(int idClienteExterno) {
+        this.idClienteExterno = idClienteExterno;
+    }
+
+    public String getNombreCliente() {
+        return nombreCliente;
+    }
+
+    public void setNombreCliente(String nombreCliente) {
+        this.nombreCliente = nombreCliente;
+    }
+
+    public String getDireccionCliente() {
+        return direccionCliente;
+    }
+
+    public void setDireccionCliente(String direccionCliente) {
+        this.direccionCliente = direccionCliente;
+    }
+
+    public String getTelefonoCliente() {
+        return telefonoCliente;
+    }
+
+    public void setTelefonoCliente(String telefonoCliente) {
+        this.telefonoCliente = telefonoCliente;
     }
 }

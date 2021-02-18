@@ -348,7 +348,7 @@ public class ActualizarElemento extends AppCompatActivity {
                     NetworkInfo networkInfo = conn.getActiveNetworkInfo();
 
                     if(networkInfo != null && networkInfo.isConnected()) {
-                        Toast.makeText(getApplicationContext(),"Conectando con "+networkInfo.getTypeName()+" / "+networkInfo.getExtraInfo(),Toast.LENGTH_LONG).show();
+                        //Toast.makeText(getApplicationContext(),"Conectando con "+networkInfo.getTypeName()+" / "+networkInfo.getExtraInfo(),Toast.LENGTH_LONG).show();
                         btnGuardar.setEnabled(false);
                         btnCancelar.setEnabled(false);
                         ActualizarMobiliario();
@@ -699,9 +699,9 @@ public class ActualizarElemento extends AppCompatActivity {
             if (cursor.moveToFirst()) {
                 do {
                     i++;
-                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(2).toUpperCase());
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
                     claseViaList.add(dataSpinner);
-                    labels.add(cursor.getString(2).toUpperCase());
+                    labels.add(cursor.getString(1).toUpperCase());
                 } while (cursor.moveToNext());
             }
         }
@@ -1198,7 +1198,7 @@ public class ActualizarElemento extends AppCompatActivity {
             NetworkInfo networkInfo = conn.getActiveNetworkInfo();
 
             if(networkInfo != null && networkInfo.isConnected()) {
-                Toast.makeText(getApplicationContext(),"Conectando con "+networkInfo.getTypeName()+" / "+networkInfo.getExtraInfo(),Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(),"Conectando con "+networkInfo.getTypeName()+" / "+networkInfo.getExtraInfo(),Toast.LENGTH_LONG).show();
                 final AsyncHttpClient client = new AsyncHttpClient();
                 RequestParams requestParams = new RequestParams();
 
@@ -1221,7 +1221,7 @@ public class ActualizarElemento extends AppCompatActivity {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                         String respuesta = new String(responseBody);
-                        //Log.d("resultado",""+respuesta);
+                        //Log.d(Constantes.TAG,""+respuesta);
                         try{
                             JSONObject jsonObject = new JSONObject(new String(responseBody));
                             String mensaje = jsonObject.getString("mensaje");
@@ -1237,71 +1237,144 @@ public class ActualizarElemento extends AppCompatActivity {
                             alert.create().show();
 
                             txtIdElemento.setText(jsonObject.getString("id"));
-                            txtPosteno.setText(jsonObject.getString("posteno"));
+                            txtPosteno.setText(jsonObject.getString("poste_no"));
                             txtAlturaPoste.setText(jsonObject.getString("alturaposte"));
-                            txtInterdistancia.setText(jsonObject.getString("interdistancia"));
-                            //txtTransformadorno.setText(jsonObject.getString("transformador"));
-                            txtPotenciaTransformador.setText(jsonObject.getString("potenciatransformador"));
+                            txtInterdistancia.setText(String.valueOf(jsonObject.getInt("interdistancia")));
+                            txtPotenciaTransformador.setText(String.valueOf(jsonObject.getDouble("potenciatransformador")));
                             txtDireccion.setText(jsonObject.getString("direccion"));
                             txtLatitud.setText(jsonObject.getString("latitud"));
                             txtLongitud.setText(jsonObject.getString("longitud"));
-                            idMobiliarioBusqueda = parseInt(jsonObject.getString("idmobiliario"));
-                            idReferenciaBusqueda = parseInt(jsonObject.getString("idreferencia"));
+                            idMobiliarioBusqueda = jsonObject.getInt("id_mobiliario");
+                            idReferenciaBusqueda = jsonObject.getInt("id_referencia");
+                            txtMtTransformador.setText(jsonObject.getString("placa_mt_transformador"));
+                            txtCtTransformador.setText(jsonObject.getString("placa_ct_transformador"));
+                            txtAnchoVia.setText(String.valueOf(jsonObject.getInt("ancho_via")));
 
                             //tipologiaList
                             for(int i=0;i<tipologiaList.size();i++){
-                                if(tipologiaList.get(i).getId() == parseInt(jsonObject.getString("idtipologia"))){
-                                    sltTipologia.setAdapter(sltTipologia.getAdapter());
+                                if(tipologiaList.get(i).getId() == jsonObject.getInt("id_tipologia")){
                                     sltTipologia.setSelection(i);
                                 }
                             }
-                            // this.cargarMobiliario(database);
-                            // this.cargarReferencia(database);
+                            //Tipo Balasto
+                            for(int i=0;i<tipoBalastoList.size();i++){
+                                if(tipoBalastoList.get(i).getId() == jsonObject.getInt("id_tipo_balasto")){
+                                    sltTipoBalasto.setSelection(i);
+                                }
+                            }
+                            //Tipo Base fotocelda
+                            for(int i=0;i<tipoBaseFotoceldaList.size();i++){
+                                if(tipoBaseFotoceldaList.get(i).getId() == jsonObject.getInt("id_tipo_base_fotocelda")){
+                                    sltTipoBaseFotocelda.setSelection(i);
+                                }
+                            }
+                            //Tipo Soporte
+                            for(int i=0;i<tipoBrazoList.size();i++){
+                                if(tipoBrazoList.get(i).getId() == jsonObject.getInt("id_tipo_brazo")){
+                                    sltTipoBrazo.setSelection(i);
+                                }
+                            }
+                            //Tipo Soporte
+                            for(int i=0;i<controlEncendidoList.size();i++){
+                                if(controlEncendidoList.get(i).getId() == jsonObject.getInt("id_control_encendido")){
+                                    sltControlEncendido.setSelection(i);
+                                }
+                            }
                             //EstadoList
                             for(int i=0;i<estadoMobiliarioList.size();i++){
-                                if(estadoMobiliarioList.get(i).getId() == parseInt(jsonObject.getString("idestadomobiliario"))){
+                                if(estadoMobiliarioList.get(i).getId() == jsonObject.getInt("id_estado_mobiliario")){
                                     sltEstadoMobiliario.setSelection(i);
                                 }
                             }
                             //barrioList
                             for(int i=0;i<barrioList.size();i++){
-                                if(barrioList.get(i).getId() == parseInt(jsonObject.getString("idbarrio"))){
+                                if(barrioList.get(i).getId() == jsonObject.getInt("id_barrio")){
                                     sltBarrio.setSelection(i);
                                 }
                             }
                             //TipoPosteList
                             for(int i=0;i<tipoPosteList.size();i++){
-                                if(tipoPosteList.get(i).getId() == parseInt(jsonObject.getString("idtipoposte"))){
+                                if(tipoPosteList.get(i).getId() == jsonObject.getInt("id_tipo_poste")){
                                     sltTipoPoste.setSelection(i);
+                                }
+                            }
+                            //Norma Construccion Poste
+                            for(int i=0;i<normaConstruccionPosteList.size();i++){
+                                if(normaConstruccionPosteList.get(i).getId() == jsonObject.getInt("id_norma_construccion_poste")){
+                                    sltNormaConstruccionPoste.setSelection(i);
                                 }
                             }
                             //TipoRedList
                             for(int i=0;i<tipoRedList.size();i++){
-                                if(tipoRedList.get(i).getId() == parseInt(jsonObject.getString("idtipored"))){
+                                if(tipoRedList.get(i).getId() == jsonObject.getInt("id_tipo_red")){
                                     sltTipoRed.setSelection(i);
                                 }
                             }
                             //ClaseVia
                             for(int i=0;i<claseViaList.size();i++){
-                                if(claseViaList.get(i).getId() == parseInt(jsonObject.getString("idclasevia"))){
+                                if(claseViaList.get(i).getId() == jsonObject.getInt("id_clase_via")){
                                     sltClaseVia.setSelection(i);
                                 }
                             }
+                            //Tipo Escenario
+                            for(int i=0;i<tipoEscenarioList.size();i++){
+                                if(tipoEscenarioList.get(i).getId() == jsonObject.getInt("id_tipo_escenario")){
+                                    sltTipoEscenario.setSelection(i);
+                                }
+                            }
+                            //Tipo Instalacion Red
+                            for(int i=0;i<tipoInstalacionRedList.size();i++){
+                                if(tipoInstalacionRedList.get(i).getId() == jsonObject.getInt("id_tipo_instalacion_red")){
+                                    sltTipoInstalacionRed.setSelection(i);
+                                }
+                            }
+                            //Calibre Conductor
+                            for(int i=0;i<calibreList.size();i++){
+                                if(calibreList.get(i).getId() == jsonObject.getInt("id_calibre_conductores")){
+                                    sltCalibreConexionElemento.setSelection(i);
+                                }
+                            }
+                            swPosteExclusivoAp.setChecked(jsonObject.getBoolean("poste_exclusivo_ap"));
+                            swTranformadorExclusivoAP.setChecked(jsonObject.getBoolean("transformador_exclusivo_ap"));
+
+                            zona = jsonObject.getString("zona");
+                            if(jsonObject.getString("zona").contentEquals("U")){
+                                rdZonaRural.setChecked(false);
+                                rdZonaUrbano.setChecked(true);
+                            }else{
+                                rdZonaRural.setChecked(true);
+                                rdZonaUrbano.setChecked(false);
+                            }
+
+                            sector = jsonObject.getString("sector");
+                            if(jsonObject.getString("sector").contentEquals("N")){
+                                rdSectorNormal.setChecked(true);
+                                rdSectorSubNormal.setChecked(false);
+                            }else{
+                                rdSectorNormal.setChecked(false);
+                                rdSectorSubNormal.setChecked(true);
+                            }
+
+
                             progressBar.setVisibility(View.INVISIBLE);
                         }catch (JSONException e){
                             e.printStackTrace();
-                            //Log.d("resultado","Error: onsuccess"+e.getMessage()+"respuesta:"+respuesta);
+                            //Log.d(Constantes.TAG,"Error: onsuccess"+e.getMessage()+"respuesta:"+respuesta);
                             Toast.makeText(getApplicationContext(),getText(R.string.alert_error_ejecucion)+ " Servicio Web, Código:"+statusCode, Toast.LENGTH_SHORT).show();
                             progressBar.setVisibility(View.INVISIBLE);
+                            btnGuardar.setEnabled(true);
+                            btnCancelar.setEnabled(true);
                         }
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                         String respuesta = new String(responseBody);
-                        Log.d("resultado","Error "+respuesta);
+                        //Log.d(Constantes.TAG,"Error "+respuesta);
                         Toast.makeText(getApplicationContext(),getText(R.string.alert_error_ejecucion)+ " Código: "+statusCode, Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.INVISIBLE);
+                        btnGuardar.setEnabled(true);
+                        btnCancelar.setEnabled(true);
                     }
                 });
             }
@@ -1408,25 +1481,49 @@ public class ActualizarElemento extends AppCompatActivity {
         requestParams.put("id_municipio",idDefaultMunicipio);
         requestParams.put("id_proceso",idDefaultProceso);
         requestParams.put("id_contrato",idDefaultContrato);
-        requestParams.put("id_barrio",barrioList.get(sltBarrio.getSelectedItemPosition()).getId());
-        requestParams.put("latitud",txtLatitud.getText());
-        requestParams.put("longitud",txtLongitud.getText());
+
         requestParams.put("id_tipologia",tipologiaList.get(sltTipologia.getSelectedItemPosition()).getId());
         requestParams.put("id_mobiliario",mobiliarioList.get(sltMobiliario.getSelectedItemPosition()).getIdMobiliario());
         requestParams.put("id_referencia",referenciaMobiliarioList.get(sltReferencia.getSelectedItemPosition()).getIdReferenciaMobiliario());
-        requestParams.put("id_tipo_poste",tipoPosteList.get(sltTipoPoste.getSelectedItemPosition()).getId());
-        requestParams.put("id_tipo_red",tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId());
-        requestParams.put("id_clase_via",claseViaList.get(sltClaseVia.getSelectedItemPosition()).getId());;
-        requestParams.put("id_estado",estadoMobiliarioList.get(sltEstadoMobiliario.getSelectedItemPosition()).getId());
+        requestParams.put("id_estado_mobiliario",estadoMobiliarioList.get(sltEstadoMobiliario.getSelectedItemPosition()).getId());
+        requestParams.put("id_tipo_balasto", tipoBalastoList.get(sltTipoBalasto.getSelectedItemPosition()).getId());
+        requestParams.put("id_tipo_base_fotocelda", tipoBaseFotoceldaList.get(sltTipoBaseFotocelda.getSelectedItemPosition()).getId());
+        requestParams.put("id_tipo_brazo", tipoBrazoList.get(sltTipoBrazo.getSelectedItemPosition()).getId());
+        requestParams.put("id_control_encendido", controlEncendidoList.get(sltControlEncendido.getSelectedItemPosition()).getId());
+        requestParams.put("id_tipo_escenario", tipoEscenarioList.get(sltTipoEscenario.getSelectedItemPosition()).getId());
+
+        requestParams.put("id_barrio",barrioList.get(sltBarrio.getSelectedItemPosition()).getId());
         requestParams.put("direccion",txtDireccion.getText());
+        requestParams.put("zona", zona);
+        requestParams.put("sector", sector);
+
         requestParams.put("actualiza_posicion",actualizarCoordenadas);
+        requestParams.put("latitud",txtLatitud.getText());
+        requestParams.put("longitud",txtLongitud.getText());
+
+        requestParams.put("id_clase_via",claseViaList.get(sltClaseVia.getSelectedItemPosition()).getId());
+        requestParams.put("ancho_via", txtAnchoVia.getText());
+
+        requestParams.put("id_tipo_poste",tipoPosteList.get(sltTipoPoste.getSelectedItemPosition()).getId());
+        requestParams.put("id_norma_construccion_poste", normaConstruccionPosteList.get(sltNormaConstruccionPoste.getSelectedItemPosition()).getId());
         requestParams.put("poste_no",txtPosteno.getText());
         requestParams.put("altura_poste",txtAlturaPoste.getText());
         requestParams.put("interdistancia",txtInterdistancia.getText());
-        //requestParams.put("transformador_no",txtTransformadorno.getText());
+
+        requestParams.put("id_tipo_red",tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId());
+        requestParams.put("id_calibre", calibreList.get(sltCalibreConexionElemento.getSelectedItemPosition()).getId());
+        requestParams.put("id_tipo_instalacion_red", tipoInstalacionRedList.get(sltTipoInstalacionRed.getSelectedItemPosition()).getId());
+
+        requestParams.put("poste_exclusivo_ap", swPosteExclusivoAp.isChecked());
         requestParams.put("potencia_transformador",txtPotenciaTransformador.getText());
+        requestParams.put("placa_mt_transformador", txtMtTransformador.getText());
+        requestParams.put("placa_ct_transformador", txtCtTransformador.getText());
+        requestParams.put("transformador_exclusivo_ap", swTranformadorExclusivoAP.isChecked());
+
         requestParams.put("encode_string",encodeString);
         client.setTimeout(Constantes.TIMEOUT);
+        //Log.d(Constantes.TAG,"json->"+requestParams.toString());
+
         RequestHandle post = client.post(ServicioWeb.urlActualizarElemento, requestParams, new AsyncHttpResponseHandler() {
             @Override
             public void onStart() {
@@ -1437,7 +1534,7 @@ public class ActualizarElemento extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 String respuesta = new String(responseBody);
-                Log.d("resultado",""+respuesta);
+                Log.d(Constantes.TAG,""+respuesta);
                 try {
                     JSONObject jsonObject = new JSONObject(new String(responseBody));
                     String mensaje = jsonObject.getString("mensaje");
@@ -1456,7 +1553,7 @@ public class ActualizarElemento extends AppCompatActivity {
 
                 }catch (JSONException e){
                     e.printStackTrace();
-                    Log.d("resultado","Error: onsuccess"+e.getMessage()+"respuesta:"+respuesta);
+                    Log.d(Constantes.TAG,"Error: onsuccess"+e.getMessage()+"respuesta:"+respuesta);
                     Toast.makeText(getApplicationContext(),getText(R.string.alert_error_ejecucion)+ " Servicio Web, Código:"+statusCode, Toast.LENGTH_SHORT).show();
                     progressBar.setVisibility(View.INVISIBLE);
                 }
@@ -1466,7 +1563,7 @@ public class ActualizarElemento extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 String respuesta = new String(responseBody);
-                Log.d("resultado","Error "+respuesta);
+                Log.d(Constantes.TAG,"Error "+respuesta);
                 Toast.makeText(getApplicationContext(),getText(R.string.alert_error_ejecucion)+ " Código: "+statusCode, Toast.LENGTH_SHORT).show();
                 progressBar.setVisibility(View.INVISIBLE);
             }
@@ -1504,6 +1601,10 @@ public class ActualizarElemento extends AppCompatActivity {
         swActualizarPosicion.setChecked(false);
         swPosteExclusivoAp.setChecked(false);
         swTranformadorExclusivoAP.setChecked(false);
+        rdSectorNormal.setChecked(true);
+        rdSectorSubNormal.setChecked(false);
+        rdZonaUrbano.setChecked(true);
+        rdZonaRural.setChecked(false);
         imgFoto.setImageResource(R.drawable.imagen_no_disponible);
         encodeString=null;
     }

@@ -481,6 +481,11 @@ public class ListaActividad extends AppCompatActivity  {
                     actividadOperativa.setPendienteSincronizar(cursor.getString(cursor.getColumnIndex("pendiente_sincronizar")));
                     actividadOperativa.setElementoNoEncontrado(cursor.getString(cursor.getColumnIndex("elemento_no_encontrado")));
                     actividadOperativa.setAfectadoPorVandalismo(cursor.getString(cursor.getColumnIndex("afectado_por_vandalismo")));
+                    actividadOperativa.setIdReporteDano(cursor.getInt(cursor.getColumnIndex("id_reporte_dano")));
+                    actividadOperativa.setIdClienteExterno(cursor.getInt(cursor.getColumnIndex("id_cliente_externo")));
+                    actividadOperativa.setNombreCliente(cursor.getString(cursor.getColumnIndex("nombre_cliente")));
+                    actividadOperativa.setDireccionCliente(cursor.getString(cursor.getColumnIndex("direccion_cliente")));
+                    actividadOperativa.setTelefonoCliente(cursor.getString(cursor.getColumnIndex("telefono_cliente")));
                     //Log.d(Constantes.TAG,"poste:"+cursor.getString(cursor.getColumnIndex("afectado_por_vandalismo")));
 
                     actividadOperativaArrayList.add(actividadOperativa);

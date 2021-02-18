@@ -234,6 +234,11 @@ class MisActividades {
                                 jObjectActividad.getString("usuario_programa_actividad")
                         );
                         actividadOperativa.setObservacion(jObjectActividad.getString("observacion"));
+                        actividadOperativa.setIdReporteDano(jObjectActividad.getInt("radicado_reporte_dano"));
+                        actividadOperativa.setIdClienteExterno(jObjectActividad.getInt("id_cliente_externo"));
+                        actividadOperativa.setNombreCliente(jObjectActividad.getString("nombre_cliente"));
+                        actividadOperativa.setDireccionCliente(jObjectActividad.getString("direccion_cliente"));
+                        actividadOperativa.setTelefonoCliente(jObjectActividad.getString("telefono_cliente"));
                         actividadOperativaDB.agregarDatos(actividadOperativa);
                         //Thread.sleep(200);
                     }

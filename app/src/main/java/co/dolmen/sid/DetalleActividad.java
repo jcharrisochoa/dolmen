@@ -64,6 +64,9 @@ public class DetalleActividad extends AppCompatActivity {
     private TextView txtLatitud;
     private TextView txtLongitud;
     private TextView txtSincronizada;
+    private TextView txtNombreCliente;
+    private TextView txtDireccionCliente;
+    private TextView txtTelefonoCliente;
 
     private LinearLayout layoutMaterial;
     private LinearLayout layoutElementoDesmontado;
@@ -117,6 +120,9 @@ public class DetalleActividad extends AppCompatActivity {
         txtLatitud      = findViewById(R.id.txt_latitud);
         txtLongitud      = findViewById(R.id.txt_longitud);
         txtSincronizada = findViewById(R.id.txt_sincronizada);
+        txtNombreCliente    = findViewById(R.id.txt_nombre_cliente);
+        txtDireccionCliente = findViewById(R.id.txt_direccion_cliente);
+        txtTelefonoCliente  = findViewById(R.id.txt_telefono_cliente);
 
         layoutMaterial              = findViewById(R.id.layout_material);
         layoutElementoDesmontado    = findViewById(R.id.layout_elemento_desmontado);
@@ -189,7 +195,10 @@ public class DetalleActividad extends AppCompatActivity {
         txtPrograma.setText(String.valueOf(ao.getPrograma().getId()));
         txtTipoOperacion.setText(ao.getTipoActividad().getDescripcion());
         txtET.setText(ao.getEt());
-        //txtReporte.setText();
+        txtReporte.setText(String.valueOf(ao.getIdReporteDano()));
+        txtNombreCliente.setText(ao.getNombreCliente());
+        txtDireccionCliente.setText(ao.getDireccionCliente());
+        txtTelefonoCliente.setText(ao.getTelefonoCliente());
         txtProceso.setText(ao.getProcesoSgc().getDescripcion());
         txtVehiculo.setText(ao.getEquipo().getSerial());
         txtElemento.setText(ao.getElemento().getElemento_no());
