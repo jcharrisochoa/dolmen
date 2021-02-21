@@ -21,7 +21,7 @@
             android:orientation="vertical">
 
             <ImageView
-                android:id="@+id/foto_antes_1"
+                android:id="@+id/foto_despues_1"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_gravity="center"
@@ -55,7 +55,7 @@
             android:orientation="vertical">
 
             <ImageView
-                android:id="@+id/foto_antes_2"
+                android:id="@+id/foto_despues_2"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_gravity="center"
@@ -96,7 +96,7 @@
             android:orientation="vertical">
 
             <ImageView
-                android:id="@+id/foto_antes_3"
+                android:id="@+id/foto_despues_3"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_gravity="center"
@@ -130,7 +130,7 @@
             android:orientation="vertical">
 
             <ImageView
-                android:id="@+id/foto_antes_4"
+                android:id="@+id/foto_despues_4"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_gravity="center"

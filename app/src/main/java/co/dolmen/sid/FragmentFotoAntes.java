@@ -267,6 +267,10 @@ public class FragmentFotoAntes extends Fragment {
             }
 
         } else if (resultCode == RESULT_CANCELED) {
+            accionarFoto1 = false;
+            accionarFoto2 = false;
+            accionarFoto3 = false;
+            accionarFoto4 = false;
             Toast.makeText(getContext(), getText(R.string.alert_cancelar_camara), Toast.LENGTH_SHORT).show();
 
         } else {

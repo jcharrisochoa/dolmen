@@ -70,10 +70,10 @@ public class FragmentFotoDespues extends Fragment {
         btnDelFoto3 = view.findViewById(R.id.btn_borrar_foto_3);
         btnDelFoto4 = view.findViewById(R.id.btn_borrar_foto_4);
 
-        imgAntfoto1 = view.findViewById(R.id.foto_antes_1);
-        imgAntfoto2 = view.findViewById(R.id.foto_antes_2);
-        imgAntfoto3 = view.findViewById(R.id.foto_antes_3);
-        imgAntfoto4 = view.findViewById(R.id.foto_antes_4);
+        imgAntfoto1 = view.findViewById(R.id.foto_despues_1);
+        imgAntfoto2 = view.findViewById(R.id.foto_despues_2);
+        imgAntfoto3 = view.findViewById(R.id.foto_despues_3);
+        imgAntfoto4 = view.findViewById(R.id.foto_despues_4);
 
 
         imgAntfoto1.setOnClickListener(new View.OnClickListener() {
@@ -233,6 +233,10 @@ public class FragmentFotoDespues extends Fragment {
             }
 
         } else if (resultCode == RESULT_CANCELED) {
+            accionarFoto1 = false;
+            accionarFoto2 = false;
+            accionarFoto3 = false;
+            accionarFoto4 = false;
             Toast.makeText(getContext(), getText(R.string.alert_cancelar_camara), Toast.LENGTH_SHORT).show();
 
         } else {
@@ -244,16 +248,16 @@ public class FragmentFotoDespues extends Fragment {
     public void quitarFoto(ImageView imageView){
         imageView.setImageResource(R.drawable.icon_no_photography);
         switch (imageView.getId()){
-            case R.id.foto_antes_1:
+            case R.id.foto_despues_1:
                 encodeStringFoto_1 = "";
                 break;
-            case R.id.foto_antes_2:
+            case R.id.foto_despues_2:
                 encodeStringFoto_2 = "";
                 break;
-            case R.id.foto_antes_3:
+            case R.id.foto_despues_3:
                 encodeStringFoto_3 = "";
                 break;
-            case R.id.foto_antes_4:
+            case R.id.foto_despues_4:
                 encodeStringFoto_4 = "";
                 break;
         }
