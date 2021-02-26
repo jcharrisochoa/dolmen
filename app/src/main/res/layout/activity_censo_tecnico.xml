@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,1042 +7,1186 @@
     android:layout_height="match_parent"
     tools:context=".CensoTecnico">
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginRight="4dp"
-        android:background="#FFFFFF"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/txt_buscar_elemento"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:autofillHints="@string/buscar_elemento"
-            android:background="@android:drawable/edit_text"
-            android:ems="10"
-            android:hint="@string/buscar_elemento"
-            android:inputType="number"
-            android:maxLength="7"
-            tools:text="@string/buscar_elemento" />
-
-        <ImageButton
-            android:id="@+id/btn_buscar_elemento"
-            android:layout_width="wrap_content"
-            android:layout_height="46dp"
-            android:layout_weight="1"
-            android:background="@android:drawable/btn_default_small"
-            android:contentDescription="@string/buscar_elemento"
-            android:tint="@android:color/holo_orange_dark"
-            app:srcCompat="@android:drawable/ic_menu_search" />
-
-        <ImageButton
-            android:id="@+id/btn_limpiar"
-            android:layout_width="wrap_content"
-            android:layout_height="46dp"
-            android:layout_weight="1"
-            android:background="@android:drawable/btn_default_small"
-            android:tint="@color/colorAccent"
-            app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
-
-
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginBottom="2dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/ly_botones_accion"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
-
-        <ScrollView
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay">
 
             <LinearLayout
+                android:id="@+id/linearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Elemento No:" />
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <EditText
-                    android:id="@+id/txt_elemento_no"
+                    android:id="@+id/txt_buscar_elemento"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@android:drawable/edit_text"
+                    android:layout_weight="1"
+                    android:autofillHints="@string/buscar_elemento"
                     android:ems="10"
+                    android:hint="@string/buscar_elemento"
                     android:inputType="number"
-                    android:maxLength="6" />
+                    android:maxLength="7"
+                    tools:text="@string/buscar_elemento" />
 
-                <View
-                    android:id="@+id/divider3"
+                <ImageButton
+                    android:id="@+id/btn_buscar_elemento"
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="?android:attr/listDivider" />
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:background="@color/colorPrimary"
+                    android:contentDescription="@string/buscar_elemento"
+                    android:src="@drawable/icon_search"
+                    android:tint="@color/colorIconText" />
 
-                <Switch
-                    android:id="@+id/sw_numero_luminaria_visible"
+                <ImageButton
+                    android:id="@+id/btn_limpiar"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginBottom="2dp"
-                    android:checked="true"
-                    android:text="¿El Número de la Luminaria es  Visible?" />
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:background="@color/colorPrimary"
+                    android:src="@drawable/icon_cancel"
+                    android:tint="@color/colorIconText" />
 
-                <View
-                    android:id="@+id/divider4"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="?android:attr/listDivider" />
+            </LinearLayout>
 
-                <Switch
-                    android:id="@+id/sw_tiene_luminaria"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:checked="true"
-                    android:text="¿Posee Luminaria?" />
+        </com.google.android.material.appbar.AppBarLayout>
 
-                <View
-                    android:id="@+id/divider5"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="?android:attr/listDivider" />
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/textViewCensoAsignado"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Censo Asignado *" />
-
-                <Spinner
-                    android:id="@+id/slt_censo_asignado"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown" />
-
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Tipologia" />
-
-                <Spinner
-                    android:id="@+id/slt_tipologia"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown" />
-
-                <TextView
-                    android:id="@+id/textView3"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Mobiliario" />
-
-                <Spinner
-                    android:id="@+id/slt_mobiliario"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown" />
-
-                <TextView
-                    android:id="@+id/textView4"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Referencia" />
-
-                <Spinner
-                    android:id="@+id/slt_referencia"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown" />
-
-                <TextView
-                    android:id="@+id/textView24"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Funcionamiento del mobiliario" />
-
-                <Spinner
-                    android:id="@+id/slt_estado_mobiliario"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown" />
-
-                <View
-                    android:id="@+id/divider7"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="?android:attr/listDivider" />
-
-                <Switch
-                    android:id="@+id/sw_mobiliario_en_buenas_condiciones"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:checked="true"
-                    android:text="¿Mobiliario en buenas condiciones físicas?" />
-
-                <View
-                    android:id="@+id/divider8"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="?android:attr/listDivider" />
-
-                <TextView
-                    android:id="@+id/textView27"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Otras Caracteristicas del Estado del Mobiliario" />
-
-                <CheckBox
-                    android:id="@+id/chk_brazo_mal_estado"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:text="Brazo en mal estado" />
-
-                <CheckBox
-                    android:id="@+id/chk_visor_mal_estado"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:text="Visor en mal estado" />
-
-                <CheckBox
-                    android:id="@+id/chk_mobiliario_mal_posicionado"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:text="Mobiliario mal posicionado" />
-
-                <CheckBox
-                    android:id="@+id/chk_mobiliario_obsoleto"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:text="Mobiliario Obsoleto" />
-
-                <CheckBox
-                    android:id="@+id/chk_sin_bombillo"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:text="Sin Bombillo" />
-
-                <TextView
-                    android:id="@+id/textView5"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Barrio *" />
-
-                <Spinner
-                    android:id="@+id/slt_barrio"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown" />
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Elemento No:" />
+
+                    <EditText
+                        android:id="@+id/txt_elemento_no"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/edit_text"
+                        android:ems="10"
+                        android:inputType="number"
+                        android:maxLength="6" />
+
+                    <View
+                        android:id="@+id/divider3"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="?android:attr/listDivider" />
+
+                    <Switch
+                        android:id="@+id/sw_numero_luminaria_visible"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:checked="true"
+                        android:text="¿El Número de la Luminaria es  Visible?" />
+
+                    <View
+                        android:id="@+id/divider4"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="?android:attr/listDivider" />
+
+                    <Switch
+                        android:id="@+id/sw_tiene_luminaria"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:checked="true"
+                        android:text="¿Posee Luminaria?" />
+
+                    <View
+                        android:id="@+id/divider5"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="?android:attr/listDivider" />
+
+                    <TextView
+                        android:id="@+id/textViewCensoAsignado"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Censo Asignado *" />
+
+                    <Spinner
+                        android:id="@+id/slt_censo_asignado"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/btn_dropdown" />
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Tipologia" />
+
+                    <Spinner
+                        android:id="@+id/slt_tipologia"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/btn_dropdown" />
+
+                    <TextView
+                        android:id="@+id/textView3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Mobiliario" />
+
+                    <Spinner
+                        android:id="@+id/slt_mobiliario"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/btn_dropdown" />
+
+                    <TextView
+                        android:id="@+id/textView4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Referencia" />
+
+                    <Spinner
+                        android:id="@+id/slt_referencia"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/btn_dropdown" />
+
+                    <TextView
+                        android:id="@+id/textView50"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Fabricante" />
+
+                    <Spinner
+                        android:id="@+id/slt_fabricante_elemento"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/btn_dropdown" />
+
+                    <TextView
+                        android:id="@+id/textView24"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Funcionamiento del mobiliario" />
+
+                    <Spinner
+                        android:id="@+id/slt_estado_mobiliario"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/btn_dropdown" />
+
+                    <TextView
+                        android:id="@+id/textView30"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Calibre del conductro de la conexión al Elemento" />
+
+                    <Spinner
+                        android:id="@+id/slt_calibre_conexion_elemento"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/btn_dropdown" />
+
+                    <View
+                        android:id="@+id/divider7"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="?android:attr/listDivider" />
+
+                    <Switch
+                        android:id="@+id/sw_mobiliario_en_buenas_condiciones"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:checked="true"
+                        android:text="¿Mobiliario en buenas condiciones físicas?" />
+
+                    <View
+                        android:id="@+id/divider8"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="?android:attr/listDivider" />
+
+                    <TextView
+                        android:id="@+id/textView27"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Otras Caracteristicas del Estado del Mobiliario" />
+
+                    <CheckBox
+                        android:id="@+id/chk_brazo_mal_estado"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:text="Brazo en mal estado" />
+
+                    <CheckBox
+                        android:id="@+id/chk_visor_mal_estado"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:text="Visor en mal estado" />
+
+                    <CheckBox
+                        android:id="@+id/chk_mobiliario_mal_posicionado"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:text="Mobiliario mal posicionado" />
+
+                    <CheckBox
+                        android:id="@+id/chk_mobiliario_obsoleto"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:text="Mobiliario Obsoleto" />
+
+                    <CheckBox
+                        android:id="@+id/chk_sin_bombillo"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:text="Sin Bombillo" />
+
+                    <TextView
+                        android:id="@+id/textView5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Barrio *" />
+
+                    <Spinner
+                        android:id="@+id/slt_barrio"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/btn_dropdown" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/textView25"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Zona" />
+
+                            <RadioGroup
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+
+                                <RadioButton
+                                    android:id="@+id/rd_urbano"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="40dp"
+                                    android:checked="true"
+                                    android:text="Urbana" />
+
+                                <RadioButton
+                                    android:id="@+id/rd_rutal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="40dp"
+                                    android:text="Rural" />
+
+                            </RadioGroup>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/textView26"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Sector" />
+
+                            <RadioGroup
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+
+                                <RadioButton
+                                    android:id="@+id/rd_normal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="40dp"
+                                    android:checked="true"
+                                    android:text="Normal" />
+
+                                <RadioButton
+                                    android:id="@+id/rd_subnormal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="40dp"
+                                    android:text="SubNormal" />
+                            </RadioGroup>
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/textView23"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Dirección *" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:orientation="horizontal">
 
-                        <TextView
-                            android:id="@+id/textView25"
+                        <EditText
+                            android:id="@+id/txt_direccion"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Zona" />
+                            android:layout_weight="1"
+                            android:background="@android:drawable/edit_text"
+                            android:ems="10"
+                            android:inputType="textPersonName" />
 
-                        <RadioGroup
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                        <ImageButton
+                            android:id="@+id/btn_editar_direccion"
+                            android:layout_width="90dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@android:drawable/btn_default_small"
+                            android:tint="@android:color/holo_green_dark"
+                            app:srcCompat="@android:drawable/ic_menu_edit" />
 
-                            <RadioButton
-                                android:id="@+id/rd_urbano"
-                                android:layout_width="match_parent"
-                                android:layout_height="40dp"
-                                android:checked="true"
-                                android:text="Urbana" />
 
-                            <RadioButton
-                                android:id="@+id/rd_rutal"
-                                android:layout_width="match_parent"
-                                android:layout_height="40dp"
-                                android:text="Rural" />
+                    </LinearLayout>
 
-                        </RadioGroup>
+                    <TextView
+                        android:id="@+id/txt_mensaje_direccion"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/view_latitud"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Lat:" />
+
+                        <TextView
+                            android:id="@+id/gps_latitud"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3"
+                            android:text=""
+                            android:textColor="@color/design_default_color_primary_dark" />
+
+                        <TextView
+                            android:id="@+id/view_longitud"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Lon:" />
+
+                        <TextView
+                            android:id="@+id/gps_longitud"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3"
+                            android:text=""
+                            android:textColor="@color/design_default_color_primary_dark" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/textView26"
-                            android:layout_width="match_parent"
+                            android:id="@+id/view_altitud"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Sector" />
+                            android:layout_weight="1"
+                            android:text="Alt:" />
 
-                        <RadioGroup
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                        <TextView
+                            android:id="@+id/gps_altitud"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3"
+                            android:text=""
+                            android:textColor="@color/design_default_color_primary_dark" />
 
-                            <RadioButton
-                                android:id="@+id/rd_normal"
-                                android:layout_width="match_parent"
-                                android:layout_height="40dp"
-                                android:checked="true"
-                                android:text="Normal" />
+                        <TextView
+                            android:id="@+id/view_precision"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Pre:" />
 
-                            <RadioButton
-                                android:id="@+id/rd_subnormal"
-                                android:layout_width="match_parent"
-                                android:layout_height="40dp"
-                                android:text="SubNormal" />
-                        </RadioGroup>
+                        <TextView
+                            android:id="@+id/gps_precision"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3"
+                            android:text=""
+                            android:textColor="@color/design_default_color_primary_dark" />
+
+                        <TextView
+                            android:id="@+id/view_velocidad"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Vel:" />
+
+                        <TextView
+                            android:id="@+id/gps_velocidad"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3"
+                            android:text=""
+                            android:textColor="@color/design_default_color_primary_dark" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/view_direccion"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Dir:" />
+
+                        <TextView
+                            android:id="@+id/gps_direccion"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="4"
+                            android:text=""
+                            android:textColor="@color/design_default_color_primary_dark" />
 
                     </LinearLayout>
-                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/textView23"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Dirección *" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
 
-                    <EditText
-                        android:id="@+id/txt_direccion"
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <EditText
+                                android:id="@+id/txt_latitud"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:ems="10"
+                                android:hint="Latitud"
+                                android:inputType="textPersonName" />
+
+                            <EditText
+                                android:id="@+id/txt_longitud"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:ems="10"
+                                android:hint="Longitud"
+                                android:inputType="textPersonName" />
+                        </LinearLayout>
+
+                        <ImageButton
+                            android:id="@+id/btn_capturar_gps"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@android:drawable/btn_default_small"
+                            android:tint="@android:color/holo_green_dark"
+                            app:srcCompat="@android:drawable/ic_menu_mylocation" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/textView28"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:text="Tipo Espacio" />
+
+                    <Spinner
+                        android:id="@+id/slt_tipo_escenario"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/btn_dropdown" />
+
+                    <TextView
+                        android:id="@+id/textView10"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:text="Clase Via (M1,M2,M3) *" />
+
+                    <Spinner
+                        android:id="@+id/slt_clase_via"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/btn_dropdown" />
+
+                    <TextView
+                        android:id="@+id/textView51"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Perfil*" />
+
+                    <Spinner
+                        android:id="@+id/slt_clase_perfil"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/btn_dropdown" />
+
+                    <TextView
+                        android:id="@+id/textView33"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/alert_ancho_via" />
+
+                    <EditText
+                        android:id="@+id/txt_ancho_via"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/edit_text"
+                        android:ems="10"
+                        android:hint="Ej: 20mts"
+                        android:inputType="number"
+                        android:maxLength="4" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/textView53"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/titulo_anden_a" />
+
+                            <EditText
+                                android:id="@+id/txt_anden_a"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@android:drawable/edit_text"
+                                android:ems="10"
+                                android:hint="Ej: 0.6mts"
+                                android:inputType="numberDecimal"
+                                android:maxLength="4" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/textView54"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/titulo_anden_b" />
+
+                            <EditText
+                                android:id="@+id/txt_anden_b"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@android:drawable/edit_text"
+                                android:ems="10"
+                                android:hint="Ej: 0.5mts"
+                                android:inputType="numberDecimal"
+                                android:maxLength="4" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/textView55"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/titulo_avance_anden" />
+
+                    <EditText
+                        android:id="@+id/txt_avance_anden"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/edit_text"
+                        android:ems="10"
+                        android:hint="Ej: 2mts"
+                        android:inputType="number"
+                        android:maxLength="4" />
+
+
+                    <TextView
+                        android:id="@+id/textView14"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Poste #" />
+
+                    <EditText
+                        android:id="@+id/txt_poste_no"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/edit_text"
+                        android:ems="10"
+                        android:hint="Identificación Poste"
+                        android:inputType="textPersonName" />
+
+                    <TextView
+                        android:id="@+id/textView11"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Tipo Poste *" />
+
+                    <Spinner
+                        android:id="@+id/slt_tipo_poste"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/btn_dropdown" />
+
+                    <TextView
+                        android:id="@+id/textView12"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Norma Construcción Tipo Poste *" />
+
+                    <Spinner
+                        android:id="@+id/slt_norma_construccion_poste"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/btn_dropdown" />
+
+                    <TextView
+                        android:id="@+id/textView52"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Fabricante Poste*" />
+
+                    <Spinner
+                        android:id="@+id/slt_fabricante_poste"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/btn_dropdown" />
+
+
+                    <TextView
+                        android:id="@+id/textView13"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Tipo Retenida" />
+
+                    <Spinner
+                        android:id="@+id/slt_tipo_retenida"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/btn_dropdown" />
+
+                    <Switch
+                        android:id="@+id/sw_puesta_tierra"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:text="¿Tiene Puesta a Tierra?" />
+
+                    <View
+                        android:id="@+id/divider2"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="?android:attr/listDivider" />
+
+                    <Switch
+                        android:id="@+id/sw_poste_exclulsivo_alumbrado_publico"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:text="¿Poste Exclusivo Alumbrado Público?" />
+
+                    <View
+                        android:id="@+id/divider6"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="?android:attr/listDivider" />
+
+                    <Switch
+                        android:id="@+id/sw_poste_en_buen_estado"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:checked="true"
+                        android:text="¿El Poste está en buen estado?" />
+
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/textView56"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Interdistancia Anterior*" />
+
+                            <EditText
+                                android:id="@+id/txt_interdistancia_anterior"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@android:drawable/edit_text"
+                                android:ems="10"
+                                android:hint="Ej: 12Mts"
+                                android:inputType="number" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/textView15"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Interdistancia Sigte*" />
+
+                            <EditText
+                                android:id="@+id/txt_interdistancia"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@android:drawable/edit_text"
+                                android:ems="10"
+                                android:hint="Ej: 12Mts"
+                                android:inputType="number" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/textView20"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Potencia Transformador (KVA)" />
+
+                    <EditText
+                        android:id="@+id/txt_potencia_transformador"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/edit_text"
+                        android:ems="10"
+                        android:hint="Ej: 25KVA"
+                        android:inputType="numberDecimal" />
+
+                    <TextView
+                        android:id="@+id/textView21"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="MT Transformador" />
+
+                    <EditText
+                        android:id="@+id/txt_mt_transformador"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:background="@android:drawable/edit_text"
                         android:ems="10"
                         android:inputType="textPersonName" />
 
-                    <ImageButton
-                        android:id="@+id/btn_editar_direccion"
-                        android:layout_width="90dp"
+                    <TextView
+                        android:id="@+id/textView22"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@android:drawable/btn_default_small"
-                        android:tint="@android:color/holo_green_dark"
-                        app:srcCompat="@android:drawable/ic_menu_edit" />
+                        android:text="CT Transformador" />
 
+                    <EditText
+                        android:id="@+id/txt_ct_transformador"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/edit_text"
+                        android:ems="10"
+                        android:inputType="textPersonName" />
 
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/textView28"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Tipo Espacio" />
-
-                <Spinner
-                    android:id="@+id/slt_tipo_escenario"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown" />
-
-                <TextView
-                    android:id="@+id/txt_mensaje_direccion"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
+                    <Switch
+                        android:id="@+id/sw_transformador_exclusivo_ap"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:text="¿El tranformador es Exclusivo AP?" />
 
                     <TextView
-                        android:id="@+id/view_latitud"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/textView29"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Lat:" />
+                        android:text="Propiedad del Trasnformador" />
 
-                    <TextView
-                        android:id="@+id/gps_latitud"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="3"
-                        android:text=""
-                        android:textColor="@color/design_default_color_primary_dark" />
+                    <RadioGroup
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
 
-                    <TextView
-                        android:id="@+id/view_longitud"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Lon:" />
+                        <RadioButton
+                            android:id="@+id/rd_transformador_no_aplica"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:checked="true"
+                            android:text="No Aplica" />
 
-                    <TextView
-                        android:id="@+id/gps_longitud"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="3"
-                        android:text=""
-                        android:textColor="@color/design_default_color_primary_dark" />
-                </LinearLayout>
+                        <RadioButton
+                            android:id="@+id/rd_transformador_publico"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:text="Público" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
+                        <RadioButton
+                            android:id="@+id/rd_transformador_privado"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:text="Privado" />
 
-                    <TextView
-                        android:id="@+id/view_altitud"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Alt:" />
+                    </RadioGroup>
 
-                    <TextView
-                        android:id="@+id/gps_altitud"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="3"
-                        android:text=""
-                        android:textColor="@color/design_default_color_primary_dark" />
-
-                    <TextView
-                        android:id="@+id/view_precision"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Pre:" />
-
-                    <TextView
-                        android:id="@+id/gps_precision"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="3"
-                        android:text=""
-                        android:textColor="@color/design_default_color_primary_dark" />
-
-                    <TextView
-                        android:id="@+id/view_velocidad"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Vel:" />
-
-                    <TextView
-                        android:id="@+id/gps_velocidad"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="3"
-                        android:text=""
-                        android:textColor="@color/design_default_color_primary_dark" />
-                </LinearLayout>
-
-                <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/view_direccion"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Dir:" />
-
-                <TextView
-                    android:id="@+id/gps_direccion"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="4"
-                    android:text=""
-                    android:textColor="@color/design_default_color_primary_dark" />
-
-            </LinearLayout>
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    <View
+                        android:id="@+id/divider"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="?android:attr/listDivider" />
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:orientation="vertical">
 
-                        <EditText
-                            android:id="@+id/txt_latitud"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:ems="10"
-                            android:hint="Latitud"
-                            android:inputType="textPersonName" />
-
-                        <EditText
-                            android:id="@+id/txt_longitud"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:ems="10"
-                            android:hint="Longitud"
-                            android:inputType="textPersonName" />
-                    </LinearLayout>
-
-                    <ImageButton
-                        android:id="@+id/btn_capturar_gps"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@android:drawable/btn_default_small"
-                        android:tint="@android:color/holo_green_dark"
-                        app:srcCompat="@android:drawable/ic_menu_mylocation" />
-
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/textView10"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Clase Via (M1,M2,M3) *" />
-
-                <Spinner
-                    android:id="@+id/slt_clase_via"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown" />
-
-                <TextView
-                    android:id="@+id/textView33"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/alert_ancho_via" />
-
-                <EditText
-                    android:id="@+id/txt_ancho_via"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/edit_text"
-                    android:ems="10"
-                    android:hint="Ej: 20mts"
-                    android:inputType="number" />
-
-                <TextView
-                    android:id="@+id/textView30"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Calibre del conductro de la conexión al Elemento" />
-
-                <Spinner
-                    android:id="@+id/slt_calibre_conexion_elemento"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown" />
-
-                <TextView
-                    android:id="@+id/textView11"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Tipo Poste *" />
-
-                <Spinner
-                    android:id="@+id/slt_tipo_poste"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown" />
-
-                <TextView
-                    android:id="@+id/textView12"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Norma Construcción Tipo Poste *" />
-
-                <Spinner
-                    android:id="@+id/slt_norma_construccion_poste"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown" />
-
-                <Switch
-                    android:id="@+id/sw_puesta_tierra"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:text="¿Tiene Puesta a Tierra?" />
-
-                <View
-                    android:id="@+id/divider2"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="?android:attr/listDivider" />
-
-                <Switch
-                    android:id="@+id/sw_poste_exclulsivo_alumbrado_publico"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:text="¿Poste Exclusivo Alumbrado Público?"
-                    />
-
-                <View
-                    android:id="@+id/divider6"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="?android:attr/listDivider" />
-
-                <Switch
-                    android:id="@+id/sw_poste_en_buen_estado"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:text="¿El Poste está en buen estado?"
-                    android:checked="true" />
-
-                <TextView
-                    android:id="@+id/textView13"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Tipo Retenida" />
-
-                <Spinner
-                    android:id="@+id/slt_tipo_retenida"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/btn_dropdown" />
-
-                <TextView
-                    android:id="@+id/textView14"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Poste #" />
-
-                <EditText
-                    android:id="@+id/txt_poste_no"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/edit_text"
-                    android:ems="10"
-                    android:hint="Identificación Poste"
-                    android:inputType="textPersonName" />
-
-                <TextView
-                    android:id="@+id/textView15"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Interdistancia Poste en Mts *" />
-
-                <EditText
-                    android:id="@+id/txt_interdistancia"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/edit_text"
-                    android:ems="10"
-                    android:hint="Ej: 12Mts"
-                    android:inputType="number" />
-
-                <TextView
-                    android:id="@+id/textView20"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Potencia Transformador (KVA)" />
-
-                <EditText
-                    android:id="@+id/txt_potencia_transformador"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/edit_text"
-                    android:ems="10"
-                    android:hint="Ej: 25KVA"
-                    android:inputType="numberDecimal" />
-
-                <TextView
-                    android:id="@+id/textView21"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="MT Transormador" />
-
-                <EditText
-                    android:id="@+id/txt_mt_transformador"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/edit_text"
-                    android:ems="10"
-                    android:inputType="textPersonName" />
-
-                <TextView
-                    android:id="@+id/textView22"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="CT Transformador" />
-
-                <EditText
-                    android:id="@+id/txt_ct_transformador"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/edit_text"
-                    android:ems="10"
-                    android:inputType="textPersonName" />
-
-                <Switch
-                    android:id="@+id/sw_transformador_exclusivo_ap"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:text="¿El tranformador es Exclusivo AP?" />
-
-                <TextView
-                    android:id="@+id/textView29"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Propiedad del Trasnformador" />
-
-                <RadioGroup
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
-
-                    <RadioButton
-                        android:id="@+id/rd_transformador_no_aplica"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:checked="true"
-                        android:text="No Aplica" />
-
-                    <RadioButton
-                        android:id="@+id/rd_transformador_publico"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:text="Público" />
-
-                    <RadioButton
-                        android:id="@+id/rd_transformador_privado"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:text="Privado" />
-
-                </RadioGroup>
-
-                <View
-                    android:id="@+id/divider"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="?android:attr/listDivider" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#EFFBFB"
-                    android:fadeScrollbars="false"
-                    android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/textView9"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center|center_horizontal"
-                            android:text="TIPO ARMADO RED *"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="18sp" />
-
-                        <TextView
-                            android:id="@+id/textView16"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Tipo Red *" />
-
-                    <Spinner
-                        android:id="@+id/slt_tipo_red"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@android:drawable/btn_dropdown" />
-
-                        <TextView
-                            android:id="@+id/textView17"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Tipo Tensión *" />
-
-                    <Spinner
-                        android:id="@+id/slt_tipo_tension"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@android:drawable/btn_dropdown" />
-
-                        <TextView
-                            android:id="@+id/textView31"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Calibre del Conductor Eléctrico*" />
-
-                        <Spinner
-                            android:id="@+id/slt_calibre_conductor_armado"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@android:drawable/btn_dropdown" />
-
-                        <TextView
-                            android:id="@+id/textView18"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Tipo Estructura *" />
-
-                    <Spinner
-                        android:id="@+id/slt_tipo_estructura"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@android:drawable/btn_dropdown" />
-
-                        <TextView
-                            android:id="@+id/textView19"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Norma Construcción *" />
-
-                    <Spinner
-                        android:id="@+id/slt_norma_construccion_red"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@android:drawable/btn_dropdown" />
-
-                    <ImageButton
-                        android:id="@+id/btn_agregar_armado"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="right"
-                        android:background="@android:drawable/btn_default_small"
-                        app:srcCompat="@android:drawable/ic_input_add" />
-
-
-
-
-                </LinearLayout>
-                    <!---->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical"
-                        android:background="#FBEFF8"
-                        android:id="@+id/layout_tabla_armamdo">
-
-                        <TextView
-                            android:id="@+id/txt_titulo_armados_agregados"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center|center_horizontal"
-                            android:text="TIPO ARMADO RED AGREGADOS *"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="18sp" />
-
-                        <TableLayout
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:stretchColumns="1"
-                            android:layout_gravity="center"
-                            android:layout_margin="10dp">
+                            android:background="#EFFBFB"
+                            android:fadeScrollbars="false"
+                            android:orientation="vertical">
 
-                            <TableRow>
-                                <TextView
-                                    android:text="@string/titulo_norma"
-                                    android:gravity="center"
-                                    android:textSize="16sp"
-                                    android:textColor="@color/colorPrimary"/>
+                            <TextView
+                                android:id="@+id/textView9"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center|center_horizontal"
+                                android:text="TIPO ARMADO RED *"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="18sp" />
 
-                                <TextView
-                                    android:text="@string/titulo_accion"
-                                    android:gravity="right"
-                                    android:textSize="16sp"
-                                    android:textColor="@color/colorPrimary"/>
-                            </TableRow>
-                            <TableRow>
-                                <TextView
-                                    android:text=""
-                                    android:padding="3dip"
-                                    android:id="@+id/txt_norma_armado_red_1"/>
+                            <TextView
+                                android:id="@+id/textView16"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Tipo Red *" />
 
-                                <ImageButton
-                                    android:id="@+id/btn_eliminar_armado_1"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="right"
-                                    android:background="@android:drawable/btn_default_small"
-                                    android:tint="@color/colorAccent"
-                                    app:srcCompat="@android:drawable/ic_menu_delete" />
-                            </TableRow>
-                            <TableRow>
-                                <TextView
-                                    android:text=""
-                                    android:padding="3dip"
-                                    android:id="@+id/txt_norma_armado_red_2"/>
+                            <Spinner
+                                android:id="@+id/slt_tipo_red"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@android:drawable/btn_dropdown" />
 
-                                <ImageButton
-                                    android:id="@+id/btn_eliminar_armado_2"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="right"
-                                    android:background="@android:drawable/btn_default_small"
-                                    android:tint="@color/colorAccent"
-                                    app:srcCompat="@android:drawable/ic_menu_delete" />
-                            </TableRow>
-                            <TableRow>
-                                <TextView
-                                    android:text=""
-                                    android:padding="3dip"
-                                    android:id="@+id/txt_norma_armado_red_3"/>
+                            <TextView
+                                android:id="@+id/textView17"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Tipo Tensión *" />
 
-                                <ImageButton
-                                    android:id="@+id/btn_eliminar_armado_3"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="right"
-                                    android:background="@android:drawable/btn_default_small"
-                                    android:tint="@color/colorAccent"
-                                    app:srcCompat="@android:drawable/ic_menu_delete" />
-                            </TableRow>
+                            <Spinner
+                                android:id="@+id/slt_tipo_tension"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@android:drawable/btn_dropdown" />
 
-                        </TableLayout>
+                            <TextView
+                                android:id="@+id/textView31"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Calibre del Conductor Eléctrico*" />
+
+                            <Spinner
+                                android:id="@+id/slt_calibre_conductor_armado"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@android:drawable/btn_dropdown" />
+
+                            <TextView
+                                android:id="@+id/textView18"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Tipo Estructura *" />
+
+                            <Spinner
+                                android:id="@+id/slt_tipo_estructura"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@android:drawable/btn_dropdown" />
+
+                            <TextView
+                                android:id="@+id/textView19"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Norma Construcción *" />
+
+                            <Spinner
+                                android:id="@+id/slt_norma_construccion_red"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@android:drawable/btn_dropdown" />
+
+                            <ImageButton
+                                android:id="@+id/btn_agregar_armado"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="right"
+                                android:background="@android:drawable/btn_default_small"
+                                app:srcCompat="@android:drawable/ic_input_add" />
+
+
+                        </LinearLayout>
+                        <!---->
+                        <LinearLayout
+                            android:id="@+id/layout_tabla_armamdo"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="#FBEFF8"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/txt_titulo_armados_agregados"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center|center_horizontal"
+                                android:text="TIPO ARMADO RED AGREGADOS *"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="18sp" />
+
+                            <TableLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:layout_margin="10dp"
+                                android:stretchColumns="1">
+
+                                <TableRow>
+
+                                    <TextView
+                                        android:gravity="center"
+                                        android:text="@string/titulo_norma"
+                                        android:textColor="@color/colorPrimary"
+                                        android:textSize="16sp" />
+
+                                    <TextView
+                                        android:gravity="right"
+                                        android:text="@string/titulo_accion"
+                                        android:textColor="@color/colorPrimary"
+                                        android:textSize="16sp" />
+                                </TableRow>
+
+                                <TableRow>
+
+                                    <TextView
+                                        android:id="@+id/txt_norma_armado_red_1"
+                                        android:padding="3dip"
+                                        android:text="" />
+
+                                    <ImageButton
+                                        android:id="@+id/btn_eliminar_armado_1"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="right"
+                                        android:background="@android:drawable/btn_default_small"
+                                        android:tint="@color/colorAccent"
+                                        app:srcCompat="@android:drawable/ic_menu_delete" />
+                                </TableRow>
+
+                                <TableRow>
+
+                                    <TextView
+                                        android:id="@+id/txt_norma_armado_red_2"
+                                        android:padding="3dip"
+                                        android:text="" />
+
+                                    <ImageButton
+                                        android:id="@+id/btn_eliminar_armado_2"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="right"
+                                        android:background="@android:drawable/btn_default_small"
+                                        android:tint="@color/colorAccent"
+                                        app:srcCompat="@android:drawable/ic_menu_delete" />
+                                </TableRow>
+
+                                <TableRow>
+
+                                    <TextView
+                                        android:id="@+id/txt_norma_armado_red_3"
+                                        android:padding="3dip"
+                                        android:text="" />
+
+                                    <ImageButton
+                                        android:id="@+id/btn_eliminar_armado_3"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="right"
+                                        android:background="@android:drawable/btn_default_small"
+                                        android:tint="@color/colorAccent"
+                                        app:srcCompat="@android:drawable/ic_menu_delete" />
+                                </TableRow>
+
+                            </TableLayout>
+
+                        </LinearLayout>
 
                     </LinearLayout>
 
+
+                    <View
+                        android:id="@+id/dividerfoto"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="?android:attr/listDivider" />
+                    <!--Foto 1-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/foto_1"
+                            android:layout_width="250dp"
+                            android:layout_height="250dp"
+                            android:layout_gravity="center|center_horizontal"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            app:srcCompat="@drawable/imagen_no_disponible" />
+
+                        <Button
+                            android:id="@+id/btn_tomar_foto_1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@android:drawable/btn_default_small"
+                            android:drawableLeft="@android:drawable/ic_menu_camera"
+                            android:text="@string/btn_tomar_foto" />
+
+                        <Button
+                            android:id="@+id/btn_borrar_foto_1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@android:drawable/btn_default"
+                            android:drawableLeft="@android:drawable/ic_delete"
+                            android:text="@string/btn_borrar_foto" />
+                    </LinearLayout>
+                    <!--Foto 2-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/foto_2"
+                            android:layout_width="250dp"
+                            android:layout_height="250dp"
+                            android:layout_gravity="center|center_horizontal"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            app:srcCompat="@drawable/imagen_no_disponible" />
+
+                        <Button
+                            android:id="@+id/btn_tomar_foto_2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@android:drawable/btn_default_small"
+                            android:drawableLeft="@android:drawable/ic_menu_camera"
+                            android:text="@string/btn_tomar_foto" />
+
+                        <Button
+                            android:id="@+id/btn_borrar_foto_2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@android:drawable/btn_default"
+                            android:drawableLeft="@android:drawable/ic_delete"
+                            android:text="@string/btn_borrar_foto" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/textViewObs"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Observación" />
+
+                    <EditText
+                        android:id="@+id/txt_observacion"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/editbox_background_normal"
+                        android:ems="10"
+                        android:gravity="start|top"
+                        android:hint="Observación"
+                        android:inputType="textMultiLine"
+                        android:lines="5" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:orientation="horizontal" />
                 </LinearLayout>
 
+            </ScrollView>
 
-                <View
-                    android:id="@+id/dividerfoto"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="?android:attr/listDivider" />
-                <!--Foto 1-->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:id="@+id/foto_1"
-                        android:layout_width="250dp"
-                        android:layout_height="250dp"
-                        android:layout_gravity="center|center_horizontal"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="5dp"
-                        app:srcCompat="@drawable/imagen_no_disponible" />
-
-                    <Button
-                        android:id="@+id/btn_tomar_foto_1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@android:drawable/btn_default_small"
-                        android:drawableLeft="@android:drawable/ic_menu_camera"
-                        android:text="@string/btn_tomar_foto" />
-
-                    <Button
-                        android:id="@+id/btn_borrar_foto_1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@android:drawable/btn_default"
-                        android:drawableLeft="@android:drawable/ic_delete"
-                        android:text="@string/btn_borrar_foto" />
-                </LinearLayout>
-                <!--Foto 2-->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:id="@+id/foto_2"
-                        android:layout_width="250dp"
-                        android:layout_height="250dp"
-                        android:layout_gravity="center|center_horizontal"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="5dp"
-                        app:srcCompat="@drawable/imagen_no_disponible" />
-
-                    <Button
-                        android:id="@+id/btn_tomar_foto_2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@android:drawable/btn_default_small"
-                        android:drawableLeft="@android:drawable/ic_menu_camera"
-                        android:text="@string/btn_tomar_foto" />
-
-                    <Button
-                        android:id="@+id/btn_borrar_foto_2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@android:drawable/btn_default"
-                        android:drawableLeft="@android:drawable/ic_delete"
-                        android:text="@string/btn_borrar_foto" />
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/textViewObs"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Observación" />
-                <EditText
-                    android:id="@+id/txt_observacion"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:drawable/editbox_background_normal"
-                    android:ems="10"
-                    android:gravity="start|top"
-                    android:hint="Observación"
-                    android:inputType="textMultiLine"
-                    android:lines="5" />
-            </LinearLayout>
-        </ScrollView>
-
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ly_botones_accion"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginBottom="2dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -1057,28 +1201,29 @@
                 android:indeterminate="true" />
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <Button
-                android:id="@+id/btn_cancelar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@android:drawable/btn_default_small"
-                android:drawableLeft="@android:drawable/ic_menu_revert"
-                android:text="@string/btn_cancelar" />
 
-            <Button
-                android:id="@+id/btn_guardar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@android:drawable/btn_default_small"
-                android:drawableLeft="@android:drawable/ic_menu_save"
-                android:text="@string/btn_guardar" />
-        </LinearLayout>
-    </LinearLayout>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_guardar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:tint="@color/colorIconText"
+        app:backgroundTint="@color/colorAccentOk"
+        app:srcCompat="@drawable/icon_save"
+        tools:ignore="VectorDrawableCompat" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_cancelar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|left"
+        android:layout_margin="@dimen/fab_margin"
+        android:tint="@color/colorIconText"
+        app:backgroundTint="@color/colorAccentCancel"
+        app:srcCompat="@drawable/icon_undo"
+        tools:ignore="VectorDrawableCompat" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -2,6 +2,8 @@ package co.dolmen.sid.utilidades;
 
 import android.database.sqlite.SQLiteDatabase;
 
+import co.dolmen.sid.entidad.ClasePerfil;
+import co.dolmen.sid.modelo.ClasePerfilDB;
 import co.dolmen.sid.modelo.ElementoDesmontadoDB;
 import co.dolmen.sid.modelo.ActaContratoDB;
 import co.dolmen.sid.modelo.ActividadOperativaDB;
@@ -22,6 +24,8 @@ import co.dolmen.sid.modelo.ElementoDB;
 import co.dolmen.sid.modelo.EquipoDB;
 import co.dolmen.sid.modelo.EstadoActividadDB;
 import co.dolmen.sid.modelo.EstadoMobiliarioDB;
+import co.dolmen.sid.modelo.FabricanteElementoDB;
+import co.dolmen.sid.modelo.FabricantePosteDB;
 import co.dolmen.sid.modelo.MobiliarioDB;
 import co.dolmen.sid.modelo.MovimientoArticuloDB;
 import co.dolmen.sid.modelo.MunicipioDB;
@@ -107,6 +111,9 @@ public class MiBaseDatos {
     public CentroCostoDB centroCostoDB;
     public ElementoDesmontadoDB elementoDesmontadoDB;
     public VatiajeDesmontadoDB vatiajeDesmontadoDB;
+    public ClasePerfilDB clasePerfilDB;
+    public FabricantePosteDB fabricantePosteDB;
+    public FabricanteElementoDB fabricanteElementoDB;
 
     public MiBaseDatos(SQLiteDatabase sqLiteDatabase){
         tipologiaDB = new TipologiaDB(sqLiteDatabase);
@@ -160,6 +167,10 @@ public class MiBaseDatos {
         centroCostoDB   = new CentroCostoDB(sqLiteDatabase);
         elementoDesmontadoDB = new ElementoDesmontadoDB(sqLiteDatabase);
         vatiajeDesmontadoDB = new VatiajeDesmontadoDB(sqLiteDatabase);
+        clasePerfilDB   = new ClasePerfilDB(sqLiteDatabase);
+        fabricantePosteDB   = new FabricantePosteDB(sqLiteDatabase);
+        fabricanteElementoDB = new FabricanteElementoDB(sqLiteDatabase);
+
     }
 
     public void crearTabla(){
@@ -214,6 +225,9 @@ public class MiBaseDatos {
         centroCostoDB.crearTabla();
         elementoDesmontadoDB.crearTabla();
         vatiajeDesmontadoDB.crearTabla();
+        clasePerfilDB.crearTabla();
+        fabricantePosteDB.crearTabla();
+        fabricanteElementoDB.crearTabla();
         //Log.d("DataBase","create");
     }
 
@@ -269,6 +283,9 @@ public class MiBaseDatos {
         centroCostoDB.borrarTabla();
         elementoDesmontadoDB.borrarTabla();
         vatiajeDesmontadoDB.borrarTabla();
+        clasePerfilDB.borrarTabla();
+        fabricantePosteDB.borrarTabla();
+        fabricanteElementoDB.borrarTabla();
     }
 
     public void eliminarDatos(){
@@ -314,5 +331,8 @@ public class MiBaseDatos {
         centroCostoDB.eliminarDatos();
         elementoDesmontadoDB.eliminarDatos();
         vatiajeDesmontadoDB.eliminarDatos();
+        clasePerfilDB.eliminarDatos();
+        fabricantePosteDB.eliminarDatos();
+        fabricanteElementoDB.eliminarDatos();
     }
 }

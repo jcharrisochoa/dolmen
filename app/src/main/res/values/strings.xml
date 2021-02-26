@@ -227,4 +227,10 @@
     <string name="titulo_centro_costo">Centro Costo</string>
     <string name="titulo_lista_vatiaje_desmontado">Vatiaje Desmontado agregado(s)</string>
     <string name="alert_vatiaje">Seleccione un vatiaje</string>
+    <string name="titulo_clase_perfil">Clase Perfil</string>
+    <string name="titulo_fabricante_poste">Fabricante Poste</string>
+    <string name="titulo_fabricante_elemento">Fabricante Elemento</string>
+    <string name="titulo_avance_anden">Avance Anden</string>
+    <string name="titulo_anden_a">Anden A</string>
+    <string name="titulo_anden_b">Anden B</string>
 </resources>

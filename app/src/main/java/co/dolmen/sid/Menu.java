@@ -166,7 +166,8 @@ public class Menu extends AppCompatActivity {
         btnCensoTecnico.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(Menu.this,SubMenuCensoTecnico.class);
+                //Intent i = new Intent(Menu.this,SubMenuCensoTecnico.class);
+                Intent i = new Intent(Menu.this,CensoTecnico.class);
                 startActivity(i);
                 Menu.this.finish();
             }

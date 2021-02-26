@@ -5,8 +5,13 @@ public class Censo {
     private int id_censo;
     private int interdistancia;
     private int ancho_via;
+    private int mobiliario_no_anterior;
+    private int mobiliario_no_posterior;
 
     private double potenciaTransformador;
+    private double anden_a;
+    private double anden_b;
+    private double avance_anden;
 
     private char numeroMobiliarioVisible;
     private char mobiliarioEnSitio;
@@ -31,6 +36,10 @@ public class Censo {
     private EstadoMobiliario estadoMobiliario;
     private TipoEscenario tipoEscenario;
     private Calibre calibre;
+    private ClasePerfil clasePerfil;
+    private FabricantePoste fabricantePoste;
+    private FabricanteElemento fabricanteElemento;
+    private TipoBrazo tipoBrazo;
 
     private String chkSwLuminariaVisible;
     private String chkSwPoseeLuminaria;
@@ -397,5 +406,77 @@ public class Censo {
 
     public void setCalibre(Calibre calibre) {
         this.calibre = calibre;
+    }
+
+    public ClasePerfil getClasePerfil() {
+        return clasePerfil;
+    }
+
+    public void setClasePerfil(ClasePerfil clasePerfil) {
+        this.clasePerfil = clasePerfil;
+    }
+
+    public FabricantePoste getFabricantePoste() {
+        return fabricantePoste;
+    }
+
+    public void setFabricantePoste(FabricantePoste fabricantePoste) {
+        this.fabricantePoste = fabricantePoste;
+    }
+
+    public FabricanteElemento getFabricanteElemento() {
+        return fabricanteElemento;
+    }
+
+    public void setFabricanteElemento(FabricanteElemento fabricanteElemento) {
+        this.fabricanteElemento = fabricanteElemento;
+    }
+
+    public TipoBrazo getTipoBrazo() {
+        return tipoBrazo;
+    }
+
+    public void setTipoBrazo(TipoBrazo tipoBrazo) {
+        this.tipoBrazo = tipoBrazo;
+    }
+
+    public int getMobiliario_no_anterior() {
+        return mobiliario_no_anterior;
+    }
+
+    public void setMobiliario_no_anterior(int mobiliario_no_anterior) {
+        this.mobiliario_no_anterior = mobiliario_no_anterior;
+    }
+
+    public int getMobiliario_no_posterior() {
+        return mobiliario_no_posterior;
+    }
+
+    public void setMobiliario_no_posterior(int mobiliario_no_posterior) {
+        this.mobiliario_no_posterior = mobiliario_no_posterior;
+    }
+
+    public double getAnden_a() {
+        return anden_a;
+    }
+
+    public void setAnden_a(double anden_a) {
+        this.anden_a = anden_a;
+    }
+
+    public double getAnden_b() {
+        return anden_b;
+    }
+
+    public void setAnden_b(double anden_b) {
+        this.anden_b = anden_b;
+    }
+
+    public double getAvance_anden() {
+        return avance_anden;
+    }
+
+    public void setAvance_anden(double avance_anden) {
+        this.avance_anden = avance_anden;
     }
 }

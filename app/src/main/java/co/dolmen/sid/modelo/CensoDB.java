@@ -76,7 +76,18 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
                         "id_tipo_conductor_electrico INTEGER DEFAULT NULL,"+
                         "id_calibre INTEGER NOT NULL,"+
                         "ancho_via INTEGER NOT NULL DEFAULT 0,"+
-                        "transformador_exclusivo_ap VARCHAR(1) NOT NULL DEFAULT 'N'"+
+                        "transformador_exclusivo_ap VARCHAR(1) NOT NULL DEFAULT 'N',"+
+                        "id_tipo_brazo INTEGER DEFAULT NULL,"+
+                        "id_fabricante_poste INTEGER DEFAULT NULL,"+
+                        "anden_a NUMERIC(5,2) NOT NULL DEFAULT 0.0,"+
+                        "anden_b NUMERIC(5,2) NOT NULL DEFAULT 0.0,"+
+                        "avance_anden NUMERIC(5,2) NOT NULL DEFAULT 0.0,"+
+                        "id_fabricante_luminaria INTEGER DEFAULT NULL,"+
+                        "id_clasificacion_perfil INTEGER DEFAULT NULL,"+
+                        "mobiliario_no_anterior INTEGER DEFAULT NULL,"+
+                        "id_elemento_anterior INTEGER DEFAULT NULL,"+
+                        "mobiliario_no_posterior INTEGER DEFAULT NULL,"+
+                        "id_elemento_posterior INTEGER DEFAULT NULL"+
                         ");"
         );
     }
@@ -186,6 +197,16 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
             contentValues.put("id_calibre",censo.getCalibre().getId_calibre());
             contentValues.put("ancho_via",censo.getAncho_via());
             contentValues.put("transformador_exclusivo_ap",censo.getChkSwTransformadorExclusivoAP());
+            //--
+            contentValues.put("id_tipo_brazo",censo.getTipoBrazo().getidTipoBrazo());
+            contentValues.put("id_fabricante_poste",censo.getFabricantePoste().getId());
+            contentValues.put("anden_a",censo.getAnden_a());
+            contentValues.put("anden_b",censo.getAnden_b());
+            contentValues.put("avance_anden",censo.getAvance_anden());
+            contentValues.put("id_fabricante_luminaria",censo.getFabricanteElemento().getId());
+            contentValues.put("id_clasificacion_perfil",censo.getClasePerfil().getId());
+            contentValues.put("mobiliario_no_anterior",censo.getMobiliario_no_anterior());
+            contentValues.put("mobiliario_no_posterior",censo.getMobiliario_no_posterior());
 
             try {
                 lastId = db.insertWithOnConflict(Constantes.TABLA_CENSO_TECNICO, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);

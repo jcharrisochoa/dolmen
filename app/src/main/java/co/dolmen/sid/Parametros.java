@@ -45,6 +45,7 @@ import co.dolmen.sid.modelo.BodegaDB;
 import co.dolmen.sid.modelo.CalibreDB;
 import co.dolmen.sid.modelo.CensoAsignadoDB;
 import co.dolmen.sid.modelo.CentroCostoDB;
+import co.dolmen.sid.modelo.ClasePerfilDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
 import co.dolmen.sid.modelo.ContratoDB;
 import co.dolmen.sid.modelo.ControlEncendidoDB;
@@ -52,6 +53,8 @@ import co.dolmen.sid.modelo.ElementoDB;
 import co.dolmen.sid.modelo.EquipoDB;
 import co.dolmen.sid.modelo.EstadoActividadDB;
 import co.dolmen.sid.modelo.EstadoMobiliarioDB;
+import co.dolmen.sid.modelo.FabricanteElementoDB;
+import co.dolmen.sid.modelo.FabricantePosteDB;
 import co.dolmen.sid.modelo.MobiliarioDB;
 import co.dolmen.sid.modelo.MunicipioDB;
 import co.dolmen.sid.modelo.NormaConstruccionPosteDB;
@@ -749,6 +752,45 @@ public class Parametros extends AppCompatActivity {
                     progress = (int)Math.round((double)(i+1)/arrayCentroCosto.length()*100);
                     publishProgress(progress, R.string.titulo_centro_costo);
                     Log.d("parametros","->Centro Costo:"+progress+"%");
+                }
+
+                //--Clase Perfil
+                ClasePerfilDB clasePerfilDB = new ClasePerfilDB(database);
+                JSONArray arrayClasePerfil = parametros.getJSONArray("clase_perfil");
+                for (int i = 0;i<arrayClasePerfil.length();i++){
+                    JSONObject jObjectClasePerfil = arrayClasePerfil.getJSONObject(i);
+                    clasePerfilDB.setId(jObjectClasePerfil.getInt("id"));
+                    clasePerfilDB.setDescripcion(jObjectClasePerfil.getString("descripcion"));
+                    clasePerfilDB.agregarDatos(clasePerfilDB);
+                    progress = (int)Math.round((double)(i+1)/arrayClasePerfil.length()*100);
+                    publishProgress(progress, R.string.titulo_clase_perfil);
+                    Log.d("parametros","->Clase Perfil:"+progress+"%");
+                }
+
+                //--Fabricante Poste
+                FabricantePosteDB fabricantePosteDB = new FabricantePosteDB(database);
+                JSONArray arrayFabricantePosteDB = parametros.getJSONArray("fabricante_poste");
+                for (int i = 0;i<arrayFabricantePosteDB.length();i++){
+                    JSONObject jObjectFabricantePosteDB = arrayFabricantePosteDB.getJSONObject(i);
+                    fabricantePosteDB.setId(jObjectFabricantePosteDB.getInt("id"));
+                    fabricantePosteDB.setDescripcion(jObjectFabricantePosteDB.getString("descripcion"));
+                    fabricantePosteDB.agregarDatos(fabricantePosteDB);
+                    progress = (int)Math.round((double)(i+1)/arrayFabricantePosteDB.length()*100);
+                    publishProgress(progress, R.string.titulo_fabricante_poste);
+                    Log.d("parametros","->Fabricante Poste:"+progress+"%");
+                }
+
+                //--Fabricante Elemento
+                FabricanteElementoDB fabricanteElementoDB = new FabricanteElementoDB(database);
+                JSONArray arrayFabricanteElementoDB = parametros.getJSONArray("fabricante_elemento");
+                for (int i = 0;i<arrayFabricanteElementoDB.length();i++){
+                    JSONObject jObjectFabricanteElementoDB = arrayFabricanteElementoDB.getJSONObject(i);
+                    fabricanteElementoDB.setId(jObjectFabricanteElementoDB.getInt("id"));
+                    fabricanteElementoDB.setDescripcion(jObjectFabricanteElementoDB.getString("descripcion"));
+                    fabricanteElementoDB.agregarDatos(fabricanteElementoDB);
+                    progress = (int)Math.round((double)(i+1)/arrayFabricanteElementoDB.length()*100);
+                    publishProgress(progress, R.string.titulo_fabricante_elemento);
+                    Log.d("parametros","->Fabricante Elemento:"+progress+"%");
                 }
 
                 //Proveedor

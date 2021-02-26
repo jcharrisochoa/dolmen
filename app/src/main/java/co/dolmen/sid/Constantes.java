@@ -65,4 +65,7 @@ public final class Constantes {
     public static final String TABLA_CENTRO_COSTO               = "centro_costo";
     public static final String TABLA_ELEMENTO_DESMONTADO        = "elemento_desmontado";
     public static final String TABLA_VATIAJE_DESMONTADO         = "vatiaje_desmontado";
+    public static final String TABLA_FABRICANTE_ELEMENTO        = "fabricante_elemento";
+    public static final String TABLA_FABRICANTE_POSTE           = "fabricante_poste";
+    public static final String TABLA_CLASE_PERFIL               = "clase_perfil";
 }

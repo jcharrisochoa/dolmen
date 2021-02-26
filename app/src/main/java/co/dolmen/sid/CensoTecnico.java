@@ -1,5 +1,6 @@
 package co.dolmen.sid;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -33,6 +34,7 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -49,12 +51,14 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestHandle;
 import com.loopj.android.http.RequestParams;
 
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -82,6 +86,7 @@ import co.dolmen.sid.entidad.ComponenteNormaConstruccionRed;
 import co.dolmen.sid.entidad.Contrato;
 import co.dolmen.sid.entidad.Elemento;
 import co.dolmen.sid.entidad.EstadoMobiliario;
+import co.dolmen.sid.entidad.FabricantePoste;
 import co.dolmen.sid.entidad.Mobiliario;
 import co.dolmen.sid.entidad.NormaConstruccionPoste;
 import co.dolmen.sid.entidad.NormaConstruccionRed;
@@ -99,9 +104,12 @@ import co.dolmen.sid.modelo.CensoArchivoDB;
 import co.dolmen.sid.modelo.CensoAsignadoDB;
 import co.dolmen.sid.modelo.CensoDB;
 import co.dolmen.sid.modelo.CensoTipoArmadoDB;
+import co.dolmen.sid.modelo.ClasePerfilDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
 import co.dolmen.sid.modelo.ElementoDB;
 import co.dolmen.sid.modelo.EstadoMobiliarioDB;
+import co.dolmen.sid.modelo.FabricanteElementoDB;
+import co.dolmen.sid.modelo.FabricantePosteDB;
 import co.dolmen.sid.modelo.MobiliarioDB;
 import co.dolmen.sid.modelo.NormaConstruccionPosteDB;
 import co.dolmen.sid.modelo.NormaConstruccionRedDB;
@@ -116,6 +124,9 @@ import co.dolmen.sid.modelo.TipoTensionDB;
 import co.dolmen.sid.modelo.TipologiaDB;
 import co.dolmen.sid.utilidades.DataSpinner;
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.entity.StringEntity;
+import cz.msebera.android.httpclient.message.BasicHeader;
+import cz.msebera.android.httpclient.protocol.HTTP;
 
 import static java.lang.Integer.parseInt;
 
@@ -149,6 +160,10 @@ public class CensoTecnico extends AppCompatActivity {
     Spinner sltTipoEscenario;
     Spinner sltCalibreConexionElemento;
     Spinner sltCalibreTipoArmado;
+    Spinner sltFabricanteElemento;
+    Spinner sltFabricantePoste;
+    Spinner sltClasePerfil;
+
     //--
     EditText txtElementoNo;
     EditText txtLatitud;
@@ -165,6 +180,9 @@ public class CensoTecnico extends AppCompatActivity {
     EditText txtPosteNo;
     EditText txtObservacion;
     EditText txtAnchoVia;
+    EditText txtAnden_a;
+    EditText txtAnden_b;
+    EditText txtAvanceAnden;
 
     //--
     Switch swLuminariaVisible;
@@ -175,8 +193,8 @@ public class CensoTecnico extends AppCompatActivity {
     Switch swMobiliarioBuenEstado;
     Switch swTranformadorExclusivoAP;
     //--
-    Button btnGuardar;
-    Button btnCancelar;
+    FloatingActionButton btnGuardar;
+    FloatingActionButton btnCancelar;
     Button btnTomarFoto1;
     Button btnTomarFoto2;
     Button btnBorrarFoto1;
@@ -210,6 +228,9 @@ public class CensoTecnico extends AppCompatActivity {
     ArrayList<DataSpinner> censoAsignadoList;
     ArrayList<DataSpinner> tipoEscenarioList;
     ArrayList<DataSpinner> calibreList;
+    ArrayList<DataSpinner> fabricanteElementoList;
+    ArrayList<DataSpinner> fabricantePosteList;
+    ArrayList<DataSpinner> clasePerfilList;
 
     ComponenteNormaConstruccionRed componenteNormaConstruccionRed;
     //--
@@ -338,6 +359,9 @@ public class CensoTecnico extends AppCompatActivity {
         sltTipoEscenario = findViewById(R.id.slt_tipo_escenario);
         sltCalibreConexionElemento = findViewById(R.id.slt_calibre_conexion_elemento);
         sltCalibreTipoArmado        = findViewById(R.id.slt_calibre_conductor_armado);
+        sltFabricanteElemento = findViewById(R.id.slt_fabricante_elemento);
+        sltFabricantePoste = findViewById(R.id.slt_fabricante_poste);
+        sltClasePerfil = findViewById(R.id.slt_clase_perfil);
         //--
         txtElementoNo = findViewById(R.id.txt_elemento_no);
         txtLatitud = findViewById(R.id.txt_latitud);
@@ -375,8 +399,8 @@ public class CensoTecnico extends AppCompatActivity {
         chkSinBombillo              = findViewById(R.id.chk_sin_bombillo);
         //-
         btnCapturarGPS = findViewById(R.id.btn_capturar_gps);
-        btnGuardar = findViewById(R.id.btn_guardar);
-        btnCancelar = findViewById(R.id.btn_cancelar);
+        btnGuardar = findViewById(R.id.fab_guardar);
+        btnCancelar = findViewById(R.id.fab_cancelar);
         btnTomarFoto1 = findViewById(R.id.btn_tomar_foto_1);
         btnTomarFoto2 = findViewById(R.id.btn_tomar_foto_2);
         btnBorrarFoto1 = findViewById(R.id.btn_borrar_foto_1);
@@ -601,7 +625,8 @@ public class CensoTecnico extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 database.close();
-                Intent i = new Intent(CensoTecnico.this, SubMenuCensoTecnico.class);
+                //Intent i = new Intent(CensoTecnico.this, SubMenuCensoTecnico.class);
+                Intent i = new Intent(CensoTecnico.this, Menu.class);
                 startActivity(i);
                 CensoTecnico.this.finish();
             }
@@ -795,8 +820,26 @@ public class CensoTecnico extends AppCompatActivity {
         cargarCensoAsignado(database);
         cargarTipoEscenario(database);
         cargarCalibre(database);
+        cargarFabricanteElemento(database);
+        cargarFabricantePoste(database);
+        cargarClasePerfil(database);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(android.view.Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_censo_tecnico,menu);
+        return true; //super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_sincronizar:
+                sincronizar();
+                break;
+        }
+        return true;//super.onOptionsItemSelected(item);
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -1047,6 +1090,60 @@ public class CensoTecnico extends AppCompatActivity {
     }
 
     //--
+    private void cargarFabricanteElemento(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        fabricanteElementoList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        FabricanteElementoDB fabricanteElementoDB = new FabricanteElementoDB(sqLiteDatabase);
+        Cursor cursor = fabricanteElementoDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        fabricanteElementoList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    fabricanteElementoList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltFabricanteElemento.setAdapter(dataAdapter);
+    }
+
+    //--
+    private void cargarFabricantePoste(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        fabricantePosteList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        FabricantePosteDB fabricantePosteDB = new FabricantePosteDB(sqLiteDatabase);
+        Cursor cursor = fabricantePosteDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        fabricantePosteList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    fabricantePosteList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltFabricantePoste.setAdapter(dataAdapter);
+    }
+
+    //--
     private void cargarEstadoMobiliario(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
         estadoMobiliarioList = new ArrayList<DataSpinner>();
@@ -1188,6 +1285,33 @@ public class CensoTecnico extends AppCompatActivity {
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, labels);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sltClaseVia.setAdapter(dataAdapter);
+    }
+
+    //--
+    private void cargarClasePerfil(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        clasePerfilList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        ClasePerfilDB clasePerfilDB = new ClasePerfilDB(sqLiteDatabase);
+        Cursor cursor = clasePerfilDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        clasePerfilList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    clasePerfilList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltClasePerfil.setAdapter(dataAdapter);
     }
 
     //--
@@ -2314,4 +2438,232 @@ public class CensoTecnico extends AppCompatActivity {
         }
     }
 
+    private void sincronizar() {
+
+    }
+
+/*
+    private void sincronizar(){
+
+        setButton(false);
+        final String tag = "Log:\n";
+        ConnectivityManager conn = (ConnectivityManager) getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = conn.getActiveNetworkInfo();
+
+        if(networkInfo != null && networkInfo.isConnected()) {
+            Toast.makeText(getApplicationContext(),"Conectando con "+networkInfo.getTypeName()+" / "+networkInfo.getExtraInfo(),Toast.LENGTH_LONG).show();
+            JSONObject principal = new JSONObject();
+            if (censoDB.consultarTodo().getCount() > 0) {
+                try {
+                    principal.put("json",armarJson());
+
+                    final AsyncHttpClient client = new AsyncHttpClient();
+                    StringEntity jsonParams = new StringEntity(principal.toString(), "UTF-8");
+                    jsonParams.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+                    client.setTimeout(Constantes.TIMEOUT);
+
+                    RequestHandle post = client.post(getApplicationContext(), ServicioWeb.urlSincronizarCensoTecnico, jsonParams, "application/json", new AsyncHttpResponseHandler() {
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                            String respuesta = new String(responseBody);
+                            String logs = tag;
+
+                            try {
+                                JSONObject jsonResponse = new JSONObject(new String(responseBody));
+
+                                JSONArray jArrayLog = jsonResponse.getJSONArray("log");
+                                for (int i=0;i<jArrayLog.length();i++){
+                                    JSONObject jLog = jArrayLog.getJSONObject(i);
+                                    jLog.getInt("id");
+                                    jLog.getInt("id_censo");
+                                    jLog.getInt("mobiliario");
+                                    jLog.getString("mensaje");
+                                    jLog.getBoolean("procesar");
+                                    logs = logs + "Mobiliario No: "+jLog.getInt("mobiliario")+","+jLog.getString("mensaje")+"\n";
+                                    if (jLog.getBoolean("procesar")){
+                                        censoArchivoDB.eliminarDatos(jLog.getInt("id"));
+                                        censoTipoArmadoDB.eliminarDatos(jLog.getInt("id"));
+                                        censoDB.eliminarDatos(jLog.getInt("id"));
+                                    }
+                                }
+                                visualizarLogs(logs,jsonResponse.getString("mensaje"));
+
+                                cant = censoDB.consultarTodo().getCount();
+                                limite = (cant>50)?50:cant;
+                                btnSincronizar.setText(getText(R.string.btn_sincronizar)+" ("+limite+" de "+cant+")");
+                                setButton(true);
+
+                            }catch (JSONException e){
+                                e.printStackTrace();
+                            }
+                        }
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                            String respuesta = new String(responseBody);
+                            Log.d("JSON-RESPONSE-ERROR:",respuesta);
+                            Toast.makeText(getApplicationContext(),getText(R.string.alert_error_ejecucion)+ " Código: "+statusCode+" "+error.getMessage(), Toast.LENGTH_LONG).show();
+                            setButton(true);
+                        }
+
+                        @Override
+                        public void onUserException(Throwable error) {
+                            super.onUserException(error);
+                            Log.d("JSON-RESPONSE:",error.getMessage());
+                        }
+                    });
+
+
+                } catch (JSONException e){
+                    Toast.makeText(getApplicationContext(),"Error generando empaquetando los datos",Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                    setButton(true);
+                }
+            }
+            else {
+                alert.setTitle(R.string.titulo_alerta);
+                alert.setMessage(R.string.alert_sin_datos_por_sincronizar);
+                alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        setButton(true);
+                        dialogInterface.cancel();
+                    }
+                });
+                alert.create().show();
+            }
+        }
+        else{
+            alert.setTitle(R.string.titulo_alerta);
+            alert.setMessage(R.string.alert_conexion);
+            alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    setButton(true);
+                    dialogInterface.cancel();
+                }
+            });
+            alert.create().show();
+        }
+    }
+
+    private void setButton(boolean estado){
+        btnRegistrarElemento.setEnabled(estado);
+        btnCancelar.setEnabled(estado);
+        btnSincronizar.setEnabled(estado);
+
+        if(estado) {
+            progressBar.setVisibility(View.INVISIBLE);
+        }
+        else{
+            progressBar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private JSONArray armarJson() throws JSONException{
+        JSONArray datos = new JSONArray();
+        cursor = censoDB.consultarTodo(limite);
+        if (cursor.moveToFirst()) {
+            do {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("id", cursor.getInt(cursor.getColumnIndex("id")));
+                jsonObject.put("id_usuario", idUsuario);
+                jsonObject.put("id_municipio", cursor.getInt(cursor.getColumnIndex("id_municipio")));
+                jsonObject.put("id_barrio", cursor.getInt(cursor.getColumnIndex("id_barrio")));
+                jsonObject.put("id_tipologia", cursor.getInt(cursor.getColumnIndex("id_tipologia")));
+                jsonObject.put("id_mobiliario", cursor.getInt(cursor.getColumnIndex("id_mobiliario")));
+                jsonObject.put("id_referencia", cursor.getInt(cursor.getColumnIndex("id_referencia")));
+                jsonObject.put("id_estado_mobiliario", cursor.getInt(cursor.getColumnIndex("id_estado_mobiliario")));
+                jsonObject.put("longitud", cursor.getFloat(cursor.getColumnIndex("longitud")));
+                jsonObject.put("latitud", cursor.getFloat(cursor.getColumnIndex("latitud")));
+                jsonObject.put("direccion", cursor.getString(cursor.getColumnIndex("direccion")));
+                jsonObject.put("fch_registro", cursor.getString(cursor.getColumnIndex("fch_registro")));
+                jsonObject.put("observacion", cursor.getString(cursor.getColumnIndex("observacion")));
+                jsonObject.put("id_censo", cursor.getInt(cursor.getColumnIndex("id_censo")));
+                jsonObject.put("id_elemento", cursor.getInt(cursor.getColumnIndex("id_elemento")));
+                jsonObject.put("mobiliario_no", cursor.getInt(cursor.getColumnIndex("mobiliario_no")));
+                jsonObject.put("numero_mobiliario_visible", cursor.getString(cursor.getColumnIndex("numero_mobiliario_visible")));
+                jsonObject.put("mobiliario_en_sitio", cursor.getString(cursor.getColumnIndex("mobiliario_en_sitio")));
+                jsonObject.put("id_sentido", 0);
+                jsonObject.put("cantidad", 1);
+                jsonObject.put("id_tipo_poste", cursor.getInt(cursor.getColumnIndex("id_tipo_poste")));
+                jsonObject.put("id_norma_construccion_poste", cursor.getInt(cursor.getColumnIndex("id_norma_construccion_poste")));
+                jsonObject.put("id_tipo_red", cursor.getInt(cursor.getColumnIndex("id_tipo_red")));
+                jsonObject.put("poste_no", cursor.getString(cursor.getColumnIndex("poste_no")));
+                jsonObject.put("interdistancia", cursor.getInt(cursor.getColumnIndex("interdistancia")));
+                jsonObject.put("puesta_a_tierra", cursor.getString(cursor.getColumnIndex("puesta_a_tierra")));
+                jsonObject.put("poste_exclusivo_ap", cursor.getString(cursor.getColumnIndex("poste_exclusivo_ap")));
+                jsonObject.put("id_tipo_retenida", cursor.getInt(cursor.getColumnIndex("id_tipo_retenida")));
+                jsonObject.put("id_clase_via", cursor.getInt(cursor.getColumnIndex("id_clase_via")));
+                jsonObject.put("serial_medidor", 0);
+                jsonObject.put("lectura_medidor", 0);
+                jsonObject.put("potencia_transformador", cursor.getDouble(cursor.getColumnIndex("potencia_transformador")));
+                jsonObject.put("placa_mt_transformador", cursor.getString(cursor.getColumnIndex("placa_mt_transformador")));
+                jsonObject.put("placa_ct_transformador", cursor.getString(cursor.getColumnIndex("placa_ct_transformador")));
+                jsonObject.put("poste_buen_estado", cursor.getString(cursor.getColumnIndex("poste_buen_estado")));
+                jsonObject.put("sector", cursor.getString(cursor.getColumnIndex("sector")));
+                jsonObject.put("zona", cursor.getString(cursor.getColumnIndex("zona")));
+                jsonObject.put("id_tipo_escenario", cursor.getString(cursor.getColumnIndex("id_tipo_escenario")));
+                jsonObject.put("mobiliario_buen_estado", cursor.getString(cursor.getColumnIndex("mobiliario_buen_estado")));
+                jsonObject.put("tipo_propietario_transformador", cursor.getString(cursor.getColumnIndex("tipo_propietario_transformador")));
+                jsonObject.put("brazo_mal_estado",cursor.getString(cursor.getColumnIndex("brazo_mal_estado")));
+                jsonObject.put("visor_mal_estado",cursor.getString(cursor.getColumnIndex("visor_mal_estado")));
+                jsonObject.put("mobiliario_mal_posicionado",cursor.getString(cursor.getColumnIndex("mobiliario_mal_posicionado")));
+                jsonObject.put("mobiliario_obsoleto",cursor.getString(cursor.getColumnIndex("mobiliario_obsoleto")));
+                jsonObject.put("mobiliario_sin_bombillo",cursor.getString(cursor.getColumnIndex("mobiliario_sin_bombillo")));
+                jsonObject.put("ancho_via",cursor.getString(cursor.getColumnIndex("ancho_via")));
+                jsonObject.put("transformador_exclusivo_ap",cursor.getString(cursor.getColumnIndex("transformador_exclusivo_ap")));
+
+                //--Tipo Armado
+                JSONArray jsonArrayTipoArmado = new JSONArray();
+                cursorTipoArmado = censoTipoArmadoDB.consultarTodo(cursor.getInt(cursor.getColumnIndex("id")));
+                if (cursorTipoArmado.moveToFirst()) {
+                    do {
+                        JSONObject jsonTipoArmado = new JSONObject();
+                        jsonTipoArmado.put("id_tipo_red",cursorTipoArmado.getInt(cursorTipoArmado.getColumnIndex("id_tipo_red")));
+                        jsonTipoArmado.put("id_norma_construccion",cursorTipoArmado.getInt(cursorTipoArmado.getColumnIndex("id_norma_construccion_red")));
+                        jsonTipoArmado.put("id_calibre",cursorTipoArmado.getInt(cursorTipoArmado.getColumnIndex("id_calibre")));
+                        jsonArrayTipoArmado.put(jsonTipoArmado);
+                    } while (cursorTipoArmado.moveToNext());
+                }
+                cursorTipoArmado.close();
+                jsonObject.put("tipo_armado",jsonArrayTipoArmado);
+
+                //--Imagenes
+                JSONArray jsonArrayFoto = new JSONArray();
+                cursorCensoArchivo = censoArchivoDB.consultarTodo(cursor.getInt(cursor.getColumnIndex("id")));
+                if (cursorCensoArchivo.moveToFirst()) {
+                    do {
+                        jsonArrayFoto.put(cursorCensoArchivo.getString(cursorCensoArchivo.getColumnIndex("archivo")));
+                    } while (cursorCensoArchivo.moveToNext());
+                }
+                jsonObject.put("foto",jsonArrayFoto);
+
+                datos.put(jsonObject);
+            } while (cursor.moveToNext());
+        }
+
+        return datos;
+    }
+
+    private void visualizarLogs(String logs,String msg){
+        alertLogs = new AlertDialog.Builder(this);
+        View content = LayoutInflater.from(getApplicationContext()).inflate(R.layout.visualizar_logs,null);
+        txtLog         = content.findViewById(R.id.txt_log);
+        txtLog.setEnabled(false);
+        txtLog.setText(msg+"\n\n"+logs);
+        alertLogs.setTitle(R.string.titulo_alerta);
+        alert.setMessage(msg);
+        alertLogs.setView(content);
+        alertLogs.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                setButton(true);
+                dialogInterface.cancel();
+            }
+        });
+
+        alertLogs.create().setCancelable(false);
+        alertLogs.create().show();
+    }
+    */
 }
