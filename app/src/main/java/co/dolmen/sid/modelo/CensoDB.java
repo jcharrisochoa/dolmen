@@ -53,6 +53,7 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
                         "id_tipo_red INTEGER DEFAULT NULL,"+
                         "poste_no VARCHAR(12) DEFAULT NULL,"+
                         "interdistancia INTEGER NOT NULL DEFAULT 0,"+
+                        "interdistancia_anterior INTEGER NOT NULL DEFAULT 0,"+
                         "puesta_a_tierra VARCHAR(1) NOT NULL DEFAULT 'N',"+
                         "poste_exclusivo_ap VARCHAR(1) NOT NULL DEFAULT 'N',"+
                         "poste_buen_estado VARCHAR(1) NOT NULL DEFAULT 'N',"+
@@ -174,6 +175,7 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
             contentValues.put("id_tipo_red",censo.getTipoRed().getId());
             contentValues.put("poste_no",censo.getPosteNo());
             contentValues.put("interdistancia",censo.getInterdistancia());
+            contentValues.put("interdistancia_anterior",censo.getInterdistancia_anterior());
             contentValues.put("puesta_a_tierra",censo.getChkSwPuestaTierra());
             contentValues.put("poste_exclusivo_ap",censo.getChkSwPosteExclusivoAp());
             contentValues.put("poste_buen_estado",censo.getChkSwPosteBuenEstado());

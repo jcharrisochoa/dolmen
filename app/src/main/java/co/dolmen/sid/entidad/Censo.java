@@ -4,6 +4,7 @@ public class Censo {
     private long lastId;
     private int id_censo;
     private int interdistancia;
+    private int interdistancia_anterior;
     private int ancho_via;
     private int mobiliario_no_anterior;
     private int mobiliario_no_posterior;
@@ -478,5 +479,13 @@ public class Censo {
 
     public void setAvance_anden(double avance_anden) {
         this.avance_anden = avance_anden;
+    }
+
+    public int getInterdistancia_anterior() {
+        return interdistancia_anterior;
+    }
+
+    public void setInterdistancia_anterior(int interdistancia_anterior) {
+        this.interdistancia_anterior = interdistancia_anterior;
     }
 }

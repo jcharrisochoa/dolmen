@@ -210,6 +210,18 @@
                         android:background="@android:drawable/btn_dropdown" />
 
                     <TextView
+                        android:id="@+id/textView57"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Tipo Brazo" />
+
+                    <Spinner
+                        android:id="@+id/slt_tipo_brazo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:drawable/btn_dropdown" />
+
+                    <TextView
                         android:id="@+id/textView30"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -784,7 +796,7 @@
                                 android:id="@+id/textView56"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Interdistancia Anterior*" />
+                                android:text="Interdistancia Anterior" />
 
                             <EditText
                                 android:id="@+id/txt_interdistancia_anterior"

@@ -233,4 +233,7 @@
     <string name="titulo_avance_anden">Avance Anden</string>
     <string name="titulo_anden_a">Anden A</string>
     <string name="titulo_anden_b">Anden B</string>
+    <string name="alert_clase_perfil">Clase Perfil</string>
+    <string name="alert_fabricante_elemento">Seleccione Fabricante Elemento</string>
+    <string name="alert_tipo_brazo">Seleccione Tipo Brazo</string>
 </resources>
