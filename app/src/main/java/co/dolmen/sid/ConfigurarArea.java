@@ -238,9 +238,20 @@ public class ConfigurarArea extends AppCompatActivity {
         btnCerrarSesion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String mensaje = "";
+                Cursor cursorCenso = miBaseDatos.censoDB.consultarTodo();
                 Cursor cursor = miBaseDatos.actividadOperativaDB.porSincronizar();
+
                 if(cursor.getCount()>0){
-                    alertConfirm.setMessage("Tiene "+cursor.getCount()+" actividad(es) por sincrinozar\n\n"+getText(R.string.alert_cerrar_sesion));
+                    mensaje = "Tiene "+cursor.getCount()+" actividad(es) por sincrinozar\n\n";
+                }
+
+                if(cursorCenso.getCount()>0){
+                    mensaje = "Tiene "+cursorCenso.getCount()+" actividad(es) de Censo por sincrinozar\n\n";
+                }
+
+                if(!mensaje.isEmpty()) {
+                    alertConfirm.setMessage(mensaje + getText(R.string.alert_cerrar_sesion));
                 }
                 else{
                     alertConfirm.setMessage(R.string.alert_cerrar_sesion);

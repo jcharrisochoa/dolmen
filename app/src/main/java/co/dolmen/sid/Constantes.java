@@ -10,7 +10,7 @@ public final class Constantes {
     public static final int MIN_UPDATE_TIME = 2000;
     public static final int MIN_UPDATE_DISTANCE = 0;
     //--Base Datos
-    public static final int VERSION_BASEDATOS = 11;
+    public static final int VERSION_BASEDATOS = 12;
     public static int OLD_VERSION_BASEDATOS;
     public static final String NOMBRE_BASEDATOS = "sid.db";
 

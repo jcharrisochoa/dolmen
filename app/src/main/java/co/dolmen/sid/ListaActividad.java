@@ -531,7 +531,6 @@ public class ListaActividad extends AppCompatActivity  {
             dialog.setIcon(R.drawable.icon_info);
 
             alertDialog = new AlertDialog.Builder(activity);
-
             inflater = LayoutInflater.from(activity);
         }
 
@@ -560,8 +559,6 @@ public class ListaActividad extends AppCompatActivity  {
         @Override
         protected void onPostExecute(Boolean result) {
             if (result) {
-                //Toast.makeText(getApplicationContext(), "Recopilación de datos Finalizado", Toast.LENGTH_SHORT).show()
-                //Log.d(Constantes.TAG,"JSON->"+jsonArray.toString()+"Count:"+jsonArray.length());
                 if(jsonArray.length()==0){
                     dialog.dismiss();
                     alert.setMessage(getText(R.string.alert_sin_datos_por_sincronizar));
