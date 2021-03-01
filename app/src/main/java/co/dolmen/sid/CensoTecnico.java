@@ -196,6 +196,8 @@ public class CensoTecnico extends AppCompatActivity {
     EditText txtAnden_b;
     EditText txtAvanceAnden;
     EditText txtInterdistanciaAnterior;
+    EditText txtMobiliarioAnterior;
+    EditText txtMobiliarioSiguiente;
 
     //--
     Switch swLuminariaVisible;
@@ -400,6 +402,8 @@ public class CensoTecnico extends AppCompatActivity {
         txtAnden_a = findViewById(R.id.txt_anden_a);
         txtAnden_b = findViewById(R.id.txt_anden_b);
         txtAvanceAnden = findViewById(R.id.txt_avance_anden);
+        txtMobiliarioAnterior   = findViewById(R.id.txt_mobiliario_no_anterior);
+        txtMobiliarioSiguiente  = findViewById(R.id.txt_mobiliario_no_siguiente);
         //--
         swLuminariaVisible = findViewById(R.id.sw_numero_luminaria_visible);
         swPoseeLuminaria = findViewById(R.id.sw_tiene_luminaria);
@@ -1985,6 +1989,8 @@ public class CensoTecnico extends AppCompatActivity {
         txtAnden_b.setText("");
         txtAvanceAnden.setText("");
         txtInterdistancia.setText("");
+        txtMobiliarioAnterior.setText("");
+        txtMobiliarioSiguiente.setText("");
 
         swLuminariaVisible.setChecked(true);
         swPoseeLuminaria.setChecked(true);
@@ -2226,6 +2232,10 @@ public class CensoTecnico extends AppCompatActivity {
                         tipoBrazoList.get(sltTipoBrazo.getSelectedItemPosition()).getDescripcion()
                 )
         );
+        int mAnterior       = (txtMobiliarioAnterior.getText().toString().isEmpty()) ? 0 : Integer.parseInt(txtMobiliarioAnterior.getText().toString());
+        int mPosterior       = (txtMobiliarioSiguiente.getText().toString().isEmpty()) ? 0 : Integer.parseInt(txtMobiliarioSiguiente.getText().toString());
+        censo.setMobiliario_no_anterior(mAnterior);
+        censo.setMobiliario_no_posterior(mPosterior);
 
         CensoDB censoDB = new CensoDB(sqLiteDatabase);
         if (censoDB.agregarDatos(censo)) {
@@ -2351,6 +2361,8 @@ public class CensoTecnico extends AppCompatActivity {
         requestParams.put("anden_a",txtAnden_a.getText());
         requestParams.put("anden_b",txtAnden_b.getText());
         requestParams.put("avance_anden",txtAvanceAnden.getText());
+        requestParams.put("mobiliario_no_anterior",txtMobiliarioAnterior.getText());
+        requestParams.put("mobiliario_no_posterior",txtMobiliarioSiguiente.getText());
         requestParams.put("foto_1", encodeStringFoto_1);
         requestParams.put("foto_2", encodeStringFoto_2);
         int index = 0;
@@ -2850,6 +2862,8 @@ public class CensoTecnico extends AppCompatActivity {
                     jsonObject.put("anden_a", cursor.getDouble(cursor.getColumnIndex("anden_a")));
                     jsonObject.put("anden_b", cursor.getDouble(cursor.getColumnIndex("anden_b")));
                     jsonObject.put("avance_anden", cursor.getInt(cursor.getColumnIndex("avance_anden")));
+                    jsonObject.put("mobiliario_no_anterior",cursor.getInt(cursor.getColumnIndex("mobiliario_no_anterior")));
+                    jsonObject.put("mobiliario_no_posterior",cursor.getInt(cursor.getColumnIndex("mobiliario_no_posterior")));
 
                     //--Tipo Armado
                     JSONArray jsonArrayTipoArmado = new JSONArray();
