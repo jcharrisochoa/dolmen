@@ -40,7 +40,7 @@ public class ActividadOperativaDB extends ActividadOperativa implements Database
                 "e.id_tipo_red,trd.descripcion as tipo_red,e.id_tipo_escenario,tsc.descripcion as tipo_escenario," +
                 "e.id_tipo_instalacion_red_alimentacion, tir.descripcion as tipo_instalacion_red,e.id_clase_via,cv.descripcion as clase_via," +
                 "e.id_calibre_conductores,cb.descripcion as calibre_conductor,e.ancho_via,e.interdistancia,e.poste_no,e.estructura_soporte_compartida,e.transformador_compartido," +
-                "e.potencia_transformador,e.placa_mt_transformador,e.placa_ct_transformador,e.foto," +
+                "e.potencia_transformador,e.placa_mt_transformador,e.placa_ct_transformador,e.foto,e.latitud as latitud_elemento,e.longitud as longitud_elemento," +
                 "ao.id_reporte_dano,ao.id_cliente_externo,ao.nombre_cliente,ao.direccion_cliente,ao.telefono_cliente "+
                 "from " + Constantes.TABLA_ACTIVIDAD_OPERATIVA + " ao " +
                 "join " + Constantes.TABLA_PROGRAMA + " pg on(ao.id_programa = pg._id) " +

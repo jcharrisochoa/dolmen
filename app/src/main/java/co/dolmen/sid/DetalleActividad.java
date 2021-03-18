@@ -204,7 +204,7 @@ public class DetalleActividad extends AppCompatActivity {
         txtElemento.setText(ao.getElemento().getElemento_no());
         txtMobiliario.setText(ao.getElemento().getMobiliario().getDescripcionMobiliario());
         txtReferencia.setText(ao.getElemento().getReferenciaMobiliario().getDescripcionReferenciaMobiliario());
-        txtBarrio.setText(ao.getBarrio().getNombreBarrio());
+        txtBarrio.setText("("+ao.getBarrio().getIdBarrio()+") - "+ao.getBarrio().getNombreBarrio());
         txtDireccion.setText(ao.getDireccion());
         if(ao.getFechaEjecucion() != null)
             txtEjecucion.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(ao.getFechaEjecucion()));

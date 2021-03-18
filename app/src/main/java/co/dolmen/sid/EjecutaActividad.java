@@ -251,6 +251,7 @@ public class EjecutaActividad extends AppCompatActivity {
         barrio.setNombreBarrio(fragmentInformacion.barrioList.get(fragmentInformacion.sltBarrio.getSelectedItemPosition()).getDescripcion());
         barrio.setId(idDefaultMunicipio);
 
+
         if(!fragmentElemento.txtLatitud.getText().toString().isEmpty() && actividadOperativa.getLatitud() == 0)
             actividadOperativa.setLatitud(Float.parseFloat(fragmentElemento.txtLatitud.getText().toString()));
 

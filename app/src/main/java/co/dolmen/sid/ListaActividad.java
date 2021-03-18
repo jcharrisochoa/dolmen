@@ -293,7 +293,7 @@ public class ListaActividad extends AppCompatActivity  {
                     Barrio barrio = new Barrio();
                     barrio.setId(cursor.getInt(cursor.getColumnIndex("id_municipio")));
                     barrio.setDescripcion(cursor.getString(cursor.getColumnIndex("municipio")));
-                    barrio.setIdBarrio(cursor.getInt(cursor.getColumnIndex("id_barrio")));
+                    barrio.setIdBarrio(cursor.getInt(cursor.getColumnIndex("id_barrio_actividad")));
                     //barrio.setIdBarrio(0);
                     barrio.setNombreBarrio(cursor.getString(cursor.getColumnIndex("barrio")));
 
@@ -413,6 +413,9 @@ public class ListaActividad extends AppCompatActivity  {
                         elemento.setDireccion(cursor.getString(cursor.getColumnIndex("direccion_elemento")));
                         elemento.setPlacaMT(cursor.getString(cursor.getColumnIndex("placa_mt_transformador")));
                         elemento.setPlacaCT(cursor.getString(cursor.getColumnIndex("placa_ct_transformador")));
+                        elemento.setEncodeStringFoto(cursor.getString(cursor.getColumnIndex("foto")));
+                        elemento.setLatitud(cursor.getFloat(cursor.getColumnIndex("latitud_elemento")));
+                        elemento.setLongitud(cursor.getFloat(cursor.getColumnIndex("longitud_elemento")));
 
                     }
                     ProcesoSgc procesoSgc = new ProcesoSgc();
@@ -882,7 +885,7 @@ public class ListaActividad extends AppCompatActivity  {
                         jsonElemento.put("placa_mt_transformador", atendidaPendiente.getElemento().getPlacaMT());
                         jsonElemento.put("placa_ct_transformador", atendidaPendiente.getElemento().getPlacaCT());
                         jsonElemento.put("transformador_exclusivo_ap", atendidaPendiente.getElemento().isTransformadorExclusivo());
-                        jsonElemento.put("foto",atendidaPendiente.getElemento().getEncodeStringFoto());
+                        //jsonElemento.put("foto",atendidaPendiente.getElemento().getEncodeStringFoto());
 
                         jsonObject.put("info_elemento",jsonElemento);
 
