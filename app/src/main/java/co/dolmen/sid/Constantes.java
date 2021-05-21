@@ -10,7 +10,7 @@ public final class Constantes {
     public static final int MIN_UPDATE_TIME = 2000;
     public static final int MIN_UPDATE_DISTANCE = 0;
     //--Base Datos
-    public static final int VERSION_BASEDATOS = 12;
+    public static final int VERSION_BASEDATOS = 13;
     public static int OLD_VERSION_BASEDATOS;
     public static final String NOMBRE_BASEDATOS = "sid.db";
 
@@ -68,4 +68,5 @@ public final class Constantes {
     public static final String TABLA_FABRICANTE_ELEMENTO        = "fabricante_elemento";
     public static final String TABLA_FABRICANTE_POSTE           = "fabricante_poste";
     public static final String TABLA_CLASE_PERFIL               = "clase_perfil";
+    public static final String TABLA_COMERCIALIZADOR_ENERGIA    = "comercializador_energia";
 }

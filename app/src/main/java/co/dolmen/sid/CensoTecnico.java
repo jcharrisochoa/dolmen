@@ -29,6 +29,7 @@ import android.media.MediaScannerConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -114,6 +115,7 @@ import co.dolmen.sid.modelo.CensoDB;
 import co.dolmen.sid.modelo.CensoTipoArmadoDB;
 import co.dolmen.sid.modelo.ClasePerfilDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
+import co.dolmen.sid.modelo.ComercializadorDB;
 import co.dolmen.sid.modelo.ElementoDB;
 import co.dolmen.sid.modelo.EstadoMobiliarioDB;
 import co.dolmen.sid.modelo.FabricanteElementoDB;
@@ -175,6 +177,7 @@ public class CensoTecnico extends AppCompatActivity {
     Spinner sltFabricantePoste;
     Spinner sltClasePerfil;
     Spinner sltTipoBrazo;
+    Spinner sltComercializador;
 
     //--
     EditText txtElementoNo;
@@ -247,6 +250,7 @@ public class CensoTecnico extends AppCompatActivity {
     ArrayList<DataSpinner> fabricantePosteList;
     ArrayList<DataSpinner> clasePerfilList;
     ArrayList<DataSpinner> tipoBrazoList;
+    ArrayList<DataSpinner> comercializadorList;
 
     ComponenteNormaConstruccionRed componenteNormaConstruccionRed;
     //--
@@ -385,6 +389,7 @@ public class CensoTecnico extends AppCompatActivity {
         sltFabricantePoste = findViewById(R.id.slt_fabricante_poste);
         sltClasePerfil = findViewById(R.id.slt_clase_perfil);
         sltTipoBrazo    = findViewById(R.id.slt_tipo_brazo);
+        sltComercializador  = findViewById(R.id.slt_comercializador);
         //--
         txtElementoNo = findViewById(R.id.txt_elemento_no);
         txtLatitud = findViewById(R.id.txt_latitud);
@@ -838,6 +843,19 @@ public class CensoTecnico extends AppCompatActivity {
             }
         });
 
+        sltComercializador.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                cargarNormaConstruccionRed(database);
+                //Log.d(Constantes.TAG,"hola");
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
         cargarTipologia(database);
         cargarBarrio(database);
         cargarEstadoMobiliario(database);
@@ -853,6 +871,7 @@ public class CensoTecnico extends AppCompatActivity {
         cargarFabricantePoste(database);
         cargarClasePerfil(database);
         cargarTipoBrazo(database);
+        cargarComercializador(database);
     }
 
     @Override
@@ -959,27 +978,32 @@ public class CensoTecnico extends AppCompatActivity {
 
     //--Administrar Tabla Armado Red----
     private boolean validarArmadoRed() {
-        if (tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId() == 0) {
-            alert.setMessage(R.string.alert_tipo_red);
+        if (comercializadorList.get(sltComercializador.getSelectedItemPosition()).getId() == 0) {
+            alert.setMessage(R.string.alert_comercializador);
             return false;
         } else {
-            if (tipoTensionList.get(sltTipoTension.getSelectedItemPosition()).getId() == 0) {
-                alert.setMessage(R.string.alert_tipo_tension);
+            if (tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId() == 0) {
+                alert.setMessage(R.string.alert_tipo_red);
                 return false;
             } else {
-                if (calibreList.get(sltCalibreTipoArmado.getSelectedItemPosition()).getId() == 0) {
-                    alert.setMessage(R.string.alert_tipo_calibre);
+                if (tipoTensionList.get(sltTipoTension.getSelectedItemPosition()).getId() == 0) {
+                    alert.setMessage(R.string.alert_tipo_tension);
                     return false;
                 } else {
-                    if (tipoEstructuraList.get(sltTipoEstructura.getSelectedItemPosition()).getId() == 0) {
-                        alert.setMessage(R.string.alert_tipo_estructura);
+                    if (calibreList.get(sltCalibreTipoArmado.getSelectedItemPosition()).getId() == 0) {
+                        alert.setMessage(R.string.alert_tipo_calibre);
                         return false;
                     } else {
-                        if (normaConstruccionRedList.get(sltNormaConstruccionRed.getSelectedItemPosition()).getId() == 0) {
-                            alert.setMessage(R.string.alert_norma_construccion_red);
+                        if (tipoEstructuraList.get(sltTipoEstructura.getSelectedItemPosition()).getId() == 0) {
+                            alert.setMessage(R.string.alert_tipo_estructura);
                             return false;
                         } else {
-                            return true;
+                            if (normaConstruccionRedList.get(sltNormaConstruccionRed.getSelectedItemPosition()).getId() == 0) {
+                                alert.setMessage(R.string.alert_norma_construccion_red);
+                                return false;
+                            } else {
+                                return true;
+                            }
                         }
                     }
                 }
@@ -1511,13 +1535,41 @@ public class CensoTecnico extends AppCompatActivity {
     }
 
     //--
+    private void cargarComercializador(SQLiteDatabase sqLiteDatabase) {
+        int i = 0;
+        comercializadorList = new ArrayList<DataSpinner>();
+        List<String> labels = new ArrayList<>();
+        ComercializadorDB comercializadorDB = new ComercializadorDB(sqLiteDatabase);
+        Cursor cursor = comercializadorDB.consultarTodo();
+        DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
+        comercializadorList.add(dataSpinner);
+        labels.add(getText(R.string.seleccione).toString());
+        if (cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
+                    dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(1).toUpperCase());
+                    comercializadorList.add(dataSpinner);
+                    labels.add(cursor.getString(1).toUpperCase());
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sltComercializador.setAdapter(dataAdapter);
+    }
+
+    //--
     private void cargarNormaConstruccionRed(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
-        int idTipoEstructura = tipoEstructuraList.get(sltTipoEstructura.getSelectedItemPosition()).getId();
+        int idTipoEstructura = (tipoEstructuraList == null)?0:tipoEstructuraList.get(sltTipoEstructura.getSelectedItemPosition()).getId();
+        int idComercializador = (comercializadorList == null)?0:comercializadorList.get(sltComercializador.getSelectedItemPosition()).getId();
         normaConstruccionRedList = new ArrayList<DataSpinner>();
         List<String> labels = new ArrayList<>();
         NormaConstruccionRedDB normaConstruccionRedDB = new NormaConstruccionRedDB(sqLiteDatabase);
-        Cursor cursor = normaConstruccionRedDB.consultarTodo(idTipoEstructura);
+        Cursor cursor = normaConstruccionRedDB.consultarTodo(idTipoEstructura,idComercializador);
         DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
         normaConstruccionRedList.add(dataSpinner);
         labels.add(getText(R.string.seleccione).toString());

@@ -991,6 +991,18 @@
                                 android:textSize="18sp" />
 
                             <TextView
+                                android:id="@+id/textView86"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Comercializador *" />
+
+                            <Spinner
+                                android:id="@+id/slt_comercializador"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@android:drawable/btn_dropdown" />
+
+                            <TextView
                                 android:id="@+id/textView16"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"

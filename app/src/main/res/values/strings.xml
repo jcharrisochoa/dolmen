@@ -236,4 +236,6 @@
     <string name="alert_clase_perfil">Clase Perfil</string>
     <string name="alert_fabricante_elemento">Seleccione Fabricante Elemento</string>
     <string name="alert_tipo_brazo">Seleccione Tipo Brazo</string>
+    <string name="titulo_comercializador">Comercializador</string>
+    <string name="alert_comercializador">Seleccione el Comercializador</string>
 </resources>

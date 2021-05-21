@@ -8,6 +8,7 @@ public class NormaConstruccionRed  implements Serializable {
     String norma;
 
     TipoEstructura tipoEstructura;
+    Comercializador comercializador;
 
     public NormaConstruccionRed(){
         tipoEstructura = new TipoEstructura();
@@ -43,5 +44,13 @@ public class NormaConstruccionRed  implements Serializable {
 
     public void setTipoEstructura(TipoEstructura tipoEstructura) {
         this.tipoEstructura = tipoEstructura;
+    }
+
+    public Comercializador getComercializador() {
+        return comercializador;
+    }
+
+    public void setComercializador(Comercializador comercializador) {
+        this.comercializador = comercializador;
     }
 }

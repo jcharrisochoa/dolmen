@@ -29,6 +29,7 @@ import org.json.JSONObject;
 import java.util.concurrent.ExecutionException;
 
 import co.dolmen.sid.entidad.Barrio;
+import co.dolmen.sid.entidad.Comercializador;
 import co.dolmen.sid.entidad.Contrato;
 import co.dolmen.sid.entidad.EstadoMobiliario;
 import co.dolmen.sid.entidad.Municipio;
@@ -47,6 +48,7 @@ import co.dolmen.sid.modelo.CensoAsignadoDB;
 import co.dolmen.sid.modelo.CentroCostoDB;
 import co.dolmen.sid.modelo.ClasePerfilDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
+import co.dolmen.sid.modelo.ComercializadorDB;
 import co.dolmen.sid.modelo.ContratoDB;
 import co.dolmen.sid.modelo.ControlEncendidoDB;
 import co.dolmen.sid.modelo.ElementoDB;
@@ -541,10 +543,26 @@ public class Parametros extends AppCompatActivity {
                     Log.d("parametros","->Tipo Estructura:"+progress+"%");
                 }
 
+
+                //--Comercializador
+                ComercializadorDB comercializadorDB = new ComercializadorDB(database);
+                JSONArray arrayComercializador = parametros.getJSONArray("comercializador");
+                for (int i = 0;i<arrayComercializador.length();i++){
+                    JSONObject jObjectComercializador = arrayComercializador.getJSONObject(i);
+                    comercializadorDB.setId(jObjectComercializador.getInt("id"));
+                    comercializadorDB.setDescripcion(jObjectComercializador.getString("descripcion"));
+                    //--
+                    comercializadorDB.agregarDatos(comercializadorDB);
+                    progress = (int)Math.round((double)(i+1)/arrayComercializador.length()*100);
+                    publishProgress(progress, R.string.titulo_comercializador);
+                    Log.d("parametros","->Comercializador:"+progress+"%");
+                }
+
                 //--Norma Construccion Red
                 NormaConstruccionRedDB normaConstruccionRedDB = new NormaConstruccionRedDB(database);
                 JSONArray arrayNormaConstruccionRed = parametros.getJSONArray("norma_construccion_red");
                 for (int i = 0;i<arrayNormaConstruccionRed.length();i++){
+
                     JSONObject jObjectNormaConstruccionRed = arrayNormaConstruccionRed.getJSONObject(i);
                     normaConstruccionRedDB.setId(jObjectNormaConstruccionRed.getInt("id"));
                     normaConstruccionRedDB.setDescripcion(jObjectNormaConstruccionRed.getString("descripcion"));
@@ -553,6 +571,10 @@ public class Parametros extends AppCompatActivity {
                     TipoEstructura tipoEstructura = new TipoEstructura();
                     tipoEstructura.setId(jObjectNormaConstruccionRed.getInt("id_tipo_estructura"));
                     normaConstruccionRedDB.setTipoEstructura(tipoEstructura);
+                    //--
+                    Comercializador comercializador = new Comercializador();
+                    comercializador.setId(jObjectNormaConstruccionRed.getInt("id_comercializador_energia"));
+                    normaConstruccionRedDB.setComercializador(comercializador);
                     //--
                     normaConstruccionRedDB.agregarDatos(normaConstruccionRedDB);
                     progress = (int)Math.round((double)(i+1)/arrayNormaConstruccionRed.length()*100);
@@ -743,7 +765,7 @@ public class Parametros extends AppCompatActivity {
                 //--Centro Costo
                 CentroCostoDB centroCostoDB = new CentroCostoDB(database);
                 JSONArray arrayCentroCosto= parametros.getJSONArray("centro_costo");
-                for (int i = 0;i<arrayEquipo.length();i++){
+                for (int i = 0;i<arrayCentroCosto.length();i++){
                     JSONObject jObjectCentroCosto = arrayCentroCosto.getJSONObject(i);
                     centroCostoDB.setIdCentroCosto(jObjectCentroCosto.getInt("id"));
                     centroCostoDB.setCodigo(jObjectCentroCosto.getInt("codigo"));
@@ -903,12 +925,12 @@ public class Parametros extends AppCompatActivity {
                     @Override
                     public void onSuccess(byte[] response) {
                         //Log.d("programacion"," Fin Escritura"+new String(response));
-                        //Toast.makeText(getApplicationContext(), "Actualizacion de actividades Finalizada totalmente!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Actualizacion de actividades Finalizada totalmente!", Toast.LENGTH_SHORT).show();
                         inventarioRemoto.consultarExistencia(new ResponseHandle() {
                             @Override
                             public void onSuccess(byte[] response) {
                                 database.close();
-                                //Log.d("programacion"," Fin Escritura Inventario"+new String(response));
+                                Log.d(Constantes.TAG," Fin Escritura Inventario"+new String(response));
                                 Intent intent = new Intent(Parametros.this,ConfigurarArea.class);
                                 startActivity(intent);
                                 finish();

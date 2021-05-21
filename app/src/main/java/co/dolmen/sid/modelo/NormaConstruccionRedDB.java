@@ -18,7 +18,13 @@ public class NormaConstruccionRedDB extends NormaConstruccionRed implements Data
     }
     @Override
     public void crearTabla() {
-        db.execSQL("create table "+ Constantes.TABLA_NORMA_CONSTRUCCION_RED+"( _id INTEGER PRIMARY KEY,id_tipo_estructura INTEGER, descripcion VARCHAR(80),norma VARCHAR(12));");
+        db.execSQL("create table "+ Constantes.TABLA_NORMA_CONSTRUCCION_RED+
+                "( _id INTEGER PRIMARY KEY," +
+                "id_tipo_estructura INTEGER, " +
+                "descripcion VARCHAR(80)," +
+                "norma VARCHAR(12)," +
+                "id_comercializador_energia INTEGER " +
+                ");");
     }
 
     @Override
@@ -37,6 +43,7 @@ public class NormaConstruccionRedDB extends NormaConstruccionRed implements Data
                 contentValues.put("id_tipo_estructura", normaConstruccionRed.getTipoEstructura().getId());
                 contentValues.put("descripcion", normaConstruccionRed.getDescripcion());
                 contentValues.put("norma", normaConstruccionRed.getNorma());
+                contentValues.put("id_comercializador_energia", normaConstruccionRed.getComercializador().getId());
                 db.insert(Constantes.TABLA_NORMA_CONSTRUCCION_RED, null, contentValues);
             }
             result.close();
@@ -69,6 +76,12 @@ public class NormaConstruccionRedDB extends NormaConstruccionRed implements Data
     }
     public Cursor consultarTodo(int idTipoEstructura){
         this.sql = "SELECT * FROM "+ Constantes.TABLA_NORMA_CONSTRUCCION_RED+" WHERE id_tipo_estructura="+idTipoEstructura;
+        Cursor result = db.rawQuery(this.sql, null);
+        return result;
+    }
+
+    public Cursor consultarTodo(int idTipoEstructura,int idComercializador){
+        this.sql = "SELECT * FROM "+ Constantes.TABLA_NORMA_CONSTRUCCION_RED+" WHERE id_tipo_estructura="+idTipoEstructura+" and id_comercializador_energia="+idComercializador;
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }

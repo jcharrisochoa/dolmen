@@ -885,6 +885,7 @@ public class ListaActividad extends AppCompatActivity  {
                         jsonElemento.put("placa_mt_transformador", atendidaPendiente.getElemento().getPlacaMT());
                         jsonElemento.put("placa_ct_transformador", atendidaPendiente.getElemento().getPlacaCT());
                         jsonElemento.put("transformador_exclusivo_ap", atendidaPendiente.getElemento().isTransformadorExclusivo());
+                        jsonElemento.put("foto",atendidaPendiente.getElemento().getEncodeStringFoto());
                         //jsonElemento.put("foto",atendidaPendiente.getElemento().getEncodeStringFoto());
 
                         jsonObject.put("info_elemento",jsonElemento);

@@ -4,6 +4,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import co.dolmen.sid.entidad.ClasePerfil;
 import co.dolmen.sid.modelo.ClasePerfilDB;
+import co.dolmen.sid.modelo.ComercializadorDB;
 import co.dolmen.sid.modelo.ElementoDesmontadoDB;
 import co.dolmen.sid.modelo.ActaContratoDB;
 import co.dolmen.sid.modelo.ActividadOperativaDB;
@@ -114,6 +115,7 @@ public class MiBaseDatos {
     public ClasePerfilDB clasePerfilDB;
     public FabricantePosteDB fabricantePosteDB;
     public FabricanteElementoDB fabricanteElementoDB;
+    public ComercializadorDB comercializadorDB;
 
     public MiBaseDatos(SQLiteDatabase sqLiteDatabase){
         tipologiaDB = new TipologiaDB(sqLiteDatabase);
@@ -170,7 +172,7 @@ public class MiBaseDatos {
         clasePerfilDB   = new ClasePerfilDB(sqLiteDatabase);
         fabricantePosteDB   = new FabricantePosteDB(sqLiteDatabase);
         fabricanteElementoDB = new FabricanteElementoDB(sqLiteDatabase);
-
+        comercializadorDB = new ComercializadorDB(sqLiteDatabase);
     }
 
     public void crearTabla(){
@@ -228,6 +230,7 @@ public class MiBaseDatos {
         clasePerfilDB.crearTabla();
         fabricantePosteDB.crearTabla();
         fabricanteElementoDB.crearTabla();
+        comercializadorDB.crearTabla();
         //Log.d("DataBase","create");
     }
 
@@ -286,6 +289,7 @@ public class MiBaseDatos {
         clasePerfilDB.borrarTabla();
         fabricantePosteDB.borrarTabla();
         fabricanteElementoDB.borrarTabla();
+        comercializadorDB.borrarTabla();
     }
 
     public void eliminarDatos(){
@@ -334,5 +338,6 @@ public class MiBaseDatos {
         clasePerfilDB.eliminarDatos();
         fabricantePosteDB.eliminarDatos();
         fabricanteElementoDB.eliminarDatos();
+        comercializadorDB.eliminarDatos();
     }
 }
