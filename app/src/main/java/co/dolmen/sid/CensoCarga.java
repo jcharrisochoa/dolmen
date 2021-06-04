@@ -1,5 +1,6 @@
 package co.dolmen.sid;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -56,6 +57,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -70,6 +72,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestHandle;
@@ -126,8 +129,8 @@ public class CensoCarga extends AppCompatActivity {
     Switch swPoseeLuminaria;
     Switch swMobiliarioBuenEstado;
 
-    Button btnGuardar;
-    Button btnCancelar;
+    FloatingActionButton btnGuardar;
+    FloatingActionButton btnCancelar;
 
     ImageButton btnCapturarGPS;
     ImageButton btnBuscarElemento;
@@ -246,12 +249,12 @@ public class CensoCarga extends AppCompatActivity {
         rdSectorSubNormal   = findViewById(R.id.rd_subnormal);
         //--
         btnCapturarGPS = findViewById(R.id.btn_capturar_gps);
-        btnGuardar = findViewById(R.id.btn_guardar);
-        btnCancelar = findViewById(R.id.btn_cancelar);
+        btnGuardar = findViewById(R.id.fab_guardar);
+        btnCancelar = findViewById(R.id.fab_cancelar);
         btnEditarDireccion = findViewById(R.id.btn_editar_direccion);
         btnLimpiar = findViewById(R.id.btn_limpiar);
         btnBuscarElemento = findViewById(R.id.btn_buscar_elemento);
-        btnSincronizar = findViewById(R.id.btn_sincronizar_carga);
+        //btnSincronizar = findViewById(R.id.btn_sincronizar_carga);
 
         //--
         viewLatitud = findViewById(R.id.gps_latitud);
@@ -391,12 +394,12 @@ public class CensoCarga extends AppCompatActivity {
             }
         });
 
-        btnSincronizar.setOnClickListener(new View.OnClickListener() {
+        /*btnSincronizar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 sincronizar();
             }
-        });
+        });*/
 
 
 
@@ -436,6 +439,23 @@ public class CensoCarga extends AppCompatActivity {
         cargarEstadoMobiliario(database);
         cargarCensoAsignado(database);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(android.view.Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_censo_tecnico,menu);
+        return true; //super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_sincronizar:
+                sincronizar();
+                break;
+        }
+        return true;//super.onOptionsItemSelected(item);
+    }
+
     //--Cargar Parametrizacion--
     private void cargarTipologia(SQLiteDatabase sqLiteDatabase) {
         int i = 0;
@@ -1119,7 +1139,7 @@ public class CensoCarga extends AppCompatActivity {
 
     //--
     private void setButton(boolean estado){
-        btnSincronizar.setEnabled(estado);
+        //btnSincronizar.setEnabled(estado);
         btnGuardar.setEnabled(estado);
         btnCancelar.setEnabled(estado);
         btnBuscarElemento.setEnabled(estado);

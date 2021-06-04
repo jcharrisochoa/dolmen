@@ -88,7 +88,8 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
                         "mobiliario_no_anterior INTEGER DEFAULT NULL,"+
                         "id_elemento_anterior INTEGER DEFAULT NULL,"+
                         "mobiliario_no_posterior INTEGER DEFAULT NULL,"+
-                        "id_elemento_posterior INTEGER DEFAULT NULL"+
+                        "id_elemento_posterior INTEGER DEFAULT NULL,"+
+                        "id_elemento_transformador INTEGER DEFAULT NULL"+
                         ");"
         );
     }

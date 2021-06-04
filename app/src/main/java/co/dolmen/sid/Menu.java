@@ -9,6 +9,7 @@ import co.dolmen.sid.utilidades.MiBaseDatos;
 import co.dolmen.sid.utilidades.MiLocalizacion;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,6 +26,11 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Menu extends AppCompatActivity {
 
@@ -186,9 +192,74 @@ public class Menu extends AppCompatActivity {
         btnCensoCarga.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(Menu.this,CensoCarga.class);
-                startActivity(i);
-                Menu.this.finish();
+
+                final String[] items = {"Centro Distribución","Secuencial"};
+
+                final int[] selected = new int[1];
+
+                new MaterialAlertDialogBuilder(Menu.this)
+                        .setTitle(R.string.tipo_recorrido)
+                        .setSingleChoiceItems(items,-1, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                selected[0] = which;
+
+                                /*dialog.dismiss();
+                                ProgressDialog progress = new ProgressDialog(Menu.this);
+                                progress.setCancelable(false);
+                                progress.setTitle(R.string.titulo_alerta);
+                                progress.setIcon(R.drawable.icon_info);
+                                progress.setMessage(getString(R.string.cargando));
+                                switch (which){
+                                    case 0:
+                                        progress.show();
+                                        break;
+                                    case 1:
+                                        progress.show();
+                                        Intent i = new Intent(Menu.this,CensoCarga.class);
+                                        startActivity(i);
+                                        Menu.this.finish();
+                                        break;
+                                }*/
+                            }
+                        })
+                        .setNegativeButton(R.string.btn_cancelar, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int i) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .setPositiveButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                ProgressDialog progress = new ProgressDialog(Menu.this);
+                                progress.setCancelable(false);
+                                progress.setTitle(R.string.titulo_alerta);
+                                progress.setIcon(R.drawable.icon_info);
+                                progress.setMessage(getString(R.string.cargando));
+                                Intent i;
+                                switch (selected[0]){
+                                    case 0:
+                                        progress.show();
+                                        i = new Intent(Menu.this,ListaTransformador.class);
+                                        startActivity(i);
+                                        Menu.this.finish();
+                                        break;
+                                    case 1:
+                                        progress.show();
+                                        i = new Intent(Menu.this,CensoCarga.class);
+                                        startActivity(i);
+                                        Menu.this.finish();
+                                        break;
+                                    default:
+                                        dialog.dismiss();
+                                }
+                            }
+                        })
+                        .setCancelable(false)
+                .create().show();
             }
         });
 

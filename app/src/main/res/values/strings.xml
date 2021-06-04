@@ -238,4 +238,7 @@
     <string name="alert_tipo_brazo">Seleccione Tipo Brazo</string>
     <string name="titulo_comercializador">Comercializador</string>
     <string name="alert_comercializador">Seleccione el Comercializador</string>
+    <string name="tipo_recorrido">Tipo Recorrido</string>
+    <string name="lista_transformador">Transformadores</string>
+    <string name="titulo_transformador_sai">Código SAI</string>
 </resources>

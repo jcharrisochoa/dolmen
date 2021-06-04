@@ -56,7 +56,8 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
                     "potencia_transformador DECIMAL(5,2) NOT NULL DEFAULT 0,"+
                     "placa_mt_transformador VARCHAR (20),"+
                     "placa_ct_transformador VARCHAR (20),"+
-                    "foto TEXT"+
+                    "foto TEXT,"+
+                    "temporal VARCHAR(1) NOT NULL DEFAULT 'N'"+
                 ");"
         );
     }
@@ -245,6 +246,40 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
         "e.id_municipio="+idMunicipio+" and " +
         "e.id_proceso_sgc="+idProceso+" and " +
         "e.elemento_no="+elementoNo;
+        //Log.d("respuesta",""+this.sql);
+        Cursor result = db.rawQuery(this.sql, null);
+        return result;
+    }
+
+    //--Elementos de Infraestructura Electrica
+    public Cursor consultarElemento(int idMunicipio,int idProceso,int elementoNo,int idTipologia){
+        String q = "";
+        if(elementoNo != 0){
+            q = " and e.elemento_no="+elementoNo;
+        }
+        this.sql = "select e._id,e.elemento_no,e.direccion,e.id_municipio,e.id_barrio,e.id_proceso_sgc,e.id_tipologia,e.id_mobiliario,e.id_referencia,e.id_estado_mobiliario,"+
+                "tm.descripcion as tipologia,mb.descripcion as mobiliario,rm.descripcion as referencia,em.descripcion as estado_mobiliario,b.descripcion as barrio,"+
+                "e.zona,e.sector, e.id_tipo_poste,tp.descripcion as tipo_poste,e.id_norma_construccion_poste,"+
+                "ncp.descripcion as norma_construccion_poste,e.id_tipo_red,trd.descripcion as tipo_red,"+
+                "e.id_tipo_instalacion_red_alimentacion, tir.descripcion as tipo_instalacion_red, e.id_calibre_conductores,"+
+                "cb.descripcion as calibre_conductor,e.poste_no ,e.estructura_soporte_compartida,e.transformador_compartido,e.potencia_transformador,"+
+                "e.placa_mt_transformador,e.placa_ct_transformador "+
+                "from "+ Constantes.TABLA_ELEMENTO+" e "+
+                "left join "+Constantes.TABLA_BARRIO+" b ON (e.id_barrio = b._id ) " +
+                "left join "+Constantes.TABLA_TIPOLOGIA_MOBILIARIO+" tm on(e.id_tipologia = tm._id) "+
+                "left join "+Constantes.TABLA_MOBILIARIO+" mb on(e.id_mobiliario = mb._id) "+
+                "left join "+Constantes.TABLA_REFERNCIA_MOBILIARIO+" rm on(e.id_referencia = rm._id) "+
+                "left join "+Constantes.TABLA_ESTADO_MOBILIARIO+" em on(e.id_estado_mobiliario = em._id) "+
+                "left join "+Constantes.TABLA_TIPO_POSTE+" tp on(e.id_tipo_poste = tp._id) "+
+                "left join "+Constantes.TABLA_NORMA_CONSTRUCCION_POSTE+" ncp on(e.id_norma_construccion_poste = ncp._id) "+
+                "left join "+Constantes.TABLA_TIPO_RED+" trd on(e.id_tipo_red = trd._id) "+
+                "left join "+Constantes.TABLA_TIPO_ESCENARIO+" tsc on(e.id_tipo_escenario = tsc._id) "+
+                "left join "+Constantes.TABLA_TIPO_INSTALACION_RED+" tir on(e.id_tipo_instalacion_red_alimentacion = tir._id) "+
+                "left join "+Constantes.TABLA_CALIBRE+" cb on(e.id_calibre_conductores = cb._id) "+
+                "where " +
+                "e.id_municipio="+idMunicipio+" and " +
+                "e.id_proceso_sgc="+idProceso+" and " +
+                "e.id_tipologia="+idTipologia + q ;
         //Log.d("respuesta",""+this.sql);
         Cursor result = db.rawQuery(this.sql, null);
         return result;

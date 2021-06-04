@@ -59,12 +59,14 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestHandle;
@@ -109,9 +111,9 @@ public class CrearElemento extends AppCompatActivity {
     private boolean gpsListener;
     public LocationManager ubicacion;
 
-    private TextView txtNombreMunicipio;
+   /* private TextView txtNombreMunicipio;
     private TextView txtNombreProceso;
-    private TextView txtNombreContrato;
+    private TextView txtNombreContrato;*/
     private TextView txtMensajeDireccion;
     private EditText txtDireccion;
     private EditText txtLatitud;
@@ -131,6 +133,8 @@ public class CrearElemento extends AppCompatActivity {
     private EditText txtPosteno;
     private EditText txtTransformador;
     private EditText txtPotenciaTransformador;
+    private EditText txtMtTransformador;
+    private EditText txtCtTransformador;
     private EditText txtSerialMedidor;
     private EditText txtLecturaMedidor;
 
@@ -150,14 +154,19 @@ public class CrearElemento extends AppCompatActivity {
     private Spinner sltProveedor;
 
 
-    private Button btnGuardar;
-    private Button btnCancelar;
+    private FloatingActionButton btnGuardar;
+    private FloatingActionButton btnCancelar;
     private Button btnTomarFoto;
     private Button btnBorrarFoto;
     private ImageButton btnEditarDireccion;
     private ImageButton btnCapturarGPS;
 
     private Switch swConexionElectrica;
+    private Switch swTranformadorExclusivoAP;
+
+    RadioButton rdTransformadorPrivado;
+    RadioButton rdTransformadorPublico;
+    RadioButton rdTransformadorNoAplica;
 
     private ImageView imgFoto;
 
@@ -178,6 +187,8 @@ public class CrearElemento extends AppCompatActivity {
 
     ToggleButton chkTercero;
     String tercero = "N";
+    private String chkSwTransformadorExclusivoAp = "N";
+    private String tipoPropietarioTranformador = "NA";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -220,9 +231,9 @@ public class CrearElemento extends AppCompatActivity {
         sltReferencia       = findViewById(R.id.sltReferenciaMobiliario);
         sltProveedor        = findViewById(R.id.sltProveedor);
 
-        txtNombreMunicipio  = findViewById(R.id.txtNombreMunicipio);
+       /* txtNombreMunicipio  = findViewById(R.id.txtNombreMunicipio);
         txtNombreProceso    = findViewById(R.id.txtNombreProceso);
-        txtNombreContrato   = findViewById(R.id.txtNombreContrato);
+        txtNombreContrato   = findViewById(R.id.txtNombreContrato);*/
         txtDireccion        =  findViewById(R.id.txt_direccion);
         txtLatitud          =  findViewById(R.id.txt_latitud);
         txtLongitud         =  findViewById(R.id.txt_longitud);
@@ -231,6 +242,8 @@ public class CrearElemento extends AppCompatActivity {
         txtPosteno                  = findViewById(R.id.txtPosteno);
         txtTransformador            = findViewById(R.id.txtTranformador);
         txtPotenciaTransformador    = findViewById(R.id.txtPotenciaTranformador);
+        txtMtTransformador = findViewById(R.id.txt_mt_transformador);
+        txtCtTransformador = findViewById(R.id.txt_ct_transformador);
         txtSerialMedidor            = findViewById(R.id.txtSerialMedidor);
         txtLecturaMedidor           = findViewById(R.id.txtLecturaMedidor);
         //--
@@ -243,9 +256,14 @@ public class CrearElemento extends AppCompatActivity {
         //-
         chkTercero  = findViewById(R.id.chkTercero);
         swConexionElectrica = findViewById(R.id.swConexionElectrica);
+        swTranformadorExclusivoAP = findViewById(R.id.sw_transformador_exclusivo_ap);
+        //--
+        rdTransformadorPrivado = findViewById(R.id.rd_transformador_privado);
+        rdTransformadorPublico = findViewById(R.id.rd_transformador_publico);
+        rdTransformadorNoAplica = findViewById(R.id.rd_transformador_no_aplica);
         //-
-        btnGuardar              = findViewById(R.id.btnGuardar);
-        btnCancelar             = findViewById(R.id.btnCancelar);
+        btnGuardar              = findViewById(R.id.fab_guardar);
+        btnCancelar             = findViewById(R.id.fab_cancelar);
         btnEditarDireccion      = findViewById(R.id.btn_editar_direccion);
         btnTomarFoto            = findViewById(R.id.btn_tomar_foto);
         btnBorrarFoto           = findViewById(R.id.btn_borrar_foto);
@@ -255,9 +273,35 @@ public class CrearElemento extends AppCompatActivity {
         //--
         progressBar            = findViewById(R.id.progressBarGuardarNuevoElemento);
         //--
-        txtNombreMunicipio.setText(nombreMunicipio);
+        /*txtNombreMunicipio.setText(nombreMunicipio);
         txtNombreProceso.setText(nombreProceso);
-        txtNombreContrato.setText(nombreContrato);
+        txtNombreContrato.setText(nombreContrato);*/
+
+        swTranformadorExclusivoAP.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                chkSwTransformadorExclusivoAp = (isChecked) ? "S" : "N";
+            }
+        });
+
+        rdTransformadorPrivado.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tipoPropietarioTranformador = "PV";
+            }
+        });
+        rdTransformadorPublico.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tipoPropietarioTranformador = "PB";
+            }
+        });
+        rdTransformadorNoAplica.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tipoPropietarioTranformador = "NA";
+            }
+        });
 
         txtDireccion.setEnabled(false);
         txtLatitud.setEnabled(false);
@@ -1083,8 +1127,14 @@ public class CrearElemento extends AppCompatActivity {
         requestParams.put("id_tipo_poste",tipoPosteList.get(sltTipoPoste.getSelectedItemPosition()).getId());
         requestParams.put("poste_no",txtPosteno.getText());
         requestParams.put("id_tipo_red",tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId());
-        requestParams.put("transformador",txtTransformador.getText());
+
+        requestParams.put("transformador",txtTransformador.getText()); //codigo sai
         requestParams.put("potencia_transformador",txtPotenciaTransformador.getText());
+        requestParams.put("placa_MT",txtMtTransformador.getText());
+        requestParams.put("placa_CT",txtCtTransformador.getText());
+
+        requestParams.put("transformador_compartido",(chkSwTransformadorExclusivoAp.contentEquals("S"))?"N":"S");
+
         requestParams.put("serial_medidor",txtSerialMedidor.getText());
         requestParams.put("lectura_medidor",txtLecturaMedidor.getText());
         requestParams.put("id_clase_via",claseViaList.get(sltClaseVia.getSelectedItemPosition()).getId());
