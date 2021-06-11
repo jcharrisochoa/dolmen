@@ -120,9 +120,9 @@ public class AdapterElemento extends RecyclerView.Adapter<AdapterElemento.ViewHo
         public void asignarDatos(Elemento elemento) {
             itemElemento.setText(elemento.getElemento_no());
             itemDireccion.setText(elemento.getDireccion());
-            itemPotencia.setText(String.valueOf(elemento.getPotenciaTransformador()));
-            itemMT.setText(elemento.getPlacaMT());
-            itemCT.setText(elemento.getPlacaCT());
+            itemPotencia.setText(String.valueOf(elemento.getPotenciaTransformador())+" KVA");
+            itemMT.setText("MT: "+elemento.getPlacaMT());
+            itemCT.setText("CT: "+elemento.getPlacaCT());
         }
 
     }

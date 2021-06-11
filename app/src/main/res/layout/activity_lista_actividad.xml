@@ -82,7 +82,7 @@
                     android:ems="10"
                     android:hint="Digite el dato a buscar"
                     android:inputType="textPersonName|text|textAutoComplete"
-                    android:maxLength="7"
+                    android:maxLength="24"
                     tools:text="@string/buscar_elemento" />
 
                 <ImageButton

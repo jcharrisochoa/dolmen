@@ -16,6 +16,56 @@
             android:layout_height="wrap_content"
             android:theme="@style/AppTheme.AppBarOverlay">
 
+            <TextView
+                android:id="@+id/textView34"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:text="Buscar por:"
+                android:textColor="@color/colorAccent"
+                android:textSize="16sp" />
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="5dp"
+                android:orientation="horizontal">
+
+                <Switch
+                    android:id="@+id/sw_buscar_placa"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/titulo_placa_no" />
+
+
+                <Switch
+                    android:id="@+id/sw_buscar_direccion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginRight="5dp"
+
+                    android:text="@string/titulo_direccion" />
+
+
+                <Switch
+                    android:id="@+id/sw_buscar_elemento"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginRight="5dp"
+                    android:text="@string/titulo_elemento" />
+
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -36,11 +86,11 @@
                     android:ems="10"
                     android:hint="Digite el dato a buscar"
                     android:inputType="textPersonName|text|textAutoComplete"
-                    android:maxLength="7"
+                    android:maxLength="24"
                     tools:text="@string/buscar_elemento" />
 
                 <ImageButton
-                    android:id="@+id/btn_buscar_actividad"
+                    android:id="@+id/btn_buscar_transformador"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="3"
