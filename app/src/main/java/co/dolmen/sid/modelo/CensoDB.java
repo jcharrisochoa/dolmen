@@ -89,7 +89,8 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
                         "id_elemento_anterior INTEGER DEFAULT NULL,"+
                         "mobiliario_no_posterior INTEGER DEFAULT NULL,"+
                         "id_elemento_posterior INTEGER DEFAULT NULL,"+
-                        "id_elemento_transformador INTEGER DEFAULT NULL"+
+                        "id_elemento_transformador INTEGER DEFAULT NULL,"+
+                        "sincronizado VARCHAR(1) CHECK(sincronizado IN ('S','N')) NOT NULL DEFAULT 'S'"+
                         ");"
         );
     }
@@ -129,6 +130,8 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
             contentValues.put("lectura_medidor",0);
             contentValues.put("id_calibre",0);
             contentValues.put("mobiliario_buen_estado",censo.getChkSwMobiliarioBuenEstado());
+            contentValues.put("id_elemento_transformador",censo.getElementoTransformador());
+            contentValues.put("sincronizado",(censo.getSincronizado())?"S":"N");
 
             try {
                 lastId = db.insertWithOnConflict(Constantes.TABLA_CENSO_TECNICO, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
@@ -210,6 +213,7 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
             contentValues.put("id_clasificacion_perfil",censo.getClasePerfil().getId());
             contentValues.put("mobiliario_no_anterior",censo.getMobiliario_no_anterior());
             contentValues.put("mobiliario_no_posterior",censo.getMobiliario_no_posterior());
+            contentValues.put("sincronizado",(censo.getSincronizado())?"S":"N");
 
             try {
                 lastId = db.insertWithOnConflict(Constantes.TABLA_CENSO_TECNICO, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
@@ -237,7 +241,13 @@ public class CensoDB extends Censo implements DatabaseDLM,DatabaseDDL   {
 
     @Override
     public Cursor consultarTodo() {
-        this.sql = "SELECT * FROM "+ Constantes.TABLA_CENSO_TECNICO;
+        this.sql = "SELECT * FROM "+ Constantes.TABLA_CENSO_TECNICO + " WHERE sincronizado='N'";
+        Cursor result = db.rawQuery(this.sql, null);
+        return result;
+    }
+
+    public Cursor consultarRecorridoDistribucion(int id_elemento_transformador) {
+        this.sql = "SELECT * FROM "+ Constantes.TABLA_CENSO_TECNICO + " WHERE id_elemento_transformador=" + id_elemento_transformador;
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }

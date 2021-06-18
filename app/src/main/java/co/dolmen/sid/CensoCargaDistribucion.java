@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,6 +33,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -50,22 +52,33 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestHandle;
+import com.loopj.android.http.RequestParams;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import co.dolmen.sid.entidad.Barrio;
+import co.dolmen.sid.entidad.Censo;
 import co.dolmen.sid.entidad.Elemento;
 import co.dolmen.sid.entidad.EstadoMobiliario;
 import co.dolmen.sid.entidad.Mobiliario;
 import co.dolmen.sid.entidad.ReferenciaMobiliario;
+import co.dolmen.sid.entidad.Tipologia;
 import co.dolmen.sid.modelo.BarrioDB;
+import co.dolmen.sid.modelo.CensoArchivoDB;
 import co.dolmen.sid.modelo.CensoAsignadoDB;
 import co.dolmen.sid.modelo.CensoDB;
 import co.dolmen.sid.modelo.ElementoDB;
@@ -75,6 +88,7 @@ import co.dolmen.sid.modelo.ReferenciaMobiliarioDB;
 import co.dolmen.sid.modelo.TipoInterseccionDB;
 import co.dolmen.sid.modelo.TipologiaDB;
 import co.dolmen.sid.utilidades.DataSpinner;
+import cz.msebera.android.httpclient.Header;
 
 import static java.lang.Integer.parseInt;
 
@@ -154,8 +168,8 @@ public class CensoCargaDistribucion extends AppCompatActivity {
     TextView viewPlacaMT;
     TextView viewPlacaCT;
     TextView viewTransformadorExclusivoAp;
-    TextView viewPropiedadTransformador;
-    TextView viewCodigoSAI;
+    //TextView viewPropiedadTransformador;
+    //TextView viewCodigoSAI;
 
     RadioButton rdZonaUrbano;
     RadioButton rdZonaRural;
@@ -174,8 +188,6 @@ public class CensoCargaDistribucion extends AppCompatActivity {
     private boolean accionarFoto1;
     private boolean accionarFoto2;
 
-    private ProgressBar progressBarGuardarCenso;
-
     Elemento elemento;
     private CensoDB censoDB;
     private Elemento transformador;
@@ -188,7 +200,7 @@ public class CensoCargaDistribucion extends AppCompatActivity {
     private String path;
     private String encodeStringFoto_1 = "";
     private String encodeStringFoto_2 = "";
-
+    private String sincronizado = "S";
     public LocationManager ubicacion;
 
     @Override
@@ -272,8 +284,6 @@ public class CensoCargaDistribucion extends AppCompatActivity {
         foto2 = findViewById(R.id.foto_2);
 
         //--
-        progressBarGuardarCenso = findViewById(R.id.progressBarGuardarCenso);
-        //--
         viewLatitud = findViewById(R.id.gps_latitud);
         viewLongitud = findViewById(R.id.gps_longitud);
         viewAltitud  = findViewById(R.id.gps_altitud);
@@ -287,7 +297,7 @@ public class CensoCargaDistribucion extends AppCompatActivity {
         viewPlacaCT                     = findViewById(R.id.txt_ct_transformador);
         viewPlacaMT                     = findViewById(R.id.txt_mt_transformador);
         viewTransformadorExclusivoAp    = findViewById(R.id.txt_transformador_exclusivo_ap);
-        viewCodigoSAI                   = findViewById(R.id.txt_codigo_sai);
+        //viewCodigoSAI                   = findViewById(R.id.txt_codigo_sai);
 
         viewTransformadorNo.setText(transformador.getElemento_no());
         viewTipoTransformador.setText(transformador.getMobiliario().getDescripcionMobiliario());
@@ -301,7 +311,6 @@ public class CensoCargaDistribucion extends AppCompatActivity {
         txtDireccion.setEnabled(false);
         txtLatitud.setEnabled(false);
         txtLongitud.setEnabled(false);
-        progressBarGuardarCenso.setVisibility(View.INVISIBLE);
 
         btnLimpiar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -401,7 +410,7 @@ public class CensoCargaDistribucion extends AppCompatActivity {
 
                     if (networkInfo != null && networkInfo.isConnected()) {
                         Toast.makeText(getApplicationContext(),"Conectando con "+networkInfo.getTypeName()+" / "+networkInfo.getExtraInfo(),Toast.LENGTH_LONG).show();
-                        //guardarFormulario('R', database);
+                        guardarFormulario('R', database);
                     } else {
                         alert.setTitle(R.string.titulo_alerta);
                         alert.setMessage(getString(R.string.alert_conexion) +" los datos se guardarán en el dispositivo");
@@ -409,7 +418,7 @@ public class CensoCargaDistribucion extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 dialogInterface.cancel();
-                                //guardarFormulario('L', database);
+                                guardarFormulario('L', database);
                             }
                         });
                         alert.create().show();
@@ -600,6 +609,253 @@ public class CensoCargaDistribucion extends AppCompatActivity {
 
     }
 
+    private void guardarFormulario(char tipoAlmacenamiento, SQLiteDatabase sqLiteDatabase) {
+        switch (tipoAlmacenamiento) {
+            case 'L':
+                sincronizado = "N";
+                ProgressDialog progress = new ProgressDialog(CensoCargaDistribucion.this);
+                progress.setCancelable(false);
+                progress.setTitle(R.string.titulo_alerta);
+                progress.setIcon(R.drawable.icon_info);
+                progress.setMessage(getString(R.string.almacenando));
+                setButton(false);
+                progress.show();
+
+                if (almacenarDatosLocal(sqLiteDatabase)) {
+                    progress.dismiss();
+                    alert.setTitle(R.string.titulo_alerta);
+                    alert.setMessage(R.string.alert_almacenamiento_local);
+                    alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                            resetFrm(false);
+                            setButton(true);
+                        }
+                    });
+                    alert.create().show();
+                } else {
+                    progress.dismiss();
+                    alert.setTitle(R.string.titulo_alerta);
+                    alert.setMessage(R.string.alert_error_almacenando_datos);
+                    alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                            setButton(true);
+                        }
+                    });
+                    alert.create().show();
+                }
+                break;
+            case 'R':
+                almacenarDatosEnRemoto();
+                break;
+        }
+    }
+
+    //--
+    private void almacenarDatosEnRemoto() {
+        final AsyncHttpClient client = new AsyncHttpClient();
+        RequestParams requestParams = new RequestParams();
+
+        ProgressDialog progress = new ProgressDialog(CensoCargaDistribucion.this);
+        progress.setCancelable(false);
+        progress.setTitle(R.string.titulo_alerta);
+        progress.setIcon(R.drawable.icon_info);
+        progress.setMessage(getString(R.string.almacenando));
+
+        Integer id_elemento_t = (txtElementoNo.getText().toString().isEmpty() && !swLuminariaVisible.isChecked()) ? null : elemento.getId();
+
+        requestParams.put("id_usuario", idUsuario);
+        requestParams.put("id_municipio", idDefaultMunicipio);
+        requestParams.put("id_barrio", barrioList.get(sltBarrio.getSelectedItemPosition()).getId());
+        requestParams.put("direccion", txtDireccion.getText());
+        requestParams.put("id_tipologia", tipologiaList.get(sltTipologia.getSelectedItemPosition()).getId());
+        requestParams.put("id_mobiliario", mobiliarioList.get(sltMobiliario.getSelectedItemPosition()).getIdMobiliario());
+        requestParams.put("id_referencia", referenciaMobiliarioList.get(sltReferencia.getSelectedItemPosition()).getIdReferenciaMobiliario());
+        requestParams.put("id_estado_mobiliario", estadoMobiliarioList.get(sltEstadoMobiliario.getSelectedItemPosition()).getId());
+        requestParams.put("longitud", txtLongitud.getText());
+        requestParams.put("latitud", txtLatitud.getText());
+        requestParams.put("observacion", txtObservacion.getText());
+        requestParams.put("id_censo", censoAsignadoList.get(sltCensoAsignado.getSelectedItemPosition()).getId());
+        requestParams.put("id_elemento", id_elemento_t);
+        requestParams.put("mobiliario_no", txtElementoNo.getText());
+        requestParams.put("numero_mobiliario_visible", chkSwLuminariaVisible);
+        requestParams.put("mobiliario_en_sitio", chkSwPoseeLuminaria);
+        requestParams.put("cantidad", 1);
+        requestParams.put("sector",sector);
+        requestParams.put("zona", zona);
+        requestParams.put("mobiliario_buen_estado", chkSwMobiliarioBuenEstado);
+        requestParams.put("id_elemento_transformador", transformador.getId());
+        requestParams.put("foto_1", encodeStringFoto_1);
+        requestParams.put("foto_2", encodeStringFoto_2);
+
+        Log.d(Constantes.TAG,"=>"+requestParams.toString());
+        client.setTimeout(Constantes.TIMEOUT);
+
+        RequestHandle post = client.post(ServicioWeb.urlGuardarCensoCarga, requestParams, new AsyncHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                super.onStart();
+                setButton(false);
+                progress.show();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                String respuesta = new String(responseBody);
+                JSONObject jsonObject;
+                String mensaje;
+                try {
+                    jsonObject = new JSONObject(new String(responseBody));
+                    mensaje = jsonObject.getString("mensaje");
+
+                    alert.setTitle(R.string.titulo_alerta);
+                    alert.setMessage(mensaje);
+                    alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    });
+                    alert.create().show();
+
+                    if(jsonObject.getInt("estado") == 1) {
+                        sincronizado = "S";
+                        if(almacenarDatosLocal(database)){
+                            Toast.makeText(getApplicationContext(), "Save", Toast.LENGTH_SHORT).show();
+                        }
+                        resetFrm(true);
+                    }
+
+                    Log.d(Constantes.TAG, "statusCode:" + statusCode + ", mensaje:" + mensaje+" ,respuesta:"+respuesta);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Log.d(Constantes.TAG,"Error: onsuccess"+e.getMessage()+"respuesta:"+respuesta);
+                    Toast.makeText(getApplicationContext(), getText(R.string.alert_error_ejecucion) + " Servicio Web, Código:" + statusCode, Toast.LENGTH_SHORT).show();
+                }
+                setButton(true);
+                progress.dismiss();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                String respuesta = new String(responseBody);
+                Log.d(Constantes.TAG,"error "+respuesta);
+                Toast.makeText(getApplicationContext(), getText(R.string.alert_error_ejecucion) + " Código: " + statusCode, Toast.LENGTH_LONG).show();
+                setButton(true);
+                progress.dismiss();
+            }
+        });
+    }
+
+    //--
+    private boolean almacenarDatosLocal(SQLiteDatabase sqLiteDatabase) {
+        boolean response = true;
+        setButton(false);
+        Barrio barrio = new Barrio();
+        barrio.setIdBarrio(barrioList.get(sltBarrio.getSelectedItemPosition()).getId());
+        barrio.setNombreBarrio(barrioList.get(sltBarrio.getSelectedItemPosition()).getDescripcion());
+
+        //--Datos del Municipio
+        barrio.setId(idDefaultMunicipio);
+        barrio.setDescripcion(nombreMunicipio);
+
+        Tipologia tipologia = new ReferenciaMobiliario();
+        tipologia.setIdTipologia(tipologiaList.get(sltTipologia.getSelectedItemPosition()).getId());
+        tipologia.setDescripcionTipologia(tipologiaList.get(sltTipologia.getSelectedItemPosition()).getDescripcion());
+        //--Datos del Proceso
+        tipologia.setId(idDefaultProceso);
+
+        Mobiliario mobiliario = new ReferenciaMobiliario();
+        mobiliario.setIdMobiliario(mobiliarioList.get(sltMobiliario.getSelectedItemPosition()).getIdMobiliario());
+        mobiliario.setDescripcionMobiliario(mobiliarioList.get(sltMobiliario.getSelectedItemPosition()).getDescripcionMobiliario());
+
+        ReferenciaMobiliario referenciaMobiliario = new ReferenciaMobiliario();
+        referenciaMobiliario.setIdReferenciaMobiliario(referenciaMobiliarioList.get(sltReferencia.getSelectedItemPosition()).getIdReferenciaMobiliario());
+        referenciaMobiliario.setDescripcionReferenciaMobiliario(referenciaMobiliarioList.get(sltReferencia.getSelectedItemPosition()).getDescripcionReferenciaMobiliario());
+
+        EstadoMobiliario estadoMobiliario = new EstadoMobiliario();
+        estadoMobiliario.setIdEstadoMobiliario(estadoMobiliarioList.get(sltEstadoMobiliario.getSelectedItemPosition()).getId());
+        estadoMobiliario.setDescripcionEstadoMobiliario(estadoMobiliarioList.get(sltEstadoMobiliario.getSelectedItemPosition()).getDescripcion());
+
+
+        if (txtElementoNo.getText().toString().isEmpty() && !swLuminariaVisible.isChecked()) {
+            elemento = new Elemento();
+            elemento.setId(0);
+            elemento.setElemento_no("");
+        }
+        elemento.setDireccion(txtDireccion.getText().toString());
+        elemento.setBarrio(barrio);
+        elemento.setTipologia(tipologia);
+        elemento.setMobiliario(mobiliario);
+        elemento.setReferenciaMobiliario(referenciaMobiliario);
+
+        Censo censo = new Censo();
+        censo.setId_censo(censoAsignadoList.get(sltCensoAsignado.getSelectedItemPosition()).getId());
+        censo.setElemento(elemento);
+        censo.setEstadoMobiliario(estadoMobiliario);
+
+        String fechaHora = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
+        censo.setFchRegistro(fechaHora);
+
+        Float latitud = (txtLatitud.getText().toString().isEmpty()) ? 0 : Float.parseFloat(txtLatitud.getText().toString());
+        Float longitud = (txtLongitud.getText().toString().isEmpty()) ? 0 : Float.parseFloat(txtLongitud.getText().toString());
+        censo.setLatitud(latitud);
+        censo.setLongitud(longitud);
+        censo.setChkSwLuminariaVisible(chkSwLuminariaVisible);
+        censo.setChkSwPoseeLuminaria(chkSwPoseeLuminaria);
+        censo.setSector(sector);
+        censo.setZona(zona);
+        censo.setChkSwMobiliarioBuenEstado(chkSwMobiliarioBuenEstado);
+        censo.setObservacion(txtObservacion.getText().toString());
+        censo.setSincronizado((sincronizado.contentEquals("S"))?true:false);
+        censo.setElementoTransformador(transformador.getId());
+
+        CensoDB censoDB = new CensoDB(sqLiteDatabase);
+        if(censoDB.agregarDatosCensoCarga(censo)){
+            CensoArchivoDB censoArchivoDB = new CensoArchivoDB(sqLiteDatabase);
+            censoArchivoDB.setId_censo_tecnico(censo.getLastId());
+            censoArchivoDB.setArchivo(encodeStringFoto_1);
+            censoArchivoDB.agregarDatos(censoArchivoDB);
+            censoArchivoDB.setArchivo(encodeStringFoto_2);
+            censoArchivoDB.agregarDatos(censoArchivoDB);
+            response = true;
+        }
+        else{
+            response = false;
+        }
+
+        return response;
+        /*if (censoDB.agregarDatosCensoCarga(censo)) {
+
+            alert.setTitle(R.string.titulo_alerta);
+            alert.setMessage(R.string.alert_almacenamiento_local);
+            alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                    resetFrm(false);
+                    setButton(true);
+                }
+            });
+            alert.create().show();
+        } else {
+            alert.setTitle(R.string.titulo_alerta);
+            alert.setMessage(R.string.alert_error_almacenando_datos);
+            alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                    setButton(true);
+                }
+            });
+            alert.create().show();
+        }*/
+    }
+
+    //--
     public void quitarFoto(ImageView imageView){
         imageView.setImageResource(R.drawable.icon_no_photography);
         switch (imageView.getId()){
@@ -611,6 +867,7 @@ public class CensoCargaDistribucion extends AppCompatActivity {
                 break;
         }
     }
+
     //--
     private void cargarImagen(){
         final CharSequence[] opciones = {getText(R.string.tomar_foto).toString(), getText(R.string.cargar_imagen).toString(), getText(R.string.btn_cancelar)};
@@ -664,6 +921,7 @@ public class CensoCargaDistribucion extends AppCompatActivity {
         });
         alertOpciones.show();
     }
+
     //--
     public void tomarFoto() {
         String nombreImagen = "";
@@ -684,7 +942,6 @@ public class CensoCargaDistribucion extends AppCompatActivity {
         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
         startActivityForResult(intent, Constantes.CONS_TOMAR_FOTO);
     }
-
 
     //--Cargar Parametrizacion--
     private void cargarTipologia(SQLiteDatabase sqLiteDatabase) {
@@ -1051,7 +1308,18 @@ public class CensoCargaDistribucion extends AppCompatActivity {
                                         alert.setMessage(R.string.alert_censo_direccion);
                                         return false;
                                     } else {
-                                        return true;
+                                        if(encodeStringFoto_1.isEmpty()) {
+                                            alert.setMessage(R.string.alert_censo_foto_1);
+                                            return false;
+                                        }
+                                        else{
+                                            if(encodeStringFoto_2.isEmpty()){
+                                                alert.setMessage(R.string.alert_censo_foto_2);
+                                                return false;
+                                            }
+                                            else
+                                                return true;
+                                        }
                                     }
                                 }
                             }
@@ -1098,6 +1366,10 @@ public class CensoCargaDistribucion extends AppCompatActivity {
         chkSwLuminariaVisible = "S";
         chkSwPoseeLuminaria = "S";
         chkSwMobiliarioBuenEstado = "S";
+        encodeStringFoto_1 = "";
+        encodeStringFoto_2 = "";
+        foto1.setImageResource(R.drawable.imagen_no_disponible);
+        foto2.setImageResource(R.drawable.imagen_no_disponible);
     }
 
     //--Administrar Direccion
@@ -1208,6 +1480,15 @@ public class CensoCargaDistribucion extends AppCompatActivity {
         alertDireccion.create().setCancelable(false);
         alertDireccion.create().show();*/
 
+    }
+
+    //--
+    private void setButton(boolean estado){
+        //btnSincronizar.setEnabled(estado);
+        btnGuardar.setEnabled(estado);
+        btnCancelar.setEnabled(estado);
+        btnBuscarElemento.setEnabled(estado);
+        btnLimpiar.setEnabled(estado);
     }
 
     //--Administracion del GPS

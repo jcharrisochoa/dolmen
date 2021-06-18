@@ -55,6 +55,8 @@ public class Censo {
     private String visorMalEstado;
     private String sinBombillo;
     private String mobiliarioObsoleto;
+    private boolean sincronizado;
+    private int elementoTransformador;
 
     public int getAncho_via() {
         return ancho_via;
@@ -487,5 +489,21 @@ public class Censo {
 
     public void setInterdistancia_anterior(int interdistancia_anterior) {
         this.interdistancia_anterior = interdistancia_anterior;
+    }
+
+    public boolean getSincronizado() {
+        return sincronizado;
+    }
+
+    public void setSincronizado(boolean sincronizado) {
+        this.sincronizado = sincronizado;
+    }
+
+    public int getElementoTransformador() {
+        return elementoTransformador;
+    }
+
+    public void setElementoTransformador(int elementoTransformador) {
+        this.elementoTransformador = elementoTransformador;
     }
 }

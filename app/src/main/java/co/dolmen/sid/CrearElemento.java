@@ -1,15 +1,19 @@
 package co.dolmen.sid;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+
+import co.dolmen.sid.entidad.Elemento;
 import co.dolmen.sid.entidad.Mobiliario;
 import co.dolmen.sid.entidad.ReferenciaMobiliario;
 import co.dolmen.sid.modelo.ActaContratoDB;
 import co.dolmen.sid.modelo.BarrioDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
+import co.dolmen.sid.modelo.ElementoDB;
 import co.dolmen.sid.modelo.EstadoMobiliarioDB;
 import co.dolmen.sid.modelo.MobiliarioDB;
 import co.dolmen.sid.modelo.ProveedorDB;
@@ -28,6 +32,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -43,6 +48,7 @@ import android.media.MediaScannerConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -79,6 +85,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -190,6 +202,7 @@ public class CrearElemento extends AppCompatActivity {
     private String chkSwTransformadorExclusivoAp = "N";
     private String tipoPropietarioTranformador = "NA";
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -361,13 +374,17 @@ public class CrearElemento extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(validarFrm()){
+                    btnGuardar.setEnabled(false);
+                    btnCancelar.setEnabled(false);
+
+                    btnGuardar.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorLightPrimary)));
+                    btnCancelar.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorLightPrimary)));
+
                     ConnectivityManager conn = (ConnectivityManager) getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
                     NetworkInfo networkInfo = conn.getActiveNetworkInfo();
 
                     if(networkInfo != null && networkInfo.isConnected()) {
                         Toast.makeText(getApplicationContext(),"Conectando con "+networkInfo.getTypeName()+" / "+networkInfo.getExtraInfo(),Toast.LENGTH_LONG).show();
-                        btnGuardar.setEnabled(false);
-                        btnCancelar.setEnabled(false);
                         GuardarMobiliario();
                     }
                     else{
@@ -376,6 +393,54 @@ public class CrearElemento extends AppCompatActivity {
                         alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
+                                BigInteger bi;
+                                int _hascode = 0;
+                                try {
+                                    LocalDateTime localDateTime;
+                                    localDateTime = LocalDateTime.now();
+                                    MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+                                    messageDigest.update(localDateTime.toString().getBytes());
+                                    byte[] hash = messageDigest.digest();
+                                    bi = new BigInteger( hash );
+                                    _hascode = Math.abs(bi.hashCode());
+                                    Log.d(Constantes.TAG,"hascode="+Math.abs(_hascode));
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                    Log.d(Constantes.TAG,e.getMessage());
+                                }
+
+                                if(!guardarLocal(_hascode,"","S")){
+                                    Log.d(Constantes.TAG,"Error Guardando Localmente el elemento");
+                                    alert.setTitle(R.string.titulo_alerta);
+                                    alert.setMessage(R.string.alert_error_almacenando_datos);
+                                    alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            dialogInterface.cancel();
+                                            btnGuardar.setEnabled(true);
+                                            btnCancelar.setEnabled(true);
+                                            btnCancelar.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccentCancel)));
+                                            btnGuardar.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccentOk)));
+                                        }
+                                    });
+                                    alert.create().show();
+                                }
+                                else{
+                                    alert.setTitle(R.string.titulo_alerta);
+                                    alert.setMessage(R.string.alert_almacenamiento_local);
+                                    alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            dialogInterface.cancel();
+                                            resetFrm();
+                                            btnGuardar.setEnabled(true);
+                                            btnCancelar.setEnabled(true);
+                                            btnCancelar.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccentCancel)));
+                                            btnGuardar.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccentOk)));
+                                        }
+                                    });
+                                    alert.create().show();
+                                }
                                 dialogInterface.cancel();
                             }
                         });
@@ -1005,6 +1070,14 @@ public class CrearElemento extends AppCompatActivity {
     private void resetFrm(){
         btnGuardar.setEnabled(true);
         btnCancelar.setEnabled(true);
+        sltSentido.setSelection(0);
+        txtLatitud.setText("");
+        txtLongitud.setText("");
+        txtTransformador.setText("");
+        txtMtTransformador.setText("");
+        txtCtTransformador.setText("");
+        txtSerialMedidor.setText("");
+        txtLecturaMedidor.setText("");
         txtObservacion.setText("");
         txtCantidad.setText("1");
         chkTercero.setChecked(false);
@@ -1069,8 +1142,14 @@ public class CrearElemento extends AppCompatActivity {
                                                         alert.setMessage(R.string.alert_censo_estado_mobiliario);
                                                         return false;
                                                     }
-                                                    else
-                                                        return true;
+                                                    else{
+                                                        if(encodeString == ""){
+                                                            alert.setMessage(R.string.alert_fotografia);
+                                                            return false;
+                                                        }
+                                                        else
+                                                            return true;
+                                                    }
                                                 }
                                             }
                                         }
@@ -1168,13 +1247,27 @@ public class CrearElemento extends AppCompatActivity {
                         }
                     });
                     alert.create().show();
-                    progressBar.setVisibility(View.INVISIBLE);
+                    if(jsonObject.getInt("idelemento")!=0){
+                        if(!guardarLocal(
+                                jsonObject.getInt("idelemento"),
+                                jsonObject.getString("mobiliario_no"),"N"
+                        )){
+                            Log.d(Constantes.TAG,"Error Guardando Localmente el elemento");
+                            Toast.makeText(getApplicationContext(),getText(R.string.alert_error_ejecucion)+ " Error Guardando localmente el elemento", Toast.LENGTH_SHORT).show();
+                        }
+                    }
                     resetFrm();
+                    btnCancelar.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccentCancel)));
+                    btnGuardar.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccentOk)));
+                    progressBar.setVisibility(View.INVISIBLE);
+
 
                 }catch (JSONException e){
                     e.printStackTrace();
-                    Log.d("resultado","Error: onsuccess"+e.getMessage()+"respuesta:"+respuesta);
+                    Log.d(Constantes.TAG,"Error: onsuccess"+e.getMessage()+"respuesta:"+respuesta);
                     Toast.makeText(getApplicationContext(),getText(R.string.alert_error_ejecucion)+ " Servicio Web, Código:"+statusCode, Toast.LENGTH_SHORT).show();
+                    btnCancelar.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccentCancel)));
+                    btnGuardar.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccentOk)));
                     progressBar.setVisibility(View.INVISIBLE);
                 }
             }
@@ -1182,12 +1275,56 @@ public class CrearElemento extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 String respuesta = new String(responseBody);
-                Log.d("resultado","Error "+respuesta);
+                Log.d(Constantes.TAG,"Error "+respuesta);
                 Toast.makeText(getApplicationContext(),getText(R.string.alert_error_ejecucion)+ " Código: "+statusCode, Toast.LENGTH_SHORT).show();
+                btnCancelar.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccentCancel)));
+                btnGuardar.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccentOk)));
                 progressBar.setVisibility(View.INVISIBLE);
             }
         });
 
+    }
+
+    public boolean guardarLocal(int id_elemento,String mobiliario_no,String temporal){
+
+        ElementoDB elementoDB = new ElementoDB(database);
+        float potenciaTransformador = (txtPotenciaTransformador.getText().toString().isEmpty())?0:Float.parseFloat(txtPotenciaTransformador.getText().toString());
+        int lecturaMedidor = (txtLecturaMedidor.getText().toString().isEmpty())?0:Integer.parseInt(txtLecturaMedidor.getText().toString());
+
+        return elementoDB.agregarDatos(
+                id_elemento,mobiliario_no,
+                txtDireccion.getText().toString(),
+                idDefaultMunicipio,
+                barrioList.get(sltBarrio.getSelectedItemPosition()).getId(),
+                idDefaultProceso,
+                tipologiaList.get(sltTipologia.getSelectedItemPosition()).getId(),
+                mobiliarioList.get(sltMobiliario.getSelectedItemPosition()).getIdMobiliario(),
+                referenciaMobiliarioList.get(sltReferencia.getSelectedItemPosition()).getIdReferenciaMobiliario(),
+                estadoMobiliarioList.get(sltEstadoMobiliario.getSelectedItemPosition()).getId(),
+                0,0,0,"U","N",
+                Float.parseFloat(txtLatitud.getText().toString()),
+                Float.parseFloat(txtLongitud.getText().toString()),
+                claseViaList.get(sltClaseVia.getSelectedItemPosition()).getId(),
+                0,
+                tipoPosteList.get(sltTipoPoste.getSelectedItemPosition()).getId(),
+                0,txtPosteno.getText().toString(),0,0,
+                tipoRedList.get(sltTipoRed.getSelectedItemPosition()).getId(),
+                0,0,0,
+                (chkSwTransformadorExclusivoAp.contentEquals("S"))?"N":"S",
+                "",
+                potenciaTransformador,
+                txtMtTransformador.getText().toString(),
+                txtCtTransformador.getText().toString(),
+                sentidoList.get(sltSentido.getSelectedItemPosition()).getId(),
+                proveedorList.get(sltProveedor.getSelectedItemPosition()).getId(),
+                unidadList.get(sltUnidad.getSelectedItemPosition()).getId(),
+                Integer.parseInt(txtCantidad.getText().toString()),
+                tercero,
+                txtSerialMedidor.getText().toString(),
+                lecturaMedidor,
+                actaList.get(sltActaContrato.getSelectedItemPosition()).getId(),
+                txtObservacion.getText().toString(),temporal
+        );
     }
     //--Administracion del GPS
     public boolean estadoGPS() {

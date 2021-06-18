@@ -70,6 +70,7 @@
             android:id="@+id/linearLayout2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -613,7 +614,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="-"
                                 android:textSize="16sp"
-                                android:textStyle="bold"/>
+                                android:textStyle="bold" />
 
                             <TextView
                                 android:id="@+id/textView22"
@@ -627,9 +628,9 @@
                                 android:layout_height="wrap_content"
                                 android:text="-"
                                 android:textSize="16sp"
-                                android:textStyle="bold"/>
+                                android:textStyle="bold" />
 
-                            <TextView
+                            <!--<TextView
                                 android:id="@+id/view_codigo_sai"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -641,7 +642,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="-"
                                 android:textSize="16sp"
-                                android:textStyle="bold"/>
+                                android:textStyle="bold"/>-->
 
                             <TextView
                                 android:id="@+id/textView59"
@@ -655,10 +656,10 @@
                                 android:layout_height="wrap_content"
                                 android:text="-"
                                 android:textSize="16sp"
-                                android:textStyle="bold"/>
+                                android:textStyle="bold" />
 
 
-                            <TextView
+                            <!--<TextView
                                 android:id="@+id/textView29"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -670,7 +671,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="-"
                                 android:textSize="16sp"
-                                android:textStyle="bold"/>
+                                android:textStyle="bold"/>-->
 
 
                             <!--<View
@@ -804,19 +805,6 @@
                         android:orientation="vertical" />
                 </LinearLayout>
             </ScrollView>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ProgressBar
-                android:id="@+id/progressBarGuardarCenso"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:indeterminate="true" />
         </LinearLayout>
 
     </androidx.appcompat.widget.LinearLayoutCompat>

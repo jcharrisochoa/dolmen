@@ -241,4 +241,5 @@
     <string name="tipo_recorrido">Tipo Recorrido</string>
     <string name="lista_transformador">Transformadores</string>
     <string name="titulo_transformador_sai">Código SAI</string>
+    <string name="almacenando">Almacenando</string>
 </resources>

@@ -31,6 +31,7 @@ import co.dolmen.sid.entidad.Elemento;
 import co.dolmen.sid.entidad.Mobiliario;
 import co.dolmen.sid.entidad.ReferenciaMobiliario;
 import co.dolmen.sid.modelo.ActividadOperativaDB;
+import co.dolmen.sid.modelo.CensoDB;
 import co.dolmen.sid.modelo.ElementoDB;
 import co.dolmen.sid.utilidades.AdapterData;
 import co.dolmen.sid.utilidades.AdapterElemento;
@@ -219,6 +220,11 @@ public class ListaTransformador extends AppCompatActivity {
             if (cursor.getCount() > 0) {
                 while (cursor.moveToNext()) {
 
+                    CensoDB censoDB = new CensoDB(database);
+                    Cursor cursorCenso = censoDB.consultarRecorridoDistribucion(
+                            cursor.getInt(cursor.getColumnIndex("_id"))
+                    );
+
 
                     Mobiliario mobiliario = new Mobiliario(
                             cursor.getInt(cursor.getColumnIndex("id_mobiliario")),
@@ -230,6 +236,7 @@ public class ListaTransformador extends AppCompatActivity {
                             cursor.getString(cursor.getColumnIndex("referencia"))
                     );
                     elemento = new Elemento();
+                    elemento.setId(cursor.getInt(cursor.getColumnIndex("_id")));
                     elemento.setMobiliario(mobiliario);
                     elemento.setReferenciaMobiliario(referenciaMobiliario);
                     elemento.setElemento_no(cursor.getString(cursor.getColumnIndex("elemento_no")));
@@ -237,7 +244,7 @@ public class ListaTransformador extends AppCompatActivity {
                     elemento.setPlacaMT(cursor.getString(cursor.getColumnIndex("placa_ct_transformador")));
                     elemento.setPlacaCT(cursor.getString(cursor.getColumnIndex("placa_mt_transformador")));
                     elemento.setPotenciaTransformador(cursor.getDouble(cursor.getColumnIndex("potencia_transformador")));
-                    //elemento.setTransformadorExclusivo((cursor.getString(cursor.getColumnIndex("transformador_compartido ")).contentEquals("S"))?false:true);
+                    elemento.setCantidad(cursorCenso.getCount());
                     elementoArrayList.add(elemento);
 
                 }

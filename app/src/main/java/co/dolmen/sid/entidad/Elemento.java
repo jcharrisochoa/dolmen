@@ -38,6 +38,17 @@ public class Elemento implements Serializable {
     private TipoInstalacionRed tipoInstalacionRed;
     private TipoRed tipoRed;
     private String encodeStringFoto;
+    private int cantidad;
+
+    private Sentido sentido;
+    private Proveedor proveedor;
+    private UnidadMedida unidadMedida;
+    private String tercero;
+    private String serialMedidor;
+    private int lecturaMedidor;
+    private ActaContrato actaContrato;
+    private String observacion;
+    private Temporal temporal;
 
     public Elemento(){
 
@@ -327,4 +338,88 @@ public class Elemento implements Serializable {
     public void setEncodeStringFoto(String encodeStringFoto) {
         this.encodeStringFoto = encodeStringFoto;
     }
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
+    }
+
+    public Sentido getSentido() {
+        return sentido;
+    }
+
+    public void setSentido(Sentido sentido) {
+        this.sentido = sentido;
+    }
+
+    public Proveedor getProveedor() {
+        return proveedor;
+    }
+
+    public void setProveedor(Proveedor proveedor) {
+        this.proveedor = proveedor;
+    }
+
+    public UnidadMedida getUnidadMedida() {
+        return unidadMedida;
+    }
+
+    public void setUnidadMedida(UnidadMedida unidadMedida) {
+        this.unidadMedida = unidadMedida;
+    }
+
+    public String getTercero() {
+        return tercero;
+    }
+
+    public void setTercero(String tercero) {
+        this.tercero = tercero;
+    }
+
+    public String getSerialMedidor() {
+        return serialMedidor;
+    }
+
+    public void setSerialMedidor(String serialMedidor) {
+        this.serialMedidor = serialMedidor;
+    }
+
+    public int getLecturaMedidor() {
+        return lecturaMedidor;
+    }
+
+    public void setLecturaMedidor(int lecturaMedidor) {
+        this.lecturaMedidor = lecturaMedidor;
+    }
+
+    public ActaContrato getActaContrato() {
+        return actaContrato;
+    }
+
+    public void setActaContrato(ActaContrato actaContrato) {
+        this.actaContrato = actaContrato;
+    }
+
+    public String getObservacion() {
+        return observacion;
+    }
+
+    public void setObservacion(String observacion) {
+        this.observacion = observacion;
+    }
+
+    public Temporal getTemporal() {
+        return temporal;
+    }
+
+    public void setTemporal(Temporal temporal) {
+        this.temporal = temporal;
+    }
+}
+
+enum Temporal{
+    S,N;
 }

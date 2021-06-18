@@ -887,8 +887,15 @@ public class Parametros extends AppCompatActivity {
                                 estructura_soporte_compartida,
                                 jObjectElemento.getDouble("potencia_transformador"),
                                 jObjectElemento.getString("placa_MT"),
-                                jObjectElemento.getString("placa_CT")
-
+                                jObjectElemento.getString("placa_CT"),
+                                jObjectElemento.getInt("id_sentido"),
+                                jObjectElemento.getInt("id_proveedor"),
+                                jObjectElemento.getInt("id_unidad_medida"),
+                                jObjectElemento.getInt("cantidad"),
+                                jObjectElemento.getString("tercero"),
+                                jObjectElemento.getString("serial_medidor"),
+                                jObjectElemento.getInt("lectura_medidor"),
+                          0,"","N"
                         );
 
                         progress = (int) Math.round((double) (i + 1) / arrayElemento.length() * 100);

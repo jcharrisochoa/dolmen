@@ -123,6 +123,7 @@ public class AdapterElemento extends RecyclerView.Adapter<AdapterElemento.ViewHo
             itemPotencia.setText(String.valueOf(elemento.getPotenciaTransformador())+" KVA");
             itemMT.setText("MT: "+elemento.getPlacaMT());
             itemCT.setText("CT: "+elemento.getPlacaCT());
+            itemCantidad.setText("Total Censado:"+elemento.getCantidad());
         }
 
     }

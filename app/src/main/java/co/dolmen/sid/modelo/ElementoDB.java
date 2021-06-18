@@ -44,6 +44,12 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
                     "id_calibre_conductores INTEGER,"+
                     "id_tipo_red INTEGER,"+
                     "id_tipo_instalacion_red_alimentacion INTEGER,"+
+                    "id_sentido INTEGER,"+
+                    "id_proveedor INTEGER,"+
+                    "id_unidad_medida INTEGER,"+
+                    "id_acta INTEGER,"+
+                    "cantidad INTEGER NOT NULL DEFAULT 1,"+
+                    "tercero VARCHAR(1) CHECK(tercero IN ('S','N')) NOT NULL DEFAULT 'S',"+
                     "zona VARCHAR(1),"+
                     "sector VARCHAR(1),"+
                     "ancho_via INTEGER,"+
@@ -56,7 +62,10 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
                     "potencia_transformador DECIMAL(5,2) NOT NULL DEFAULT 0,"+
                     "placa_mt_transformador VARCHAR (20),"+
                     "placa_ct_transformador VARCHAR (20),"+
+                    "serial_medidor VARCHAR(12),"+
+                    "lectura_medidor INTEGER DEFAULT 0,"+
                     "foto TEXT,"+
+                    "observacion TEXT,"+
                     "temporal VARCHAR(1) NOT NULL DEFAULT 'N'"+
                 ");"
         );
@@ -78,6 +87,7 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
 
     @Override
     public boolean agregarDatos(Object o) {
+        //String transformadorCompartido;
         if(o instanceof Elemento) {
             elemento = (Elemento) o;
             Cursor result = consultarId(elemento.getId());
@@ -94,6 +104,10 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
                 contentValues.put("id_referencia", elemento.getReferenciaMobiliario().getIdReferenciaMobiliario());
                 contentValues.put("id_estado_mobiliario", elemento.getEstadoMobiliario().getIdEstadoMobiliario());
                 //Log.d("VALUE",contentValues.toString());
+                contentValues.put("transformador_compartido", (elemento.isTransformadorExclusivo())?"N":"S");
+                contentValues.put("potencia_transformador", elemento.getPotenciaTransformador());
+                contentValues.put("placa_mt_transformador", elemento.getPlacaMT());
+                contentValues.put("placa_ct_transformador", elemento.getPlacaCT());
                 db.insert(Constantes.TABLA_ELEMENTO, null, contentValues);
             }
             result.close();
@@ -111,8 +125,11 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
                                 int id_norma_construccion_poste,String poste_no,int interdistancia,
                                 int id_calibre_conductores,int id_tipo_red,int id_tipo_instalacion_red_alimentacion,
                                 int id_control_encendido,int id_tipo_escenario,String transformador_compartido, String estructura_soporte_compartida,
-                                double potencia_transformador,String placa_mt,String placa_ct
+                                double potencia_transformador,String placa_mt,String placa_ct,int id_sentido,
+                                int id_proveedor,int id_unidad_medida ,int cantidad, String tercero,String serial_medidor,
+                                int  lectura_medidor, int id_acta, String observacion,String temporal
                                 ){
+        long rowID = -1;
         Cursor result = consultarId(id_elemento);
 
         if(result.getCount() == 0) {
@@ -150,11 +167,23 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
             contentValues.put("potencia_transformador", potencia_transformador);
             contentValues.put("placa_mt_transformador", placa_mt);
             contentValues.put("placa_ct_transformador", placa_ct);
+            contentValues.put("id_sentido", id_sentido);
+            contentValues.put("id_proveedor", id_proveedor);
+            contentValues.put("id_unidad_medida", id_unidad_medida);
+            contentValues.put("cantidad", cantidad);
+            contentValues.put("tercero", tercero);
+            contentValues.put("serial_medidor", serial_medidor);
+            contentValues.put("lectura_medidor", lectura_medidor);
+            contentValues.put("id_acta", id_acta);
+            contentValues.put("observacion", observacion);
+            contentValues.put("temporal", temporal);
+
             //Log.d("VALUE",contentValues.toString());
-            db.insert(Constantes.TABLA_ELEMENTO, null, contentValues);
+            rowID = db.insert(Constantes.TABLA_ELEMENTO, null, contentValues);
+            Log.d(Constantes.TAG,"rowID:"+rowID);
         }
         result.close();
-        return true;
+        return (rowID>0)?true:false;
     }
     @Override
     public void actualizarDatos(Object o) {
@@ -194,6 +223,18 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
             contentValues.put("placa_mt_transformador",  elemento.getPlacaMT());
             contentValues.put("placa_ct_transformador", elemento.getPlacaCT());
             contentValues.put("foto", elemento.getEncodeStringFoto());
+            //--Cambios 17 junio 2021
+            contentValues.put("id_sentido", elemento.getSentido().getId());
+            contentValues.put("id_proveedor", elemento.getProveedor().getId());
+            contentValues.put("id_unidad_medida", elemento.getUnidadMedida().getId());
+            contentValues.put("cantidad", elemento.getCantidad());
+            contentValues.put("tercero", elemento.getTercero());
+            contentValues.put("serial_medidor", elemento.getSerialMedidor());
+            contentValues.put("lectura_medidor", elemento.getLecturaMedidor());
+            contentValues.put("id_acta", elemento.getActaContrato().getIdActa());
+            contentValues.put("observacion", elemento.getObservacion());
+            contentValues.put("temporal", String.valueOf(elemento.getTemporal()));
+
             db.update(Constantes.TABLA_ELEMENTO,contentValues,"_id="+elemento.getId(),null);
         }
     }
