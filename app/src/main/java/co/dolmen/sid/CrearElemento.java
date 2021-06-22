@@ -1,5 +1,6 @@
 package co.dolmen.sid;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +13,9 @@ import co.dolmen.sid.entidad.Mobiliario;
 import co.dolmen.sid.entidad.ReferenciaMobiliario;
 import co.dolmen.sid.modelo.ActaContratoDB;
 import co.dolmen.sid.modelo.BarrioDB;
+import co.dolmen.sid.modelo.CensoArchivoDB;
+import co.dolmen.sid.modelo.CensoDB;
+import co.dolmen.sid.modelo.CensoTipoArmadoDB;
 import co.dolmen.sid.modelo.ClaseViaDB;
 import co.dolmen.sid.modelo.ElementoDB;
 import co.dolmen.sid.modelo.EstadoMobiliarioDB;
@@ -26,8 +30,14 @@ import co.dolmen.sid.modelo.TipologiaDB;
 import co.dolmen.sid.modelo.UnidadMedidaDB;
 import co.dolmen.sid.utilidades.DataSpinner;
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.HttpResponse;
+import cz.msebera.android.httpclient.entity.StringEntity;
+import cz.msebera.android.httpclient.message.BasicHeader;
+import cz.msebera.android.httpclient.protocol.HTTP;
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -48,6 +58,7 @@ import android.media.MediaScannerConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -56,6 +67,7 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -77,7 +89,9 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestHandle;
 import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.ResponseHandlerInterface;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -119,6 +133,7 @@ public class CrearElemento extends AppCompatActivity {
     private int idMobiliarioBusqueda;
     private int idReferenciaBusqueda;
     private Integer conexionElectrica = 0;
+    private  int contenLenght =  0;
 
     private boolean gpsListener;
     public LocationManager ubicacion;
@@ -303,12 +318,14 @@ public class CrearElemento extends AppCompatActivity {
                 tipoPropietarioTranformador = "PV";
             }
         });
+
         rdTransformadorPublico.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 tipoPropietarioTranformador = "PB";
             }
         });
+
         rdTransformadorNoAplica.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -329,6 +346,7 @@ public class CrearElemento extends AppCompatActivity {
                 CrearElemento.this.finish();
             }
         });
+
         btnEditarDireccion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -349,6 +367,7 @@ public class CrearElemento extends AppCompatActivity {
                 imgFoto.setImageResource(R.drawable.imagen_no_disponible);
             }
         });
+
         btnCapturarGPS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -370,6 +389,7 @@ public class CrearElemento extends AppCompatActivity {
                 }
             }
         });
+
         btnGuardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -459,6 +479,7 @@ public class CrearElemento extends AppCompatActivity {
                 }
             }
         });
+
         chkTercero.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -466,6 +487,7 @@ public class CrearElemento extends AppCompatActivity {
 
             }
         });
+
         swConexionElectrica.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
@@ -477,6 +499,7 @@ public class CrearElemento extends AppCompatActivity {
                 }
             }
         });
+
         sltTipologia.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -489,6 +512,7 @@ public class CrearElemento extends AppCompatActivity {
             }
 
         });
+
         sltMobiliario.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -500,6 +524,7 @@ public class CrearElemento extends AppCompatActivity {
 
             }
         });
+
         cargarTipologia(database);
         cargarEstadoMobiliario(database);
         cargarBarrio(database);
@@ -511,6 +536,22 @@ public class CrearElemento extends AppCompatActivity {
         cargarActa(database);
         cargarProveedor(database);
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(android.view.Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_censo_tecnico,menu);
+        return true; //super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_sincronizar:
+                sincronizarPendientes();
+                break;
+        }
+        return true;//super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -1323,9 +1364,11 @@ public class CrearElemento extends AppCompatActivity {
                 txtSerialMedidor.getText().toString(),
                 lecturaMedidor,
                 actaList.get(sltActaContrato.getSelectedItemPosition()).getId(),
-                txtObservacion.getText().toString(),temporal
+                txtObservacion.getText().toString(),temporal,
+                encodeString
         );
     }
+
     //--Administracion del GPS
     public boolean estadoGPS() {
         ubicacion = (LocationManager) getSystemService(this.LOCATION_SERVICE);
@@ -1390,5 +1433,265 @@ public class CrearElemento extends AppCompatActivity {
         public void onProviderDisabled(String s) {
             Toast.makeText(getApplicationContext(),s+" Inactivo",Toast.LENGTH_LONG).show();
         }
+    }
+
+    //--Sincronizar Elementos pendientes
+    private void sincronizarPendientes(){
+        ConnectivityManager conn = (ConnectivityManager) getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = conn.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            CrearElemento.Sincronizar sincronizar = new CrearElemento.Sincronizar(this);
+            sincronizar.execute();
+        } else {
+            alert.setTitle(R.string.titulo_alerta);
+            alert.setMessage(R.string.alert_conexion);
+            alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                }
+            });
+            alert.create().show();
+        }
+    }
+
+    private class Sincronizar extends AsyncTask<Void,Integer,Boolean> {
+
+        private JSONArray jsonArray;
+        private ProgressDialog dialog;
+        private int progress;
+        private TextView msgLogs;
+        private View view;
+        private AlertDialog.Builder alertDialog;
+        private LayoutInflater inflater;
+        ElementoDB elementoDB;
+        Cursor cursor;
+
+        public Sincronizar(Activity activity) {
+            dialog = new ProgressDialog(activity);
+            alertDialog = new AlertDialog.Builder(activity);
+
+            dialog.setCancelable(false);
+            dialog.setTitle(R.string.titulo_alerta);
+            dialog.setIcon(R.drawable.icon_info);
+
+            inflater = LayoutInflater.from(activity);
+
+            elementoDB = new ElementoDB(database);
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            setButton(false);
+
+            dialog.setMessage(getText(R.string.recopilando_datos)+" 0%");
+            dialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            try {
+                jsonArray = armarJSON();
+            } catch (JSONException e) {
+                setButton(true);
+
+                Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+            }
+            return true;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            dialog.setMessage(getText(R.string.recopilando_datos)+" "+values[0].intValue()+"%");
+        }
+
+        protected void onPostExecute(Boolean result) {
+            if (result) {
+                Log.d(Constantes.TAG,"json->"+jsonArray);
+                if (jsonArray.length() == 0) {
+                    dialog.dismiss();
+                    alert.setMessage(getText(R.string.alert_sin_datos_por_sincronizar));
+                    alert.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            setButton(true);
+                        }
+                    });
+                    alert.create().show();
+                }
+                else{
+                    AsyncHttpClient client = new AsyncHttpClient();
+                    StringEntity jsonParams = new StringEntity(jsonArray.toString(), "UTF-8");
+                    jsonParams.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+                    client.setTimeout(Constantes.TIMEOUT);
+                    RequestHandle post = client.post(getApplicationContext(), ServicioWeb.urlSincronizarElemento, jsonParams, "application/json", new AsyncHttpResponseHandler() {
+                        @Override
+                        public void onStart() {
+                            super.onStart();
+                            dialog.setMessage(getText(R.string.dialogo_procesando));
+                        }
+
+                        @Override
+                        public void onPreProcessResponse(ResponseHandlerInterface instance, HttpResponse response) {
+                            super.onPreProcessResponse(instance, response);
+                            Header[] headers = response.getAllHeaders();
+                            for (Header header : headers) {
+                                if (header.getName().equalsIgnoreCase("content-length")) {
+                                    String value = header.getValue();
+                                    contenLenght = Integer.valueOf(value);
+                                    Log.d(Constantes.TAG,"contenLenght:"+contenLenght);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onProgress(long bytesWritten, long totalSize) {
+                            super.onProgress(bytesWritten, totalSize);
+                            progress = (int)Math.round(((double)bytesWritten/(double)contenLenght)*100);
+                            //Log.d(Constantes.TAG,progress+"%");
+                        }
+
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                            String respuesta = new String(responseBody);
+                            Log.d(Constantes.TAG, respuesta);
+                            String log = "";
+                            try {
+                                JSONObject jsonResponse = new JSONObject(new String(responseBody));
+                                Log.d(Constantes.TAG,"JSON-RESPONSE:"+respuesta);
+                                JSONArray jArrayLog = jsonResponse.getJSONArray("log");
+                                /*for (int i=0;i<jArrayLog.length();i++){
+                                    JSONObject jLog = jArrayLog.getJSONObject(i);
+                                    jLog.getInt("id");
+                                    jLog.getInt("id_censo");
+                                    jLog.getInt("mobiliario");
+                                    jLog.getString("mensaje");
+                                    jLog.getBoolean("procesar");
+                                    log = log + "Mobiliario No: "+jLog.getInt("mobiliario")+","+jLog.getString("mensaje")+"\n";
+                                    if (jLog.getBoolean("procesar")){
+                                        censoArchivoDB.eliminarDatos(jLog.getInt("id"));
+                                        censoTipoArmadoDB.eliminarDatos(jLog.getInt("id"));
+                                        censoDB.eliminarDatos(jLog.getInt("id"));
+                                    }
+                                }*/
+
+                                view = inflater.inflate(R.layout.dialogo_log, null);
+                                msgLogs = view.findViewById(R.id.msg_logs);
+                                msgLogs.setText(log);
+
+                                alertDialog.setView(view);
+                                alertDialog.setCancelable(false);
+                                alertDialog.setTitle(R.string.titulo_alerta);
+                                alertDialog.setIcon(R.drawable.icon_problem);
+                                alertDialog.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                        setButton(true);
+                                    }
+                                });
+                                alertDialog.create().show();
+
+                                dialog.dismiss();
+
+                            }catch (JSONException e){
+                                dialog.dismiss();
+                                setButton(true);
+                                Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
+                                Log.d(Constantes.TAG,"JSON-RESPONSE-ERROR:"+e.getMessage());
+                                e.printStackTrace();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                            String respuesta = new String(responseBody);
+                            dialog.dismiss();
+                            setButton(true);
+                            Toast.makeText(getApplicationContext(),getText(R.string.alert_error_ejecucion)+ " Código: "+statusCode+" "+error.getMessage(), Toast.LENGTH_LONG).show();
+                            Log.d(Constantes.TAG,"JSON-RESPONSE-ERROR:"+respuesta);
+                        }
+
+                        @Override
+                        public void onUserException(Throwable error) {
+                            super.onUserException(error);
+                            dialog.dismiss();
+                            setButton(true);
+                            Toast.makeText(getApplicationContext(), getText(R.string.alert_error_ejecucion) + " " + error.getMessage(), Toast.LENGTH_LONG).show();
+                            Log.d(Constantes.TAG,"JSON-RESPONSE-ERROR:"+error.getMessage());
+                        }
+                    });
+                }
+            }
+        }
+
+        private JSONArray armarJSON() throws JSONException {
+            int p = 0;
+            JSONArray datos = new JSONArray();
+
+            cursor = elementoDB.consultarTemporales();
+            int size = cursor.getCount();
+            if (cursor.moveToFirst()) {
+                do {
+                    JSONObject jsonObject = new JSONObject();
+
+                    jsonObject.put("id_usuario", idUsuario);
+                    jsonObject.put("id_tipologia", cursor.getInt(cursor.getColumnIndex("id_tipologia")));
+                    jsonObject.put("id_mobiliario", cursor.getInt(cursor.getColumnIndex("id_mobiliario")));
+                    jsonObject.put("id_referencia", cursor.getInt(cursor.getColumnIndex("id_referencia")));
+                    jsonObject.put("id_estado_mobiliario", cursor.getInt(cursor.getColumnIndex("id_estado_mobiliario")));
+                    jsonObject.put("id_municipio", cursor.getInt(cursor.getColumnIndex("id_municipio")));
+                    jsonObject.put("id_barrio", cursor.getInt(cursor.getColumnIndex("id_barrio")));
+                    jsonObject.put("longitud", cursor.getFloat(cursor.getColumnIndex("longitud")));
+                    jsonObject.put("latitud", cursor.getFloat(cursor.getColumnIndex("latitud")));
+                    jsonObject.put("direccion", cursor.getString(cursor.getColumnIndex("direccion")));
+                    jsonObject.put("sector", cursor.getString(cursor.getColumnIndex("sector")));
+                    jsonObject.put("zona", cursor.getString(cursor.getColumnIndex("zona")));
+                    jsonObject.put("id_sentido", cursor.getInt(cursor.getColumnIndex("id_sentido")));
+                    jsonObject.put("cantidad", cursor.getInt(cursor.getColumnIndex("cantidad")));
+                    jsonObject.put("id_tipo_poste", cursor.getInt(cursor.getColumnIndex("id_tipo_poste")));
+                    jsonObject.put("id_tipo_red", cursor.getInt(cursor.getColumnIndex("id_tipo_red")));
+                    jsonObject.put("poste_no", cursor.getString(cursor.getColumnIndex("poste_no")));
+                    jsonObject.put("id_clase_via", cursor.getInt(cursor.getColumnIndex("id_clase_via")));
+                    jsonObject.put("serial_medidor", cursor.getString(cursor.getColumnIndex("serial_medidor")));
+                    jsonObject.put("lectura_medidor", cursor.getInt(cursor.getColumnIndex("lectura_medidor")));
+                    jsonObject.put("potencia_transformador", cursor.getDouble(cursor.getColumnIndex("potencia_transformador")));
+                    jsonObject.put("placa_mt_transformador", cursor.getString(cursor.getColumnIndex("placa_mt_transformador")));
+                    jsonObject.put("placa_ct_transformador", cursor.getString(cursor.getColumnIndex("placa_ct_transformador")));
+                    jsonObject.put("transformador_compartido", cursor.getString(cursor.getColumnIndex("transformador_compartido")));
+                    jsonObject.put("id_unidad_medida", cursor.getInt(cursor.getColumnIndex("id_unidad_medida")));
+                    jsonObject.put("id_proveedor", cursor.getInt(cursor.getColumnIndex("id_proveedor")));
+                    jsonObject.put("id_acta", cursor.getInt(cursor.getColumnIndex("id_acta")));
+                    jsonObject.put("tercero", cursor.getString(cursor.getColumnIndex("tercero")));
+                    //jsonObject.put("fch_registro", cursor.getString(cursor.getColumnIndex("fch_registro")));
+                    jsonObject.put("observacion", cursor.getString(cursor.getColumnIndex("observacion")));
+                    //jsonObject.put("foto", cursor.getString(cursor.getColumnIndex("foto")));
+                    datos.put(jsonObject);
+                    progress = (int)Math.round((double)(p+1)/size*100);
+                    publishProgress(progress);
+                    p++;
+                } while (cursor.moveToNext());
+            }
+            return datos;
+        }
+
+        private void setButton(boolean estado){
+            btnCancelar.setEnabled(estado);
+            btnCancelar.setEnabled(estado);
+            if(estado){
+                btnCancelar.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccentCancel)));
+                btnGuardar.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccentOk)));
+            }
+            else{
+                btnGuardar.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorLightPrimary)));
+                btnCancelar.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorLightPrimary)));
+            }
+        }
+
     }
 }

@@ -127,7 +127,7 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
                                 int id_control_encendido,int id_tipo_escenario,String transformador_compartido, String estructura_soporte_compartida,
                                 double potencia_transformador,String placa_mt,String placa_ct,int id_sentido,
                                 int id_proveedor,int id_unidad_medida ,int cantidad, String tercero,String serial_medidor,
-                                int  lectura_medidor, int id_acta, String observacion,String temporal
+                                int  lectura_medidor, int id_acta, String observacion,String temporal,String foto
                                 ){
         long rowID = -1;
         Cursor result = consultarId(id_elemento);
@@ -177,6 +177,7 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
             contentValues.put("id_acta", id_acta);
             contentValues.put("observacion", observacion);
             contentValues.put("temporal", temporal);
+            contentValues.put("foto",foto);
 
             //Log.d("VALUE",contentValues.toString());
             rowID = db.insert(Constantes.TABLA_ELEMENTO, null, contentValues);
@@ -247,6 +248,12 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
     @Override
     public Cursor consultarTodo() {
         this.sql = "SELECT * FROM "+Constantes.TABLA_ELEMENTO;
+        Cursor result = db.rawQuery(this.sql, null);
+        return result;
+    }
+
+    public Cursor consultarTemporales(){
+        this.sql = "SELECT * FROM "+Constantes.TABLA_ELEMENTO+" where temporal='S'";
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }

@@ -895,7 +895,7 @@ public class Parametros extends AppCompatActivity {
                                 jObjectElemento.getString("tercero"),
                                 jObjectElemento.getString("serial_medidor"),
                                 jObjectElemento.getInt("lectura_medidor"),
-                          0,"","N"
+                          0,"","N",""
                         );
 
                         progress = (int) Math.round((double) (i + 1) / arrayElemento.length() * 100);

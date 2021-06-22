@@ -603,6 +603,20 @@
                                 android:textStyle="bold" />
 
                             <TextView
+                                android:id="@+id/textView81"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/titulo_direccion" />
+
+                            <TextView
+                                android:id="@+id/txt_direccion_transformador"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="-"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <TextView
                                 android:id="@+id/textView21"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"

@@ -168,6 +168,7 @@ public class CensoCargaDistribucion extends AppCompatActivity {
     TextView viewPlacaMT;
     TextView viewPlacaCT;
     TextView viewTransformadorExclusivoAp;
+    TextView viewDireccionTransformador;
     //TextView viewPropiedadTransformador;
     //TextView viewCodigoSAI;
 
@@ -297,11 +298,13 @@ public class CensoCargaDistribucion extends AppCompatActivity {
         viewPlacaCT                     = findViewById(R.id.txt_ct_transformador);
         viewPlacaMT                     = findViewById(R.id.txt_mt_transformador);
         viewTransformadorExclusivoAp    = findViewById(R.id.txt_transformador_exclusivo_ap);
+        viewDireccionTransformador      = findViewById(R.id.txt_direccion_transformador);
         //viewCodigoSAI                   = findViewById(R.id.txt_codigo_sai);
 
         viewTransformadorNo.setText(transformador.getElemento_no());
         viewTipoTransformador.setText(transformador.getMobiliario().getDescripcionMobiliario());
         viewPotenciaTransformador.setText(transformador.getReferenciaMobiliario().getDescripcionReferenciaMobiliario());
+        viewDireccionTransformador.setText(transformador.getDireccion());
         viewPlacaMT.setText(transformador.getPlacaMT());
         viewPlacaCT.setText(transformador.getPlacaCT());
         viewTransformadorExclusivoAp.setText((transformador.isTransformadorExclusivo())?"SI":"NO");
