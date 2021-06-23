@@ -296,8 +296,8 @@ public class MiBaseDatos {
         censoTipoArmadoDB.eliminarDatos();
         censoArchivoDB.eliminarDatos();
         censoDB.eliminarDatos();
-        programaDB.eliminarDatos();
         censoAsignadoDB.eliminarDatos();
+        programaDB.eliminarDatos();
         elementoDB.eliminarDatos();
         procesoSgcDB.eliminarDatos();
         contratoDB.eliminarDatos();

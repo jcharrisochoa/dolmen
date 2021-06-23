@@ -2745,107 +2745,111 @@ public class CensoTecnico extends AppCompatActivity {
                     alert.create().show();
                 }
                 else{
-                    AsyncHttpClient client = new AsyncHttpClient();
-                    StringEntity jsonParams = new StringEntity(jsonArray.toString(), "UTF-8");
-                    jsonParams.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
-                    client.setTimeout(Constantes.TIMEOUT);
-                    RequestHandle post = client.post(getApplicationContext(), ServicioWeb.urlSincronizarCensoTecnico, jsonParams, "application/json", new AsyncHttpResponseHandler() {
-                        @Override
-                        public void onStart() {
-                            super.onStart();
-                            dialog.setMessage(getText(R.string.dialogo_procesando));
-                        }
+                    try {
+                        AsyncHttpClient client = new AsyncHttpClient();
+                        StringEntity jsonParams = new StringEntity(jsonArray.toString(), "UTF-8");
+                        jsonParams.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+                        client.setTimeout(Constantes.TIMEOUT);
+                        RequestHandle post = client.post(getApplicationContext(), ServicioWeb.urlSincronizarCensoTecnico, jsonParams, "application/json", new AsyncHttpResponseHandler() {
+                            @Override
+                            public void onStart() {
+                                super.onStart();
+                                dialog.setMessage(getText(R.string.dialogo_procesando));
+                            }
 
-                        @Override
-                        public void onPreProcessResponse(ResponseHandlerInterface instance, HttpResponse response) {
-                            super.onPreProcessResponse(instance, response);
-                            Header[] headers = response.getAllHeaders();
-                            for (Header header : headers) {
-                                if (header.getName().equalsIgnoreCase("content-length")) {
-                                    String value = header.getValue();
-                                    contenLenght = Integer.valueOf(value);
-                                    Log.d(Constantes.TAG,"contenLenght:"+contenLenght);
+                            @Override
+                            public void onPreProcessResponse(ResponseHandlerInterface instance, HttpResponse response) {
+                                super.onPreProcessResponse(instance, response);
+                                Header[] headers = response.getAllHeaders();
+                                for (Header header : headers) {
+                                    if (header.getName().equalsIgnoreCase("content-length")) {
+                                        String value = header.getValue();
+                                        contenLenght = Integer.valueOf(value);
+                                        Log.d(Constantes.TAG, "contenLenght:" + contenLenght);
+                                    }
                                 }
                             }
-                        }
 
-                        @Override
-                        public void onProgress(long bytesWritten, long totalSize) {
-                            super.onProgress(bytesWritten, totalSize);
-                            progress = (int)Math.round(((double)bytesWritten/(double)contenLenght)*100);
-                            //Log.d(Constantes.TAG,progress+"%");
-                        }
+                            @Override
+                            public void onProgress(long bytesWritten, long totalSize) {
+                                super.onProgress(bytesWritten, totalSize);
+                                progress = (int) Math.round(((double) bytesWritten / (double) contenLenght) * 100);
+                                //Log.d(Constantes.TAG,progress+"%");
+                            }
 
-                        @Override
-                        public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                            String respuesta = new String(responseBody);
-                            Log.d(Constantes.TAG, respuesta);
-                            String log = "";
-                            try {
-                                JSONObject jsonResponse = new JSONObject(new String(responseBody));
-                                Log.d(Constantes.TAG,"JSON-RESPONSE:"+respuesta);
-                                JSONArray jArrayLog = jsonResponse.getJSONArray("log");
-                               for (int i=0;i<jArrayLog.length();i++){
-                                    JSONObject jLog = jArrayLog.getJSONObject(i);
-                                    jLog.getInt("id");
-                                    jLog.getInt("id_censo");
-                                    jLog.getInt("mobiliario");
-                                    jLog.getString("mensaje");
-                                    jLog.getBoolean("procesar");
-                                    log = log + "Mobiliario No: "+jLog.getInt("mobiliario")+","+jLog.getString("mensaje")+"\n";
-                                    if (jLog.getBoolean("procesar")){
-                                        censoArchivoDB.eliminarDatos(jLog.getInt("id"));
-                                        censoTipoArmadoDB.eliminarDatos(jLog.getInt("id"));
-                                        censoDB.eliminarDatos(jLog.getInt("id"));
+                            @Override
+                            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                                String respuesta = new String(responseBody);
+                                Log.d(Constantes.TAG, respuesta);
+                                String log = "";
+                                try {
+                                    JSONObject jsonResponse = new JSONObject(new String(responseBody));
+                                    Log.d(Constantes.TAG, "JSON-RESPONSE:" + respuesta);
+                                    JSONArray jArrayLog = jsonResponse.getJSONArray("log");
+                                    for (int i = 0; i < jArrayLog.length(); i++) {
+                                        JSONObject jLog = jArrayLog.getJSONObject(i);
+                                        jLog.getInt("id");
+                                        jLog.getInt("id_censo");
+                                        jLog.getInt("mobiliario");
+                                        jLog.getString("mensaje");
+                                        jLog.getBoolean("procesar");
+                                        log = log + "Mobiliario No: " + jLog.getInt("mobiliario") + "," + jLog.getString("mensaje") + "\n";
+                                        if (jLog.getBoolean("procesar")) {
+                                            censoArchivoDB.eliminarDatos(jLog.getInt("id"));
+                                            censoTipoArmadoDB.eliminarDatos(jLog.getInt("id"));
+                                            censoDB.eliminarDatos(jLog.getInt("id"));
+                                        }
                                     }
+
+                                    view = inflater.inflate(R.layout.dialogo_log, null);
+                                    msgLogs = view.findViewById(R.id.msg_logs);
+                                    msgLogs.setText(log);
+
+                                    alertDialog.setView(view);
+                                    alertDialog.setCancelable(false);
+                                    alertDialog.setTitle(R.string.titulo_alerta);
+                                    alertDialog.setIcon(R.drawable.icon_problem);
+                                    alertDialog.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                            setButton(true);
+                                        }
+                                    });
+                                    alertDialog.create().show();
+
+                                    dialog.dismiss();
+
+                                } catch (JSONException e) {
+                                    dialog.dismiss();
+                                    setButton(true);
+                                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                                    Log.d(Constantes.TAG, "JSON-RESPONSE-ERROR:" + e.getMessage());
+                                    e.printStackTrace();
                                 }
+                            }
 
-                                view = inflater.inflate(R.layout.dialogo_log, null);
-                                msgLogs = view.findViewById(R.id.msg_logs);
-                                msgLogs.setText(log);
-
-                                alertDialog.setView(view);
-                                alertDialog.setCancelable(false);
-                                alertDialog.setTitle(R.string.titulo_alerta);
-                                alertDialog.setIcon(R.drawable.icon_problem);
-                                alertDialog.setNeutralButton(R.string.btn_aceptar, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                        setButton(true);
-                                    }
-                                });
-                                alertDialog.create().show();
-
-                                dialog.dismiss();
-
-                            }catch (JSONException e){
+                            @Override
+                            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                                String respuesta = new String(responseBody);
                                 dialog.dismiss();
                                 setButton(true);
-                                Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
-                                Log.d(Constantes.TAG,"JSON-RESPONSE-ERROR:"+e.getMessage());
-                                e.printStackTrace();
+                                Toast.makeText(getApplicationContext(), getText(R.string.alert_error_ejecucion) + " Código: " + statusCode + " " + error.getMessage(), Toast.LENGTH_LONG).show();
+                                Log.d(Constantes.TAG, "JSON-RESPONSE-ERROR:" + respuesta);
                             }
-                        }
 
-                        @Override
-                        public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                            String respuesta = new String(responseBody);
-                            dialog.dismiss();
-                            setButton(true);
-                            Toast.makeText(getApplicationContext(),getText(R.string.alert_error_ejecucion)+ " Código: "+statusCode+" "+error.getMessage(), Toast.LENGTH_LONG).show();
-                            Log.d(Constantes.TAG,"JSON-RESPONSE-ERROR:"+respuesta);
-                        }
-
-                        @Override
-                        public void onUserException(Throwable error) {
-                            super.onUserException(error);
-                            dialog.dismiss();
-                            setButton(true);
-                            Toast.makeText(getApplicationContext(), getText(R.string.alert_error_ejecucion) + " " + error.getMessage(), Toast.LENGTH_LONG).show();
-                            Log.d(Constantes.TAG,"JSON-RESPONSE-ERROR:"+error.getMessage());
-                        }
-                    });
+                            @Override
+                            public void onUserException(Throwable error) {
+                                super.onUserException(error);
+                                dialog.dismiss();
+                                setButton(true);
+                                Toast.makeText(getApplicationContext(), getText(R.string.alert_error_ejecucion) + " " + error.getMessage(), Toast.LENGTH_LONG).show();
+                                Log.d(Constantes.TAG, "JSON-RESPONSE-ERROR:" + error.getMessage());
+                            }
+                        });
+                    }catch (RuntimeException error){
+                        Toast.makeText(getApplicationContext(), getText(R.string.alert_error_ejecucion) + " " + error.getMessage(), Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         }

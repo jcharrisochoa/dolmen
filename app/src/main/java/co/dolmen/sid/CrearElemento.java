@@ -1331,6 +1331,8 @@ public class CrearElemento extends AppCompatActivity {
         ElementoDB elementoDB = new ElementoDB(database);
         float potenciaTransformador = (txtPotenciaTransformador.getText().toString().isEmpty())?0:Float.parseFloat(txtPotenciaTransformador.getText().toString());
         int lecturaMedidor = (txtLecturaMedidor.getText().toString().isEmpty())?0:Integer.parseInt(txtLecturaMedidor.getText().toString());
+        float lat = (txtLatitud.getText().toString().isEmpty())?0:Float.parseFloat(txtLatitud.getText().toString());
+        float lon = (txtLongitud.getText().toString().isEmpty())?0:Float.parseFloat(txtLongitud.getText().toString());
 
         return elementoDB.agregarDatos(
                 id_elemento,mobiliario_no,
@@ -1343,8 +1345,8 @@ public class CrearElemento extends AppCompatActivity {
                 referenciaMobiliarioList.get(sltReferencia.getSelectedItemPosition()).getIdReferenciaMobiliario(),
                 estadoMobiliarioList.get(sltEstadoMobiliario.getSelectedItemPosition()).getId(),
                 0,0,0,"U","N",
-                Float.parseFloat(txtLatitud.getText().toString()),
-                Float.parseFloat(txtLongitud.getText().toString()),
+                lat,
+                lon,
                 claseViaList.get(sltClaseVia.getSelectedItemPosition()).getId(),
                 0,
                 tipoPosteList.get(sltTipoPoste.getSelectedItemPosition()).getId(),
@@ -1564,21 +1566,21 @@ public class CrearElemento extends AppCompatActivity {
                             try {
                                 JSONObject jsonResponse = new JSONObject(new String(responseBody));
                                 Log.d(Constantes.TAG,"JSON-RESPONSE:"+respuesta);
-                                JSONArray jArrayLog = jsonResponse.getJSONArray("log");
-                                /*for (int i=0;i<jArrayLog.length();i++){
-                                    JSONObject jLog = jArrayLog.getJSONObject(i);
-                                    jLog.getInt("id");
-                                    jLog.getInt("id_censo");
-                                    jLog.getInt("mobiliario");
-                                    jLog.getString("mensaje");
-                                    jLog.getBoolean("procesar");
-                                    log = log + "Mobiliario No: "+jLog.getInt("mobiliario")+","+jLog.getString("mensaje")+"\n";
-                                    if (jLog.getBoolean("procesar")){
-                                        censoArchivoDB.eliminarDatos(jLog.getInt("id"));
-                                        censoTipoArmadoDB.eliminarDatos(jLog.getInt("id"));
-                                        censoDB.eliminarDatos(jLog.getInt("id"));
+                                JSONArray jsonArrayLog = jsonResponse.getJSONArray("log");
+
+
+                                for (int i = 0; i < jsonArrayLog.length(); i++) {
+
+                                    //opcion actualizar registro bd local
+                                    if (jsonArrayLog.getJSONObject(i).getBoolean("procesado")) {
+                                        /*pos = adapterData.getPositionItem(jsonArrayLog.getJSONObject(i).getInt("id_actividad"));
+                                        actividadOperativaArrayList.get(pos).setPendienteSincronizar("N");
+                                        actividadOperativaDB.actualizarDatos(actividadOperativaArrayList.get(pos));
+                                        adapterData.notifySetChange();*/
                                     }
-                                }*/
+                                    log = log +  jsonArrayLog.getJSONObject(i).getString("mensaje")+",TempID : "+jsonArrayLog.getJSONObject(i).getInt("id_temporal")+"\n";
+                                }
+
 
                                 view = inflater.inflate(R.layout.dialogo_log, null);
                                 msgLogs = view.findViewById(R.id.msg_logs);
@@ -1640,11 +1642,13 @@ public class CrearElemento extends AppCompatActivity {
                 do {
                     JSONObject jsonObject = new JSONObject();
 
+                    jsonObject.put("id", cursor.getInt(cursor.getColumnIndex("_id")));
                     jsonObject.put("id_usuario", idUsuario);
                     jsonObject.put("id_tipologia", cursor.getInt(cursor.getColumnIndex("id_tipologia")));
                     jsonObject.put("id_mobiliario", cursor.getInt(cursor.getColumnIndex("id_mobiliario")));
                     jsonObject.put("id_referencia", cursor.getInt(cursor.getColumnIndex("id_referencia")));
                     jsonObject.put("id_estado_mobiliario", cursor.getInt(cursor.getColumnIndex("id_estado_mobiliario")));
+                    jsonObject.put("id_proceso",idDefaultProceso);
                     jsonObject.put("id_municipio", cursor.getInt(cursor.getColumnIndex("id_municipio")));
                     jsonObject.put("id_barrio", cursor.getInt(cursor.getColumnIndex("id_barrio")));
                     jsonObject.put("longitud", cursor.getFloat(cursor.getColumnIndex("longitud")));
@@ -1670,7 +1674,7 @@ public class CrearElemento extends AppCompatActivity {
                     jsonObject.put("tercero", cursor.getString(cursor.getColumnIndex("tercero")));
                     //jsonObject.put("fch_registro", cursor.getString(cursor.getColumnIndex("fch_registro")));
                     jsonObject.put("observacion", cursor.getString(cursor.getColumnIndex("observacion")));
-                    //jsonObject.put("foto", cursor.getString(cursor.getColumnIndex("foto")));
+                    jsonObject.put("foto", cursor.getString(cursor.getColumnIndex("foto")));
                     datos.put(jsonObject);
                     progress = (int)Math.round((double)(p+1)/size*100);
                     publishProgress(progress);
