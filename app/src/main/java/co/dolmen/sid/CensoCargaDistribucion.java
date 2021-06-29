@@ -668,6 +668,9 @@ public class CensoCargaDistribucion extends AppCompatActivity {
         progress.setIcon(R.drawable.icon_info);
         progress.setMessage(getString(R.string.almacenando));
 
+        ElementoDB elementoDBTrsf = new ElementoDB(database);
+        Cursor cursorTransformador = elementoDBTrsf.consultarId(transformador.getId());
+
         Integer id_elemento_t = (txtElementoNo.getText().toString().isEmpty() && !swLuminariaVisible.isChecked()) ? null : elemento.getId();
 
         requestParams.put("id_usuario", idUsuario);
@@ -690,9 +693,41 @@ public class CensoCargaDistribucion extends AppCompatActivity {
         requestParams.put("sector",sector);
         requestParams.put("zona", zona);
         requestParams.put("mobiliario_buen_estado", chkSwMobiliarioBuenEstado);
-        requestParams.put("id_elemento_transformador", transformador.getId());
         requestParams.put("foto_1", encodeStringFoto_1);
         requestParams.put("foto_2", encodeStringFoto_2);
+
+        //--Datos del transformador Base ,Sincronizar datos del transformador,
+        // si el elemento transformador es temporal
+        requestParams.put("id_elemento_transformador", transformador.getId());
+        requestParams.put("id_acta",cursorTransformador.getInt(cursorTransformador.getColumnIndex("id_acta")));
+        requestParams.put("id_barrio",cursorTransformador.getInt(cursorTransformador.getColumnIndex("id_barrio")));
+        requestParams.put("direccion",cursorTransformador.getString(cursorTransformador.getColumnIndex("direccion")));
+        requestParams.put("latitud",cursorTransformador.getDouble(cursorTransformador.getColumnIndex("latitud")));
+        requestParams.put("longitud",cursorTransformador.getDouble(cursorTransformador.getColumnIndex("longitud")));
+        requestParams.put("id_tipologia",cursorTransformador.getInt(cursorTransformador.getColumnIndex("id_tipologia")));
+        requestParams.put("id_mobiliario",cursorTransformador.getInt(cursorTransformador.getColumnIndex("id_mobiliario")));
+        requestParams.put("id_referencia",cursorTransformador.getInt(cursorTransformador.getColumnIndex("id_referencia")));
+        requestParams.put("id_sentido",cursorTransformador.getInt(cursorTransformador.getColumnIndex("id_sentido")));
+        requestParams.put("tercero",cursorTransformador.getString(cursorTransformador.getColumnIndex("tercero")));
+        requestParams.put("id_proveedor",cursorTransformador.getInt(cursorTransformador.getColumnIndex("id_proveedor")));
+        requestParams.put("cantidad",cursorTransformador.getInt(cursorTransformador.getColumnIndex("cantidad")));
+        requestParams.put("id_unidad",cursorTransformador.getInt(cursorTransformador.getColumnIndex("id_unidad_medida")));
+        requestParams.put("id_tipo_poste",cursorTransformador.getInt(cursorTransformador.getColumnIndex("id_tipo_poste")));
+        requestParams.put("poste_no",cursorTransformador.getString(cursorTransformador.getColumnIndex("poste_no")));
+        requestParams.put("id_tipo_red",cursorTransformador.getInt(cursorTransformador.getColumnIndex("id_tipo_red")));
+        requestParams.put("transformador",""); //codigo sai
+        requestParams.put("potencia_transformador",cursorTransformador.getDouble(cursorTransformador.getColumnIndex("potencia_transformador")));
+        requestParams.put("placa_MT",cursorTransformador.getString(cursorTransformador.getColumnIndex("placa_mt_transformador")));
+        requestParams.put("placa_CT",cursorTransformador.getString(cursorTransformador.getColumnIndex("placa_ct_transformador")));
+        requestParams.put("transformador_compartido",cursorTransformador.getString(cursorTransformador.getColumnIndex("transformador_compartido")));
+        requestParams.put("serial_medidor",cursorTransformador.getString(cursorTransformador.getColumnIndex("serial_medidor")));
+        requestParams.put("lectura_medidor",cursorTransformador.getInt(cursorTransformador.getColumnIndex("lectura_medidor")));
+        requestParams.put("id_clase_via",cursorTransformador.getInt(cursorTransformador.getColumnIndex("id_clase_via")));
+        requestParams.put("id_estado_mobiliario",cursorTransformador.getInt(cursorTransformador.getColumnIndex("id_estado_mobiliario")));
+        requestParams.put("observacion",cursorTransformador.getString(cursorTransformador.getColumnIndex("observacion")));
+        requestParams.put("conexion_electrica","S");
+        requestParams.put("foto",cursorTransformador.getString(cursorTransformador.getColumnIndex("foto")));
+        requestParams.put("temporal",cursorTransformador.getString(cursorTransformador.getColumnIndex("temporal")));
 
         Log.d(Constantes.TAG,"=>"+requestParams.toString());
         client.setTimeout(Constantes.TIMEOUT);
@@ -726,6 +761,7 @@ public class CensoCargaDistribucion extends AppCompatActivity {
 
                     if(jsonObject.getInt("estado") == 1) {
                         sincronizado = "S";
+                        //transformador.setId(); actualizar con el ID bd sid, si el elemento fue temporal
                         if(almacenarDatosLocal(database)){
                             Toast.makeText(getApplicationContext(), "Save", Toast.LENGTH_SHORT).show();
                         }

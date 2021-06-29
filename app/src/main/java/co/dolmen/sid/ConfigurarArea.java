@@ -161,7 +161,9 @@ public class ConfigurarArea extends AppCompatActivity {
         sltMunicipio.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                cargarContrato(database,municipioList.get(i).getId(),procesoList.get(sltProceso.getSelectedItemPosition()).getId());
+                cargarContrato(database,
+                        municipioList.get(i).getId(),
+                        procesoList.get(sltProceso.getSelectedItemPosition()).getId());
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -374,20 +376,21 @@ public class ConfigurarArea extends AppCompatActivity {
         contratoList = new ArrayList<DataSpinner>();
         List<String> labels = new ArrayList<>();
         int i = 0;
-        if(id_municipio == 0 || id_proceso_sgc==0){
+
+       if(id_municipio == 0 || id_proceso_sgc==0){
             DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
             contratoList.add(dataSpinner);
             labels.add(getText(R.string.seleccione).toString());
+            setDefaultPositionContrato = 0;
         }
-        else {
+         else {
             ContratoDB contratoDB = new ContratoDB(sqLiteDatabase);
             Cursor cursor = contratoDB.consultarTodo(id_municipio, id_proceso_sgc);
             DataSpinner dataSpinner = new DataSpinner(i, getText(R.string.seleccione).toString());
             contratoList.add(dataSpinner);
             labels.add(getText(R.string.seleccione).toString());
-            Log.d ("Count",""+cursor.getCount());
             if (cursor.getCount() > 0){
-                if (cursor.moveToFirst()) {
+               if (cursor.moveToFirst()) {
                     do {
                         i++;
                         dataSpinner = new DataSpinner(cursor.getInt(0), cursor.getString(3).toUpperCase());

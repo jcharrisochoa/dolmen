@@ -117,6 +117,14 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
             return false;
     }
 
+    public void actualizarElementoTemporal(int id_temporal,int id_elemento,String mobiliario_no){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("_id",id_elemento);
+        contentValues.put("elemento_no", mobiliario_no);
+        contentValues.put("temporal", "N");
+        db.update(Constantes.TABLA_ELEMENTO,contentValues,"_id="+id_temporal,null);
+    }
+
     public boolean agregarDatos(int id_elemento,String mobiliario_no,String direccion,
                                 int id_municipio,int id_barrio,int id_proceso_sgc,int id_tipologia,
                                 int id_mobiliario,int id_referencia,int id_estado_mobiliario,int id_tipo_balasto,
@@ -195,6 +203,15 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
 
             estructura_soporte_compartida = (elemento.isPosteExclusivo())?"N":"S";
             transformador_compartido = (elemento.isTransformadorExclusivo())?"N":"S";
+
+            int id_sentido = (elemento.getSentido() != null)?elemento.getSentido().getId():0;
+            int id_proveedor = (elemento.getProveedor() != null)?elemento.getProveedor().getId():0;
+            int id_unidad_medida = (elemento.getUnidadMedida() != null)?elemento.getUnidadMedida().getId():0;
+            int id_acta = (elemento.getActaContrato()!=null)?elemento.getActaContrato().getIdActa():0;
+            int cantidad =  (elemento.getCantidad() != 0)?elemento.getCantidad():0;
+            String temporal = (elemento.getTemporal() != null)?String.valueOf(elemento.getTemporal()):"N";
+            String tercero = (elemento.getTercero()!=null)?elemento.getTercero():"N";
+
             ContentValues contentValues = new ContentValues();
             contentValues.put("direccion", elemento.getDireccion());
             contentValues.put("id_municipio", elemento.getMunicipio().getId());
@@ -225,16 +242,16 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
             contentValues.put("placa_ct_transformador", elemento.getPlacaCT());
             contentValues.put("foto", elemento.getEncodeStringFoto());
             //--Cambios 17 junio 2021
-            contentValues.put("id_sentido", elemento.getSentido().getId());
-            contentValues.put("id_proveedor", elemento.getProveedor().getId());
-            contentValues.put("id_unidad_medida", elemento.getUnidadMedida().getId());
+            contentValues.put("id_sentido", id_sentido);
+            contentValues.put("id_proveedor", id_proveedor);
+            contentValues.put("id_unidad_medida", id_unidad_medida);
             contentValues.put("cantidad", elemento.getCantidad());
-            contentValues.put("tercero", elemento.getTercero());
+            contentValues.put("tercero", tercero);
             contentValues.put("serial_medidor", elemento.getSerialMedidor());
             contentValues.put("lectura_medidor", elemento.getLecturaMedidor());
-            contentValues.put("id_acta", elemento.getActaContrato().getIdActa());
+            contentValues.put("id_acta", id_acta);
             contentValues.put("observacion", elemento.getObservacion());
-            contentValues.put("temporal", String.valueOf(elemento.getTemporal()));
+            contentValues.put("temporal", temporal);
 
             db.update(Constantes.TABLA_ELEMENTO,contentValues,"_id="+elemento.getId(),null);
         }
@@ -259,7 +276,7 @@ public class ElementoDB extends Elemento implements DatabaseDLM,DatabaseDDL {
     }
 
     public Cursor consultarId(int id){
-        this.sql = "SELECT _id FROM "+Constantes.TABLA_ELEMENTO+" WHERE _id="+id;
+        this.sql = "SELECT * FROM "+Constantes.TABLA_ELEMENTO+" WHERE _id="+id;
         Cursor result = db.rawQuery(this.sql, null);
         return result;
     }

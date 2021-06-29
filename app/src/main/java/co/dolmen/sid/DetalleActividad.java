@@ -95,6 +95,7 @@ public class DetalleActividad extends AppCompatActivity {
 
         Intent i = getIntent();
         actividadOperativa = (ActividadOperativa)i.getSerializableExtra("actividadOperativa");
+        Log.d(Constantes.TAG,"acti:"+actividadOperativa.toString());
         setTitle(getString(R.string.titulo_actividad)+" No "+actividadOperativa.getIdActividad());
 
         btnEnSitio     = findViewById(R.id.fab_en_sitio);

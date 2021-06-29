@@ -1567,16 +1567,17 @@ public class CrearElemento extends AppCompatActivity {
                                 JSONObject jsonResponse = new JSONObject(new String(responseBody));
                                 Log.d(Constantes.TAG,"JSON-RESPONSE:"+respuesta);
                                 JSONArray jsonArrayLog = jsonResponse.getJSONArray("log");
-
+                                ElementoDB elementoDBTemp = new ElementoDB(database);
 
                                 for (int i = 0; i < jsonArrayLog.length(); i++) {
 
                                     //opcion actualizar registro bd local
                                     if (jsonArrayLog.getJSONObject(i).getBoolean("procesado")) {
-                                        /*pos = adapterData.getPositionItem(jsonArrayLog.getJSONObject(i).getInt("id_actividad"));
-                                        actividadOperativaArrayList.get(pos).setPendienteSincronizar("N");
-                                        actividadOperativaDB.actualizarDatos(actividadOperativaArrayList.get(pos));
-                                        adapterData.notifySetChange();*/
+                                        elementoDBTemp.actualizarElementoTemporal(
+                                                jsonArrayLog.getJSONObject(i).getInt("id_temporal"),
+                                                jsonArrayLog.getJSONObject(i).getInt("id_elemento"),
+                                                jsonArrayLog.getJSONObject(i).getString("mobiliario_no")
+                                                );
                                     }
                                     log = log +  jsonArrayLog.getJSONObject(i).getString("mensaje")+",TempID : "+jsonArrayLog.getJSONObject(i).getInt("id_temporal")+"\n";
                                 }

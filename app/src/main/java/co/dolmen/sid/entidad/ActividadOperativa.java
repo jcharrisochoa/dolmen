@@ -368,4 +368,51 @@ public class ActividadOperativa implements Serializable {
     public void setTelefonoCliente(String telefonoCliente) {
         this.telefonoCliente = telefonoCliente;
     }
+
+    @Override
+    public String toString() {
+        return "ActividadOperativa{" +
+                "idActividad=" + idActividad +
+                ", idEspacioPublicitario=" + idEspacioPublicitario +
+                ", idUsuarioDescarga=" + idUsuarioDescarga +
+                ", idReporteDano=" + idReporteDano +
+                ", idClienteExterno=" + idClienteExterno +
+                ", nombreCliente='" + nombreCliente + '\'' +
+                ", direccionCliente='" + direccionCliente + '\'' +
+                ", telefonoCliente='" + telefonoCliente + '\'' +
+                ", programa=" + programa.getId() +
+                ", procesoSgc=" + procesoSgc.getDescripcion() +
+                ", elemento={" +
+                "  id="+elemento.getId() +
+                ", mobiliario_no="+elemento.getElemento_no()+
+                ", mobiliario_no="+elemento.getDireccion()+
+                ", latitud="+elemento.getLatitud()+
+                ", longitud="+elemento.getLongitud()+
+                "}"+
+                ", centroCosto=" + centroCosto.getDescripcionCentroCosto() +
+                ", barrio=" + barrio.getNombreBarrio() +
+                ", estadoActividad=" + estadoActividad.getDescripcion() +
+                ", tipoReporteDano=" + tipoReporteDano.getDescripcion() +
+                ", tipoActividad=" + tipoActividad.getDescripcion() +
+                ", equipo=" + equipo.getCodigo() +
+                ", fechaPrograma=" + fechaPrograma +
+                ", fechaActividad=" + fechaActividad +
+                ", fechaEnSitio=" + fechaEnSitio +
+                ", fechaEjecucion=" + fechaEjecucion +
+                ", direccion='" + direccion + '\'' +
+                ", longitud=" + longitud +
+                ", latitud=" + latitud +
+                ", et='" + et + '\'' +
+                ", usuarioProgramaActividad='" + usuarioProgramaActividad + '\'' +
+                ", nroElementoDesmontado='" + nroElementoDesmontado + '\'' +
+                ", usuarioGeneraActividad='" + usuarioGeneraActividad + '\'' +
+                ", observacion='" + observacion + '\'' +
+                ", pendienteSincronizar='" + pendienteSincronizar + '\'' +
+                ", afectadoPorVandalismo='" + afectadoPorVandalismo + '\'' +
+                ", elementoNoEncontrado='" + elementoNoEncontrado + '\'' +
+                ", archivoActividadList=" + archivoActividadList +
+                ", elementosDesmontadosList=" + elementosDesmontadosList +
+                ", vatiajeDesmontadoList=" + vatiajeDesmontadoList +
+                '}';
+    }
 }
